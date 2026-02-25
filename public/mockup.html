@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LabLooker — Design Mockups</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f0f0f0; padding: 40px 20px; }
+    h1 { text-align: center; font-size: 22px; color: #444; margin-bottom: 8px; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 48px; font-size: 14px; }
+    .label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 16px; text-align: center; }
+    .mockups { display: flex; gap: 32px; max-width: 1100px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+    .mockup { flex: 1; min-width: 440px; max-width: 520px; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.15); }
+
+    /* ===== OPTION A: Warm & Trustworthy ===== */
+    .option-a { background: #faf8f5; }
+    .option-a .nav { background: #faf8f5; border-bottom: 1px solid #e8e0d8; padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; }
+    .option-a .logo { font-size: 18px; font-weight: 800; color: #2d6a5e; }
+    .option-a .logo span { color: #c0826a; }
+    .option-a .nav-cta { background: #2d6a5e; color: white; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; }
+    .option-a .hero { padding: 52px 28px 44px; text-align: center; }
+    .option-a .badge { display: inline-flex; align-items: center; gap: 6px; background: #e8f4f1; color: #2d6a5e; border: 1px solid #b8ddd7; border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 600; margin-bottom: 24px; }
+    .option-a .badge-dot { width: 6px; height: 6px; background: #2d6a5e; border-radius: 50%; }
+    .option-a h2 { font-size: 34px; font-weight: 800; color: #1a2e2b; line-height: 1.2; margin-bottom: 14px; }
+    .option-a h2 span { color: #2d6a5e; }
+    .option-a .sub { font-size: 15px; color: #6b7c79; line-height: 1.6; margin-bottom: 28px; max-width: 380px; margin-left: auto; margin-right: auto; }
+    .option-a .search-bar { display: flex; background: white; border: 2px solid #c8dbd8; border-radius: 12px; overflow: hidden; max-width: 420px; margin: 0 auto 28px; box-shadow: 0 2px 12px rgba(45,106,94,0.1); }
+    .option-a .search-input { flex: 1; padding: 14px 16px; font-size: 14px; color: #333; border: none; outline: none; background: transparent; font-family: 'Inter', sans-serif; }
+    .option-a .search-btn { background: #2d6a5e; color: white; padding: 14px 20px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
+    .option-a .tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .option-a .tag { background: #f0f7f5; border: 1px solid #c8dbd8; color: #2d6a5e; padding: 5px 12px; border-radius: 20px; font-size: 12px; }
+    .option-a .stats { display: flex; gap: 0; border-top: 1px solid #e8e0d8; }
+    .option-a .stat { flex: 1; text-align: center; padding: 20px 12px; border-right: 1px solid #e8e0d8; }
+    .option-a .stat:last-child { border-right: none; }
+    .option-a .stat-num { font-size: 22px; font-weight: 800; color: #2d6a5e; }
+    .option-a .stat-label { font-size: 11px; color: #8a9e9b; margin-top: 3px; }
+    .option-a .palette { display: flex; height: 36px; }
+    .option-a .swatch { flex: 1; }
+
+    /* ===== OPTION B: Clean & Modern Health ===== */
+    .option-b { background: #ffffff; }
+    .option-b .nav { background: white; border-bottom: 1px solid #f0f0f0; padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; }
+    .option-b .logo { font-size: 18px; font-weight: 800; color: #1a1f2e; }
+    .option-b .logo span { color: #e85d26; }
+    .option-b .nav-cta { background: #e85d26; color: white; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; }
+    .option-b .hero { padding: 52px 28px 44px; text-align: center; background: linear-gradient(160deg, #f8f9ff 0%, #ffffff 100%); }
+    .option-b .badge { display: inline-flex; align-items: center; gap: 6px; background: #fff3ef; color: #e85d26; border: 1px solid #fac9b5; border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 600; margin-bottom: 24px; }
+    .option-b .badge-dot { width: 6px; height: 6px; background: #e85d26; border-radius: 50%; }
+    .option-b h2 { font-size: 34px; font-weight: 800; color: #1a1f2e; line-height: 1.2; margin-bottom: 14px; }
+    .option-b h2 span { color: #e85d26; }
+    .option-b .sub { font-size: 15px; color: #6b7280; line-height: 1.6; margin-bottom: 28px; max-width: 380px; margin-left: auto; margin-right: auto; }
+    .option-b .search-bar { display: flex; background: white; border: 2px solid #e5e7eb; border-radius: 12px; overflow: hidden; max-width: 420px; margin: 0 auto 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .option-b .search-input { flex: 1; padding: 14px 16px; font-size: 14px; color: #333; border: none; outline: none; background: transparent; font-family: 'Inter', sans-serif; }
+    .option-b .search-btn { background: #1a1f2e; color: white; padding: 14px 20px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
+    .option-b .tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .option-b .tag { background: #f9fafb; border: 1px solid #e5e7eb; color: #374151; padding: 5px 12px; border-radius: 20px; font-size: 12px; }
+    .option-b .stats { display: flex; gap: 0; border-top: 1px solid #f3f4f6; }
+    .option-b .stat { flex: 1; text-align: center; padding: 20px 12px; border-right: 1px solid #f3f4f6; }
+    .option-b .stat:last-child { border-right: none; }
+    .option-b .stat-num { font-size: 22px; font-weight: 800; color: #1a1f2e; }
+    .option-b .stat-num span { color: #e85d26; }
+    .option-b .stat-label { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+    .option-b .palette { display: flex; height: 36px; }
+    .option-b .swatch { flex: 1; }
+
+    .palette-label { padding: 10px 28px; font-size: 11px; color: #999; display: flex; gap: 12px; flex-wrap: wrap; border-top: 1px solid rgba(0,0,0,0.06); }
+    .pl { display: flex; align-items: center; gap: 5px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <h1>LabLooker — Design Direction</h1>
+  <p class="subtitle">Two options for Rosa to choose from. Both are light-theme with embedded search.</p>
+
+  <div class="mockups">
+
+    <!-- OPTION A -->
+    <div>
+      <div class="label">Option A — Warm &amp; Trustworthy</div>
+      <div class="mockup option-a">
+        <div class="nav">
+          <div class="logo">Lab<span>Looker</span></div>
+          <div class="nav-cta">Get Started Free</div>
+        </div>
+        <div class="hero">
+          <div class="badge"><div class="badge-dot"></div> Free to use — no account required</div>
+          <h2>Know your labs.<br/><span>Know your options.</span></h2>
+          <p class="sub">Search any test by name or symptom. Compare self-pay prices across 15+ labs. Get CPT codes. Built by a patient, for patients.</p>
+          <div class="search-bar">
+            <input class="search-input" type="text" placeholder="🔬  Search any lab test or symptom..." readonly />
+            <button class="search-btn">Search</button>
+          </div>
+          <div class="tags">
+            <div class="tag">Thyroid panel</div>
+            <div class="tag">Ferritin</div>
+            <div class="tag">HbA1c</div>
+            <div class="tag">Vitamin D</div>
+            <div class="tag">Fatigue</div>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="stat-num">633+</div><div class="stat-label">Lab tests</div></div>
+          <div class="stat"><div class="stat-num">15+</div><div class="stat-label">Labs compared</div></div>
+          <div class="stat"><div class="stat-num">Free</div><div class="stat-label">No account needed</div></div>
+        </div>
+        <div class="palette">
+          <div class="swatch" style="background:#faf8f5"></div>
+          <div class="swatch" style="background:#e8f4f1"></div>
+          <div class="swatch" style="background:#2d6a5e"></div>
+          <div class="swatch" style="background:#1a2e2b"></div>
+          <div class="swatch" style="background:#c0826a"></div>
+        </div>
+        <div class="palette-label">
+          <div class="pl"><div class="dot" style="background:#faf8f5;border:1px solid #ccc"></div> Cream bg</div>
+          <div class="pl"><div class="dot" style="background:#2d6a5e"></div> Sage green (primary)</div>
+          <div class="pl"><div class="dot" style="background:#1a2e2b"></div> Deep forest (text)</div>
+          <div class="pl"><div class="dot" style="background:#c0826a"></div> Terracotta (accent)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTION B -->
+    <div>
+      <div class="label">Option B — Clean &amp; Modern Health</div>
+      <div class="mockup option-b">
+        <div class="nav">
+          <div class="logo">Lab<span>Looker</span></div>
+          <div class="nav-cta">Get Started Free</div>
+        </div>
+        <div class="hero">
+          <div class="badge"><div class="badge-dot"></div> Free to use — no account required</div>
+          <h2>Know your labs.<br/><span>Know your options.</span></h2>
+          <p class="sub">Search any test by name or symptom. Compare self-pay prices across 15+ labs. Get CPT codes. Built by a patient, for patients.</p>
+          <div class="search-bar">
+            <input class="search-input" type="text" placeholder="🔬  Search any lab test or symptom..." readonly />
+            <button class="search-btn">Search</button>
+          </div>
+          <div class="tags">
+            <div class="tag">Thyroid panel</div>
+            <div class="tag">Ferritin</div>
+            <div class="tag">HbA1c</div>
+            <div class="tag">Vitamin D</div>
+            <div class="tag">Fatigue</div>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="stat-num">633<span>+</span></div><div class="stat-label">Lab tests</div></div>
+          <div class="stat"><div class="stat-num">15<span>+</span></div><div class="stat-label">Labs compared</div></div>
+          <div class="stat"><div class="stat-num" style="color:#2d7dd2">Free</div><div class="stat-label">No account needed</div></div>
+        </div>
+        <div class="palette">
+          <div class="swatch" style="background:#ffffff"></div>
+          <div class="swatch" style="background:#f8f9ff"></div>
+          <div class="swatch" style="background:#1a1f2e"></div>
+          <div class="swatch" style="background:#2d7dd2"></div>
+          <div class="swatch" style="background:#e85d26"></div>
+        </div>
+        <div class="palette-label">
+          <div class="pl"><div class="dot" style="background:#ffffff;border:1px solid #ccc"></div> Pure white bg</div>
+          <div class="pl"><div class="dot" style="background:#1a1f2e"></div> Deep navy (text)</div>
+          <div class="pl"><div class="dot" style="background:#2d7dd2"></div> Blue (primary)</div>
+          <div class="pl"><div class="dot" style="background:#e85d26"></div> Coral/orange (accent)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p style="text-align:center;margin-top:40px;color:#aaa;font-size:13px;">Both options use light theme + embedded search bar in the hero. Current dark theme not shown.</p>
+</body>
+</html>

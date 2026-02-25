@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LabLooker — Quicksand Focus</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #faf8f5;
+    color: #1a2e2b;
+    font-family: 'Quicksand', sans-serif;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+  h1 {
+    font-size: 1.1rem;
+    color: #6b8c88;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-family: system-ui, sans-serif;
+  }
+  .card {
+    background: white;
+    border: 1px solid #e0ebe9;
+    border-radius: 16px;
+    padding: 40px 50px;
+    text-align: center;
+    width: 100%;
+    max-width: 750px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .label {
+    font-size: 0.75rem;
+    color: #6b8c88;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+    font-family: system-ui, sans-serif;
+  }
+  .wordmark {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .big { font-size: 3.5rem; }
+  .med { font-size: 2.2rem; }
+  .sm { font-size: 1.4rem; }
+
+  /* Magnifying glass O — forest colored lens, red blood drop */
+  .mag-o {
+    display: inline-block;
+    position: relative;
+  }
+  .mag-o .lens {
+    display: inline-block;
+    width: 0.62em;
+    height: 0.62em;
+    border: 0.075em solid #1a2e2b;
+    border-radius: 50%;
+    position: relative;
+    top: 0.06em;
+    margin: 0 -0.01em;
+  }
+  .mag-o .lens::after {
+    content: '';
+    position: absolute;
+    bottom: -0.26em;
+    right: -0.16em;
+    width: 0.075em;
+    height: 0.28em;
+    background: #1a2e2b;
+    border-radius: 0.04em;
+    transform: rotate(-45deg);
+  }
+  /* Teardrop: pointy top, round bottom */
+  .mag-o .drop {
+    position: absolute;
+    top: 46%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0.18em;
+    height: 0.24em;
+    background: #c0444a;
+    border-radius: 50% 50% 50% 50% / 60% 60% 30% 30%;
+  }
+
+  /* Light lens variant for dark backgrounds */
+  .dark-bg .mag-o .lens {
+    border-color: #e0ebe9;
+  }
+  .dark-bg .mag-o .lens::after {
+    background: #e0ebe9;
+  }
+
+  .note {
+    font-size: 0.82rem;
+    color: #6b8c88;
+    margin-top: 14px;
+    font-family: system-ui, sans-serif;
+    line-height: 1.5;
+  }
+  hr {
+    width: 100%;
+    max-width: 750px;
+    border: none;
+    border-top: 1px solid #e0ebe9;
+  }
+  .sizes-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+  .dark-bg {
+    background: #1a2e2b;
+  }
+</style>
+</head>
+<body>
+
+<h1>Quicksand — Forest Lab / Sage Looker / Forest Magnifier</h1>
+
+<!-- Main hero size -->
+<div class="card">
+  <div class="label">Forest "Lab" · Sage "Looker" · Forest magnifying glass · Red blood drop</div>
+  <div class="wordmark big">
+    <span style="color:#1a2e2b;">Lab</span><span style="color:#2d6a5e;">Lo<span class="mag-o"><span class="lens"><span class="drop"></span></span></span>ker</span>
+  </div>
+</div>
+
+<!-- Multiple sizes -->
+<div class="card">
+  <div class="label">At Different Sizes</div>
+  <div class="wordmark big">
+    <span style="color:#1a2e2b;">Lab</span><span style="color:#2d6a5e;">Lo<span class="mag-o"><span class="lens"><span class="drop"></span></span></span>ker</span>
+  </div>
+  <div style="margin-top:20px;">
+    <div class="wordmark med">
+      <span style="color:#1a2e2b;">Lab</span><span style="color:#2d6a5e;">Lo<span class="mag-o"><span class="lens"><span class="drop"></span></span></span>ker</span>
+    </div>
+  </div>
+  <div style="margin-top:16px;">
+    <div class="wordmark sm">
+      <span style="color:#1a2e2b;">Lab</span><span style="color:#2d6a5e;">Lo<span class="mag-o"><span class="lens"><span class="drop"></span></span></span>ker</span>
+    </div>
+  </div>
+</div>
+
+<!-- With tagline options -->
+<div class="card">
+  <div class="label">With Tagline</div>
+  <div class="wordmark" style="font-size:2.8rem;">
+    <span style="color:#1a2e2b;">Lab</span><span style="color:#2d6a5e;">Lo<span class="mag-o"><span class="lens"><span class="drop"></span></span></span>ker</span>
+  </div>
+  <div style="font-size:0.95rem; color:#6b8c88; margin-top:6px; font-weight:500; letter-spacing:0.03em;">Know before you go.</div>
+</div>
+
+<!-- On dark -->
+<div class="card dark-bg">
+  <div class="label" style="color:#6b8c88;">On Dark Background</div>
+  <div class="wordmark big">
+    <span style="color:#e0ebe9;">Lab</span><span style="color:#6bbfad;">Lo<span class="mag-o"><span class="lens"><span class="drop"></span></span></span>ker</span>
+  </div>
+  <div style="margin-top:20px;">
+    <div class="wordmark med">
+      <span style="color:#e0ebe9;">Lab</span><span style="color:#6bbfad;">Lo<span class="mag-o"><span class="lens"><span class="drop"></span></span></span>ker</span>
+    </div>
+  </div>
+</div>
+
+<!-- Compare: forest mag vs red mag vs sage mag -->
+<hr>
+<div class="card">
+  <div class="label">Compare: Magnifying Glass Color</div>
+  <div style="display:flex; justify-content:center; gap:40px; flex-wrap:wrap; align-items:baseline;">
+    <div>
+      <div style="font-size:0.65rem; color:#6b8c88; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; font-family:system-ui;">Forest glass ★</div>
+      <div class="wordmark" style="font-size:2.4rem;">
+        <span style="color:#1a2e2b;">Lab</span><span style="color:#2d6a5e;">Lo<span class="mag-o"><span class="lens" style="border-color:#1a2e2b;"><span class="drop"></span></span></span>ker</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.65rem; color:#6b8c88; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; font-family:system-ui;">Red glass</div>
+      <div class="wordmark" style="font-size:2.4rem;">
+        <span style="color:#1a2e2b;">Lab</span><span style="color:#2d6a5e;">Lo<span class="mag-o"><span class="lens" style="border-color:#c0444a;"><span class="lens" style="display:none;"></span><span class="drop"></span></span></span>ker</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.65rem; color:#6b8c88; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; font-family:system-ui;">Sage glass</div>
+      <div class="wordmark" style="font-size:2.4rem;">
+        <span style="color:#1a2e2b;">Lab</span><span style="color:#2d6a5e;">Lo<span class="mag-o"><span class="lens" style="border-color:#2d6a5e;"><span class="drop"></span></span></span>ker</span>
+      </div>
+    </div>
+  </div>
+  <div class="note">Forest glass ties to "Lab" color. Red glass ties to the blood drop. Sage glass blends with "Looker."</div>
+</div>
+
+</body>
+</html>

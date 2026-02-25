@@ -9,10 +9,10 @@ export default function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-zinc-800/50 bg-zinc-950/80 backdrop-blur-xl">
+    <header className="fixed top-0 z-50 w-full border-b border-[#e0ebe9] bg-[#faf8f5]/80 backdrop-blur-xl">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-white">
+        <Link href="/" className="text-xl font-bold text-[#1a2e2b]">
           {APP_CONFIG.name}
         </Link>
 
@@ -22,9 +22,14 @@ export default function Nav() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-zinc-400 transition-colors hover:text-white"
+              className="text-sm text-[#6b8c88] transition-colors hover:text-[#1a2e2b] flex items-center gap-1.5"
             >
               {link.label}
+              {'badge' in link && link.badge && (
+                <span className="rounded-full bg-primary-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-primary-400">
+                  {link.badge}
+                </span>
+              )}
             </Link>
           ))}
         </div>
@@ -41,7 +46,7 @@ export default function Nav() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden text-zinc-400 hover:text-white"
+          className="md:hidden text-[#6b8c88] hover:text-[#1a2e2b]"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -59,19 +64,24 @@ export default function Nav() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="border-t border-zinc-800 bg-zinc-950 px-6 py-4 md:hidden">
+        <div className="border-t border-[#e0ebe9] bg-[#faf8f5] px-6 py-4 md:hidden">
           <div className="flex flex-col gap-4">
             {APP_CONFIG.nav.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-zinc-400 transition-colors hover:text-white"
+                className="text-sm text-[#6b8c88] transition-colors hover:text-[#1a2e2b] flex items-center gap-1.5"
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
+                {'badge' in link && link.badge && (
+                  <span className="rounded-full bg-primary-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-primary-400">
+                    {link.badge}
+                  </span>
+                )}
               </Link>
             ))}
-            <div className="flex flex-col gap-2 pt-4 border-t border-zinc-800">
+            <div className="flex flex-col gap-2 pt-4 border-t border-[#e0ebe9]">
               <Button variant="secondary" href="/login">Log in</Button>
               <Button href="/signup">Start Free Trial</Button>
             </div>

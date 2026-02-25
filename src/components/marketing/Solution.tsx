@@ -3,32 +3,32 @@ export default function Solution() {
     {
       icon: (
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
         </svg>
       ),
-      title: 'Launch in days, not months',
+      title: 'Search by symptom or test name',
       description:
-        'Pre-built auth, payments, and dashboard. Clone, configure, and deploy — your SaaS is live before the week is out.',
+        "Find what you need whether you know the test name or just your symptoms. LabLooker maps both to the right lab tests.",
     },
     {
       icon: (
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
         </svg>
       ),
-      title: 'Production-ready security',
+      title: 'Compare real self-pay prices',
       description:
-        'Row Level Security, server-side auth, encrypted secrets, and Stripe webhook verification — all baked in from day one.',
+        'See prices from Quest, LabCorp, Ulta Lab Tests, Walk-In Lab, and 10+ more, side by side.',
     },
     {
       icon: (
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
         </svg>
       ),
-      title: 'One config, infinite apps',
+      title: 'Understand the codes',
       description:
-        'Change your app name, pricing, and copy in a single config file. The same template powers every app you build.',
+        'Every test includes its CPT code, common ICD-10 diagnosis codes, and a plain-English explanation of what it measures and why.',
     },
   ]
 
@@ -43,11 +43,11 @@ export default function Solution() {
           <p className="text-sm font-semibold uppercase tracking-wider text-primary-400">
             The solution
           </p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Everything you need to ship fast
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#1a2e2b] sm:text-4xl">
+            Finally, a tool built for patients
           </h2>
-          <p className="mt-4 text-lg text-zinc-400">
-            Stop rebuilding the wheel. Start with a foundation that works.
+          <p className="mt-4 text-lg text-[#6b8c88]">
+            One place to research, compare, and understand your lab work.
           </p>
         </div>
 
@@ -56,15 +56,15 @@ export default function Solution() {
           {features.map((feature, i) => (
             <div
               key={i}
-              className="group relative rounded-xl border border-zinc-800 bg-zinc-900/50 p-8 transition-all duration-300 hover:border-primary-500/30 hover:bg-primary-500/5"
+              className="group relative rounded-xl border border-[#e0ebe9] bg-white p-8 transition-all duration-300 hover:border-primary-500/30 hover:bg-primary-500/5"
             >
               <div className="mb-4 inline-flex rounded-lg bg-primary-500/10 p-3 text-primary-400">
                 {feature.icon}
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-white">
+              <h3 className="mb-2 text-lg font-semibold text-[#1a2e2b]">
                 {feature.title}
               </h3>
-              <p className="text-sm leading-relaxed text-zinc-400">
+              <p className="text-sm leading-relaxed text-[#6b8c88]">
                 {feature.description}
               </p>
             </div>

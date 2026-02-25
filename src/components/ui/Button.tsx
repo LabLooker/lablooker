@@ -8,8 +8,8 @@ const variantStyles: Record<Variant, string> = {
   primary:
     'bg-primary-500 text-white hover:bg-primary-600 shadow-lg shadow-primary-500/25',
   secondary:
-    'bg-zinc-800 text-white hover:bg-zinc-700 border border-zinc-700',
-  ghost: 'text-zinc-400 hover:text-white hover:bg-zinc-800/50',
+    'bg-white text-[#1a2e2b] hover:bg-[#f0eeeb] border border-[#e0ebe9]',
+  ghost: 'text-[#6b8c88] hover:text-[#1a2e2b] hover:bg-[#e0ebe9]/50',
 }
 
 const sizeStyles: Record<Size, string> = {
