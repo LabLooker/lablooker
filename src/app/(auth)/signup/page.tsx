@@ -44,8 +44,8 @@ export default function SignupPage() {
 
   return (
     <div className="w-full max-w-sm">
-      <h1 className="text-2xl font-bold text-white text-center">Create your account</h1>
-      <p className="mt-2 text-sm text-zinc-400 text-center">
+      <h1 className="text-2xl font-bold text-[#1a2e2b] text-center">Create your account</h1>
+      <p className="mt-2 text-sm text-[#6b8c88] text-center">
         Start your 14-day free trial
       </p>
 
@@ -57,7 +57,7 @@ export default function SignupPage() {
         )}
 
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-zinc-300">
+          <label htmlFor="name" className="block text-sm font-medium text-[#4a6b67]">
             Full name
           </label>
           <input
@@ -66,13 +66,13 @@ export default function SignupPage() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             required
-            className="mt-1 block w-full rounded-md border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+            className="mt-1 block w-full rounded-md border border-[#e0ebe9] bg-white px-4 py-2.5 text-sm text-[#1a2e2b] placeholder-[#a3bfbb] focus:border-[#2d6a5e] focus:outline-none focus:ring-1 focus:ring-[#2d6a5e]"
             placeholder="Jane Doe"
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-zinc-300">
+          <label htmlFor="email" className="block text-sm font-medium text-[#4a6b67]">
             Email
           </label>
           <input
@@ -81,13 +81,13 @@ export default function SignupPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="mt-1 block w-full rounded-md border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+            className="mt-1 block w-full rounded-md border border-[#e0ebe9] bg-white px-4 py-2.5 text-sm text-[#1a2e2b] placeholder-[#a3bfbb] focus:border-[#2d6a5e] focus:outline-none focus:ring-1 focus:ring-[#2d6a5e]"
             placeholder="you@example.com"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-zinc-300">
+          <label htmlFor="password" className="block text-sm font-medium text-[#4a6b67]">
             Password
           </label>
           <input
@@ -97,7 +97,7 @@ export default function SignupPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={8}
-            className="mt-1 block w-full rounded-md border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+            className="mt-1 block w-full rounded-md border border-[#e0ebe9] bg-white px-4 py-2.5 text-sm text-[#1a2e2b] placeholder-[#a3bfbb] focus:border-[#2d6a5e] focus:outline-none focus:ring-1 focus:ring-[#2d6a5e]"
             placeholder="••••••••"
           />
         </div>
@@ -107,9 +107,9 @@ export default function SignupPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-zinc-500">
+      <p className="mt-6 text-center text-sm text-[#6b8c88]">
         Already have an account?{' '}
-        <Link href="/login" className="text-primary-400 hover:text-primary-300">
+        <Link href="/login" className="text-[#2d6a5e] hover:text-[#245a50]">
           Sign in
         </Link>
       </p>

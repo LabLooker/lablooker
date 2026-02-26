@@ -1,4 +1,3 @@
-
 'use client'
 
 export const dynamic = 'force-dynamic'
@@ -81,18 +80,18 @@ export default function DashboardPage() {
     profile?.plan === 'business'
       ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
       : profile?.plan === 'pro'
-        ? 'bg-primary-500/10 text-primary-400 border-primary-500/20'
-        : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+        ? 'bg-[#2d6a5e]/10 text-[#2d6a5e] border-[#2d6a5e]/20'
+        : 'bg-[#faf8f5] text-[#6b8c88] border-[#e0ebe9]'
 
   return (
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-2xl font-bold text-[#1a2e2b]">
           Welcome back{profile?.full_name ? `, ${profile.full_name}` : ''}
         </h1>
         <div className="mt-2 flex items-center gap-3">
-          <p className="text-sm text-zinc-400">Here&apos;s what&apos;s happening today</p>
+          <p className="text-sm text-[#6b8c88]">Here&apos;s what&apos;s happening today</p>
           {profile && (
             <span
               className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize ${planBadgeColor}`}
@@ -107,11 +106,11 @@ export default function DashboardPage() {
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.label}>
-            <p className="text-sm text-zinc-400">{stat.label}</p>
+            <p className="text-sm text-[#6b8c88]">{stat.label}</p>
             <div className="mt-2 flex items-baseline gap-2">
-              <p className="text-2xl font-bold text-white">{stat.value}</p>
+              <p className="text-2xl font-bold text-[#1a2e2b]">{stat.value}</p>
               {stat.change && (
-                <span className="text-xs font-medium text-emerald-400">
+                <span className="text-xs font-medium text-emerald-600">
                   {stat.change}
                 </span>
               )}
@@ -123,17 +122,17 @@ export default function DashboardPage() {
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Quick actions */}
         <div className="lg:col-span-1">
-          <h2 className="mb-4 text-lg font-semibold text-white">Quick Actions</h2>
+          <h2 className="mb-4 text-lg font-semibold text-[#1a2e2b]">Quick Actions</h2>
           <div className="space-y-3">
             {quickActions.map((action) => (
               <Card key={action.title} hover>
                 <div className="flex items-start gap-4">
-                  <div className="rounded-lg bg-primary-500/10 p-2.5 text-primary-400">
+                  <div className="rounded-lg bg-[#2d6a5e]/10 p-2.5 text-[#2d6a5e]">
                     {action.icon}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-white">{action.title}</p>
-                    <p className="text-xs text-zinc-500">{action.description}</p>
+                    <p className="text-sm font-medium text-[#1a2e2b]">{action.title}</p>
+                    <p className="text-xs text-[#6b8c88]">{action.description}</p>
                   </div>
                 </div>
               </Card>
@@ -143,16 +142,16 @@ export default function DashboardPage() {
 
         {/* Recent activity */}
         <div className="lg:col-span-2">
-          <h2 className="mb-4 text-lg font-semibold text-white">Recent Activity</h2>
+          <h2 className="mb-4 text-lg font-semibold text-[#1a2e2b]">Recent Activity</h2>
           <Card>
-            <div className="divide-y divide-zinc-800">
+            <div className="divide-y divide-[#e0ebe9]">
               {activity.map((item, i) => (
                 <div key={i} className={`flex items-center justify-between ${i > 0 ? 'pt-4' : ''} ${i < activity.length - 1 ? 'pb-4' : ''}`}>
                   <div>
-                    <p className="text-sm font-medium text-white">{item.action}</p>
-                    <p className="text-xs text-zinc-500">{item.detail}</p>
+                    <p className="text-sm font-medium text-[#1a2e2b]">{item.action}</p>
+                    <p className="text-xs text-[#6b8c88]">{item.detail}</p>
                   </div>
-                  <span className="text-xs text-zinc-600 whitespace-nowrap ml-4">{item.time}</span>
+                  <span className="text-xs text-[#6b8c88] whitespace-nowrap ml-4">{item.time}</span>
                 </div>
               ))}
             </div>

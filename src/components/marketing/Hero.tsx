@@ -16,7 +16,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-32">
+    <section className="relative overflow-hidden pt-32 pb-12 sm:pt-40 sm:pb-20">
       {/* Background gradient effects */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-primary-500/10 blur-[120px]" />
@@ -89,7 +89,7 @@ export default function Hero() {
         </div>
 
         {/* Value prop mini */}
-        <div className="mt-16 flex flex-col items-center gap-4">
+        <div className="mt-10 flex flex-col items-center gap-4">
           <div className="flex items-center gap-6 text-sm text-[#6b8c88]">
             <span className="flex items-center gap-1.5">
               <svg className="h-4 w-4 text-primary-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">

@@ -1,4 +1,3 @@
-
 'use client'
 
 export const dynamic = 'force-dynamic'
@@ -37,11 +36,11 @@ export default function AppLayout({
   const pathname = usePathname()
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-[#faf8f5]">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-30 flex h-screen w-64 flex-col border-r border-zinc-800 bg-zinc-950">
-        <div className="flex h-16 items-center border-b border-zinc-800 px-6">
-          <Link href="/dashboard" className="text-lg font-bold text-white">
+      <aside className="fixed left-0 top-0 z-30 flex h-screen w-64 flex-col border-r border-[#e0ebe9] bg-white">
+        <div className="flex h-16 items-center border-b border-[#e0ebe9] px-6">
+          <Link href="/dashboard" className="text-lg font-bold text-[#1a2e2b]">
             {APP_CONFIG.name}
           </Link>
         </div>
@@ -54,8 +53,8 @@ export default function AppLayout({
                 href={link.href}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-primary-500/10 text-primary-400'
-                    : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+                    ? 'bg-[#2d6a5e]/10 text-[#2d6a5e]'
+                    : 'text-[#6b8c88] hover:bg-[#faf8f5] hover:text-[#1a2e2b]'
                 }`}
               >
                 <link.icon />
@@ -64,10 +63,10 @@ export default function AppLayout({
             )
           })}
         </nav>
-        <div className="border-t border-zinc-800 p-4">
+        <div className="border-t border-[#e0ebe9] p-4">
           <Link
             href="/"
-            className="flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+            className="flex items-center gap-2 text-sm text-[#6b8c88] hover:text-[#4a6b67] transition-colors"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />

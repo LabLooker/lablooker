@@ -1,4 +1,3 @@
-
 'use client'
 
 export const dynamic = 'force-dynamic'
@@ -84,14 +83,14 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="mb-8 text-2xl font-bold text-white">Settings</h1>
+      <h1 className="mb-8 text-2xl font-bold text-[#1a2e2b]">Settings</h1>
 
       {/* Profile Section */}
       <Card className="mb-6">
-        <h2 className="mb-4 text-lg font-semibold text-white">Profile</h2>
+        <h2 className="mb-4 text-lg font-semibold text-[#1a2e2b]">Profile</h2>
         <form onSubmit={handleSaveProfile} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-zinc-300">
+            <label htmlFor="name" className="block text-sm font-medium text-[#4a6b67]">
               Full name
             </label>
             <input
@@ -99,18 +98,18 @@ export default function SettingsPage() {
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+              className="mt-1 block w-full rounded-md border border-[#e0ebe9] bg-[#faf8f5] px-4 py-2.5 text-sm text-[#1a2e2b] placeholder-[#a3bfbb] focus:border-[#2d6a5e] focus:outline-none focus:ring-1 focus:ring-[#2d6a5e]"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-300">
+            <label className="block text-sm font-medium text-[#4a6b67]">
               Email
             </label>
             <input
               type="email"
               value={profile?.email || ''}
               disabled
-              className="mt-1 block w-full rounded-md border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-500 cursor-not-allowed"
+              className="mt-1 block w-full rounded-md border border-[#e0ebe9] bg-[#faf8f5] px-4 py-2.5 text-sm text-[#6b8c88] cursor-not-allowed"
             />
           </div>
           <div className="flex items-center gap-3">
@@ -118,7 +117,7 @@ export default function SettingsPage() {
               {saving ? 'Saving...' : 'Save changes'}
             </Button>
             {saved && (
-              <span className="text-sm text-emerald-400">Saved!</span>
+              <span className="text-sm text-emerald-600">Saved!</span>
             )}
           </div>
         </form>
@@ -126,12 +125,12 @@ export default function SettingsPage() {
 
       {/* Billing Section */}
       <Card className="mb-6">
-        <h2 className="mb-4 text-lg font-semibold text-white">Billing</h2>
+        <h2 className="mb-4 text-lg font-semibold text-[#1a2e2b]">Billing</h2>
         <div className="space-y-4">
-          <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950 px-4 py-3">
+          <div className="flex items-center justify-between rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-4 py-3">
             <div>
-              <p className="text-sm font-medium text-white">Current Plan</p>
-              <p className="text-xs text-zinc-500">
+              <p className="text-sm font-medium text-[#1a2e2b]">Current Plan</p>
+              <p className="text-xs text-[#6b8c88]">
                 {planLabel} plan
                 {profile?.plan_status === 'canceled' && ' (cancels at period end)'}
               </p>
@@ -139,8 +138,8 @@ export default function SettingsPage() {
             <span
               className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
                 profile?.plan === 'pro' || profile?.plan === 'business'
-                  ? 'bg-primary-500/10 text-primary-400'
-                  : 'bg-zinc-800 text-zinc-400'
+                  ? 'bg-[#2d6a5e]/10 text-[#2d6a5e]'
+                  : 'bg-[#faf8f5] text-[#6b8c88]'
               }`}
             >
               {planLabel}
@@ -168,7 +167,7 @@ export default function SettingsPage() {
 
       {/* Danger Zone */}
       <Card>
-        <h2 className="mb-4 text-lg font-semibold text-white">Account</h2>
+        <h2 className="mb-4 text-lg font-semibold text-[#1a2e2b]">Account</h2>
         <Button variant="ghost" size="sm" onClick={handleSignOut}>
           Sign out
         </Button>
