@@ -44,12 +44,22 @@ export default function Nav() {
           </Button>
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden text-[#6b8c88] hover:text-[#1a2e2b]"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
+        {/* Mobile search + hamburger */}
+        <div className="flex items-center gap-3 md:hidden">
+          <Link
+            href="/search"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-[#6b8c88] hover:text-[#2d6a5e] hover:bg-[#2d6a5e]/5 transition-colors"
+            aria-label="Search"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </Link>
+          <button
+            className="text-[#6b8c88] hover:text-[#1a2e2b]"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
           {mobileOpen ? (
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -59,7 +69,8 @@ export default function Nav() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
             </svg>
           )}
-        </button>
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}

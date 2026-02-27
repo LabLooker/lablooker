@@ -51,8 +51,8 @@ export const APP_CONFIG = {
   nav: [
     { label: 'Search', href: '/search' },
     { label: 'Panel Builder', href: '/panel-builder', badge: 'New' },
-    { label: 'Pricing', href: '#pricing' },
-    { label: 'FAQ', href: '#faq' },
+    { label: 'Pricing', href: '/pricing' },
+    { label: 'FAQ', href: '/#faq' },
   ],
 
   faqs: [

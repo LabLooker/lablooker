@@ -126,6 +126,11 @@ export default function Pricing() {
                   ~$4/mo · save $22 vs monthly
                 </p>
               )}
+              {tier.key === 'pro' && !annual && (
+                <p className="mt-1 text-xs text-[#6b8c88]">
+                  Cancel anytime
+                </p>
+              )}
               {tier.key === 'free' && (
                 <p className="mt-1 text-xs text-[#6b8c88]">
                   Forever free

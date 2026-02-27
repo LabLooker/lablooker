@@ -75,8 +75,34 @@ export default function Hero() {
           </button>
         </form>
 
+        {/* Health topic pills */}
+        <div className="mt-8 flex flex-wrap justify-center gap-2 mx-auto max-w-2xl">
+          {[
+            { label: 'Thyroid & Endocrine', q: 'thyroid' },
+            { label: 'Heart & Cholesterol', q: 'cholesterol' },
+            { label: 'Testosterone & TRT', q: 'testosterone' },
+            { label: 'Menopause & BHRT', q: 'estradiol progesterone FSH LH DHEA' },
+            { label: 'Inflammation & Autoimmune', q: 'inflammation' },
+            { label: 'Weight & Metabolism', q: 'metabolic' },
+            { label: 'Iron & Anemia', q: 'iron ferritin' },
+            { label: 'Vitamins & Minerals', q: 'vitamin' },
+            { label: 'Mood & Mental Health', q: 'cortisol DHEA serotonin' },
+            { label: 'Diabetes & Blood Sugar', q: 'glucose A1c insulin' },
+            { label: 'Kidney & Liver', q: 'kidney liver' },
+            { label: 'Immune & Infections', q: 'immune hepatitis HIV' },
+          ].map((topic) => (
+            <a
+              key={topic.label}
+              href={`/search?q=${encodeURIComponent(topic.q)}`}
+              className="rounded-full border border-[#e0ebe9] bg-white px-3 py-1.5 text-xs font-medium text-[#4a6b67] transition-all hover:border-[#2d6a5e] hover:text-[#2d6a5e] hover:bg-[#2d6a5e]/5"
+            >
+              {topic.label}
+            </a>
+          ))}
+        </div>
+
         {/* CTA buttons */}
-        <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+        <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <Button size="lg" href="/search">
             Search Lab Tests
             <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">

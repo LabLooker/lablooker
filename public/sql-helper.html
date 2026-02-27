@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html><head><title>LabLooker SQL Files</title>
+<style>
+body { font-family: sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #faf8f5; color: #1a2e2b; }
+h1 { color: #2d6a5e; }
+button { background: #2d6a5e; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; margin: 8px 4px; }
+button:hover { background: #245a50; }
+.step { margin: 20px 0; padding: 16px; background: white; border: 1px solid #e0ebe9; border-radius: 8px; }
+textarea { width: 100%; height: 200px; margin-top: 10px; font-family: monospace; font-size: 12px; display: none; }
+.instructions { background: #e0ebe9; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+</style>
+</head><body>
+<h1>🧪 LabLooker — Supabase Seeding</h1>
+<div class="instructions">
+<strong>How to use:</strong> Click a button → SQL appears in the box → click inside the box → Ctrl+A (select all) → Ctrl+C (copy) → paste into Supabase SQL Editor → click Run. Do them in order 1-4.
+</div>
+
+<div class="step">
+<h3>Step 1: Schema (creates tables)</h3>
+<button onclick="loadFile('/schema.sql', 'ta1')">Show schema.sql</button>
+<textarea id="ta1" readonly></textarea>
+</div>
+
+<div class="step">
+<h3>Step 2: Seed Data (357 tests + pricing + labs)</h3>
+<button onclick="loadFile('/seed-full.sql', 'ta2')">Show seed-full.sql</button>
+<textarea id="ta2" readonly></textarea>
+</div>
+
+<div class="step">
+<h3>Step 3: Lab Code Crosswalk (LabCorp + Quest codes)</h3>
+<button onclick="loadFile('/lab-codes.sql', 'ta3')">Show lab-codes.sql</button>
+<textarea id="ta3" readonly></textarea>
+</div>
+
+<div class="step">
+<h3>Step 4: DrSays Pricing</h3>
+<button onclick="loadFile('/drsays-pricing.sql', 'ta4')">Show drsays-pricing.sql</button>
+<textarea id="ta4" readonly></textarea>
+</div>
+
+<script>
+async function loadFile(path, taId) {
+  const ta = document.getElementById(taId);
+  const res = await fetch(path);
+  const text = await res.text();
+  ta.value = text;
+  ta.style.display = 'block';
+  ta.select();
+  ta.focus();
+}
+</script>
+</body></html>
