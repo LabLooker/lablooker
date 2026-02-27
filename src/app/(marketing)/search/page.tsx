@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
@@ -94,6 +94,14 @@ const HEALTH_TOPICS = [
 ]
 
 export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="pt-28 pb-20 sm:pt-36 text-center"><p className="text-[#6b8c88]">Loading...</p></div>}>
+      <SearchPageInner />
+    </Suspense>
+  )
+}
+
+function SearchPageInner() {
   const searchParams = useSearchParams()
   const [tests, setTests] = useState<Test[]>([])
   const [symptoms, setSymptoms] = useState<Symptom[]>([])
