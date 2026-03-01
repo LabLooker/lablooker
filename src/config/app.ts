@@ -49,10 +49,11 @@ export const APP_CONFIG = {
   },
 
   nav: [
-    { label: 'Search', href: '/search' },
-    { label: 'Panel Builder', href: '/panel-builder', badge: 'New' },
+    { label: 'Translate', href: '/translate' },
+    { label: 'Discover', href: '/search' },
+    { label: 'Advocate', href: '/advocate' },
+    { label: 'Compare', href: '/search' },
     { label: 'Pricing', href: '/pricing' },
-    { label: 'FAQ', href: '/#faq' },
   ],
 
   faqs: [

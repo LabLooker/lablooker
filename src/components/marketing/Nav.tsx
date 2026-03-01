@@ -25,11 +25,6 @@ export default function Nav() {
               className="text-sm text-[#6b8c88] transition-colors hover:text-[#1a2e2b] flex items-center gap-1.5"
             >
               {link.label}
-              {'badge' in link && link.badge && (
-                <span className="rounded-full bg-primary-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-primary-400">
-                  {link.badge}
-                </span>
-              )}
             </Link>
           ))}
         </div>
@@ -85,11 +80,7 @@ export default function Nav() {
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
-                {'badge' in link && link.badge && (
-                  <span className="rounded-full bg-primary-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-primary-400">
-                    {link.badge}
-                  </span>
-                )}
+                {/* badge removed */}
               </Link>
             ))}
             <div className="flex flex-col gap-2 pt-4 border-t border-[#e0ebe9]">
