@@ -44,7 +44,8 @@ export default function Hero() {
 
         {/* Headline */}
         <h1 className="mx-auto max-w-4xl text-5xl font-extrabold tracking-tight text-[#1a2e2b] sm:text-6xl lg:text-7xl">
-          Know your labs.{' '}
+          Know your labs.
+          <br />
           <span className="bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
             Know your options.
           </span>
