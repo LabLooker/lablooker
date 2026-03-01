@@ -121,7 +121,7 @@ export default function TranslatePage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#faf8f5' }}>
-      <div className="max-w-3xl mx-auto px-4 py-12">
+      <div className="max-w-3xl mx-auto px-4 pt-24 pb-12">
 
         {/* Header */}
         <div className="text-center mb-10">
