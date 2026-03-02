@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card Style Mockup — LabLooker</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', system-ui, sans-serif; background: #faf8f5; padding: 40px 24px; color: #1a2e2b; }
+  h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; color: #1a2e2b; }
+  .subhead { color: #6b8c88; font-size: 15px; margin-bottom: 48px; }
+  .section { margin-bottom: 60px; }
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #6b8c88; margin-bottom: 16px; padding: 6px 14px; background: #e0ebe9; border-radius: 20px; display: inline-block; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 900px; }
+  .card { background: white; border-radius: 14px; padding: 24px; cursor: pointer; transition: all .18s; }
+  .icon-wrap { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+  .card-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .card-desc { font-size: 12px; line-height: 1.55; color: #6b8c88; }
+  .arrow { font-size: 16px; margin-top: 14px; font-weight: 700; opacity: 0; transition: opacity .18s; }
+
+  /* OPTION A — All sage green, consistent */
+  .a .card { border: 1.5px solid #e0ebe9; border-top: 3px solid #2d6a5e; }
+  .a .card:hover { border-color: #2d6a5e; box-shadow: 0 4px 20px rgba(45,106,94,.08); }
+  .a .icon-wrap { background: rgba(45,106,94,.12); }
+  .a svg { color: #2d6a5e; }
+  .a .arrow { color: #2d6a5e; }
+  .a .card:hover .arrow { opacity: 1; }
+
+  /* OPTION B — No border, shadow on hover */
+  .b .card { border: 1.5px solid #e0ebe9; box-shadow: none; }
+  .b .card:hover { border-color: #2d6a5e; box-shadow: 0 6px 24px rgba(45,106,94,.1); }
+  .b .icon-wrap { background: rgba(45,106,94,.1); }
+  .b svg { color: #2d6a5e; }
+  .b .arrow { color: #2d6a5e; }
+  .b .card:hover .arrow { opacity: 1; }
+
+  /* OPTION C — Soft sage tint background */
+  .c .card { border: 1.5px solid #daeae7; background: #f4faf9; }
+  .c .card:hover { border-color: #2d6a5e; background: #eef7f5; box-shadow: 0 4px 16px rgba(45,106,94,.08); }
+  .c .icon-wrap { background: rgba(45,106,94,.14); }
+  .c svg { color: #2d6a5e; }
+  .c .arrow { color: #2d6a5e; }
+  .c .card:hover .arrow { opacity: 1; }
+
+  /* OPTION D — White, big bold icons, no accent border */
+  .d .card { border: 1.5px solid #e0ebe9; }
+  .d .card:hover { border-color: #2d6a5e; box-shadow: 0 4px 20px rgba(45,106,94,.07); }
+  .d .icon-wrap { width: 56px; height: 56px; background: rgba(45,106,94,.1); }
+  .d svg { color: #2d6a5e; width: 28px; height: 28px; }
+  .d .arrow { color: #2d6a5e; }
+  .d .card:hover .arrow { opacity: 1; }
+
+  svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+  @media (max-width: 700px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<h1>Card Style Options</h1>
+<p class="subhead">Hover over the cards to see interactive states. Choose your favorite.</p>
+
+<!-- OPTION A -->
+<div class="section a">
+  <div class="section-label">Option A — Sage green top border, all consistent</div>
+  <div class="grid">
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+      </div>
+      <div class="card-title">Understand</div>
+      <div class="card-desc">Search any test by name, symptom, or CPT code.</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+      </div>
+      <div class="card-title">Translate</div>
+      <div class="card-desc">Convert lab orders between providers instantly.</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+      </div>
+      <div class="card-title">Compare</div>
+      <div class="card-desc">Find the lowest self-pay price across 15+ labs.</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
+      </div>
+      <div class="card-title">Track</div>
+      <div class="card-desc">Log results, set goals, visualize trends over time.</div>
+      <div class="arrow">→</div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION B -->
+<div class="section b">
+  <div class="section-label">Option B — Clean white, shadow + border on hover only</div>
+  <div class="grid">
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+      </div>
+      <div class="card-title">Understand</div>
+      <div class="card-desc">Search any test by name, symptom, or CPT code.</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+      </div>
+      <div class="card-title">Translate</div>
+      <div class="card-desc">Convert lab orders between providers instantly.</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+      </div>
+      <div class="card-title">Compare</div>
+      <div class="card-desc">Find the lowest self-pay price across 15+ labs.</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
+      </div>
+      <div class="card-title">Track</div>
+      <div class="card-desc">Log results, set goals, visualize trends over time.</div>
+      <div class="arrow">→</div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION C -->
+<div class="section c">
+  <div class="section-label">Option C — Soft sage tint background on all cards</div>
+  <div class="grid">
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+      </div>
+      <div class="card-title">Understand</div>
+      <div class="card-desc">Search any test by name, symptom, or CPT code.</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+      </div>
+      <div class="card-title">Translate</div>
+      <div class="card-desc">Convert lab orders between providers instantly.</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+      </div>
+      <div class="card-title">Compare</div>
+      <div class="card-desc">Find the lowest self-pay price across 15+ labs.</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
+      </div>
+      <div class="card-title">Track</div>
+      <div class="card-desc">Log results, set goals, visualize trends over time.</div>
+      <div class="arrow">→</div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION D -->
+<div class="section d">
+  <div class="section-label">Option D — White cards, larger bolder icons</div>
+  <div class="grid">
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+      </div>
+      <div class="card-title">Understand</div>
+      <div class="card-desc">Search any test by name, symptom, or CPT code.</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+      </div>
+      <div class="card-title">Translate</div>
+      <div class="card-desc">Convert lab orders between providers instantly.</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+      </div>
+      <div class="card-title">Compare</div>
+      <div class="card-desc">Find the lowest self-pay price across 15+ labs.</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="card">
+      <div class="icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
+      </div>
+      <div class="card-title">Track</div>
+      <div class="card-desc">Log results, set goals, visualize trends over time.</div>
+      <div class="arrow">→</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

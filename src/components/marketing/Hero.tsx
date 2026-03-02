@@ -133,7 +133,7 @@ export default function Hero() {
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b]">Compare</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
-              Find the cheapest price across 35+ labs.
+              Find the lowest self-pay price at 15+ labs.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100" style={{ color: '#b45309' }}>→</span>
           </Link>
@@ -207,7 +207,7 @@ export default function Hero() {
               <svg className="h-4 w-4 text-primary-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
               </svg>
-              15+ DTC labs compared
+              15+ providers compared
             </span>
           </div>
         </div>
