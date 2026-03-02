@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase'
 import type { Test, ICD10Code } from '@/types/database'
 import Button from '@/components/ui/Button'
 import { useStateRestriction, StateRestrictionBanner } from '@/components/StateRestrictionProvider'
+import ResultLogModal from '@/components/tracker/ResultLogModal'
 
 const CATEGORY_LABELS: Record<string, string> = {
   thyroid: 'Thyroid', hormones: 'Hormones', iron_blood: 'Iron & Blood',
@@ -39,6 +40,13 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
   const [copiedCpt, setCopiedCpt] = useState(false)
   const [testId, setTestId] = useState<string>('')
   const { userState, isRestricted, setShowStatePicker } = useStateRestriction()
+
+  // Tracker panel state
+  const [trackerUser, setTrackerUser] = useState<{ id: string } | null>(null)
+  const [latestResult, setLatestResult] = useState<{ value: number; unit: string | null; drawn_at: string } | null>(null)
+  const [trackerGoal, setTrackerGoal] = useState<{ target_value: number | null; target_direction: string; target_low: number | null; target_high: number | null } | null>(null)
+  const [showLogModal, setShowLogModal] = useState(false)
+  const [trackerLoaded, setTrackerLoaded] = useState(false)
 
   useEffect(() => {
     params.then((p) => setTestId(p.testId))
@@ -111,6 +119,38 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
       setLoading(false)
     }
     load()
+  }, [testId])
+
+  // Load tracker data for this test
+  useEffect(() => {
+    if (!testId) return
+    const supabase = createClient()
+    async function loadTracker() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setTrackerLoaded(true); return }
+      setTrackerUser(user)
+
+      const { data: resultData } = await supabase
+        .from('lab_results')
+        .select('value, unit, drawn_at')
+        .eq('user_id', user.id)
+        .eq('test_id', testId)
+        .order('drawn_at', { ascending: false })
+        .limit(1)
+        .single()
+      setLatestResult(resultData ?? null)
+
+      const { data: goalData } = await supabase
+        .from('lab_goals')
+        .select('target_value, target_direction, target_low, target_high')
+        .eq('user_id', user.id)
+        .eq('test_id', testId)
+        .single()
+      setTrackerGoal(goalData ?? null)
+
+      setTrackerLoaded(true)
+    }
+    loadTracker()
   }, [testId])
 
   function copyCpt() {
@@ -369,6 +409,85 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
           )}
         </div>
 
+        {/* Your Results Panel */}
+        {trackerLoaded && (
+          <div className="mt-6 rounded-xl border border-[#2d6a5e]/20 bg-white p-6">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#2d6a5e]">Your Results</h2>
+
+            {!trackerUser ? (
+              // Not signed in
+              <div className="mt-3 flex items-center justify-between gap-4">
+                <p className="text-sm text-[#4a6b67]">Sign up free to track your results over time.</p>
+                <Button href="/signup" size="sm">Sign up free</Button>
+              </div>
+            ) : latestResult ? (
+              // Has results
+              <div className="mt-3">
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-2xl font-bold text-[#1a2e2b]">{latestResult.value}</span>
+                  {latestResult.unit && <span className="text-sm text-[#6b8c88]">{latestResult.unit}</span>}
+                  <span className="text-xs text-[#6b8c88] ml-auto">
+                    {new Date(latestResult.drawn_at + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </span>
+                </div>
+                {trackerGoal && trackerGoal.target_value !== null && (
+                  <div className="mt-2">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-[#6b8c88]">Goal progress</span>
+                      <span className="text-xs font-medium text-[#2d6a5e]">
+                        {Math.min(100, Math.round(
+                          trackerGoal.target_direction === 'above'
+                            ? (latestResult.value / trackerGoal.target_value) * 100
+                            : trackerGoal.target_direction === 'below'
+                              ? latestResult.value <= trackerGoal.target_value ? 100 : Math.max(0, ((trackerGoal.target_value * 2 - latestResult.value) / trackerGoal.target_value) * 100)
+                              : 100
+                        ))}%
+                      </span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-[#e0ebe9]">
+                      <div
+                        className="h-full rounded-full bg-[#2d6a5e] transition-all"
+                        style={{
+                          width: `${Math.min(100, Math.round(
+                            trackerGoal.target_direction === 'above'
+                              ? (latestResult.value / trackerGoal.target_value) * 100
+                              : 100
+                          ))}%`
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+                <div className="mt-3 flex gap-2">
+                  <Link
+                    href={`/dashboard/tracker/${testId}`}
+                    className="rounded-lg border border-[#e0ebe9] px-3 py-1.5 text-xs font-medium text-[#4a6b67] hover:border-[#2d6a5e]/40 hover:text-[#1a2e2b] transition-colors"
+                  >
+                    View trend →
+                  </Link>
+                  <button
+                    onClick={() => setShowLogModal(true)}
+                    className="rounded-lg bg-[#2d6a5e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#245549] transition-colors"
+                  >
+                    Log result +
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // Signed in, no results
+              <div className="mt-3 flex items-center justify-between gap-4">
+                <p className="text-sm text-[#4a6b67]">You haven&apos;t tracked this test yet.</p>
+                <button
+                  onClick={() => setShowLogModal(true)}
+                  className="rounded-xl bg-[#2d6a5e] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549] whitespace-nowrap"
+                >
+                  Track this test
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Lab Codes */}
         {labCodes.length > 0 && (
           <div className="mt-6 rounded-xl border border-[#e0ebe9] bg-white p-6">
@@ -459,6 +578,29 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
           </div>
         </div>
       </div>
+
+      {/* Result Log Modal */}
+      {trackerUser && testId && test && (
+        <ResultLogModal
+          isOpen={showLogModal}
+          onClose={() => setShowLogModal(false)}
+          onSuccess={async () => {
+            // Reload latest result
+            const supabase = createClient()
+            const { data } = await supabase
+              .from('lab_results')
+              .select('value, unit, drawn_at')
+              .eq('user_id', trackerUser.id)
+              .eq('test_id', testId)
+              .order('drawn_at', { ascending: false })
+              .limit(1)
+              .single()
+            setLatestResult(data ?? null)
+          }}
+          prefillTestId={testId}
+          prefillTestName={test.test_name}
+        />
+      )}
     </section>
   )
 }
