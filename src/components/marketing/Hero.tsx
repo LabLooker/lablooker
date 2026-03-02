@@ -58,84 +58,84 @@ export default function Hero() {
 
         {/* Four action cards */}
         <div className="mx-auto mt-10 grid max-w-4xl gap-4 grid-cols-2 sm:grid-cols-4">
-          {/* Translate — sage green */}
+          {/* Translate */}
           <Link
             href="/translate"
-            className="group relative rounded-xl border border-[#e0ebe9] bg-white p-6 transition-all hover:shadow-lg overflow-hidden"
-            style={{ borderTop: '3px solid #2d6a5e' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(45,106,94,0.04)')}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'white')}
+            className="group relative rounded-xl bg-white p-6 text-center transition-all overflow-hidden"
+            style={{ border: '1.5px solid #e0ebe9' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#2d6a5e'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(45,106,94,.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#e0ebe9'; e.currentTarget.style.boxShadow = 'none' }}
           >
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full transition-colors" style={{ backgroundColor: 'rgba(45,106,94,0.15)' }}>
-              <svg className="h-5 w-5" style={{ color: '#2d6a5e' }} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(45,106,94,0.1)] transition-colors group-hover:bg-[rgba(45,106,94,0.18)]">
+              <svg className="h-5 w-5 text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
               </svg>
             </div>
-            <h3 className="mt-3 text-base font-bold text-[#1a2e2b]" style={{}}>Translate</h3>
+            <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Translate</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
-              Convert lab orders between providers instantly.
+              Convert lab orders between providers so you can go anywhere.
             </p>
-            <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100" style={{ color: '#2d6a5e' }}>→</span>
+            <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
           </Link>
 
-          {/* Discover — teal/blue */}
+          {/* Compare */}
           <Link
             href="/search"
-            className="group relative rounded-xl border border-[#e0ebe9] bg-white p-6 transition-all hover:shadow-lg overflow-hidden"
-            style={{ borderTop: '3px solid #0e7490' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(14,116,144,0.04)')}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'white')}
+            className="group relative rounded-xl bg-white p-6 text-center transition-all overflow-hidden"
+            style={{ border: '1.5px solid #e0ebe9' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#2d6a5e'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(45,106,94,.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#e0ebe9'; e.currentTarget.style.boxShadow = 'none' }}
           >
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full transition-colors" style={{ backgroundColor: 'rgba(14,116,144,0.10)' }}>
-              <svg className="h-5 w-5" style={{ color: '#0e7490' }} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-              </svg>
-            </div>
-            <h3 className="mt-3 text-base font-bold text-[#1a2e2b]">Discover</h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
-              Not sure what to test? Search by symptom.
-            </p>
-            <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100" style={{ color: '#0e7490' }}>→</span>
-          </Link>
-
-          {/* Advocate — terracotta */}
-          <Link
-            href="/advocate"
-            className="group relative rounded-xl border border-[#e0ebe9] bg-white p-6 transition-all hover:shadow-lg overflow-hidden"
-            style={{ borderTop: '3px solid #c0826a' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(192,130,106,0.04)')}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'white')}
-          >
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full transition-colors" style={{ backgroundColor: 'rgba(192,130,106,0.15)' }}>
-              <svg className="h-5 w-5" style={{ color: '#c0826a' }} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-              </svg>
-            </div>
-            <h3 className="mt-3 text-base font-bold text-[#1a2e2b]">Advocate</h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
-              Get CPT codes and a doctor-ready request letter.
-            </p>
-            <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100" style={{ color: '#c0826a' }}>→</span>
-          </Link>
-
-          {/* Compare — amber/gold */}
-          <Link
-            href="/search"
-            className="group relative rounded-xl border border-[#e0ebe9] bg-white p-6 transition-all hover:shadow-lg overflow-hidden"
-            style={{ borderTop: '3px solid #b45309' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(180,83,9,0.04)')}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'white')}
-          >
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full transition-colors" style={{ backgroundColor: 'rgba(180,83,9,0.10)' }}>
-              <svg className="h-5 w-5" style={{ color: '#b45309' }} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(45,106,94,0.1)] transition-colors group-hover:bg-[rgba(45,106,94,0.18)]">
+              <svg className="h-5 w-5 text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
             </div>
-            <h3 className="mt-3 text-base font-bold text-[#1a2e2b]">Compare</h3>
+            <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Compare</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
-              Find the lowest self-pay price at 15+ labs.
+              Find the lowest self-pay price at 15+ providers and order directly.
             </p>
-            <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100" style={{ color: '#b45309' }}>→</span>
+            <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
+          </Link>
+
+          {/* Advocate */}
+          <Link
+            href="/advocate"
+            className="group relative rounded-xl bg-white p-6 text-center transition-all overflow-hidden"
+            style={{ border: '1.5px solid #e0ebe9' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#2d6a5e'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(45,106,94,.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#e0ebe9'; e.currentTarget.style.boxShadow = 'none' }}
+          >
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(45,106,94,0.1)] transition-colors group-hover:bg-[rgba(45,106,94,0.18)]">
+              <svg className="h-5 w-5 text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+              </svg>
+            </div>
+            <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Advocate</h3>
+            <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
+              Generate a doctor request letter with CPT and ICD-10 codes.
+            </p>
+            <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
+          </Link>
+
+          {/* Track */}
+          <Link
+            href="/dashboard"
+            className="group relative rounded-xl bg-white p-6 text-center transition-all overflow-hidden"
+            style={{ border: '1.5px solid #e0ebe9' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#2d6a5e'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(45,106,94,.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#e0ebe9'; e.currentTarget.style.boxShadow = 'none' }}
+          >
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(45,106,94,0.1)] transition-colors group-hover:bg-[rgba(45,106,94,0.18)]">
+              <svg className="h-5 w-5 text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+              </svg>
+            </div>
+            <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Track</h3>
+            <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
+              Log results, set personal goals, and visualize trends over time.
+            </p>
+            <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
           </Link>
         </div>
 
