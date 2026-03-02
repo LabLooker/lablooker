@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
+import SavedProviders from '@/components/settings/SavedProviders'
 
 type Profile = {
   full_name: string | null
@@ -122,6 +123,9 @@ export default function SettingsPage() {
           </div>
         </form>
       </Card>
+
+      {/* Saved Providers */}
+      <SavedProviders />
 
       {/* Billing Section */}
       <Card className="mb-6">

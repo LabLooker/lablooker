@@ -3,6 +3,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase'
 
+type SavedProviderOption = {
+  id: string
+  nickname: string
+  provider_name: string
+}
+
 type TestResult = {
   id: string
   test_name: string
@@ -35,7 +41,27 @@ export default function AdvocatePage() {
   const [doctorName, setDoctorName] = useState('')
   const [requestDate, setRequestDate] = useState('')
 
+  // Saved providers state
+  const [savedProviders, setSavedProviders] = useState<SavedProviderOption[]>([])
+  const [isSignedIn, setIsSignedIn] = useState(false)
+
   const supabase = createClient()
+
+  // Check auth and load saved providers
+  useEffect(() => {
+    async function loadSavedProviders() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      setIsSignedIn(true)
+      const { data } = await supabase
+        .from('saved_providers')
+        .select('id, nickname, provider_name')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true })
+      if (data) setSavedProviders(data)
+    }
+    loadSavedProviders()
+  }, [supabase])
 
   // Auto-populate today's date on mount
   useEffect(() => {
@@ -243,6 +269,29 @@ export default function AdvocatePage() {
                 />
               </div>
               <div>
+                {isSignedIn && savedProviders.length > 0 ? (
+                  <div className="mb-2">
+                    <label className="block text-sm font-medium mb-1" style={{ color: '#4a6b67' }}>Saved provider</label>
+                    <select
+                      onChange={(e) => {
+                        const p = savedProviders.find(sp => sp.id === e.target.value)
+                        if (p) setDoctorName(p.provider_name)
+                      }}
+                      defaultValue=""
+                      className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
+                      style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+                    >
+                      <option value="" disabled>Select a saved provider...</option>
+                      {savedProviders.map(sp => (
+                        <option key={sp.id} value={sp.id}>{sp.nickname}</option>
+                      ))}
+                    </select>
+                  </div>
+                ) : !isSignedIn ? (
+                  <p className="text-xs mb-2" style={{ color: '#6b8c88' }}>
+                    <a href="/login" className="underline hover:text-[#2d6a5e]">Sign in</a> to use saved providers
+                  </p>
+                ) : null}
                 <label className="block text-sm font-medium mb-1" style={{ color: '#4a6b67' }}>Doctor name</label>
                 <input
                   type="text"

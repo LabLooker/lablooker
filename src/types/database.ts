@@ -52,3 +52,14 @@ export type TestICD10 = {
   test_id: string
   icd10_code_id: string
 }
+
+export type SavedProvider = {
+  id: string
+  user_id: string
+  nickname: string
+  provider_name: string
+  practice_name: string | null
+  fax_number: string | null
+  npi: string | null
+  created_at: string
+}

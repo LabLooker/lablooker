@@ -6,6 +6,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
 import TestSummaryCard, { type LabResult, type LabGoal } from '@/components/tracker/TestSummaryCard'
 import ResultLogModal from '@/components/tracker/ResultLogModal'
+import ImportModal from '@/components/tracker/ImportModal'
 
 type Profile = {
   full_name: string | null
@@ -27,6 +28,7 @@ export default function DashboardPage() {
   const [trackedTests, setTrackedTests] = useState<TrackedTest[]>([])
   const [loading, setLoading] = useState(true)
   const [showLogModal, setShowLogModal] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
   const [logModalPrefill, setLogModalPrefill] = useState<{
     testId?: string
     testName?: string
@@ -169,18 +171,26 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            if (isAtFreeLimit) {
-              alert('You\'ve tracked 5 tests on the free plan. Upgrade to Premium to track unlimited tests.')
-              return
-            }
-            openLogModal()
-          }}
-          className="shrink-0 rounded-xl bg-[#2d6a5e] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
-        >
-          + Add Result
-        </button>
+        <div className="flex shrink-0 gap-2">
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="rounded-xl border border-[#2d6a5e] bg-white px-4 py-2.5 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
+          >
+            Import CSV
+          </button>
+          <button
+            onClick={() => {
+              if (isAtFreeLimit) {
+                alert('You\'ve tracked 5 tests on the free plan. Upgrade to Premium to track unlimited tests.')
+                return
+              }
+              openLogModal()
+            }}
+            className="rounded-xl bg-[#2d6a5e] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
+          >
+            + Add Result
+          </button>
+        </div>
       </div>
 
       {/* Free limit warning */}
@@ -267,6 +277,12 @@ export default function DashboardPage() {
         prefillTestId={logModalPrefill.testId}
         prefillTestName={logModalPrefill.testName}
         prefillUnit={logModalPrefill.unit}
+      />
+
+      <ImportModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onSuccess={loadData}
       />
     </div>
   )

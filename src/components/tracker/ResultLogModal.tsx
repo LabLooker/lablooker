@@ -6,7 +6,15 @@ import { createClient } from '@/lib/supabase'
 type Test = {
   id: string
   test_name: string
+  unit?: string | null
 }
+
+const COMMON_UNITS = [
+  'ng/mL', 'pg/mL', 'µIU/mL', 'mIU/L', 'mIU/mL', 'ng/dL', 'µg/dL', 'mg/dL',
+  'g/dL', 'g/L', 'mmol/L', 'µmol/L', 'nmol/L', 'pmol/L', 'mEq/L', 'IU/L',
+  'IU/mL', 'U/mL', '%', 'ratio', 'cells/µL', 'K/µL', 'M/µL', 'fL', 'pg',
+  'µg/L', 'mg/L',
+]
 
 type Props = {
   isOpen: boolean
@@ -45,6 +53,7 @@ export default function ResultLogModal({
   const [unit, setUnit] = useState(prefillUnit ?? '')
   const [drawnAt, setDrawnAt] = useState(() => new Date().toISOString().split('T')[0])
   const [labName, setLabName] = useState('')
+  const [showUnitDropdown, setShowUnitDropdown] = useState(false)
   const [showLabSuggestions, setShowLabSuggestions] = useState(false)
   const [refRangeLow, setRefRangeLow] = useState('')
   const [refRangeHigh, setRefRangeHigh] = useState('')
@@ -81,7 +90,7 @@ export default function ResultLogModal({
     const timer = setTimeout(async () => {
       const { data } = await supabase
         .from('tests')
-        .select('id, test_name')
+        .select('id, test_name, unit')
         .ilike('test_name', `%${testSearch}%`)
         .limit(8)
       setTestResults(data ?? [])
@@ -169,6 +178,7 @@ export default function ResultLogModal({
                         setTestName(t.test_name)
                         setTestSearch(t.test_name)
                         setShowTestDropdown(false)
+                        if (t.unit) setUnit(t.unit)
                       }}
                       className="w-full px-4 py-2.5 text-left text-sm text-[#1a2e2b] hover:bg-[#faf8f5] transition-colors"
                     >
@@ -197,15 +207,40 @@ export default function ResultLogModal({
                 required
               />
             </div>
-            <div>
+            <div className="relative">
               <label className="mb-1 block text-xs font-medium text-[#4a6b67]">Unit</label>
               <input
                 type="text"
                 value={unit}
-                onChange={(e) => setUnit(e.target.value)}
+                onChange={(e) => {
+                  setUnit(e.target.value)
+                  setShowUnitDropdown(true)
+                }}
+                onFocus={() => setShowUnitDropdown(true)}
+                onBlur={() => setTimeout(() => setShowUnitDropdown(false), 150)}
                 placeholder="e.g. ng/mL"
                 className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none"
+                autoComplete="off"
               />
+              {showUnitDropdown && (
+                <div className="absolute z-10 mt-1 w-full rounded-lg border border-[#e0ebe9] bg-white shadow-lg max-h-40 overflow-y-auto">
+                  {COMMON_UNITS.filter((u) =>
+                    u.toLowerCase().includes(unit.toLowerCase())
+                  ).map((u) => (
+                    <button
+                      key={u}
+                      type="button"
+                      onMouseDown={() => {
+                        setUnit(u)
+                        setShowUnitDropdown(false)
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-[#1a2e2b] hover:bg-[#faf8f5] transition-colors"
+                    >
+                      {u}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
