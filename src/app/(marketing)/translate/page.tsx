@@ -23,22 +23,7 @@ type TranslatedTest = {
   targetCodes: LabCode[]
 }
 
-const POPULAR_LABS = ['Quest', 'LabCorp', 'CPL']
-
-const ALL_LABS = [
-  'Quest',
-  'LabCorp',
-  'CPL',
-  'ARUP',
-  'Mayo Clinic Labs',
-  'DrSays',
-  'Cleveland Clinic',
-  'Geisinger',
-  'Northwell Health',
-  'Clinical Labs of Hawaii',
-  'American Esoteric Labs',
-  'Interpath Laboratory',
-]
+const POPULAR_LABS = ['Quest Diagnostics', 'LabCorp', 'CPL']
 
 function LabPicker({
   label,
@@ -47,6 +32,7 @@ function LabPicker({
   selectedLab,
   onSelect,
   excludeLab,
+  allLabs,
 }: {
   label: string
   stepNumber: number
@@ -54,11 +40,12 @@ function LabPicker({
   selectedLab: string
   onSelect: (lab: string) => void
   excludeLab?: string
+  allLabs: string[]
 }) {
   const [labQuery, setLabQuery] = useState('')
   const [showLabDropdown, setShowLabDropdown] = useState(false)
 
-  const filteredLabs = ALL_LABS.filter(lab => {
+  const filteredLabs = allLabs.filter(lab => {
     if (lab === excludeLab) return false
     if (!labQuery) return false
     return lab.toLowerCase().includes(labQuery.toLowerCase())
@@ -176,8 +163,22 @@ export default function TranslatePage() {
   const [isSearching, setIsSearching] = useState(false)
   const [isTranslating, setIsTranslating] = useState(false)
   const [showResults, setShowResults] = useState(false)
+  const [allLabs, setAllLabs] = useState<string[]>([])
 
   const supabase = createClient()
+
+  useEffect(() => {
+    async function fetchLabs() {
+      const { data, error } = await supabase
+        .from('lab_codes')
+        .select('lab_name')
+      if (!error && data) {
+        const unique = [...new Set(data.map((r: { lab_name: string }) => r.lab_name))].sort()
+        setAllLabs(unique as string[])
+      }
+    }
+    fetchLabs()
+  }, [])
 
   const searchTests = useCallback(async (query: string) => {
     if (query.length < 2) {
@@ -362,6 +363,7 @@ export default function TranslatePage() {
             setSourceLab(lab)
             if (targetLab === lab) setTargetLab('')
           }}
+          allLabs={allLabs}
         />
 
         {/* Step 3: Target lab */}
@@ -372,6 +374,7 @@ export default function TranslatePage() {
           selectedLab={targetLab}
           onSelect={setTargetLab}
           excludeLab={sourceLab}
+          allLabs={allLabs}
         />
 
         {/* Translate button */}

@@ -34,6 +34,8 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
   const [icd10Codes, setIcd10Codes] = useState<ICD10Code[]>([])
   const [relatedTests, setRelatedTests] = useState<Test[]>([])
   const [loading, setLoading] = useState(true)
+  const [pricing, setPricing] = useState<{ price: number; requires_rx: boolean; lab_name: string; website: string; notes: string | null }[]>([])
+  const [labCodes, setLabCodes] = useState<{ lab_name: string; proprietary_code: string; code_type: string }[]>([])
   const [copiedCpt, setCopiedCpt] = useState(false)
   const [testId, setTestId] = useState<string>('')
   const { userState, isRestricted, setShowStatePicker } = useStateRestriction()
@@ -73,6 +75,30 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
           .order('code')
         if (codes) setIcd10Codes(codes)
       }
+
+      // Fetch pricing with lab details
+      const { data: pricingData } = await supabase
+        .from('pricing')
+        .select('price, requires_rx, labs(lab_name, website, notes)')
+        .eq('test_id', testId)
+        .order('price', { ascending: true })
+      if (pricingData) {
+        setPricing(pricingData.map((row: any) => ({
+          price: row.price,
+          requires_rx: row.requires_rx,
+          lab_name: row.labs.lab_name,
+          website: row.labs.website,
+          notes: row.labs.notes,
+        })))
+      }
+
+      // Fetch lab codes
+      const { data: labCodesData } = await supabase
+        .from('lab_codes')
+        .select('lab_name, proprietary_code, code_type')
+        .eq('test_id', testId)
+        .order('lab_name')
+      if (labCodesData) setLabCodes(labCodesData)
 
       if (testData.related_tests && testData.related_tests.length > 0) {
         const { data: related } = await supabase
