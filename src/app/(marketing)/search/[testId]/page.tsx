@@ -290,15 +290,53 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
             <h2 className="text-sm font-semibold uppercase tracking-wider text-[#2d6a5e]">
               Self-Pay Pricing
             </h2>
-            <span className="rounded-full bg-[#e0ebe9] px-2.5 py-0.5 text-xs font-medium text-[#2d6a5e]">
-              Coming Soon
-            </span>
+            {pricing.length === 0 && (
+              <span className="rounded-full bg-[#e0ebe9] px-2.5 py-0.5 text-xs font-medium text-[#2d6a5e]">
+                Coming Soon
+              </span>
+            )}
           </div>
 
           {isRestricted ? (
             <div className="mt-4">
               <StateRestrictionBanner />
             </div>
+          ) : pricing.length > 0 ? (
+            <>
+              <p className="mt-1 text-[11px] text-[#6b8c88]">
+                LabLooker may earn a commission through lab links. This does not affect pricing or rankings.
+              </p>
+              <div className="mt-4 space-y-2">
+                {pricing.map((p, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between rounded-lg bg-[#faf8f5] border border-[#e0ebe9] px-4 py-3"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <span className="text-sm font-medium text-[#1a2e2b]">{p.lab_name}</span>
+                      {p.notes && (
+                        <p className="text-[11px] text-[#6b8c88] mt-0.5">{p.notes}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0 ml-4">
+                      <span className="text-sm font-semibold text-[#1a2e2b]">
+                        ${Number(p.price).toFixed(2)}
+                      </span>
+                      {p.website && (
+                        <a
+                          href={p.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-lg bg-[#2d6a5e] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#245549]"
+                        >
+                          Order
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           ) : (
             <>
               <p className="mt-2 text-xs text-[#6b8c88]">
@@ -330,6 +368,30 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
             </button>
           )}
         </div>
+
+        {/* Lab Codes */}
+        {labCodes.length > 0 && (
+          <div className="mt-6 rounded-xl border border-[#e0ebe9] bg-white p-6">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#2d6a5e]">Lab Codes</h2>
+            <p className="mt-1 text-xs text-[#6b8c88]">Proprietary codes used by each lab for this test.</p>
+            <div className="mt-4 space-y-2">
+              {labCodes.map((lc, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between rounded-lg bg-[#faf8f5] px-4 py-3"
+                >
+                  <span className="text-sm text-[#1a2e2b]">{lc.lab_name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-sm font-medium text-[#2d6a5e]">{lc.proprietary_code}</span>
+                    {lc.code_type && (
+                      <span className="text-[11px] text-[#6b8c88]">({lc.code_type})</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Doctor Request Template */}
         <div className="mt-6 rounded-xl border border-[#2d6a5e]/20 bg-[#2d6a5e]/5 p-6">
