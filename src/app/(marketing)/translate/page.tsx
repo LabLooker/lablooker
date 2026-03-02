@@ -23,7 +23,148 @@ type TranslatedTest = {
   targetCodes: LabCode[]
 }
 
-const LABS = ['LabCorp', 'Quest', 'DrSays']
+const POPULAR_LABS = ['Quest', 'LabCorp', 'CPL']
+
+const ALL_LABS = [
+  'Quest',
+  'LabCorp',
+  'CPL',
+  'ARUP',
+  'Mayo Clinic Labs',
+  'DrSays',
+  'Cleveland Clinic',
+  'Geisinger',
+  'Northwell Health',
+  'Clinical Labs of Hawaii',
+  'American Esoteric Labs',
+  'Interpath Laboratory',
+]
+
+function LabPicker({
+  label,
+  stepNumber,
+  subtitle,
+  selectedLab,
+  onSelect,
+  excludeLab,
+}: {
+  label: string
+  stepNumber: number
+  subtitle: string
+  selectedLab: string
+  onSelect: (lab: string) => void
+  excludeLab?: string
+}) {
+  const [labQuery, setLabQuery] = useState('')
+  const [showLabDropdown, setShowLabDropdown] = useState(false)
+
+  const filteredLabs = ALL_LABS.filter(lab => {
+    if (lab === excludeLab) return false
+    if (!labQuery) return false
+    return lab.toLowerCase().includes(labQuery.toLowerCase())
+  })
+
+  const popularFiltered = POPULAR_LABS.filter(lab => lab !== excludeLab)
+
+  const selectLab = (lab: string) => {
+    onSelect(lab)
+    setLabQuery('')
+    setShowLabDropdown(false)
+  }
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border p-6 mb-6" style={{ borderColor: '#e0ebe9' }}>
+      <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#1a2e2b' }}>
+        <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>{stepNumber}</span>
+        {label}
+      </h2>
+      <p className="text-sm mb-4 ml-9" style={{ color: '#6b8c88' }}>
+        {subtitle}
+      </p>
+
+      {/* Selected lab display */}
+      {selectedLab && (
+        <div className="ml-9 mb-4 flex items-center gap-2">
+          <span className="px-4 py-2 rounded-lg font-semibold text-white" style={{ backgroundColor: '#2d6a5e' }}>
+            {selectedLab}
+          </span>
+          <button
+            onClick={() => onSelect('')}
+            className="text-sm underline"
+            style={{ color: '#6b8c88' }}
+          >
+            change
+          </button>
+        </div>
+      )}
+
+      {!selectedLab && (
+        <div className="ml-9">
+          {/* Popular quick picks */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            {popularFiltered.map(lab => (
+              <button
+                key={lab}
+                onClick={() => selectLab(lab)}
+                className="px-4 py-2 rounded-lg border-2 font-medium text-sm transition-all hover:border-[#2d6a5e] hover:text-[#2d6a5e]"
+                style={{
+                  borderColor: '#e0ebe9',
+                  backgroundColor: 'white',
+                  color: '#1a2e2b',
+                }}
+              >
+                {lab}
+              </button>
+            ))}
+          </div>
+
+          {/* Type-ahead search */}
+          <div className="relative">
+            <input
+              type="text"
+              value={labQuery}
+              onChange={(e) => {
+                setLabQuery(e.target.value)
+                setShowLabDropdown(true)
+              }}
+              onFocus={() => setShowLabDropdown(true)}
+              placeholder="Or type your lab name..."
+              className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
+              style={{
+                borderColor: '#e0ebe9',
+                color: '#1a2e2b',
+                backgroundColor: 'white',
+              }}
+            />
+
+            {/* Dropdown */}
+            {showLabDropdown && filteredLabs.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg max-h-48 overflow-y-auto" style={{ borderColor: '#e0ebe9' }}>
+                {filteredLabs.map(lab => (
+                  <button
+                    key={lab}
+                    onClick={() => selectLab(lab)}
+                    className="w-full text-left px-4 py-2.5 hover:bg-gray-50 border-b last:border-b-0 transition-colors text-sm"
+                    style={{ borderColor: '#e0ebe9', color: '#1a2e2b' }}
+                  >
+                    {lab}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* No results */}
+            {showLabDropdown && labQuery.length >= 2 && filteredLabs.length === 0 && (
+              <div className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg px-4 py-3 text-sm" style={{ borderColor: '#e0ebe9', color: '#6b8c88' }}>
+                No lab found for &ldquo;{labQuery}&rdquo; — <Link href="/search" className="underline" style={{ color: '#2d6a5e' }}>request it</Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function TranslatePage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -38,7 +179,6 @@ export default function TranslatePage() {
 
   const supabase = createClient()
 
-  // Search for tests
   const searchTests = useCallback(async (query: string) => {
     if (query.length < 2) {
       setSearchResults([])
@@ -53,7 +193,6 @@ export default function TranslatePage() {
         .limit(10)
 
       if (!error && data) {
-        // Filter out already selected tests
         const selectedIds = new Set(selectedTests.map(t => t.id))
         setSearchResults(data.filter(t => !selectedIds.has(t.id)))
       }
@@ -80,7 +219,6 @@ export default function TranslatePage() {
     setTranslatedTests(prev => prev.filter(t => t.test.id !== testId))
   }
 
-  // Translate codes
   const translate = async () => {
     if (selectedTests.length === 0 || !sourceLab || !targetLab) return
     setIsTranslating(true)
@@ -145,7 +283,6 @@ export default function TranslatePage() {
             Search and add the tests from your order.
           </p>
 
-          {/* Search input */}
           <div className="relative ml-9">
             <input
               type="text"
@@ -165,7 +302,6 @@ export default function TranslatePage() {
               </div>
             )}
 
-            {/* Search dropdown */}
             {searchResults.length > 0 && (
               <div className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg max-h-60 overflow-y-auto" style={{ borderColor: '#e0ebe9' }}>
                 {searchResults.map(test => (
@@ -187,7 +323,6 @@ export default function TranslatePage() {
             )}
           </div>
 
-          {/* Selected tests */}
           {selectedTests.length > 0 && (
             <div className="mt-4 ml-9 space-y-2">
               {selectedTests.map(test => (
@@ -217,61 +352,27 @@ export default function TranslatePage() {
           )}
         </div>
 
-        {/* Step 2: Pick labs */}
-        <div className="bg-white rounded-xl shadow-sm border p-6 mb-6" style={{ borderColor: '#e0ebe9' }}>
-          <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#1a2e2b' }}>
-            <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>2</span>
-            Where was the order written for?
-          </h2>
-          <p className="text-sm mb-4 ml-9" style={{ color: '#6b8c88' }}>
-            Select the lab on your original order.
-          </p>
-          <div className="ml-9 flex flex-wrap gap-3">
-            {LABS.map(lab => (
-              <button
-                key={lab}
-                onClick={() => {
-                  setSourceLab(lab)
-                  if (targetLab === lab) setTargetLab('')
-                }}
-                className="px-5 py-2.5 rounded-lg border-2 font-medium transition-all"
-                style={{
-                  borderColor: sourceLab === lab ? '#2d6a5e' : '#e0ebe9',
-                  backgroundColor: sourceLab === lab ? '#2d6a5e' : 'white',
-                  color: sourceLab === lab ? 'white' : '#1a2e2b',
-                }}
-              >
-                {lab}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Step 2: Source lab */}
+        <LabPicker
+          label="Where was the order written for?"
+          stepNumber={2}
+          subtitle="Select the lab on your original order."
+          selectedLab={sourceLab}
+          onSelect={(lab) => {
+            setSourceLab(lab)
+            if (targetLab === lab) setTargetLab('')
+          }}
+        />
 
-        <div className="bg-white rounded-xl shadow-sm border p-6 mb-6" style={{ borderColor: '#e0ebe9' }}>
-          <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#1a2e2b' }}>
-            <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>3</span>
-            Where do you want to go instead?
-          </h2>
-          <p className="text-sm mb-4 ml-9" style={{ color: '#6b8c88' }}>
-            Select your preferred lab.
-          </p>
-          <div className="ml-9 flex flex-wrap gap-3">
-            {LABS.filter(lab => lab !== sourceLab).map(lab => (
-              <button
-                key={lab}
-                onClick={() => setTargetLab(lab)}
-                className="px-5 py-2.5 rounded-lg border-2 font-medium transition-all"
-                style={{
-                  borderColor: targetLab === lab ? '#2d6a5e' : '#e0ebe9',
-                  backgroundColor: targetLab === lab ? '#2d6a5e' : 'white',
-                  color: targetLab === lab ? 'white' : '#1a2e2b',
-                }}
-              >
-                {lab}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Step 3: Target lab */}
+        <LabPicker
+          label="Where do you want to go instead?"
+          stepNumber={3}
+          subtitle="Select your preferred lab."
+          selectedLab={targetLab}
+          onSelect={setTargetLab}
+          excludeLab={sourceLab}
+        />
 
         {/* Translate button */}
         <button
@@ -305,14 +406,12 @@ export default function TranslatePage() {
               </button>
             </div>
 
-            {/* Direction banner */}
             <div className="rounded-lg px-4 py-3 mb-6 text-center" style={{ backgroundColor: '#faf8f5', border: '1px solid #e0ebe9' }}>
               <span className="font-semibold" style={{ color: '#1a2e2b' }}>{sourceLab}</span>
               <span className="mx-3" style={{ color: '#6b8c88' }}>→</span>
               <span className="font-semibold" style={{ color: '#2d6a5e' }}>{targetLab}</span>
             </div>
 
-            {/* Translation table */}
             <div className="space-y-4">
               {translatedTests.map(({ test, sourceCodes, targetCodes }) => (
                 <div key={test.id} className="rounded-lg p-4" style={{ backgroundColor: '#faf8f5', border: '1px solid #e0ebe9' }}>
@@ -347,7 +446,6 @@ export default function TranslatePage() {
               ))}
             </div>
 
-            {/* Disclaimer */}
             <div className="mt-6 rounded-lg p-4 text-xs" style={{ backgroundColor: '#fff8f5', border: '1px solid #e8d5cc', color: '#4a6b67' }}>
               <p className="font-semibold mb-1" style={{ color: '#c0826a' }}>⚠️ REFERENCE DOCUMENT — NOT A PHYSICIAN&apos;S ORDER</p>
               <p>
