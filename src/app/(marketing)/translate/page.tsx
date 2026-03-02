@@ -393,7 +393,7 @@ export default function TranslatePage() {
 
         {/* Results */}
         {showResults && translatedTests.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border p-6 mb-6" style={{ borderColor: '#e0ebe9' }}>
+          <div className="print-results bg-white rounded-xl shadow-sm border p-6 mb-6" style={{ borderColor: '#e0ebe9' }}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold" style={{ color: '#1a2e2b' }}>
                 Translation Results

@@ -55,3 +55,25 @@ h1 {
 p {
   line-height: 1.7;
 }
+
+/* Print: show only results section */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-results,
+  .print-results * {
+    visibility: visible;
+  }
+  .print-results {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px;
+  }
+  /* Hide print button itself when printing */
+  .print-results button {
+    display: none;
+  }
+}
