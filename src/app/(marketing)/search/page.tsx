@@ -156,11 +156,12 @@ function SearchPageInner() {
     }
     if (!query.trim()) return result
     const q = query.toLowerCase()
+    const words = q.split(/\s+/).filter(Boolean)
     return result.filter(
       (t) =>
-        t.test_name.toLowerCase().includes(q) ||
+        words.every(w => t.test_name.toLowerCase().includes(w)) ||
         t.cpt_codes.some((c) => c.includes(q)) ||
-        (t.description && t.description.toLowerCase().includes(q)) ||
+        (t.description && words.every(w => t.description!.toLowerCase().includes(w))) ||
         (t.category && t.category.toLowerCase().includes(q))
     )
   }, [tests, query, categoryFilter])

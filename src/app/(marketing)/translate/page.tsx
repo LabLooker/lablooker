@@ -187,15 +187,21 @@ export default function TranslatePage() {
     }
     setIsSearching(true)
     try {
+      const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+      const firstWord = words[0]
       const { data, error } = await supabase
         .from('tests')
         .select('id, test_name, cpt_codes, category')
-        .ilike('test_name', `%${query}%`)
-        .limit(10)
+        .ilike('test_name', `%${firstWord}%`)
+        .limit(50)
 
       if (!error && data) {
         const selectedIds = new Set(selectedTests.map(t => t.id))
-        setSearchResults(data.filter(t => !selectedIds.has(t.id)))
+        const matched = data.filter(t =>
+          !selectedIds.has(t.id) &&
+          words.every(w => t.test_name.toLowerCase().includes(w))
+        )
+        setSearchResults(matched.slice(0, 10))
       }
     } catch (e) {
       console.error('Search error:', e)
