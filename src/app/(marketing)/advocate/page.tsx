@@ -262,8 +262,15 @@ export default function AdvocatePage() {
                 <input
                   type="text"
                   value={dateOfBirth}
-                  onChange={(e) => setDateOfBirth(e.target.value)}
+                  onChange={(e) => {
+                    const digits = e.target.value.replace(/\D/g, '').slice(0, 8)
+                    let formatted = digits
+                    if (digits.length > 2) formatted = `${digits.slice(0, 2)}/${digits.slice(2)}`
+                    if (digits.length > 4) formatted = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`
+                    setDateOfBirth(formatted)
+                  }}
                   placeholder="MM/DD/YYYY"
+                  maxLength={10}
                   className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
                   style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
                 />
@@ -292,12 +299,12 @@ export default function AdvocatePage() {
                     <a href="/login" className="underline hover:text-[#2d6a5e]">Sign in</a> to use saved providers
                   </p>
                 ) : null}
-                <label className="block text-sm font-medium mb-1" style={{ color: '#4a6b67' }}>Doctor name</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: '#4a6b67' }}>Doctor or practice name</label>
                 <input
                   type="text"
                   value={doctorName}
                   onChange={(e) => setDoctorName(e.target.value)}
-                  placeholder="Dr. Smith"
+                  placeholder="Dr. Smith or practice name"
                   className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
                   style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
                 />
