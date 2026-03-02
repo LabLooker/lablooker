@@ -29,7 +29,19 @@ export default function AdvocatePage() {
   const [copied, setCopied] = useState(false)
   const templateRef = useRef<HTMLDivElement>(null)
 
+  // Patient info fields
+  const [patientName, setPatientName] = useState('')
+  const [dateOfBirth, setDateOfBirth] = useState('')
+  const [doctorName, setDoctorName] = useState('')
+  const [requestDate, setRequestDate] = useState('')
+
   const supabase = createClient()
+
+  // Auto-populate today's date on mount
+  useEffect(() => {
+    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    setRequestDate(today)
+  }, [])
 
   const searchTests = useCallback(async (query: string) => {
     if (query.length < 2) {
@@ -97,15 +109,21 @@ export default function AdvocatePage() {
     }, 100)
   }
 
+  const blank = (len = 24) => '_'.repeat(len)
+
+  const displayName = patientName.trim() || blank()
+  const displayDOB = dateOfBirth.trim() || blank()
+  const displayDate = requestDate.trim() || blank()
+  const displayDoctor = doctorName.trim() || blank(12)
+
   const getPlainText = () => {
     const lines: string[] = []
     lines.push('PATIENT LAB TEST REQUEST')
     lines.push('')
-    lines.push('Patient Name: ___________________________')
-    lines.push('Date of Birth: __________________________')
-    lines.push('Date: ___________________________________')
+    lines.push(`Patient: ${patientName.trim() || blank(25)}    Date: ${requestDate.trim() || blank(20)}`)
+    lines.push(`Date of Birth: ${dateOfBirth.trim() || blank(20)}`)
     lines.push('')
-    lines.push('Dear Dr. ___________,')
+    lines.push(`Dear Dr. ${doctorName.trim() || blank(12)},`)
     lines.push('')
     lines.push('I am requesting the following laboratory tests for the reasons described below. I understand these will need to be ordered at your discretion.')
     lines.push('')
@@ -150,8 +168,6 @@ export default function AdvocatePage() {
     }
   }
 
-  const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-
   return (
     <>
       {/* Print styles */}
@@ -184,10 +200,68 @@ export default function AdvocatePage() {
             </p>
           </div>
 
-          {/* Step 1: Search and add tests */}
+          {/* Step 1: Your Information */}
           <div className="bg-white rounded-xl shadow-sm border p-6 mb-6 no-print" style={{ borderColor: '#e0ebe9' }}>
             <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#1a2e2b' }}>
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>1</span>
+              Your information
+            </h2>
+            <p className="text-sm mb-4 ml-9" style={{ color: '#6b8c88' }}>
+              Optional — pre-fill the template so you don&apos;t have to hand-write it later.
+            </p>
+
+            <div className="ml-9 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1" style={{ color: '#4a6b67' }}>Patient name</label>
+                <input
+                  type="text"
+                  value={patientName}
+                  onChange={(e) => setPatientName(e.target.value)}
+                  placeholder="Jane Smith"
+                  className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
+                  style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1" style={{ color: '#4a6b67' }}>Date of birth</label>
+                <input
+                  type="text"
+                  value={dateOfBirth}
+                  onChange={(e) => setDateOfBirth(e.target.value)}
+                  placeholder="MM/DD/YYYY"
+                  className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
+                  style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1" style={{ color: '#4a6b67' }}>Doctor name</label>
+                <input
+                  type="text"
+                  value={doctorName}
+                  onChange={(e) => setDoctorName(e.target.value)}
+                  placeholder="Dr. Smith"
+                  className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
+                  style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1" style={{ color: '#4a6b67' }}>Date of request</label>
+                <input
+                  type="text"
+                  value={requestDate}
+                  onChange={(e) => setRequestDate(e.target.value)}
+                  placeholder="Today's date"
+                  className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
+                  style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Step 2: Search and add tests */}
+          <div className="bg-white rounded-xl shadow-sm border p-6 mb-6 no-print" style={{ borderColor: '#e0ebe9' }}>
+            <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#1a2e2b' }}>
+              <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>2</span>
               What tests do you want to request?
             </h2>
             <p className="text-sm mb-4 ml-9" style={{ color: '#6b8c88' }}>
@@ -250,10 +324,10 @@ export default function AdvocatePage() {
             )}
           </div>
 
-          {/* Step 2: Reason/symptoms */}
+          {/* Step 3: Reason/symptoms */}
           <div className="bg-white rounded-xl shadow-sm border p-6 mb-6 no-print" style={{ borderColor: '#e0ebe9' }}>
             <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#1a2e2b' }}>
-              <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>2</span>
+              <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>3</span>
               Why are you requesting these tests?
             </h2>
             <p className="text-sm mb-4 ml-9" style={{ color: '#6b8c88' }}>
@@ -271,10 +345,10 @@ export default function AdvocatePage() {
             </div>
           </div>
 
-          {/* Step 3: Generate */}
+          {/* Step 4: Generate */}
           <div className="bg-white rounded-xl shadow-sm border p-6 mb-6 no-print" style={{ borderColor: '#e0ebe9' }}>
             <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#1a2e2b' }}>
-              <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>3</span>
+              <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>4</span>
               Generate your template
             </h2>
             <p className="text-sm mb-4 ml-9" style={{ color: '#6b8c88' }}>
@@ -323,23 +397,39 @@ export default function AdvocatePage() {
                   <h2 className="text-2xl font-bold" style={{ color: '#1a2e2b' }}>Patient Lab Test Request</h2>
                 </div>
 
-                <div className="mb-6 space-y-3 text-sm" style={{ color: '#1a2e2b' }}>
-                  <div className="flex gap-2">
-                    <span className="font-medium w-32 shrink-0">Patient Name:</span>
-                    <span className="border-b flex-1" style={{ borderColor: '#ccc' }}>&nbsp;</span>
+                <div className="mb-6 text-sm" style={{ color: '#1a2e2b' }}>
+                  <div className="flex gap-8 mb-2">
+                    <div className="flex gap-2 flex-1">
+                      <span className="font-medium shrink-0">Patient:</span>
+                      {patientName.trim()
+                        ? <span>{patientName.trim()}</span>
+                        : <span className="border-b flex-1" style={{ borderColor: '#ccc' }}>&nbsp;</span>
+                      }
+                    </div>
+                    <div className="flex gap-2 flex-1">
+                      <span className="font-medium shrink-0">Date:</span>
+                      {requestDate.trim()
+                        ? <span>{requestDate.trim()}</span>
+                        : <span className="border-b flex-1" style={{ borderColor: '#ccc' }}>&nbsp;</span>
+                      }
+                    </div>
                   </div>
                   <div className="flex gap-2">
-                    <span className="font-medium w-32 shrink-0">Date of Birth:</span>
-                    <span className="border-b flex-1" style={{ borderColor: '#ccc' }}>&nbsp;</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="font-medium w-32 shrink-0">Date:</span>
-                    <span className="border-b flex-1" style={{ borderColor: '#ccc' }}>{today}</span>
+                    <span className="font-medium shrink-0">Date of Birth:</span>
+                    {dateOfBirth.trim()
+                      ? <span>{dateOfBirth.trim()}</span>
+                      : <span className="border-b" style={{ borderColor: '#ccc', minWidth: '180px' }}>&nbsp;</span>
+                    }
                   </div>
                 </div>
 
                 <div className="mb-6" style={{ color: '#1a2e2b' }}>
-                  <p className="mb-4">Dear Dr. ___________,</p>
+                  <p className="mb-4">
+                    Dear Dr. {doctorName.trim()
+                      ? <span>{doctorName.trim().replace(/^Dr\.?\s*/i, '')},</span>
+                      : <span><span style={{ display: 'inline-block', borderBottom: '1px solid #ccc', minWidth: '100px' }}>&nbsp;</span>,</span>
+                    }
+                  </p>
                   <p className="text-sm leading-relaxed">
                     I am requesting the following laboratory tests for the reasons described below. I understand these will need to be ordered at your discretion.
                   </p>
