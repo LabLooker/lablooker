@@ -1,0 +1,1 @@
+ALTER TABLE tests ADD COLUMN IF NOT EXISTS prep_notes TEXT;

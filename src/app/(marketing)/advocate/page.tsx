@@ -206,8 +206,11 @@ export default function AdvocatePage() {
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>1</span>
               Your information
             </h2>
-            <p className="text-sm mb-4 ml-9" style={{ color: '#6b8c88' }}>
+            <p className="text-sm mb-1 ml-9" style={{ color: '#6b8c88' }}>
               Optional — pre-fill the template so you don&apos;t have to hand-write it later.
+            </p>
+            <p className="text-xs mb-4 ml-9 italic" style={{ color: '#a3bfbb' }}>
+              🔒 This information is used only to fill in your printable letter. It is never stored, sent to LabLooker, or shared with anyone.
             </p>
 
             <div className="ml-9 grid grid-cols-1 sm:grid-cols-2 gap-4">
