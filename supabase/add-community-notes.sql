@@ -1,0 +1,1 @@
+ALTER TABLE tests ADD COLUMN IF NOT EXISTS community_notes TEXT;

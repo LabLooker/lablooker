@@ -9,6 +9,7 @@ export type Test = {
   related_tests: string[]
   notes: string | null
   prep_notes?: string | null
+  community_notes?: string | null
   created_at: string
   updated_at: string
 }

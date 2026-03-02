@@ -289,6 +289,17 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
                 {test.prep_notes}
               </div>
             )}
+            {test.community_notes && (
+              <div className="mt-4 rounded-lg p-4" style={{ backgroundColor: '#fdf8f5', border: '1px solid #e8d5cc' }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-sm font-semibold" style={{ color: '#c0826a' }}>💬 Patient Community Notes</span>
+                </div>
+                <p className="text-sm leading-relaxed" style={{ color: '#4a6b67' }}>{test.community_notes}</p>
+                <p className="mt-2 text-xs italic" style={{ color: '#6b8c88' }}>
+                  Reflects common practices in thyroid, BHRT, and functional medicine communities. This may differ from standard clinical guidelines. Not medical advice — always discuss with your provider.
+                </p>
+              </div>
+            )}
             <p className="mt-3 text-xs italic" style={{ color: '#6b8c88' }}>
               General guidelines only. Requirements vary by lab and individual. Confirm with your provider before adjusting any medications.
             </p>
