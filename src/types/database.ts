@@ -8,6 +8,7 @@ export type Test = {
   turnaround: string | null
   related_tests: string[]
   notes: string | null
+  prep_notes?: string | null
   created_at: string
   updated_at: string
 }

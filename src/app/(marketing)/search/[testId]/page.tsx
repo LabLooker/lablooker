@@ -284,6 +284,14 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
                 </>
               )}
             </div>
+            {test.prep_notes && (
+              <div className="mt-3 text-sm leading-relaxed" style={{ color: '#4a6b67' }}>
+                {test.prep_notes}
+              </div>
+            )}
+            <p className="mt-3 text-xs italic" style={{ color: '#6b8c88' }}>
+              General guidelines only. Requirements vary by lab and individual. Confirm with your provider before adjusting any medications.
+            </p>
           </div>
           <div className="rounded-xl border border-[#e0ebe9] bg-white p-6">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-[#2d6a5e]">Turnaround Time</h2>
