@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import type { Test, Symptom } from '@/types/database'
@@ -79,18 +79,18 @@ const CATEGORY_LABELS: Record<string, string> = {
 }
 
 const HEALTH_TOPICS = [
-  { icon: '🦋', label: 'Thyroid & Endocrine', categories: ['thyroid', 'hormones'] },
-  { icon: '❤️', label: 'Heart & Cholesterol', categories: ['cardiovascular', 'lipids', 'cardiac'] },
-  { icon: '💪', label: 'Testosterone & TRT', searchQuery: 'testosterone' },
-  { icon: '🌸', label: 'Menopause & BHRT', searchQuery: 'estradiol progesterone FSH LH DHEA' },
-  { icon: '🔥', label: 'Inflammation & Autoimmune', categories: ['inflammation', 'autoimmune', 'autoimmune_gi'] },
-  { icon: '⚖️', label: 'Weight & Metabolism', categories: ['metabolic'] },
-  { icon: '🩸', label: 'Iron & Anemia', categories: ['iron', 'iron_blood', 'hematology'] },
-  { icon: '💊', label: 'Vitamins & Minerals', categories: ['vitamins', 'vitamins_minerals', 'minerals'] },
-  { icon: '🧠', label: 'Mood & Mental Health', searchQuery: 'cortisol DHEA serotonin B12 folate thyroid' },
-  { icon: '🍬', label: 'Diabetes & Blood Sugar', searchQuery: 'glucose A1c insulin' },
-  { icon: '🫘', label: 'Kidney & Liver', categories: ['kidney', 'liver', 'kidney_liver'] },
-  { icon: '🛡️', label: 'Immune & Infections', categories: ['immune', 'infectious'] },
+  { slug: 'thyroid', icon: '🦋', label: 'Thyroid & Endocrine', categories: ['thyroid', 'hormones'] },
+  { slug: 'heart', icon: '❤️', label: 'Heart & Cholesterol', categories: ['cardiovascular', 'lipids', 'cardiac'] },
+  { slug: 'testosterone', icon: '💪', label: 'Testosterone & TRT', searchQuery: 'testosterone' },
+  { slug: 'bhrt', icon: '🌸', label: 'Menopause & BHRT', searchQuery: 'estradiol progesterone FSH LH DHEA' },
+  { slug: 'inflammation', icon: '🔥', label: 'Inflammation & Autoimmune', categories: ['inflammation', 'autoimmune', 'autoimmune_gi'] },
+  { slug: 'metabolism', icon: '⚖️', label: 'Weight & Metabolism', categories: ['metabolic'] },
+  { slug: 'iron', icon: '🩸', label: 'Iron & Anemia', categories: ['iron', 'iron_blood', 'hematology'] },
+  { slug: 'vitamins', icon: '💊', label: 'Vitamins & Minerals', categories: ['vitamins', 'vitamins_minerals', 'minerals'] },
+  { slug: 'mental-health', icon: '🧠', label: 'Mood & Mental Health', searchQuery: 'cortisol DHEA serotonin B12 folate thyroid' },
+  { slug: 'diabetes', icon: '🍬', label: 'Diabetes & Blood Sugar', searchQuery: 'glucose A1c insulin' },
+  { slug: 'kidney-liver', icon: '🫘', label: 'Kidney & Liver', categories: ['kidney', 'liver', 'kidney_liver'] },
+  { slug: 'immune', icon: '🛡️', label: 'Immune & Infections', categories: ['immune', 'infectious'] },
 ]
 
 export default function SearchPage() {
@@ -103,11 +103,26 @@ export default function SearchPage() {
 
 function SearchPageInner() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [tests, setTests] = useState<Test[]>([])
   const [symptoms, setSymptoms] = useState<Symptom[]>([])
   const [query, setQuery] = useState(searchParams.get('q') || '')
   const [loading, setLoading] = useState(true)
-  const [categoryFilter, setCategoryFilter] = useState<string[] | null>(null)
+
+  // Initialize topic filter from URL on mount
+  const initialTopic = searchParams.get('topic')
+  const initialTopicData = initialTopic ? HEALTH_TOPICS.find(t => t.slug === initialTopic) : null
+  const [categoryFilter, setCategoryFilter] = useState<string[] | null>(
+    initialTopicData?.categories ?? null
+  )
+
+  // If topic has a searchQuery (not categories), restore it
+  useEffect(() => {
+    if (initialTopicData?.searchQuery && !initialTopicData.categories) {
+      setQuery(initialTopicData.searchQuery)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [redFlagDismissed, setRedFlagDismissed] = useState(false)
   const [redFlagTriggered, setRedFlagTriggered] = useState(false)
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
@@ -214,6 +229,7 @@ function SearchPageInner() {
               onChange={(e) => {
                 setQuery(e.target.value)
                 setCategoryFilter(null)
+                if (!e.target.value) router.replace('/search')
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleSearchSubmit()
@@ -223,7 +239,7 @@ function SearchPageInner() {
             />
             {query && (
               <button
-                onClick={() => { setQuery(''); setCategoryFilter(null) }}
+                onClick={() => { setQuery(''); setCategoryFilter(null); router.replace('/search') }}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6b8c88] hover:text-[#1a2e2b]"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -253,6 +269,7 @@ function SearchPageInner() {
                     <button
                       key={topic.label}
                       onClick={() => {
+                        router.replace(`/search?topic=${topic.slug}`)
                         if (topic.categories) {
                           setCategoryFilter(topic.categories)
                         } else if (topic.searchQuery) {
@@ -278,7 +295,7 @@ function SearchPageInner() {
             {!query.trim() && categoryFilter && categoryFilter.length > 0 && (
               <div className="mt-6 mx-auto max-w-5xl">
                 <button
-                  onClick={() => setCategoryFilter(null)}
+                  onClick={() => { setCategoryFilter(null); router.replace('/search') }}
                   className="flex items-center gap-2 text-sm text-[#6b8c88] hover:text-[#2d6a5e] transition-colors"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
