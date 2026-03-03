@@ -345,7 +345,7 @@ function SearchPageInner() {
                     <button
                       key={topic.label}
                       onClick={() => {
-                        router.replace(`/search?topic=${topic.slug}`)
+                        router.push(`/search?topic=${topic.slug}`)
                         setActiveTopicSlug(topic.slug)
                         if (topic.categories) {
                           setCategoryFilter(topic.categories)
