@@ -113,7 +113,7 @@ export default function Hero() {
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Advocate</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
-              Build a request template to bring to your doctor — with CPT and ICD-10 codes included.
+              Generate a document to request specific labs from your provider. Print directly, or copy clean text to paste into a portal message or email.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
           </Link>
@@ -133,7 +133,7 @@ export default function Hero() {
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Track</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
-              Log results, set personal goals, and visualize trends over time.
+              Log results, set goals, and visualize trends over time. Free account keeps your history private and secure.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
           </Link>
