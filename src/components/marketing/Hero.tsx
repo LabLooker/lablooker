@@ -165,22 +165,22 @@ export default function Hero() {
         {/* Health topic pills */}
         <div className="mt-6 flex flex-wrap justify-center gap-2 mx-auto max-w-2xl">
           {[
-            { label: 'Thyroid & Endocrine', q: 'thyroid' },
-            { label: 'Heart & Cholesterol', q: 'cholesterol' },
-            { label: 'Testosterone & TRT', q: 'testosterone' },
-            { label: 'Menopause & BHRT', q: 'estradiol progesterone FSH LH DHEA' },
-            { label: 'Inflammation & Autoimmune', q: 'inflammation' },
-            { label: 'Weight & Metabolism', q: 'metabolic' },
-            { label: 'Iron & Anemia', q: 'iron ferritin' },
-            { label: 'Vitamins & Minerals', q: 'vitamin' },
-            { label: 'Mood & Mental Health', q: 'cortisol DHEA serotonin' },
-            { label: 'Diabetes & Blood Sugar', q: 'glucose A1c insulin' },
-            { label: 'Kidney & Liver', q: 'kidney liver' },
-            { label: 'Immune & Infections', q: 'immune hepatitis HIV' },
+            { label: 'Thyroid & Endocrine', slug: 'thyroid' },
+            { label: 'Heart & Cholesterol', slug: 'heart' },
+            { label: 'Testosterone & TRT', slug: 'testosterone' },
+            { label: 'Menopause & BHRT', slug: 'bhrt' },
+            { label: 'Inflammation & Autoimmune', slug: 'inflammation' },
+            { label: 'Weight & Metabolism', slug: 'metabolism' },
+            { label: 'Iron & Anemia', slug: 'iron' },
+            { label: 'Vitamins & Minerals', slug: 'vitamins' },
+            { label: 'Mood & Mental Health', slug: 'mental-health' },
+            { label: 'Diabetes & Blood Sugar', slug: 'diabetes' },
+            { label: 'Kidney & Liver', slug: 'kidney-liver' },
+            { label: 'Immune & Infections', slug: 'immune' },
           ].map((topic) => (
             <a
               key={topic.label}
-              href={`/search?q=${encodeURIComponent(topic.q)}`}
+              href={`/search?topic=${topic.slug}`}
               className="rounded-full border border-[#e0ebe9] bg-white px-3 py-1.5 text-xs font-medium text-[#4a6b67] transition-all hover:border-[#2d6a5e] hover:text-[#2d6a5e] hover:bg-[#2d6a5e]/5"
             >
               {topic.label}
