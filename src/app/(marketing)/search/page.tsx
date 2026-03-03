@@ -91,62 +91,62 @@ const HEALTH_TOPICS: HealthTopic[] = [
   {
     slug: 'thyroid', icon: '🦋', label: 'Thyroid & Endocrine',
     categories: ['thyroid'],
-    priority: ['TSH', 'Free T3', 'Free T4', 'Reverse T3', 'Anti-TPO', 'Anti-Thyroglobulin', 'Comprehensive Thyroid', 'Thyroid Panel', 'Total T3', 'Total T4', 'TRAb', 'TSI', 'Calcitonin', 'Thyroglobulin', 'Parathyroid'],
+    priority: ['Free T3', 'Free T4', 'Reverse T3', 'Total T3', 'Total T4', 'Anti-TPO', 'Anti-Thyroglobulin', 'Thyroid Panel', 'TSH'],
   },
   {
     slug: 'heart', icon: '❤️', label: 'Heart & Cholesterol',
     categories: ['cardiovascular', 'lipids'],
-    priority: ['Lipid Panel', 'Total Cholesterol', 'LDL', 'HDL', 'Triglycerides', 'hs-CRP', 'Lipoprotein(a)', 'Apolipoprotein B', 'Homocysteine', 'Non-HDL', 'NMR', 'CardioIQ', 'Oxidized LDL', 'BNP', 'NT-proBNP', 'Troponin'],
+    priority: ['Lp(a)', 'ApoB', 'hs-CRP', 'Homocysteine', 'Triglycerides', 'HDL', 'LDL', 'Total Cholesterol', 'Lipid Panel', 'Lipoprotein'],
   },
   {
     slug: 'testosterone', icon: '💪', label: 'Testosterone & TRT',
     keywords: ['testosterone', 'shbg', 'free testosterone'],
-    priority: ['Testosterone, Total', 'Testosterone, Free', 'Testosterone, Bioavailable', 'Free Testosterone + Total', 'SHBG', 'Sex Hormone Panel, Male'],
+    priority: ['Free Testosterone', 'Testosterone, Free', 'SHBG', 'Total Testosterone', 'Testosterone, Total', 'Estradiol', 'LH', 'FSH', 'PSA', 'Bioavailable'],
   },
   {
     slug: 'bhrt', icon: '🌸', label: 'Menopause & BHRT',
     keywords: ['estradiol', 'progesterone', 'fsh', 'lh', 'dhea', 'shbg', 'amh', 'menopause', 'estrone', 'estriol', 'estrogen', 'sex hormone panel, female'],
-    priority: ['Estradiol', 'FSH', 'LH', 'Progesterone', 'DHEA-S', 'SHBG', 'AMH', 'Estrone', 'Estriol', 'Total Estrogen', 'Estrogen Metabolites', 'Sex Hormone Panel, Female'],
+    priority: ['Estradiol', 'Testosterone', 'Progesterone', 'DHEA', 'SHBG', 'AMH', 'FSH', 'LH', 'Cortisol'],
   },
   {
     slug: 'inflammation', icon: '🔥', label: 'Inflammation & Autoimmune',
     categories: ['inflammation', 'autoimmune'],
-    priority: ['hs-CRP', 'CRP', 'ESR', 'ANA', 'Anti-dsDNA', 'Rheumatoid Factor', 'Anti-CCP', 'Interleukin-6', 'TNF-Alpha', 'Procalcitonin', 'Sjogren', 'HLA-B27'],
+    priority: ['hs-CRP', 'CRP', 'Homocysteine', 'ESR', 'Ferritin', 'Fibrinogen', 'ANA', 'Anti-dsDNA', 'RF', 'Anti-CCP'],
   },
   {
     slug: 'metabolism', icon: '⚖️', label: 'Weight & Metabolism',
     categories: ['metabolic'],
-    priority: ['BMP', 'CMP', 'HbA1c', 'Glucose, Fasting', 'Insulin', 'HOMA-IR', 'C-Peptide', 'Electrolyte', 'Calcium', 'Magnesium', 'Uric Acid', 'Creatinine'],
+    priority: ['Insulin', 'Fasting Insulin', 'HOMA', 'HbA1c', 'Glucose', 'Cortisol', 'Leptin', 'TSH', 'Free T3', 'Triglycerides', 'Lipid'],
   },
   {
     slug: 'iron', icon: '🩸', label: 'Iron & Anemia',
     categories: ['iron', 'hematology'],
-    priority: ['Ferritin', 'Iron, Serum', 'Iron & TIBC', 'TIBC', 'Transferrin Saturation', 'Transferrin', 'CBC with Diff', 'Hemoglobin', 'Hematocrit', 'Reticulocyte', 'MCV', 'RDW', 'Haptoglobin', 'Blood Smear'],
+    priority: ['Ferritin', 'Iron', 'Transferrin Saturation', 'TIBC', 'Transferrin', 'Reticulocyte', 'Hemoglobin', 'Hematocrit', 'CBC', 'RBC'],
   },
   {
     slug: 'vitamins', icon: '💊', label: 'Vitamins & Minerals',
     categories: ['vitamins', 'minerals'],
-    priority: ['Vitamin D, 25-OH (Total)', 'Vitamin B12', 'Folate', 'Magnesium, RBC', 'Zinc', 'Selenium', 'Iodine', 'Vitamin D, 25-OH (D2', 'Vitamin D, 1,25', 'Methylmalonic', 'Iron', 'Copper', 'Chromium'],
+    priority: ['Vitamin D', 'B12', 'Magnesium, RBC', 'RBC Magnesium', 'Folate', 'Zinc', 'Selenium', 'Iodine', 'Magnesium', 'Vitamin K', 'Omega'],
   },
   {
     slug: 'mental-health', icon: '🧠', label: 'Mood & Mental Health',
     keywords: ['cortisol', 'dhea', 'b12', 'folate', 'vitamin d', 'magnesium', 'zinc', 'omega', 'serotonin', 'melatonin'],
-    priority: ['Cortisol', 'DHEA', 'Vitamin D', 'Vitamin B12', 'Folate', 'Magnesium', 'Zinc', 'Omega-3', 'Omega-6', 'Melatonin'],
+    priority: ['Ferritin', 'Free T3', 'TSH', 'Vitamin D', 'B12', 'Folate', 'Cortisol', 'DHEA', 'Magnesium', 'Zinc', 'Omega', 'Homocysteine'],
   },
   {
     slug: 'diabetes', icon: '🍬', label: 'Diabetes & Blood Sugar',
     keywords: ['glucose', 'a1c', 'insulin', 'hba1c', 'glycated', 'diabetes', 'c-peptide', 'homa-ir', 'fructosamine', 'ogtt'],
-    priority: ['HbA1c', 'Glucose, Fasting', 'Insulin, Fasting', 'HOMA-IR', 'C-Peptide', 'OGTT', 'Fructosamine', 'Glucose, Random', 'Glucose, Post-prandial'],
+    priority: ['Insulin', 'Fasting Insulin', 'HOMA', 'HbA1c', 'Hemoglobin A1c', 'Glucose', 'C-Peptide', 'Fructosamine', 'Adiponectin'],
   },
   {
     slug: 'kidney-liver', icon: '🫘', label: 'Kidney & Liver',
     categories: ['kidney', 'liver'],
-    priority: ['CMP', 'BMP', 'Creatinine', 'BUN', 'eGFR', 'Kidney Function', 'ALT', 'AST', 'Total Bilirubin', 'ALP', 'GGT', 'Albumin', 'Hepatic Function', 'Total Protein', 'Microalbumin'],
+    priority: ['GGT', 'ALT', 'AST', 'Albumin', 'Bilirubin', 'Creatinine', 'BUN', 'eGFR', 'Cystatin', 'CMP', 'BMP', 'Phosphorus'],
   },
   {
     slug: 'immune', icon: '🛡️', label: 'Immune & Infections',
     categories: ['immune', 'infectious'],
-    priority: ['CBC', 'WBC', 'Immunoglobulin G', 'Immunoglobulin A', 'Immunoglobulin M', 'CD4/CD8', 'Complement C3', 'Complement C4', 'Natural Killer', 'HIV', 'Hepatitis B Panel', 'Hepatitis C', 'Lyme'],
+    priority: ['Vitamin D', 'CBC', 'WBC', 'Lymphocytes', 'Neutrophils', 'IgG', 'IgA', 'IgM', 'NK', 'CD4', 'CD8', 'ANA'],
   },
 ]
 
