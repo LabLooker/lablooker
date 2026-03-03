@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+// Use internal path to avoid pdf-parse test file lookup (fails in serverless/Vercel)
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require('pdf-parse')
+const pdfParse = require('pdf-parse/lib/pdf-parse.js')
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
