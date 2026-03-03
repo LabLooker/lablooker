@@ -152,12 +152,12 @@ export default function Hero() {
             />
             <button
               type="submit"
-              className="h-12 rounded-r-lg bg-[#2d6a5e] px-5 font-medium text-white transition-colors hover:bg-[#245649] cursor-pointer flex items-center gap-2"
+              className="h-12 rounded-r-lg bg-[#2d6a5e] px-3 sm:px-5 font-medium text-white transition-colors hover:bg-[#245649] cursor-pointer flex items-center gap-2"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
               </svg>
-              Search
+              <span className="hidden sm:inline">Search</span>
             </button>
           </form>
         </div>
