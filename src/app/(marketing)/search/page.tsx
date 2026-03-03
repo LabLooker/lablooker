@@ -360,8 +360,8 @@ function SearchPageInner() {
 
         {!loading && (
           <>
-            {/* Health topic cards — show when browsing (no query and no category selected) */}
-            {!query.trim() && !categoryFilter && (
+            {/* Health topic cards — show when browsing (no query and no active topic filter) */}
+            {!query.trim() && !categoryFilter && !keywordFilter && (
               <div className="mt-8 mx-auto max-w-4xl">
                 <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-[#6b8c88] mb-4">Lab Tests by Health Topic</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -394,9 +394,9 @@ function SearchPageInner() {
               </div>
             )}
 
-            {/* Category back button — show when a category or keyword filter is active */}
+            {/* Category back button + active topic label — show when a category or keyword filter is active */}
             {!query.trim() && !!(categoryFilter?.length || keywordFilter?.length) && (
-              <div className="mt-6 mx-auto max-w-5xl">
+              <div className="mt-6 mx-auto max-w-5xl flex items-center justify-between">
                 <button
                   onClick={() => { setCategoryFilter(null); setKeywordFilter(null); setActiveTopicSlug(null); router.replace('/search') }}
                   className="flex items-center gap-2 text-sm text-[#6b8c88] hover:text-[#2d6a5e] transition-colors"
@@ -406,6 +406,14 @@ function SearchPageInner() {
                   </svg>
                   Back to all topics
                 </button>
+                {activeTopicSlug && (() => {
+                  const t = HEALTH_TOPICS.find(t => t.slug === activeTopicSlug)
+                  return t ? (
+                    <span className="text-sm font-semibold text-[#1a2e2b]">
+                      {t.icon} {t.label}
+                    </span>
+                  ) : null
+                })()}
               </div>
             )}
 
