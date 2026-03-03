@@ -187,22 +187,52 @@ export default function TranslatePage() {
     }
     setIsSearching(true)
     try {
-      const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+      const trimmed = query.trim()
+      const words = trimmed.toLowerCase().split(/\s+/).filter(Boolean)
       const firstWord = words[0]
-      const { data, error } = await supabase
-        .from('tests')
-        .select('id, test_name, cpt_codes, category')
-        .ilike('test_name', `%${firstWord}%`)
-        .limit(50)
+      const selectedIds = new Set(selectedTests.map(t => t.id))
 
-      if (!error && data) {
-        const selectedIds = new Set(selectedTests.map(t => t.id))
-        const matched = data.filter(t =>
-          !selectedIds.has(t.id) &&
-          words.every(w => t.test_name.toLowerCase().includes(w))
-        )
-        setSearchResults(matched.slice(0, 10))
+      // Run both searches in parallel: by test name AND by lab code
+      const [nameRes, codeRes] = await Promise.all([
+        supabase
+          .from('tests')
+          .select('id, test_name, cpt_codes, category')
+          .ilike('test_name', `%${firstWord}%`)
+          .limit(50),
+        supabase
+          .from('lab_codes')
+          .select('test_id')
+          .ilike('proprietary_code', `%${trimmed}%`)
+          .limit(20),
+      ])
+
+      const matchedByName: TestResult[] = (nameRes.data || []).filter(t =>
+        !selectedIds.has(t.id) &&
+        words.every(w => t.test_name.toLowerCase().includes(w))
+      )
+
+      // For code matches, fetch the corresponding tests
+      let matchedByCode: TestResult[] = []
+      if (codeRes.data && codeRes.data.length > 0) {
+        const codeTestIds = [...new Set(codeRes.data.map(r => r.test_id))]
+          .filter(id => !selectedIds.has(id))
+        if (codeTestIds.length > 0) {
+          const { data: codeTests } = await supabase
+            .from('tests')
+            .select('id, test_name, cpt_codes, category')
+            .in('id', codeTestIds)
+          matchedByCode = codeTests || []
+        }
       }
+
+      // Merge: code matches first (user typed a code), then name matches, deduped
+      const seen = new Set<string>()
+      const merged: TestResult[] = []
+      for (const t of [...matchedByCode, ...matchedByName]) {
+        if (!seen.has(t.id)) { seen.add(t.id); merged.push(t) }
+      }
+
+      setSearchResults(merged.slice(0, 10))
     } catch (e) {
       console.error('Search error:', e)
     }
@@ -287,7 +317,7 @@ export default function TranslatePage() {
             What tests were ordered?
           </h2>
           <p className="text-sm mb-4 ml-9" style={{ color: '#6b8c88' }}>
-            Search and add the tests from your order.
+            Search by test name or type the code directly from your order slip.
           </p>
 
           <div className="relative ml-9">
@@ -295,7 +325,7 @@ export default function TranslatePage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search for a test (e.g., TSH, CBC, Vitamin D)..."
+              placeholder="Search by test name or lab code (e.g., TSH, 322000, 10231)..."
               className="w-full px-4 py-3 rounded-lg border-2 text-base focus:outline-none focus:ring-2"
               style={{
                 borderColor: '#2d6a5e',
