@@ -51,7 +51,7 @@ export const APP_CONFIG = {
   nav: [
     { label: 'Translate', href: '/translate' },
     { label: 'Discover', href: '/search' },
-    { label: 'Advocate', href: '/advocate' },
+    { label: 'Self-Advocacy', href: '/advocate' },
     { label: 'Compare', href: '/search' },
     { label: 'Pricing', href: '/pricing' },
   ],
