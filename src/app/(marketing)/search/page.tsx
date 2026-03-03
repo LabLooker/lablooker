@@ -62,6 +62,30 @@ function isRedFlagQuery(query: string): boolean {
   return getRedFlagMatch(query) !== null
 }
 
+const FM_PRIORITY_TESTS = [
+  'Ferritin',
+  'Free T3', 'Free T4', 'Reverse T3', 'Total T3', 'Total T4',
+  'Insulin', 'Fasting Insulin', 'HOMA',
+  'Vitamin D', 'Magnesium, RBC', 'RBC Magnesium', 'Vitamin B12', 'B12', 'Folate',
+  'Cortisol', 'DHEA', 'Estradiol', 'Progesterone', 'Testosterone, Free', 'Free Testosterone', 'Testosterone, Total',
+  'hs-CRP', 'CRP', 'Homocysteine',
+  'Iron', 'TIBC', 'Transferrin Saturation',
+  'CBC', 'CMP', 'BMP', 'HbA1c', 'Glucose',
+  'TSH',
+  'Lp(a)', 'ApoB', 'LDL', 'HDL', 'Triglycerides', 'Lipid Panel',
+]
+
+function sortByFmPriority(testList: Test[]): Test[] {
+  return [...testList].sort((a, b) => {
+    const aIdx = FM_PRIORITY_TESTS.findIndex(p => a.test_name.toLowerCase().includes(p.toLowerCase()))
+    const bIdx = FM_PRIORITY_TESTS.findIndex(p => b.test_name.toLowerCase().includes(p.toLowerCase()))
+    if (aIdx === -1 && bIdx === -1) return a.test_name.localeCompare(b.test_name)
+    if (aIdx === -1) return 1
+    if (bIdx === -1) return -1
+    return aIdx - bIdx
+  })
+}
+
 const CATEGORY_LABELS: Record<string, string> = {
   thyroid: 'Thyroid', hormones: 'Hormones', iron_blood: 'Iron & Blood',
   hematology: 'Hematology', iron: 'Iron', coagulation: 'Coagulation',
@@ -453,7 +477,7 @@ function SearchPageInner() {
                     {/* Related tests */}
                     <div className="rounded-b-xl border border-t-0 border-[#e0ebe9] bg-[#faf8f5] p-4">
                       <div className="flex flex-col gap-2">
-                        {tests.filter((t) => symptom.related_test_ids.includes(t.id)).map((test) => (
+                        {sortByFmPriority(tests.filter((t) => symptom.related_test_ids.includes(t.id))).map((test) => (
                           <Link
                             key={test.id}
                             href={`/search/${test.id}`}
