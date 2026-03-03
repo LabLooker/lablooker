@@ -84,7 +84,7 @@ const HEALTH_TOPICS = [
   { slug: 'testosterone', icon: '💪', label: 'Testosterone & TRT', keywords: ['testosterone'] },
   { slug: 'bhrt', icon: '🌸', label: 'Menopause & BHRT', keywords: ['estradiol', 'progesterone', 'fsh', 'lh', 'dhea', 'menopause', 'bhrt'] },
   { slug: 'inflammation', icon: '🔥', label: 'Inflammation & Autoimmune', categories: ['inflammation', 'autoimmune', 'autoimmune_gi'] },
-  { slug: 'metabolism', icon: '⚖️', label: 'Weight & Metabolism', categories: ['metabolic'] },
+  { slug: 'metabolism', icon: '⚖️', label: 'Weight & Metabolism', categories: ['metabolic', 'thyroid', 'lipids'] },
   { slug: 'iron', icon: '🩸', label: 'Iron & Anemia', categories: ['iron', 'iron_blood', 'hematology'] },
   { slug: 'vitamins', icon: '💊', label: 'Vitamins & Minerals', categories: ['vitamins', 'vitamins_minerals', 'minerals'] },
   { slug: 'mental-health', icon: '🧠', label: 'Mood & Mental Health', keywords: ['cortisol', 'dhea', 'b12', 'folate', 'serotonin', 'dopamine', 'vitamin d', 'magnesium', 'zinc', 'omega'] },
