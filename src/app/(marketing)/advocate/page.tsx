@@ -504,6 +504,11 @@ export default function AdvocatePage() {
                 </button>
               </div>
 
+              {/* Code explainer */}
+              <div className="mb-4 rounded-xl px-4 py-3 text-sm no-print" style={{ backgroundColor: '#f0f7f5', border: '1px solid #c8e0da', color: '#2d6a5e' }}>
+                <p><strong>CPT codes</strong> tell the lab what test to run. <strong>ICD-10 codes</strong> tell your insurance <em>why</em> it&apos;s medically necessary — without a matching code, claims can be denied. The codes below are the most commonly used for each test. Your doctor will confirm which applies to your situation.</p>
+              </div>
+
               {/* Printable Form */}
               {outputMode === 'form' && (
                 <div className="bg-white rounded-xl shadow-sm border p-8 mb-6 print-template" style={{ borderColor: '#e0ebe9' }}>
@@ -557,7 +562,7 @@ export default function AdvocatePage() {
                           <tr style={{ backgroundColor: '#f5f5f0' }}>
                             <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>Test Name</th>
                             <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>CPT Code</th>
-                            <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>ICD-10 Codes</th>
+                            <th className="text-left px-3 py-2 border font-semibold" title="ICD-10 codes justify medical necessity to insurance. Your doctor confirms which applies." style={{ borderColor: '#ccc', color: '#1a2e2b' }}>ICD-10 Codes <span className="font-normal text-xs" style={{ color: '#6b8c88' }}>(why it&apos;s needed)</span></th>
                           </tr>
                         </thead>
                         <tbody>
