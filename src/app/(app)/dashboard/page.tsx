@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase'
 import TestSummaryCard, { type LabResult, type LabGoal } from '@/components/tracker/TestSummaryCard'
 import ResultLogModal from '@/components/tracker/ResultLogModal'
 import ImportModal from '@/components/tracker/ImportModal'
+import PdfImportModal from '@/components/dashboard/PdfImportModal'
 
 type Profile = {
   full_name: string | null
@@ -29,6 +30,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [showLogModal, setShowLogModal] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
+  const [showPdfImportModal, setShowPdfImportModal] = useState(false)
   const [logModalPrefill, setLogModalPrefill] = useState<{
     testId?: string
     testName?: string
@@ -173,8 +175,14 @@ export default function DashboardPage() {
 
         <div className="flex shrink-0 gap-2">
           <button
-            onClick={() => setShowImportModal(true)}
+            onClick={() => setShowPdfImportModal(true)}
             className="rounded-xl border border-[#2d6a5e] bg-white px-4 py-2.5 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
+          >
+            Import PDF
+          </button>
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="rounded-xl border border-[#e0ebe9] bg-white px-4 py-2.5 text-sm font-semibold text-[#6b8c88] transition-colors hover:bg-[#faf8f5]"
           >
             Import CSV
           </button>
@@ -282,6 +290,12 @@ export default function DashboardPage() {
       <ImportModal
         isOpen={showImportModal}
         onClose={() => setShowImportModal(false)}
+        onSuccess={loadData}
+      />
+
+      <PdfImportModal
+        isOpen={showPdfImportModal}
+        onClose={() => setShowPdfImportModal(false)}
         onSuccess={loadData}
       />
     </div>
