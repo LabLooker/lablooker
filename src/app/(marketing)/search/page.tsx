@@ -78,19 +78,76 @@ const CATEGORY_LABELS: Record<string, string> = {
   mental_health: 'Mental Health', longevity: 'Longevity', cardiac: 'Cardiac',
 }
 
-const HEALTH_TOPICS = [
-  { slug: 'thyroid', icon: '🦋', label: 'Thyroid & Endocrine', categories: ['thyroid', 'hormones'] },
-  { slug: 'heart', icon: '❤️', label: 'Heart & Cholesterol', categories: ['cardiovascular', 'lipids', 'cardiac'] },
-  { slug: 'testosterone', icon: '💪', label: 'Testosterone & TRT', keywords: ['testosterone'] },
-  { slug: 'bhrt', icon: '🌸', label: 'Menopause & BHRT', keywords: ['estradiol', 'progesterone', 'fsh', 'lh', 'dhea', 'menopause', 'bhrt'] },
-  { slug: 'inflammation', icon: '🔥', label: 'Inflammation & Autoimmune', categories: ['inflammation', 'autoimmune', 'autoimmune_gi'] },
-  { slug: 'metabolism', icon: '⚖️', label: 'Weight & Metabolism', categories: ['metabolic', 'thyroid', 'lipids'] },
-  { slug: 'iron', icon: '🩸', label: 'Iron & Anemia', categories: ['iron', 'iron_blood', 'hematology'] },
-  { slug: 'vitamins', icon: '💊', label: 'Vitamins & Minerals', categories: ['vitamins', 'vitamins_minerals', 'minerals'] },
-  { slug: 'mental-health', icon: '🧠', label: 'Mood & Mental Health', keywords: ['cortisol', 'dhea', 'b12', 'folate', 'serotonin', 'dopamine', 'vitamin d', 'magnesium', 'zinc', 'omega'] },
-  { slug: 'diabetes', icon: '🍬', label: 'Diabetes & Blood Sugar', keywords: ['glucose', 'a1c', 'insulin', 'hba1c', 'glycated', 'diabetes'] },
-  { slug: 'kidney-liver', icon: '🫘', label: 'Kidney & Liver', categories: ['kidney', 'liver', 'kidney_liver'] },
-  { slug: 'immune', icon: '🛡️', label: 'Immune & Infections', categories: ['immune', 'infectious'] },
+type HealthTopic = {
+  slug: string
+  icon: string
+  label: string
+  categories?: string[]
+  keywords?: string[]
+  priority?: string[]
+}
+
+const HEALTH_TOPICS: HealthTopic[] = [
+  {
+    slug: 'thyroid', icon: '🦋', label: 'Thyroid & Endocrine',
+    categories: ['thyroid'],
+    priority: ['TSH', 'Free T3', 'Free T4', 'Reverse T3', 'Anti-TPO', 'Anti-Thyroglobulin', 'Comprehensive Thyroid', 'Thyroid Panel', 'Total T3', 'Total T4', 'TRAb', 'TSI', 'Calcitonin', 'Thyroglobulin', 'Parathyroid'],
+  },
+  {
+    slug: 'heart', icon: '❤️', label: 'Heart & Cholesterol',
+    categories: ['cardiovascular', 'lipids'],
+    priority: ['Lipid Panel', 'Total Cholesterol', 'LDL', 'HDL', 'Triglycerides', 'hs-CRP', 'Lipoprotein(a)', 'Apolipoprotein B', 'Homocysteine', 'Non-HDL', 'NMR', 'CardioIQ', 'Oxidized LDL', 'BNP', 'NT-proBNP', 'Troponin'],
+  },
+  {
+    slug: 'testosterone', icon: '💪', label: 'Testosterone & TRT',
+    keywords: ['testosterone', 'shbg', 'free testosterone'],
+    priority: ['Testosterone, Total', 'Testosterone, Free', 'Testosterone, Bioavailable', 'Free Testosterone + Total', 'SHBG', 'Sex Hormone Panel, Male'],
+  },
+  {
+    slug: 'bhrt', icon: '🌸', label: 'Menopause & BHRT',
+    keywords: ['estradiol', 'progesterone', 'fsh', 'lh', 'dhea', 'shbg', 'amh', 'menopause', 'estrone', 'estriol', 'estrogen', 'sex hormone panel, female'],
+    priority: ['Estradiol', 'FSH', 'LH', 'Progesterone', 'DHEA-S', 'SHBG', 'AMH', 'Estrone', 'Estriol', 'Total Estrogen', 'Estrogen Metabolites', 'Sex Hormone Panel, Female'],
+  },
+  {
+    slug: 'inflammation', icon: '🔥', label: 'Inflammation & Autoimmune',
+    categories: ['inflammation', 'autoimmune'],
+    priority: ['hs-CRP', 'CRP', 'ESR', 'ANA', 'Anti-dsDNA', 'Rheumatoid Factor', 'Anti-CCP', 'Interleukin-6', 'TNF-Alpha', 'Procalcitonin', 'Sjogren', 'HLA-B27'],
+  },
+  {
+    slug: 'metabolism', icon: '⚖️', label: 'Weight & Metabolism',
+    categories: ['metabolic'],
+    priority: ['BMP', 'CMP', 'HbA1c', 'Glucose, Fasting', 'Insulin', 'HOMA-IR', 'C-Peptide', 'Electrolyte', 'Calcium', 'Magnesium', 'Uric Acid', 'Creatinine'],
+  },
+  {
+    slug: 'iron', icon: '🩸', label: 'Iron & Anemia',
+    categories: ['iron', 'hematology'],
+    priority: ['Ferritin', 'Iron, Serum', 'Iron & TIBC', 'TIBC', 'Transferrin Saturation', 'Transferrin', 'CBC with Diff', 'Hemoglobin', 'Hematocrit', 'Reticulocyte', 'MCV', 'RDW', 'Haptoglobin', 'Blood Smear'],
+  },
+  {
+    slug: 'vitamins', icon: '💊', label: 'Vitamins & Minerals',
+    categories: ['vitamins', 'minerals'],
+    priority: ['Vitamin D, 25-OH (Total)', 'Vitamin B12', 'Folate', 'Magnesium, RBC', 'Zinc', 'Selenium', 'Iodine', 'Vitamin D, 25-OH (D2', 'Vitamin D, 1,25', 'Methylmalonic', 'Iron', 'Copper', 'Chromium'],
+  },
+  {
+    slug: 'mental-health', icon: '🧠', label: 'Mood & Mental Health',
+    keywords: ['cortisol', 'dhea', 'b12', 'folate', 'vitamin d', 'magnesium', 'zinc', 'omega', 'serotonin', 'melatonin'],
+    priority: ['Cortisol', 'DHEA', 'Vitamin D', 'Vitamin B12', 'Folate', 'Magnesium', 'Zinc', 'Omega-3', 'Omega-6', 'Melatonin'],
+  },
+  {
+    slug: 'diabetes', icon: '🍬', label: 'Diabetes & Blood Sugar',
+    keywords: ['glucose', 'a1c', 'insulin', 'hba1c', 'glycated', 'diabetes', 'c-peptide', 'homa-ir', 'fructosamine', 'ogtt'],
+    priority: ['HbA1c', 'Glucose, Fasting', 'Insulin, Fasting', 'HOMA-IR', 'C-Peptide', 'OGTT', 'Fructosamine', 'Glucose, Random', 'Glucose, Post-prandial'],
+  },
+  {
+    slug: 'kidney-liver', icon: '🫘', label: 'Kidney & Liver',
+    categories: ['kidney', 'liver'],
+    priority: ['CMP', 'BMP', 'Creatinine', 'BUN', 'eGFR', 'Kidney Function', 'ALT', 'AST', 'Total Bilirubin', 'ALP', 'GGT', 'Albumin', 'Hepatic Function', 'Total Protein', 'Microalbumin'],
+  },
+  {
+    slug: 'immune', icon: '🛡️', label: 'Immune & Infections',
+    categories: ['immune', 'infectious'],
+    priority: ['CBC', 'WBC', 'Immunoglobulin G', 'Immunoglobulin A', 'Immunoglobulin M', 'CD4/CD8', 'Complement C3', 'Complement C4', 'Natural Killer', 'HIV', 'Hepatitis B Panel', 'Hepatitis C', 'Lyme'],
+  },
 ]
 
 export default function SearchPage() {
@@ -112,11 +169,12 @@ function SearchPageInner() {
   // Initialize topic filter from URL on mount
   const initialTopic = searchParams.get('topic')
   const initialTopicData = initialTopic ? HEALTH_TOPICS.find(t => t.slug === initialTopic) : null
+  const [activeTopicSlug, setActiveTopicSlug] = useState<string | null>(initialTopic)
   const [categoryFilter, setCategoryFilter] = useState<string[] | null>(
     initialTopicData?.categories ?? null
   )
   const [keywordFilter, setKeywordFilter] = useState<string[] | null>(
-    initialTopicData && 'keywords' in initialTopicData ? (initialTopicData.keywords as string[]) : null
+    initialTopicData?.keywords ?? null
   )
   const [redFlagDismissed, setRedFlagDismissed] = useState(false)
   const [redFlagTriggered, setRedFlagTriggered] = useState(false)
@@ -169,6 +227,22 @@ function SearchPageInner() {
         keywordFilter.some(kw => t.test_name.toLowerCase().includes(kw))
       )
     }
+    // Priority sort for active topics
+    const activeTopic = HEALTH_TOPICS.find(t => t.slug === activeTopicSlug)
+    if (activeTopic?.priority) {
+      result = [...result].sort((a, b) => {
+        const aIdx = activeTopic.priority!.findIndex(p =>
+          a.test_name.toLowerCase().includes(p.toLowerCase())
+        )
+        const bIdx = activeTopic.priority!.findIndex(p =>
+          b.test_name.toLowerCase().includes(p.toLowerCase())
+        )
+        if (aIdx === -1 && bIdx === -1) return a.test_name.localeCompare(b.test_name)
+        if (aIdx === -1) return 1
+        if (bIdx === -1) return -1
+        return aIdx - bIdx
+      })
+    }
     if (!query.trim()) return result
     const q = query.toLowerCase()
     const words = q.split(/\s+/).filter(Boolean)
@@ -179,7 +253,7 @@ function SearchPageInner() {
         (t.description && words.every(w => t.description!.toLowerCase().includes(w))) ||
         (t.category && t.category.toLowerCase().includes(q))
     )
-  }, [tests, query, categoryFilter, keywordFilter])
+  }, [tests, query, categoryFilter, keywordFilter, activeTopicSlug])
 
   // Match symptoms to query
   const matchedSymptoms = useMemo(() => {
@@ -230,6 +304,7 @@ function SearchPageInner() {
                 setQuery(e.target.value)
                 setCategoryFilter(null)
                 setKeywordFilter(null)
+                setActiveTopicSlug(null)
                 if (!e.target.value) router.replace('/search')
               }}
               onKeyDown={(e) => {
@@ -240,7 +315,7 @@ function SearchPageInner() {
             />
             {query && (
               <button
-                onClick={() => { setQuery(''); setCategoryFilter(null); setKeywordFilter(null); router.replace('/search') }}
+                onClick={() => { setQuery(''); setCategoryFilter(null); setKeywordFilter(null); setActiveTopicSlug(null); router.replace('/search') }}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6b8c88] hover:text-[#1a2e2b]"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -271,11 +346,12 @@ function SearchPageInner() {
                       key={topic.label}
                       onClick={() => {
                         router.replace(`/search?topic=${topic.slug}`)
+                        setActiveTopicSlug(topic.slug)
                         if (topic.categories) {
                           setCategoryFilter(topic.categories)
                           setKeywordFilter(null)
-                        } else if ('keywords' in topic) {
-                          setKeywordFilter(topic.keywords as string[])
+                        } else if (topic.keywords) {
+                          setKeywordFilter(topic.keywords)
                           setCategoryFilter(null)
                         }
                       }}
@@ -298,7 +374,7 @@ function SearchPageInner() {
             {!query.trim() && !!(categoryFilter?.length || keywordFilter?.length) && (
               <div className="mt-6 mx-auto max-w-5xl">
                 <button
-                  onClick={() => { setCategoryFilter(null); setKeywordFilter(null); router.replace('/search') }}
+                  onClick={() => { setCategoryFilter(null); setKeywordFilter(null); setActiveTopicSlug(null); router.replace('/search') }}
                   className="flex items-center gap-2 text-sm text-[#6b8c88] hover:text-[#2d6a5e] transition-colors"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
