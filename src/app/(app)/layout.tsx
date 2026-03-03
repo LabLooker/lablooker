@@ -78,7 +78,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Desktop sidebar — hidden on mobile */}
       <aside className="hidden md:flex fixed left-0 top-0 z-30 h-screen w-64 flex-col border-r border-[#e0ebe9] bg-white">
         <div className="flex h-16 items-center border-b border-[#e0ebe9] px-6">
-          <Link href="/dashboard" className="text-lg font-bold text-[#1a2e2b]">
+          <Link href="/" className="text-lg font-bold text-[#1a2e2b]">
             {APP_CONFIG.name}
           </Link>
         </div>
@@ -100,7 +100,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         }`}
       >
         <div className="flex h-16 items-center justify-between border-b border-[#e0ebe9] px-6">
-          <Link href="/dashboard" className="text-lg font-bold text-[#1a2e2b]" onClick={() => setMobileOpen(false)}>
+          <Link href="/" className="text-lg font-bold text-[#1a2e2b]" onClick={() => setMobileOpen(false)}>
             {APP_CONFIG.name}
           </Link>
           <button onClick={() => setMobileOpen(false)} className="text-[#6b8c88] hover:text-[#1a2e2b]">
@@ -121,7 +121,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
             </svg>
           </button>
-          <Link href="/dashboard" className="text-base font-bold text-[#1a2e2b]">{APP_CONFIG.name}</Link>
+          <Link href="/" className="text-base font-bold text-[#1a2e2b]">{APP_CONFIG.name}</Link>
           <div className="w-6" />
         </div>
 
