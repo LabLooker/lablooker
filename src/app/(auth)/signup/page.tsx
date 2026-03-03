@@ -44,9 +44,9 @@ export default function SignupPage() {
 
   return (
     <div className="w-full max-w-sm">
-      <h1 className="text-2xl font-bold text-[#1a2e2b] text-center">Create your account</h1>
+      <h1 className="text-2xl font-bold text-[#1a2e2b] text-center">Create your free account</h1>
       <p className="mt-2 text-sm text-[#6b8c88] text-center">
-        Start your 14-day free trial
+        Track your results, set goals, and spot trends over time — free to start
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">

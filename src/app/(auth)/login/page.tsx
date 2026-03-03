@@ -40,7 +40,7 @@ export default function LoginPage() {
     <div className="w-full max-w-sm">
       <h1 className="text-2xl font-bold text-[#1a2e2b] text-center">Welcome back</h1>
       <p className="mt-2 text-sm text-[#6b8c88] text-center">
-        Sign in to your account
+        Sign in to access your lab tracker and saved results
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">
