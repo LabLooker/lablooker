@@ -81,14 +81,14 @@ const CATEGORY_LABELS: Record<string, string> = {
 const HEALTH_TOPICS = [
   { slug: 'thyroid', icon: '🦋', label: 'Thyroid & Endocrine', categories: ['thyroid', 'hormones'] },
   { slug: 'heart', icon: '❤️', label: 'Heart & Cholesterol', categories: ['cardiovascular', 'lipids', 'cardiac'] },
-  { slug: 'testosterone', icon: '💪', label: 'Testosterone & TRT', searchQuery: 'testosterone' },
-  { slug: 'bhrt', icon: '🌸', label: 'Menopause & BHRT', searchQuery: 'estradiol progesterone FSH LH DHEA' },
+  { slug: 'testosterone', icon: '💪', label: 'Testosterone & TRT', keywords: ['testosterone'] },
+  { slug: 'bhrt', icon: '🌸', label: 'Menopause & BHRT', keywords: ['estradiol', 'progesterone', 'fsh', 'lh', 'dhea', 'menopause', 'bhrt'] },
   { slug: 'inflammation', icon: '🔥', label: 'Inflammation & Autoimmune', categories: ['inflammation', 'autoimmune', 'autoimmune_gi'] },
   { slug: 'metabolism', icon: '⚖️', label: 'Weight & Metabolism', categories: ['metabolic'] },
   { slug: 'iron', icon: '🩸', label: 'Iron & Anemia', categories: ['iron', 'iron_blood', 'hematology'] },
   { slug: 'vitamins', icon: '💊', label: 'Vitamins & Minerals', categories: ['vitamins', 'vitamins_minerals', 'minerals'] },
-  { slug: 'mental-health', icon: '🧠', label: 'Mood & Mental Health', searchQuery: 'cortisol DHEA serotonin B12 folate thyroid' },
-  { slug: 'diabetes', icon: '🍬', label: 'Diabetes & Blood Sugar', searchQuery: 'glucose A1c insulin' },
+  { slug: 'mental-health', icon: '🧠', label: 'Mood & Mental Health', keywords: ['cortisol', 'dhea', 'b12', 'folate', 'serotonin', 'dopamine', 'vitamin d', 'magnesium', 'zinc', 'omega'] },
+  { slug: 'diabetes', icon: '🍬', label: 'Diabetes & Blood Sugar', keywords: ['glucose', 'a1c', 'insulin', 'hba1c', 'glycated', 'diabetes'] },
   { slug: 'kidney-liver', icon: '🫘', label: 'Kidney & Liver', categories: ['kidney', 'liver', 'kidney_liver'] },
   { slug: 'immune', icon: '🛡️', label: 'Immune & Infections', categories: ['immune', 'infectious'] },
 ]
@@ -115,14 +115,9 @@ function SearchPageInner() {
   const [categoryFilter, setCategoryFilter] = useState<string[] | null>(
     initialTopicData?.categories ?? null
   )
-
-  // If topic has a searchQuery (not categories), restore it
-  useEffect(() => {
-    if (initialTopicData?.searchQuery && !initialTopicData.categories) {
-      setQuery(initialTopicData.searchQuery)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const [keywordFilter, setKeywordFilter] = useState<string[] | null>(
+    initialTopicData && 'keywords' in initialTopicData ? (initialTopicData.keywords as string[]) : null
+  )
   const [redFlagDismissed, setRedFlagDismissed] = useState(false)
   const [redFlagTriggered, setRedFlagTriggered] = useState(false)
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
@@ -169,6 +164,11 @@ function SearchPageInner() {
     if (categoryFilter && categoryFilter.length > 0) {
       result = result.filter((t) => t.category && categoryFilter.includes(t.category))
     }
+    if (keywordFilter && keywordFilter.length > 0) {
+      result = result.filter((t) =>
+        keywordFilter.some(kw => t.test_name.toLowerCase().includes(kw))
+      )
+    }
     if (!query.trim()) return result
     const q = query.toLowerCase()
     const words = q.split(/\s+/).filter(Boolean)
@@ -179,7 +179,7 @@ function SearchPageInner() {
         (t.description && words.every(w => t.description!.toLowerCase().includes(w))) ||
         (t.category && t.category.toLowerCase().includes(q))
     )
-  }, [tests, query, categoryFilter])
+  }, [tests, query, categoryFilter, keywordFilter])
 
   // Match symptoms to query
   const matchedSymptoms = useMemo(() => {
@@ -229,6 +229,7 @@ function SearchPageInner() {
               onChange={(e) => {
                 setQuery(e.target.value)
                 setCategoryFilter(null)
+                setKeywordFilter(null)
                 if (!e.target.value) router.replace('/search')
               }}
               onKeyDown={(e) => {
@@ -239,7 +240,7 @@ function SearchPageInner() {
             />
             {query && (
               <button
-                onClick={() => { setQuery(''); setCategoryFilter(null); router.replace('/search') }}
+                onClick={() => { setQuery(''); setCategoryFilter(null); setKeywordFilter(null); router.replace('/search') }}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6b8c88] hover:text-[#1a2e2b]"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -272,8 +273,10 @@ function SearchPageInner() {
                         router.replace(`/search?topic=${topic.slug}`)
                         if (topic.categories) {
                           setCategoryFilter(topic.categories)
-                        } else if (topic.searchQuery) {
-                          setQuery(topic.searchQuery)
+                          setKeywordFilter(null)
+                        } else if ('keywords' in topic) {
+                          setKeywordFilter(topic.keywords as string[])
+                          setCategoryFilter(null)
                         }
                       }}
                       className="group flex flex-col items-center gap-2 rounded-xl border border-[#e0ebe9] bg-white p-4 transition-all hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5"
@@ -291,11 +294,11 @@ function SearchPageInner() {
               </div>
             )}
 
-            {/* Category back button — show when a category is active */}
-            {!query.trim() && categoryFilter && categoryFilter.length > 0 && (
+            {/* Category back button — show when a category or keyword filter is active */}
+            {!query.trim() && !!(categoryFilter?.length || keywordFilter?.length) && (
               <div className="mt-6 mx-auto max-w-5xl">
                 <button
-                  onClick={() => { setCategoryFilter(null); router.replace('/search') }}
+                  onClick={() => { setCategoryFilter(null); setKeywordFilter(null); router.replace('/search') }}
                   className="flex items-center gap-2 text-sm text-[#6b8c88] hover:text-[#2d6a5e] transition-colors"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
