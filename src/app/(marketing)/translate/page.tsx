@@ -23,8 +23,6 @@ type TranslatedTest = {
   targetCodes: LabCode[]
 }
 
-const POPULAR_LABS = ['Quest Diagnostics', 'LabCorp', 'CPL']
-
 function LabPicker({
   label,
   stepNumber,
@@ -44,14 +42,14 @@ function LabPicker({
 }) {
   const [labQuery, setLabQuery] = useState('')
   const [showLabDropdown, setShowLabDropdown] = useState(false)
+  const inputRef = useState<HTMLInputElement | null>(null)
 
+  // Show all labs on focus (no query), filter as user types
   const filteredLabs = allLabs.filter(lab => {
     if (lab === excludeLab) return false
-    if (!labQuery) return false
+    if (!labQuery) return true
     return lab.toLowerCase().includes(labQuery.toLowerCase())
   })
-
-  const popularFiltered = POPULAR_LABS.filter(lab => lab !== excludeLab)
 
   const selectLab = (lab: string) => {
     onSelect(lab)
@@ -86,67 +84,48 @@ function LabPicker({
       )}
 
       {!selectedLab && (
-        <div className="ml-9">
-          {/* Popular quick picks */}
-          <div className="flex flex-wrap gap-2 mb-3">
-            {popularFiltered.map(lab => (
-              <button
-                key={lab}
-                onClick={() => selectLab(lab)}
-                className="px-4 py-2 rounded-lg border-2 font-medium text-sm transition-all hover:border-[#2d6a5e] hover:text-[#2d6a5e]"
-                style={{
-                  borderColor: '#e0ebe9',
-                  backgroundColor: 'white',
-                  color: '#1a2e2b',
-                }}
-              >
-                {lab}
-              </button>
-            ))}
-          </div>
+        <div className="ml-9 relative">
+          <input
+            ref={el => { inputRef[1] }}
+            type="text"
+            value={labQuery}
+            onChange={(e) => {
+              setLabQuery(e.target.value)
+              setShowLabDropdown(true)
+            }}
+            onFocus={() => setShowLabDropdown(true)}
+            onBlur={() => setTimeout(() => setShowLabDropdown(false), 150)}
+            placeholder="Search for your lab..."
+            className="w-full px-4 py-3 rounded-lg border-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
+            style={{
+              borderColor: '#2d6a5e',
+              color: '#1a2e2b',
+              backgroundColor: 'white',
+            }}
+          />
 
-          {/* Type-ahead search */}
-          <div className="relative">
-            <input
-              type="text"
-              value={labQuery}
-              onChange={(e) => {
-                setLabQuery(e.target.value)
-                setShowLabDropdown(true)
-              }}
-              onFocus={() => setShowLabDropdown(true)}
-              placeholder="Or type your lab name..."
-              className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
-              style={{
-                borderColor: '#e0ebe9',
-                color: '#1a2e2b',
-                backgroundColor: 'white',
-              }}
-            />
+          {/* Dropdown — all labs on focus, filtered as you type */}
+          {showLabDropdown && filteredLabs.length > 0 && (
+            <div className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg max-h-52 overflow-y-auto" style={{ borderColor: '#e0ebe9' }}>
+              {filteredLabs.map(lab => (
+                <button
+                  key={lab}
+                  onMouseDown={() => selectLab(lab)}
+                  className="w-full text-left px-4 py-2.5 hover:bg-[#2d6a5e]/5 border-b last:border-b-0 transition-colors text-sm"
+                  style={{ borderColor: '#e0ebe9', color: '#1a2e2b' }}
+                >
+                  {lab}
+                </button>
+              ))}
+            </div>
+          )}
 
-            {/* Dropdown */}
-            {showLabDropdown && filteredLabs.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg max-h-48 overflow-y-auto" style={{ borderColor: '#e0ebe9' }}>
-                {filteredLabs.map(lab => (
-                  <button
-                    key={lab}
-                    onClick={() => selectLab(lab)}
-                    className="w-full text-left px-4 py-2.5 hover:bg-gray-50 border-b last:border-b-0 transition-colors text-sm"
-                    style={{ borderColor: '#e0ebe9', color: '#1a2e2b' }}
-                  >
-                    {lab}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* No results */}
-            {showLabDropdown && labQuery.length >= 2 && filteredLabs.length === 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg px-4 py-3 text-sm" style={{ borderColor: '#e0ebe9', color: '#6b8c88' }}>
-                No lab found for &ldquo;{labQuery}&rdquo; — <Link href="/search" className="underline" style={{ color: '#2d6a5e' }}>request it</Link>
-              </div>
-            )}
-          </div>
+          {/* No results */}
+          {showLabDropdown && labQuery.length >= 2 && filteredLabs.length === 0 && (
+            <div className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg px-4 py-3 text-sm" style={{ borderColor: '#e0ebe9', color: '#6b8c88' }}>
+              No lab found for &ldquo;{labQuery}&rdquo;
+            </div>
+          )}
         </div>
       )}
     </div>
