@@ -615,11 +615,16 @@ export default function AdvocatePage() {
 
               {/* Portal Message */}
               {outputMode === 'portal' && (
-                <div className="bg-white rounded-xl shadow-sm border p-6 mb-6" style={{ borderColor: '#e0ebe9' }}>
-                  <pre className="whitespace-pre-wrap text-sm leading-relaxed font-[inherit]" style={{ color: '#1a2e2b' }}>
-                    {getPortalPlainText()}
-                  </pre>
-                </div>
+                <>
+                  <div className="mb-4 rounded-xl px-4 py-3 text-sm no-print" style={{ backgroundColor: '#fef9f0', border: '1px solid #f0d9a8', color: '#7a5a1e' }}>
+                    <p>💡 <strong>This does not send anything automatically.</strong> Copy the message below and paste it into your patient portal&apos;s messaging system — MyChart, Healow, athenahealth, or wherever you normally message your doctor.</p>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-sm border p-6 mb-6" style={{ borderColor: '#e0ebe9' }}>
+                    <pre className="whitespace-pre-wrap text-sm leading-relaxed font-[inherit]" style={{ color: '#1a2e2b' }}>
+                      {getPortalPlainText()}
+                    </pre>
+                  </div>
+                </>
               )}
             </div>
           )}
