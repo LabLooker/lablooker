@@ -442,7 +442,7 @@ export default function TranslatePage() {
                       </div>
                     </div>
                     <div>
-                      <div className="font-medium mb-1" style={{ color: '#6b8c88' }}>{sourceLab} Code</div>
+                      <div className="font-medium mb-1" style={{ color: '#6b8c88' }}>{sourceLab}</div>
                       <div style={{ color: '#1a2e2b' }}>
                         {sourceCodes.length > 0
                           ? sourceCodes.map(c => c.proprietary_code).join(', ')
@@ -451,7 +451,7 @@ export default function TranslatePage() {
                       </div>
                     </div>
                     <div>
-                      <div className="font-medium mb-1" style={{ color: '#2d6a5e' }}>{targetLab} Code</div>
+                      <div className="font-medium mb-1" style={{ color: '#2d6a5e' }}>{targetLab}</div>
                       <div className="font-semibold" style={{ color: '#2d6a5e' }}>
                         {targetCodes.length > 0
                           ? targetCodes.map(c => c.proprietary_code).join(', ')
