@@ -2,6 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { APP_CONFIG } from '@/config/app'
@@ -28,58 +29,106 @@ function SettingsIcon() {
   )
 }
 
-export default function AppLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+function SidebarContent({ pathname, onNavClick }: { pathname: string; onNavClick?: () => void }) {
+  return (
+    <>
+      <nav className="flex-1 space-y-1 px-3 py-4">
+        {sidebarLinks.map((link) => {
+          const isActive = pathname === link.href
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={onNavClick}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                isActive
+                  ? 'bg-[#2d6a5e]/10 text-[#2d6a5e]'
+                  : 'text-[#6b8c88] hover:bg-[#faf8f5] hover:text-[#1a2e2b]'
+              }`}
+            >
+              <link.icon />
+              {link.label}
+            </Link>
+          )
+        })}
+      </nav>
+      <div className="border-t border-[#e0ebe9] p-4">
+        <Link
+          href="/"
+          onClick={onNavClick}
+          className="flex items-center gap-2 text-sm text-[#6b8c88] hover:text-[#4a6b67] transition-colors"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+          </svg>
+          Back to site
+        </Link>
+      </div>
+    </>
+  )
+}
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
     <div className="flex min-h-screen bg-[#faf8f5]">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-30 flex h-screen w-64 flex-col border-r border-[#e0ebe9] bg-white">
+
+      {/* Desktop sidebar — hidden on mobile */}
+      <aside className="hidden md:flex fixed left-0 top-0 z-30 h-screen w-64 flex-col border-r border-[#e0ebe9] bg-white">
         <div className="flex h-16 items-center border-b border-[#e0ebe9] px-6">
           <Link href="/dashboard" className="text-lg font-bold text-[#1a2e2b]">
             {APP_CONFIG.name}
           </Link>
         </div>
-        <nav className="flex-1 space-y-1 px-3 py-4">
-          {sidebarLinks.map((link) => {
-            const isActive = pathname === link.href
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-[#2d6a5e]/10 text-[#2d6a5e]'
-                    : 'text-[#6b8c88] hover:bg-[#faf8f5] hover:text-[#1a2e2b]'
-                }`}
-              >
-                <link.icon />
-                {link.label}
-              </Link>
-            )
-          })}
-        </nav>
-        <div className="border-t border-[#e0ebe9] p-4">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-sm text-[#6b8c88] hover:text-[#4a6b67] transition-colors"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-            </svg>
-            Back to site
+        <SidebarContent pathname={pathname} />
+      </aside>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile sidebar drawer */}
+      <aside
+        className={`fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-[#e0ebe9] bg-white transition-transform duration-200 md:hidden ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex h-16 items-center justify-between border-b border-[#e0ebe9] px-6">
+          <Link href="/dashboard" className="text-lg font-bold text-[#1a2e2b]" onClick={() => setMobileOpen(false)}>
+            {APP_CONFIG.name}
           </Link>
+          <button onClick={() => setMobileOpen(false)} className="text-[#6b8c88] hover:text-[#1a2e2b]">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
+        <SidebarContent pathname={pathname} onNavClick={() => setMobileOpen(false)} />
       </aside>
 
       {/* Main content */}
-      <main className="ml-64 flex-1 p-8">
-        {children}
-      </main>
+      <div className="flex flex-1 flex-col md:ml-64">
+        {/* Mobile top bar */}
+        <div className="flex h-14 items-center justify-between border-b border-[#e0ebe9] bg-white px-4 md:hidden">
+          <button onClick={() => setMobileOpen(true)} className="text-[#6b8c88] hover:text-[#1a2e2b]">
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
+            </svg>
+          </button>
+          <Link href="/dashboard" className="text-base font-bold text-[#1a2e2b]">{APP_CONFIG.name}</Link>
+          <div className="w-6" />
+        </div>
+
+        <main className="flex-1 p-4 md:p-8">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }
