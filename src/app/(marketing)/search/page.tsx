@@ -247,7 +247,7 @@ function SearchPageInner() {
             {/* Health topic cards — show when browsing (no query and no category selected) */}
             {!query.trim() && !categoryFilter && (
               <div className="mt-8 mx-auto max-w-4xl">
-                <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-[#6b8c88] mb-4">Find Lab Test Info by Health Topic</h2>
+                <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-[#6b8c88] mb-4">Lab Tests by Health Topic</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {HEALTH_TOPICS.map((topic) => (
                     <button
