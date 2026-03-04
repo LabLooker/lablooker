@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
+import { getLabDisplayName } from '@/config/labs'
 
 type TestResult = {
   id: string
@@ -71,7 +72,7 @@ function LabPicker({
       {selectedLab && (
         <div className="ml-9 mb-4 flex items-center gap-2">
           <span className="px-4 py-2 rounded-lg font-semibold text-white" style={{ backgroundColor: '#2d6a5e' }}>
-            {selectedLab}
+            {getLabDisplayName(selectedLab)}
           </span>
           <button
             onClick={() => onSelect('')}
@@ -114,7 +115,7 @@ function LabPicker({
                   className="w-full text-left px-4 py-2.5 hover:bg-[#2d6a5e]/5 border-b last:border-b-0 transition-colors text-sm"
                   style={{ borderColor: '#e0ebe9', color: '#1a2e2b' }}
                 >
-                  {lab}
+                  {getLabDisplayName(lab)}
                 </button>
               ))}
             </div>
@@ -425,9 +426,9 @@ export default function TranslatePage() {
             </div>
 
             <div className="rounded-lg px-4 py-3 mb-6 text-center" style={{ backgroundColor: '#faf8f5', border: '1px solid #e0ebe9' }}>
-              <span className="font-semibold" style={{ color: '#1a2e2b' }}>{sourceLab}</span>
+              <span className="font-semibold" style={{ color: '#1a2e2b' }}>{getLabDisplayName(sourceLab)}</span>
               <span className="mx-3" style={{ color: '#6b8c88' }}>→</span>
-              <span className="font-semibold" style={{ color: '#2d6a5e' }}>{targetLab}</span>
+              <span className="font-semibold" style={{ color: '#2d6a5e' }}>{getLabDisplayName(targetLab)}</span>
             </div>
 
             <div className="space-y-4">
@@ -442,7 +443,7 @@ export default function TranslatePage() {
                       </div>
                     </div>
                     <div>
-                      <div className="font-medium mb-1" style={{ color: '#6b8c88' }}>{sourceLab}</div>
+                      <div className="font-medium mb-1" style={{ color: '#6b8c88' }}>{getLabDisplayName(sourceLab)}</div>
                       <div style={{ color: '#1a2e2b' }}>
                         {sourceCodes.length > 0
                           ? sourceCodes.map(c => c.proprietary_code).join(', ')
@@ -451,11 +452,20 @@ export default function TranslatePage() {
                       </div>
                     </div>
                     <div>
-                      <div className="font-medium mb-1" style={{ color: '#2d6a5e' }}>{targetLab}</div>
+                      <div className="font-medium mb-1" style={{ color: '#2d6a5e' }}>{getLabDisplayName(targetLab)}</div>
                       <div className="font-semibold" style={{ color: '#2d6a5e' }}>
                         {targetCodes.length > 0
                           ? targetCodes.map(c => c.proprietary_code).join(', ')
-                          : <span className="italic font-normal" style={{ color: '#c0826a' }}>Not in database yet</span>
+                          : (
+                            <div>
+                              <span className="italic font-normal" style={{ color: '#c0826a' }}>Not in database yet</span>
+                              {test.cpt_codes?.length > 0 && (
+                                <div className="mt-1 text-xs font-normal rounded px-2 py-1.5" style={{ backgroundColor: '#fff8f5', border: '1px solid #e8d5cc', color: '#4a6b67' }}>
+                                  Use CPT <span className="font-semibold" style={{ color: '#1a2e2b' }}>{test.cpt_codes.join(', ')}</span> — accepted at most labs
+                                </div>
+                              )}
+                            </div>
+                          )
                         }
                       </div>
                     </div>
