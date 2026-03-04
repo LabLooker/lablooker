@@ -77,3 +77,14 @@ p {
     display: none;
   }
 }
+
+/* Prevent iOS Safari from auto-zooming on input focus.
+   Safari zooms whenever a focused input has font-size < 16px.
+   This forces 16px on mobile only — desktop keeps text-sm styling. */
+@media screen and (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
