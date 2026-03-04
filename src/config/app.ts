@@ -53,7 +53,7 @@ export const APP_CONFIG = {
     { label: 'Discover', href: '/search' },
     { label: 'Self-Advocacy', href: '/advocate' },
     { label: 'Track', href: '/dashboard' },
-    { label: 'Compare', href: '/search' },
+    { label: 'Compare', href: '/compare' },
     { label: 'Pricing', href: '/pricing' },
   ],
 
