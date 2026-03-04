@@ -174,7 +174,7 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => setShowImportModal(true)}
-            className="rounded-xl border border-[#e0ebe9] bg-white px-3 py-2 text-sm font-semibold text-[#6b8c88] transition-colors hover:bg-[#faf8f5]"
+            className="rounded-xl border border-[#2d6a5e] bg-white px-3 py-2 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
           >
             Import CSV
           </button>
