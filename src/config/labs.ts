@@ -23,5 +23,5 @@ export const LAB_REGIONS: Record<string, string> = {
  */
 export function getLabDisplayName(labName: string): string {
   const region = LAB_REGIONS[labName]
-  return region ? `${labName} · ${region}` : labName
+  return region ? `${labName} (${region})` : labName
 }
