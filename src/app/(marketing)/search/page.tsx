@@ -176,7 +176,7 @@ const HEALTH_TOPICS: HealthTopic[] = [
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="pt-28 pb-20 sm:pt-36 text-center"><p className="text-[#6b8c88]">Loading...</p></div>}>
+    <Suspense fallback={<div className="pt-24 pb-20 text-center"><p className="text-[#6b8c88]">Loading...</p></div>}>
       <SearchPageInner />
     </Suspense>
   )
@@ -299,14 +299,14 @@ function SearchPageInner() {
   }, [matchedSymptoms, tests])
 
   return (
-    <section className="pt-28 pb-20 sm:pt-36">
+    <section className="pt-24 pb-20">
       <div className="mx-auto max-w-7xl px-6">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-[#1a2e2b] sm:text-5xl">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#1a2e2b] mb-3">
             Search Lab Tests
           </h1>
-          <p className="mt-4 text-lg text-[#6b8c88]">
+          <p className="text-lg text-[#4a6b67]">
             Search by test name, CPT code, symptom, or lab code. Free, no account required.
           </p>
         </div>

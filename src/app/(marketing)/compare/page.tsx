@@ -101,15 +101,18 @@ export default function ComparePage() {
 
   return (
     <div className="min-h-screen bg-[#faf8f5]">
-      {/* Hero */}
-      <div className="border-b border-[#e0ebe9] bg-white px-4 py-12 text-center md:py-16">
-        <h1 className="text-3xl font-bold text-[#1a2e2b] md:text-4xl">Compare self-pay lab prices</h1>
-        <p className="mt-3 text-base text-[#6b8c88]">
-          Search any test to see prices across all major self-pay labs — sorted cheapest first.
-        </p>
+      <div className="max-w-3xl mx-auto px-4 pt-24 pb-12">
+
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#1a2e2b] mb-3">Compare self-pay lab prices</h1>
+          <p className="text-lg text-[#4a6b67]">
+            Search any test to see prices across all major self-pay labs — sorted cheapest first.
+          </p>
+        </div>
 
         {/* Search bar */}
-        <div className="relative mx-auto mt-8 max-w-xl">
+        <div className="relative mb-8">
           <div className="flex items-center rounded-xl border-2 border-[#2d6a5e] bg-white px-4 py-3 shadow-sm focus-within:ring-2 focus-within:ring-[#2d6a5e]/20">
             <svg className="h-5 w-5 shrink-0 text-[#6b8c88]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -157,9 +160,9 @@ export default function ComparePage() {
             </div>
           )}
         </div>
-      </div>
 
-      <div className="mx-auto max-w-3xl px-4 py-10 md:px-6">
+        {/* Content */}
+        <div>
         {/* No test selected yet */}
         {!selectedTest && !query && (
           <div className="text-center">
@@ -315,6 +318,7 @@ export default function ComparePage() {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   )
