@@ -36,8 +36,6 @@ export default function DashboardPage() {
     testName?: string
     unit?: string | null
   }>({})
-  const [testSearch, setTestSearch] = useState('')
-  const [testSearchResults, setTestSearchResults] = useState<{ id: string; test_name: string }[]>([])
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -121,23 +119,6 @@ export default function DashboardPage() {
   useEffect(() => {
     loadData()
   }, [loadData])
-
-  // Empty state test search
-  useEffect(() => {
-    if (testSearch.length < 2) {
-      setTestSearchResults([])
-      return
-    }
-    const timer = setTimeout(async () => {
-      const { data } = await supabase
-        .from('tests')
-        .select('id, test_name')
-        .ilike('test_name', `%${testSearch}%`)
-        .limit(8)
-      setTestSearchResults(data ?? [])
-    }, 250)
-    return () => clearTimeout(timer)
-  }, [testSearch, supabase])
 
   function openLogModal(testId?: string, testName?: string, unit?: string | null) {
     setLogModalPrefill({ testId, testName, unit })
@@ -227,39 +208,9 @@ export default function DashboardPage() {
           </div>
           <h2 className="text-lg font-semibold text-[#1a2e2b]">Start tracking your labs</h2>
           <p className="mt-2 max-w-sm text-sm text-[#6b8c88]">
-            Add your first result to see your trends. Search for a test below or click &ldquo;Add Result&rdquo; above.
+            Add your first result to see your trends. Click &ldquo;Add Result&rdquo; above to get started.
           </p>
 
-          {/* Test search in empty state */}
-          <div className="relative mt-6 w-full max-w-sm">
-            <input
-              type="text"
-              value={testSearch}
-              onChange={(e) => setTestSearch(e.target.value)}
-              placeholder="Search for a test (e.g. Ferritin, TSH, Vitamin D)..."
-              className="w-full rounded-xl border border-[#e0ebe9] bg-[#faf8f5] px-4 py-3 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none"
-            />
-            {testSearchResults.length > 0 && (
-              <div className="absolute z-10 mt-1 w-full rounded-xl border border-[#e0ebe9] bg-white shadow-lg overflow-hidden text-left">
-                {testSearchResults.map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => {
-                      openLogModal(t.id, t.test_name)
-                      setTestSearch('')
-                      setTestSearchResults([])
-                    }}
-                    className="w-full px-4 py-3 text-sm text-[#1a2e2b] hover:bg-[#faf8f5] transition-colors flex items-center gap-2"
-                  >
-                    <svg className="h-4 w-4 text-[#2d6a5e] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    {t.test_name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       ) : (
         /* Populated state */
