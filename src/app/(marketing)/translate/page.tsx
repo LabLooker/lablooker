@@ -47,10 +47,12 @@ type ParsedTerm = {
 function TermChip({
   term,
   onAccept,
+  onRevert,
   onRemove,
 }: {
   term: ParsedTerm
   onAccept: (test: TestResult) => void
+  onRevert: () => void
   onRemove: () => void
 }) {
   const [showDropdown, setShowDropdown] = useState(false)
@@ -63,6 +65,14 @@ function TermChip({
       >
         <span className="text-xs">✓</span>
         <span>{term.matched!.test_name}</span>
+        {/* Show change link if this was previously ambiguous */}
+        {term.suggestions && term.suggestions.length > 1 && (
+          <button
+            onClick={onRevert}
+            className="ml-1 text-xs opacity-40 hover:opacity-80 transition-opacity underline"
+            style={{ color: '#2d6a5e' }}
+          >change</button>
+        )}
         <button
           onClick={onRemove}
           className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none"
@@ -73,45 +83,45 @@ function TermChip({
   }
 
   if (term.status === 'suggestion') {
-    // Full-width inline clarification — show all options, pre-selected highlighted
+    // Auto-open dropdown list — visible immediately, click to confirm
+    const options = term.suggestions && term.suggestions.length > 0 ? term.suggestions : [term.matched!]
     return (
-      <div className="w-full rounded-lg px-4 py-3" style={{ backgroundColor: '#faf8f5', border: '1px solid #e0ebe9' }}>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs" style={{ color: '#6b8c88' }}>
-            Which <strong style={{ color: '#1a2e2b' }}>{term.raw}</strong>?
+      <div className="w-full rounded-lg overflow-hidden" style={{ border: '1px solid #2d6a5e' }}>
+        <div
+          className="px-3 py-2 flex items-center justify-between"
+          style={{ backgroundColor: '#f0f7f6', borderBottom: '1px solid #e0ebe9' }}
+        >
+          <span className="text-xs font-medium" style={{ color: '#1a2e2b' }}>
+            Which <em className="not-italic font-semibold">{term.raw}</em>?
           </span>
           <button
             onClick={onRemove}
             className="text-xs opacity-40 hover:opacity-70 transition-opacity"
             style={{ color: '#6b8c88' }}
-            aria-label="Remove"
           >
             remove ×
           </button>
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          {(term.suggestions || [term.matched!]).map(s => {
-            const isSelected = s.id === term.matched!.id
-            return (
-              <button
-                key={s.id}
-                onClick={() => onAccept(s)}
-                className="px-3 py-1.5 rounded-full text-xs font-medium transition-all"
-                style={isSelected ? {
-                  backgroundColor: '#2d6a5e',
-                  color: 'white',
-                  border: '1px solid #2d6a5e',
-                } : {
-                  backgroundColor: 'white',
-                  color: '#4a6b67',
-                  border: '1px solid #d1d5db',
-                }}
-              >
-                {s.test_name}
-              </button>
-            )
-          })}
-        </div>
+        {options.map(s => {
+          const isPreSelected = s.id === term.matched!.id
+          return (
+            <button
+              key={s.id}
+              onClick={() => onAccept(s)}
+              className="w-full text-left px-4 py-2.5 text-sm border-b last:border-b-0 transition-colors hover:bg-[#f0f7f6] flex items-center gap-2.5"
+              style={{
+                borderColor: '#f0f0f0',
+                backgroundColor: isPreSelected ? '#fafffe' : 'white',
+                color: isPreSelected ? '#2d6a5e' : '#1a2e2b',
+              }}
+            >
+              <span className="text-xs w-3 shrink-0" style={{ color: '#2d6a5e' }}>
+                {isPreSelected ? '●' : ''}
+              </span>
+              <span>{s.test_name}</span>
+            </button>
+          )
+        })}
       </div>
     )
   }
@@ -620,6 +630,11 @@ export default function TranslatePage() {
       i === index ? { ...t, status: 'matched' as TermStatus, matched: test } : t
     ))
 
+  const revertToSuggestion = (index: number) =>
+    setParsedTerms(prev => prev.map((t, i) =>
+      i === index ? { ...t, status: 'suggestion' as TermStatus } : t
+    ))
+
   const removeTerm = (index: number) =>
     setParsedTerms(prev => prev.filter((_, i) => i !== index))
 
@@ -748,7 +763,7 @@ export default function TranslatePage() {
               {confirmedTests.length} of {parsedTerms.length} ready
               {parsedTerms.some(t => t.status === 'suggestion') && (
                 <span className="ml-2 font-normal normal-case" style={{ color: '#6b8c88' }}>
-                  · tap the right test below to confirm
+                  · pick the right test below
                 </span>
               )}
             </div>
@@ -758,6 +773,7 @@ export default function TranslatePage() {
                   key={i}
                   term={term}
                   onAccept={(test) => acceptSuggestion(i, test)}
+                  onRevert={() => revertToSuggestion(i)}
                   onRemove={() => removeTerm(i)}
                 />
               ))}
