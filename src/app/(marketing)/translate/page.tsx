@@ -73,47 +73,56 @@ function TermChip({
   }
 
   if (term.status === 'suggestion') {
+    // Pre-accepted by default — show as soft green, with quiet "change" option
     return (
       <div className="relative">
         <div
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium cursor-pointer select-none"
-          style={{ backgroundColor: '#fff8f0', border: '1px solid #c0826a', color: '#c0826a' }}
-          onClick={() => setShowDropdown(!showDropdown)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
+          style={{ backgroundColor: '#f0f7f6', border: '1px dashed #2d6a5e', color: '#2d6a5e' }}
         >
-          <span className="text-xs">?</span>
-          <span>&ldquo;{term.raw}&rdquo; → {term.matched!.test_name}</span>
-          <span className="text-xs ml-0.5 opacity-60">▾</span>
+          <span className="text-xs opacity-50">~</span>
+          <span>{term.matched!.test_name}</span>
+          {term.suggestions && term.suggestions.length > 1 && (
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="ml-0.5 text-xs opacity-40 hover:opacity-80 transition-opacity"
+              title="Not this test? Change it"
+              aria-label="Change match"
+            >▾</button>
+          )}
           <button
-            onClick={(e) => { e.stopPropagation(); onAccept(term.matched!) }}
-            className="ml-1 px-1.5 py-0.5 rounded text-xs font-bold text-white"
-            style={{ backgroundColor: '#c0826a' }}
-            title="Accept this match"
-          >✓</button>
-          <button
-            onClick={(e) => { e.stopPropagation(); onRemove() }}
-            className="opacity-50 hover:opacity-100 text-xs font-bold leading-none"
+            onClick={onRemove}
+            className="ml-0.5 opacity-40 hover:opacity-80 text-xs font-bold leading-none transition-opacity"
             aria-label="Remove"
           >×</button>
         </div>
         {showDropdown && term.suggestions && term.suggestions.length > 0 && (
           <div
-            className="absolute z-20 left-0 mt-1 bg-white rounded-lg shadow-lg border min-w-56"
+            className="absolute z-20 left-0 mt-1 bg-white rounded-lg shadow-lg border min-w-64"
             style={{ borderColor: '#e0ebe9' }}
           >
             <div
-              className="px-3 py-2 text-xs font-semibold uppercase tracking-wide"
+              className="px-3 py-2 text-xs"
               style={{ color: '#6b8c88', borderBottom: '1px solid #e0ebe9' }}
             >
-              Did you mean?
+              Not this test? Pick the right one:
             </div>
             {term.suggestions.map(s => (
               <button
                 key={s.id}
                 onClick={() => { onAccept(s); setShowDropdown(false) }}
-                className="w-full text-left px-3 py-2.5 text-sm hover:bg-[#f0f7f6] border-b last:border-b-0 transition-colors"
-                style={{ color: '#1a2e2b', borderColor: '#e0ebe9' }}
+                className="w-full text-left px-3 py-2.5 text-sm border-b last:border-b-0 transition-colors hover:bg-[#f0f7f6]"
+                style={{
+                  color: '#1a2e2b',
+                  borderColor: '#e0ebe9',
+                  backgroundColor: s.id === term.matched!.id ? '#f0f7f6' : undefined,
+                  fontWeight: s.id === term.matched!.id ? 600 : undefined,
+                }}
               >
                 {s.test_name}
+                {s.id === term.matched!.id && (
+                  <span className="ml-2 text-xs font-normal opacity-50">current</span>
+                )}
               </button>
             ))}
           </div>
@@ -130,6 +139,7 @@ function TermChip({
     >
       <span className="text-xs">✕</span>
       <span>{term.raw}</span>
+      <span className="text-xs opacity-60 ml-1">— not found</span>
       <button
         onClick={onRemove}
         className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none"
@@ -628,8 +638,9 @@ export default function TranslatePage() {
   const removeTerm = (index: number) =>
     setParsedTerms(prev => prev.filter((_, i) => i !== index))
 
+  // Suggestions are pre-accepted — both matched and suggestion count as ready
   const confirmedTests = parsedTerms
-    .filter(t => t.status === 'matched' && t.matched)
+    .filter(t => (t.status === 'matched' || t.status === 'suggestion') && t.matched)
     .map(t => t.matched!)
     .filter((t, i, arr) => arr.findIndex(x => x.id === t.id) === i)
 
@@ -749,10 +760,10 @@ export default function TranslatePage() {
         {parsedTerms.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm border p-5 mb-4 print:hidden" style={{ borderColor: '#e0ebe9' }}>
             <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#6b8c88' }}>
-              {parsedTerms.length} found
+              {confirmedTests.length} of {parsedTerms.length} ready
               {parsedTerms.some(t => t.status === 'suggestion') && (
-                <span className="ml-2 font-normal normal-case" style={{ color: '#c0826a' }}>
-                  — tap ✓ to confirm suggestions
+                <span className="ml-2 font-normal normal-case" style={{ color: '#2d6a5e' }}>
+                  · dashed = closest match, tap ▾ to change
                 </span>
               )}
             </div>
