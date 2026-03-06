@@ -69,8 +69,8 @@ function TermChip({
         {term.suggestions && term.suggestions.length > 1 && (
           <button
             onClick={onRevert}
-            className="ml-1 text-xs opacity-40 hover:opacity-80 transition-opacity underline"
-            style={{ color: '#2d6a5e' }}
+            className="ml-1 text-xs opacity-50 hover:opacity-90 transition-opacity"
+            style={{ color: '#2d6a5e', textDecoration: 'underline', textUnderlineOffset: '2px' }}
           >change</button>
         )}
         <button
@@ -83,45 +83,62 @@ function TermChip({
   }
 
   if (term.status === 'suggestion') {
-    // Auto-open dropdown list — visible immediately, click to confirm
+    // Pill + attached options panel — same pill shape as matched, options hang below
     const options = term.suggestions && term.suggestions.length > 0 ? term.suggestions : [term.matched!]
     return (
-      <div className="w-full rounded-lg overflow-hidden" style={{ border: '1px solid #2d6a5e' }}>
+      <div className="w-full" style={{ maxWidth: '380px' }}>
+        {/* Pill — identical shape to matched, bottom edges connect to panel */}
         <div
-          className="px-3 py-2 flex items-center justify-between"
-          style={{ backgroundColor: '#f0f7f6', borderBottom: '1px solid #e0ebe9' }}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium w-full"
+          style={{
+            backgroundColor: '#f0f7f6',
+            border: '1px solid #2d6a5e',
+            borderBottom: 'none',
+            borderRadius: '999px 999px 4px 4px',
+            color: '#2d6a5e',
+          }}
         >
-          <span className="text-xs font-medium" style={{ color: '#1a2e2b' }}>
-            Which <em className="not-italic font-semibold">{term.raw}</em>?
-          </span>
+          <span className="text-xs opacity-50">~</span>
+          <span className="flex-1 truncate">{term.matched!.test_name}</span>
           <button
             onClick={onRemove}
-            className="text-xs opacity-40 hover:opacity-70 transition-opacity"
-            style={{ color: '#6b8c88' }}
-          >
-            remove ×
-          </button>
+            className="opacity-40 hover:opacity-80 text-xs font-bold leading-none shrink-0 transition-opacity"
+            aria-label="Remove"
+          >×</button>
         </div>
-        {options.map(s => {
-          const isPreSelected = s.id === term.matched!.id
-          return (
-            <button
-              key={s.id}
-              onClick={() => onAccept(s)}
-              className="w-full text-left px-4 py-2.5 text-sm border-b last:border-b-0 transition-colors hover:bg-[#f0f7f6] flex items-center gap-2.5"
-              style={{
-                borderColor: '#f0f0f0',
-                backgroundColor: isPreSelected ? '#fafffe' : 'white',
-                color: isPreSelected ? '#2d6a5e' : '#1a2e2b',
-              }}
-            >
-              <span className="text-xs w-3 shrink-0" style={{ color: '#2d6a5e' }}>
-                {isPreSelected ? '●' : ''}
-              </span>
-              <span>{s.test_name}</span>
-            </button>
-          )
-        })}
+        {/* Options panel — drops from pill */}
+        <div
+          style={{
+            border: '1px solid #2d6a5e',
+            borderTop: '1px solid #e0ebe9',
+            borderRadius: '0 0 12px 12px',
+            overflow: 'hidden',
+            backgroundColor: 'white',
+          }}
+        >
+          <div
+            className="px-3 py-1.5 text-xs font-medium"
+            style={{ backgroundColor: '#fafafa', borderBottom: '1px solid #f0f0f0', color: '#6b8c88' }}
+          >
+            Choose correct test:
+          </div>
+          {options.map(s => {
+            const isDefault = s.id === term.matched!.id
+            return (
+              <button
+                key={s.id}
+                onClick={() => onAccept(s)}
+                className="w-full text-left px-3 py-2.5 text-sm border-b last:border-b-0 transition-colors hover:bg-[#f0f7f6] flex items-center gap-2"
+                style={{ borderColor: '#f5f5f5', color: isDefault ? '#2d6a5e' : '#1a2e2b' }}
+              >
+                <span className="text-xs w-2.5 shrink-0" style={{ color: '#2d6a5e' }}>
+                  {isDefault ? '●' : ''}
+                </span>
+                <span>{s.test_name}</span>
+              </button>
+            )
+          })}
+        </div>
       </div>
     )
   }
