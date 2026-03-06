@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import { getLabDisplayName } from '@/config/labs'
@@ -346,8 +346,7 @@ function ResultsSection({
                   {getLabDisplayName(sourceLab)}
                 </th>
                 <th className="text-left px-4 py-3 font-semibold" style={{ color: '#2d6a5e', borderLeft: '3px solid #2d6a5e' }}>
-                  <div>{getLabDisplayName(targetLab)}</div>
-                  <div className="text-xs font-normal opacity-70 mt-0.5">← use this code</div>
+                  {getLabDisplayName(targetLab)}
                 </th>
               </tr>
             </thead>
@@ -379,7 +378,7 @@ function ResultsSection({
                       ? sourceCodes.map(c => c.proprietary_code).join(', ')
                       : <span className="italic not-italic" style={{ color: '#c0826a', fontFamily: 'inherit' }}>N/A</span>}
                   </td>
-                  <td className="px-4 py-3 font-mono text-sm font-bold" style={{ color: '#2d6a5e', backgroundColor: '#f0f7f6', borderLeft: '3px solid #2d6a5e' }}>
+                  <td className="px-4 py-3 font-mono text-sm font-semibold" style={{ color: '#2d6a5e', backgroundColor: '#f0f7f6', borderLeft: '3px solid #2d6a5e' }}>
                     {targetCodes.length > 0
                       ? targetCodes.map(c => c.proprietary_code).join(', ')
                       : <span className="italic font-normal text-xs" style={{ color: '#c0826a', fontFamily: 'inherit' }}>N/A</span>}
@@ -430,9 +429,8 @@ function ResultsSection({
                 <div className="rounded-lg px-3 py-2.5" style={{ backgroundColor: '#f0f7f6', border: '2px solid #2d6a5e' }}>
                   <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: '#2d6a5e' }}>
                     {getLabDisplayName(targetLab)}
-                    <span className="ml-1.5 font-normal normal-case opacity-60">← use this</span>
                   </div>
-                  <div className="font-mono font-bold text-base" style={{ color: '#2d6a5e' }}>
+                  <div className="font-mono font-semibold text-base" style={{ color: '#2d6a5e' }}>
                     {targetCodes.length > 0
                       ? targetCodes.map(c => c.proprietary_code).join(', ')
                       : (
@@ -527,6 +525,7 @@ export default function TranslatePage() {
   const [allLabs, setAllLabs] = useState<string[]>([])
   const [translatedTests, setTranslatedTests] = useState<TranslatedTest[]>([])
   const [isTranslating, setIsTranslating] = useState(false)
+  const resultsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     async function fetchLabs() {
@@ -664,6 +663,7 @@ export default function TranslatePage() {
       })
 
       setTranslatedTests(results)
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
     } catch (e) {
       console.error('Translation error:', e)
     }
@@ -797,11 +797,13 @@ export default function TranslatePage() {
 
         {/* Results */}
         {translatedTests.length > 0 && (
-          <ResultsSection
-            translatedTests={translatedTests}
-            sourceLab={sourceLab}
-            targetLab={targetLab}
-          />
+          <div ref={resultsRef}>
+            <ResultsSection
+              translatedTests={translatedTests}
+              sourceLab={sourceLab}
+              targetLab={targetLab}
+            />
+          </div>
         )}
 
         {/* Help text */}
