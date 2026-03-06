@@ -365,8 +365,13 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
               <p className="mt-1 text-[11px] text-[#6b8c88]">
                 LabLooker may earn a commission through lab links. This does not affect pricing or rankings.
               </p>
-              <div className="mt-4 space-y-2">
-                {pricing.map((p, i) => (
+              {(() => {
+                const FREE_PREVIEW = 3
+                const isLoggedIn = trackerLoaded && !!trackerUser
+                const visiblePricing = isLoggedIn ? pricing : pricing.slice(0, FREE_PREVIEW)
+                const hiddenPricing = isLoggedIn ? [] : pricing.slice(FREE_PREVIEW)
+
+                const PriceRow = ({ p, i }: { p: typeof pricing[0]; i: number }) => (
                   <div
                     key={i}
                     className="flex items-center justify-between rounded-lg bg-[#faf8f5] border border-[#e0ebe9] px-4 py-3"
@@ -393,8 +398,36 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
                       )}
                     </div>
                   </div>
-                ))}
-              </div>
+                )
+
+                return (
+                  <div className="mt-4 space-y-2">
+                    {visiblePricing.map((p, i) => <PriceRow key={i} p={p} i={i} />)}
+                    {hiddenPricing.length > 0 && (
+                      <div className="relative mt-1">
+                        <div className="space-y-2 blur-sm pointer-events-none select-none" aria-hidden="true">
+                          {hiddenPricing.map((p, i) => <PriceRow key={i} p={p} i={i} />)}
+                        </div>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-white/80 backdrop-blur-[2px] px-4 text-center">
+                          <p className="text-sm font-bold text-[#1a2e2b]">
+                            {hiddenPricing.length} more price{hiddenPricing.length !== 1 ? 's' : ''} available
+                          </p>
+                          <p className="mt-0.5 text-xs text-[#6b8c88]">Free account unlocks all prices instantly</p>
+                          <a
+                            href="/signup"
+                            className="mt-3 rounded-xl bg-[#2d6a5e] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
+                          >
+                            Sign up free →
+                          </a>
+                          <a href="/login" className="mt-2 text-xs text-[#6b8c88] underline hover:text-[#2d6a5e]">
+                            Already have an account? Log in
+                          </a>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })()}
             </>
           ) : (
             <>
