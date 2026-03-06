@@ -592,8 +592,22 @@ export default function TranslatePage() {
           if (all.length === 0) return { raw, status: 'notfound' }
           if (all.length === 1) return { raw, status: 'matched', matched: all[0] }
 
-          const exact = all.find(t => t.test_name.toLowerCase() === raw.toLowerCase())
+          const rawLower = raw.toLowerCase()
+
+          // Exact name match
+          const exact = all.find(t => t.test_name.toLowerCase() === rawLower)
           if (exact) return { raw, status: 'matched', matched: exact }
+
+          // Strong prefix match: typed term is clearly the start of one test name
+          // e.g. "TSH" → "TSH (Thyroid Stimulating Hormone)" or "TSH, 3rd Gen"
+          const prefixMatches = all.filter(t => {
+            const name = t.test_name.toLowerCase()
+            return name.startsWith(rawLower + ' ') ||
+              name.startsWith(rawLower + ',') ||
+              name.startsWith(rawLower + '(') ||
+              name.startsWith(rawLower + ';')
+          })
+          if (prefixMatches.length === 1) return { raw, status: 'matched', matched: prefixMatches[0] }
 
           return { raw, status: 'suggestion', matched: all[0], suggestions: all.slice(0, 5) }
         } catch {
@@ -735,7 +749,12 @@ export default function TranslatePage() {
         {parsedTerms.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm border p-5 mb-4 print:hidden" style={{ borderColor: '#e0ebe9' }}>
             <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#6b8c88' }}>
-              {confirmedTests.length} of {parsedTerms.length} matched
+              {parsedTerms.length} found
+              {parsedTerms.some(t => t.status === 'suggestion') && (
+                <span className="ml-2 font-normal normal-case" style={{ color: '#c0826a' }}>
+                  — tap ✓ to confirm suggestions
+                </span>
+              )}
             </div>
             <div className="flex flex-wrap gap-2">
               {parsedTerms.map((term, i) => (
