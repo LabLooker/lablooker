@@ -303,8 +303,21 @@ function ResultsSection({
   return (
     <div className="bg-white rounded-xl shadow-sm border p-6 mb-6" style={{ borderColor: '#e0ebe9' }}>
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+      {/* Print-only header */}
+      <div className="hidden print:block mb-6 pb-4" style={{ borderBottom: '2px solid #2d6a5e' }}>
+        <div className="text-xl font-bold mb-1" style={{ color: '#1a2e2b' }}>LabLooker — Lab Code Translation</div>
+        <div className="text-sm flex items-center gap-2" style={{ color: '#4a6b67' }}>
+          <span>From: <strong style={{ color: '#1a2e2b' }}>{getLabDisplayName(sourceLab)}</strong></span>
+          <span>→</span>
+          <span>To: <strong style={{ color: '#2d6a5e' }}>{getLabDisplayName(targetLab)}</strong></span>
+        </div>
+        <div className="text-xs mt-1" style={{ color: '#9ca3af' }}>
+          Reference only — present alongside your original physician&apos;s order
+        </div>
+      </div>
+
+      {/* Screen header */}
+      <div className="flex items-center justify-between mb-5 print:hidden">
         <div>
           <h2 className="text-xl font-bold" style={{ color: '#1a2e2b' }}>Translation Results</h2>
           <div className="flex items-center gap-2 mt-1 text-sm">
@@ -333,8 +346,9 @@ function ResultsSection({
                 <th className="text-left px-4 py-3 font-semibold" style={{ color: '#6b8c88' }}>
                   {getLabDisplayName(sourceLab)}
                 </th>
-                <th className="text-left px-4 py-3 font-semibold" style={{ color: '#2d6a5e' }}>
-                  {getLabDisplayName(targetLab)}
+                <th className="text-left px-4 py-3 font-semibold" style={{ color: '#2d6a5e', borderLeft: '3px solid #2d6a5e' }}>
+                  <div>{getLabDisplayName(targetLab)}</div>
+                  <div className="text-xs font-normal opacity-70 mt-0.5">← use this code</div>
                 </th>
               </tr>
             </thead>
@@ -364,10 +378,10 @@ function ResultsSection({
                       ? sourceCodes.map(c => c.proprietary_code).join(', ')
                       : <span className="italic not-italic" style={{ color: '#c0826a', fontFamily: 'inherit' }}>N/A</span>}
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs font-semibold" style={{ color: '#2d6a5e' }}>
+                  <td className="px-4 py-3 font-mono text-sm font-bold" style={{ color: '#2d6a5e', backgroundColor: '#f0f7f6', borderLeft: '3px solid #2d6a5e' }}>
                     {targetCodes.length > 0
                       ? targetCodes.map(c => c.proprietary_code).join(', ')
-                      : <span className="italic font-normal" style={{ color: '#c0826a', fontFamily: 'inherit' }}>N/A</span>}
+                      : <span className="italic font-normal text-xs" style={{ color: '#c0826a', fontFamily: 'inherit' }}>N/A</span>}
                   </td>
                 </tr>
               ))}
@@ -411,16 +425,17 @@ function ResultsSection({
                       : <span className="italic" style={{ color: '#c0826a', fontFamily: 'inherit' }}>Not in database</span>}
                   </div>
                 </div>
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: '#2d6a5e' }}>
+                <div className="rounded-lg px-3 py-2.5" style={{ backgroundColor: '#f0f7f6', border: '2px solid #2d6a5e' }}>
+                  <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: '#2d6a5e' }}>
                     {getLabDisplayName(targetLab)}
+                    <span className="ml-1.5 font-normal normal-case opacity-60">← use this</span>
                   </div>
-                  <div className="font-mono font-semibold" style={{ color: '#2d6a5e' }}>
+                  <div className="font-mono font-bold text-base" style={{ color: '#2d6a5e' }}>
                     {targetCodes.length > 0
                       ? targetCodes.map(c => c.proprietary_code).join(', ')
                       : (
                         <div>
-                          <span className="italic font-normal" style={{ color: '#c0826a', fontFamily: 'inherit' }}>Not in database</span>
+                          <span className="italic font-normal text-sm" style={{ color: '#c0826a', fontFamily: 'inherit' }}>Not in database</span>
                           {test.cpt_codes?.length > 0 && (
                             <div className="mt-2 text-xs font-normal rounded px-2.5 py-2" style={{ backgroundColor: '#fff8f5', border: '1px solid #e8d5cc', color: '#4a6b67' }}>
                               Use CPT <span className="font-semibold" style={{ color: '#1a2e2b' }}>{test.cpt_codes.join(', ')}</span> — accepted at most labs
@@ -436,9 +451,9 @@ function ResultsSection({
         )
       })()}
 
-      {/* Price highlights */}
+      {/* Price highlights — screen only */}
       {translatedTests.some(t => t.pricing.length > 0) && (
-        <div className="mt-5">
+        <div className="mt-5 print:hidden">
           <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#6b8c88' }}>
             💰 Best self-pay prices
           </div>
@@ -655,10 +670,17 @@ export default function TranslatePage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#faf8f5' }}>
-      <div className="max-w-3xl mx-auto px-4 pt-24 pb-12">
+      <style>{`
+        @media print {
+          nav, header, [data-radix-popper-content-wrapper] { display: none !important; }
+          body { background: white !important; padding: 0 !important; }
+          .print\\:hidden { display: none !important; }
+        }
+      `}</style>
+      <div className="max-w-3xl mx-auto px-4 pt-24 pb-12 print:pt-4">
 
         {/* Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-10 print:hidden">
           <h1 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: '#1a2e2b' }}>
             Lab Code Translator
           </h1>
@@ -668,13 +690,10 @@ export default function TranslatePage() {
         </div>
 
         {/* Bulk input */}
-        <div className="bg-white rounded-xl shadow-sm border p-6 mb-4" style={{ borderColor: '#e0ebe9' }}>
-          <label className="block text-sm font-semibold mb-1" style={{ color: '#1a2e2b' }}>
+        <div className="bg-white rounded-xl shadow-sm border p-6 mb-4 print:hidden" style={{ borderColor: '#e0ebe9' }}>
+          <label className="block text-sm font-semibold mb-3" style={{ color: '#1a2e2b' }}>
             What tests were ordered?
           </label>
-          <p className="text-xs mb-3" style={{ color: '#6b8c88' }}>
-            Type test names or codes, separated by commas or new lines. Or paste directly from your lab order.
-          </p>
           <textarea
             value={bulkInput}
             onChange={(e) => {
@@ -688,7 +707,7 @@ export default function TranslatePage() {
                 parseAndMatch()
               }
             }}
-            placeholder={'TSH, Free T4, Ferritin, Vitamin D\n\nor paste your lab order here...'}
+            placeholder="Type test names or codes — comma or line separated, or paste from your order..."
             rows={4}
             className="w-full px-4 py-3 rounded-lg border-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e] transition-colors"
             style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
@@ -712,7 +731,7 @@ export default function TranslatePage() {
 
         {/* Parsed chips */}
         {parsedTerms.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border p-5 mb-4" style={{ borderColor: '#e0ebe9' }}>
+          <div className="bg-white rounded-xl shadow-sm border p-5 mb-4 print:hidden" style={{ borderColor: '#e0ebe9' }}>
             <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#6b8c88' }}>
               {confirmedTests.length} of {parsedTerms.length} matched
             </div>
@@ -736,20 +755,22 @@ export default function TranslatePage() {
 
         {/* Lab row */}
         {parsedTerms.length > 0 && confirmedTests.length > 0 && (
-          <LabRow
-            sourceLab={sourceLab}
-            targetLab={targetLab}
-            allLabs={allLabs}
-            onSourceChange={(lab) => {
-              setSourceLab(lab)
-              if (targetLab === lab) setTargetLab('')
-              setTranslatedTests([])
-            }}
-            onTargetChange={(lab) => {
-              setTargetLab(lab)
-              setTranslatedTests([])
-            }}
-          />
+          <div className="print:hidden">
+            <LabRow
+              sourceLab={sourceLab}
+              targetLab={targetLab}
+              allLabs={allLabs}
+              onSourceChange={(lab) => {
+                setSourceLab(lab)
+                if (targetLab === lab) setTargetLab('')
+                setTranslatedTests([])
+              }}
+              onTargetChange={(lab) => {
+                setTargetLab(lab)
+                setTranslatedTests([])
+              }}
+            />
+          </div>
         )}
 
         {/* Translate button */}
@@ -757,7 +778,7 @@ export default function TranslatePage() {
           <button
             onClick={translate}
             disabled={!canTranslate || isTranslating}
-            className="w-full py-4 rounded-xl text-base font-semibold transition-all mb-8"
+            className="w-full py-4 rounded-xl text-base font-semibold transition-all mb-8 print:hidden"
             style={{
               backgroundColor: canTranslate ? '#2d6a5e' : '#e0ebe9',
               color: canTranslate ? 'white' : '#6b8c88',
@@ -783,7 +804,7 @@ export default function TranslatePage() {
 
         {/* Help text */}
         {translatedTests.length === 0 && (
-          <div className="text-center text-sm mt-6" style={{ color: '#6b8c88' }}>
+          <div className="text-center text-sm mt-6 print:hidden" style={{ color: '#6b8c88' }}>
             <p className="mb-2">
               <strong>How it works:</strong> Each lab uses its own internal codes for the same test.
               We translate them so you can walk into any lab with the right code.
