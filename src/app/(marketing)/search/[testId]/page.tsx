@@ -362,76 +362,49 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
             </div>
           ) : pricing.length > 0 ? (
             <>
-              {(() => {
-                const isLoggedIn = trackerLoaded && !!trackerUser
-                return (
-                  <>
-                    {/* Signup banner for anonymous users */}
-                    {!isLoggedIn && (
-                      <div className="mt-3 flex items-center justify-between gap-4 rounded-xl border border-[#2d6a5e]/30 bg-[#f0f7f6] px-4 py-3">
-                        <div>
-                          <p className="text-sm font-semibold text-[#1a2e2b]">
-                            🔓 {pricing.length} price{pricing.length !== 1 ? 's' : ''} available
-                          </p>
-                          <p className="text-xs text-[#4a6b67]">Sign up free — no credit card needed</p>
-                        </div>
-                        <div className="flex shrink-0 items-center gap-2">
-                          <a href="/login" className="text-xs font-medium text-[#2d6a5e] underline hover:no-underline">Log in</a>
-                          <a href="/signup" className="rounded-lg bg-[#2d6a5e] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#245549]">
-                            Sign up free →
-                          </a>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Affiliate disclosure */}
-                    <p className="mt-2 text-[11px] text-[#6b8c88]">
-                      LabLooker may earn a commission through lab links. This does not affect pricing or rankings.
-                    </p>
-
-                    {/* Price rows — names always visible, prices hidden for anonymous */}
-                    <div className="mt-3 space-y-2">
-                      {pricing.map((p, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-4 py-3"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <span className="text-sm font-medium text-[#1a2e2b]">{p.lab_name}</span>
-                            {p.notes && isLoggedIn && (
-                              <p className="mt-0.5 text-[11px] text-[#6b8c88]">{p.notes}</p>
-                            )}
-                          </div>
-                          <div className="ml-4 flex shrink-0 items-center gap-3">
-                            {isLoggedIn ? (
-                              <>
-                                <span className="text-sm font-semibold text-[#1a2e2b]">
-                                  ${Number(p.price).toFixed(2)}
-                                </span>
-                                {p.website && (
-                                  <a
-                                    href={p.website}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="rounded-lg bg-[#2d6a5e] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#245549]"
-                                  >
-                                    Order
-                                  </a>
-                                )}
-                              </>
-                            ) : (
-                              <div className="flex items-center gap-2">
-                                <div className="h-4 w-14 animate-pulse rounded bg-[#e0ebe9]" />
-                                <div className="h-7 w-14 animate-pulse rounded-lg bg-[#e0ebe9]" />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+              <p className="mt-1 text-[11px] text-[#6b8c88]">
+                LabLooker may earn a commission through lab links. This does not affect pricing or rankings.
+              </p>
+              <div className="mt-3 space-y-2">
+                {pricing.map((p, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-4 py-3"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <span className="text-sm font-medium text-[#1a2e2b]">{p.lab_name}</span>
+                      {p.notes && (
+                        <p className="mt-0.5 text-[11px] text-[#6b8c88]">{p.notes}</p>
+                      )}
                     </div>
-                  </>
-                )
-              })()}
+                    <div className="ml-4 flex shrink-0 items-center gap-3">
+                      <span className="text-sm font-semibold text-[#1a2e2b]">
+                        ${Number(p.price).toFixed(2)}
+                      </span>
+                      {p.website && (
+                        <a
+                          href={p.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-lg bg-[#2d6a5e] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#245549]"
+                        >
+                          Order
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Soft signup nudge — after prices, not blocking them */}
+              {trackerLoaded && !trackerUser && (
+                <div className="mt-4 rounded-xl border border-[#e0ebe9] bg-white px-4 py-3 text-center">
+                  <p className="text-sm font-semibold text-[#1a2e2b]">Track this test over time</p>
+                  <p className="mt-0.5 text-xs text-[#6b8c88]">Log results, spot trends, set goals — free account, no credit card</p>
+                  <a href="/signup" className="mt-3 inline-block rounded-xl bg-[#2d6a5e] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549]">
+                    Sign up free →
+                  </a>
+                </div>
+              )}
             </>
           ) : (
             <>
