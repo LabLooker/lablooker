@@ -141,10 +141,11 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#1a2e2b]">
+          <h1 className="text-3xl font-bold text-[#1a2e2b]">
             {profile?.full_name ? `${profile.full_name}'s Labs` : 'My Labs'}
           </h1>
-          <div className="mt-1 flex items-center gap-3">
+          <p className="mt-1 text-[#4a6b67]">Log results, track trends, and monitor what matters to you.</p>
+          <div className="mt-2 flex items-center gap-3">
             {profile && (
               <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize ${planBadgeColor}`}>
                 {profile.plan} plan

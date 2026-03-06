@@ -131,7 +131,7 @@ export default function Nav() {
                 Log in
               </Button>
               <Button size="sm" href="/signup">
-                Start Free Trial
+                Sign Up Free
               </Button>
             </>
           )}
@@ -198,7 +198,7 @@ export default function Nav() {
               ) : (
                 <>
                   <Button variant="secondary" href="/login">Log in</Button>
-                  <Button href="/signup">Start Free Trial</Button>
+                  <Button href="/signup">Sign Up Free</Button>
                 </>
               )}
             </div>

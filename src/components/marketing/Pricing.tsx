@@ -22,7 +22,7 @@ export default function Pricing() {
       key: 'pro' as const,
       plan: plans.pro,
       price: annual ? plans.pro.annualPrice : plans.pro.monthlyPrice,
-      cta: 'Start Free Trial',
+      cta: 'Get Started',
       href: '/signup',
       featured: true,
       comingSoon: false,

@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function PricingPage() {
   return (
-    <div className="pt-24">
+    <div>
       <Pricing />
     </div>
   )
