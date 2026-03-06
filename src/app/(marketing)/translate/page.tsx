@@ -362,18 +362,18 @@ function ResultsSection({
                   <td className="px-4 py-3">
                     <a
                       href={`/search/${test.id}`}
-                      className="font-semibold hover:underline block"
+                      className="font-semibold hover:underline"
                       style={{ color: '#1a2e2b' }}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       {test.test_name}
+                      {test.cpt_codes?.length > 0 && (
+                        <span className="font-normal ml-1" style={{ color: '#9ca3af', fontSize: '0.7rem' }}>
+                          (CPT {test.cpt_codes.join(', ')})
+                        </span>
+                      )}
                     </a>
-                    {test.cpt_codes?.length > 0 && (
-                      <span className="text-xs font-mono mt-0.5 block" style={{ color: '#9ca3af' }}>
-                        CPT {test.cpt_codes.join(', ')}
-                      </span>
-                    )}
                   </td>
                   <td className="px-4 py-3 font-mono text-xs" style={{ color: '#4a6b67' }}>
                     {sourceCodes.length > 0
@@ -395,16 +395,16 @@ function ResultsSection({
       {/* Single-test card */}
       {isSingle && (() => {
         const { test, sourceCodes, targetCodes } = translatedTests[0]
+        const cptLabel = test.cpt_codes?.length > 0 ? ` (CPT ${test.cpt_codes.join(', ')})` : ''
         return (
           <div className="rounded-lg overflow-hidden" style={{ border: '1px solid #e0ebe9' }}>
             <div className="px-5 py-4" style={{ backgroundColor: '#f0f7f6' }}>
+              {/* Test name + CPT inline */}
               <div className="flex items-start justify-between gap-2 mb-4">
-                <div>
-                  <div className="font-semibold text-base" style={{ color: '#1a2e2b' }}>{test.test_name}</div>
-                  {test.cpt_codes?.length > 0 && (
-                    <div className="text-xs font-mono mt-0.5" style={{ color: '#9ca3af' }}>
-                      CPT {test.cpt_codes.join(', ')}
-                    </div>
+                <div className="font-semibold text-base" style={{ color: '#1a2e2b' }}>
+                  {test.test_name}
+                  {cptLabel && (
+                    <span className="font-normal text-xs ml-1" style={{ color: '#9ca3af' }}>{cptLabel}</span>
                   )}
                 </div>
                 <a
@@ -417,30 +417,33 @@ function ResultsSection({
                   View details →
                 </a>
               </div>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: '#6b8c88' }}>
+              {/* Source → Target — same box style, aligned */}
+              <div className="grid grid-cols-2 gap-3">
+                {/* Source */}
+                <div className="rounded-lg px-3 py-2.5" style={{ backgroundColor: 'white', border: '1px solid #e0ebe9' }}>
+                  <div className="text-xs font-semibold uppercase tracking-wide mb-1.5 leading-tight" style={{ color: '#6b8c88' }}>
                     {getLabDisplayName(sourceLab)}
                   </div>
-                  <div className="font-mono" style={{ color: '#4a6b67' }}>
+                  <div className="font-mono text-sm" style={{ color: '#4a6b67' }}>
                     {sourceCodes.length > 0
                       ? sourceCodes.map(c => c.proprietary_code).join(', ')
-                      : <span className="italic" style={{ color: '#c0826a', fontFamily: 'inherit' }}>Not in database</span>}
+                      : <span className="italic text-xs" style={{ color: '#c0826a', fontFamily: 'inherit' }}>Not in database</span>}
                   </div>
                 </div>
+                {/* Target */}
                 <div className="rounded-lg px-3 py-2.5" style={{ backgroundColor: '#f0f7f6', border: '2px solid #2d6a5e' }}>
-                  <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: '#2d6a5e' }}>
+                  <div className="text-xs font-semibold uppercase tracking-wide mb-1.5 leading-tight" style={{ color: '#2d6a5e' }}>
                     {getLabDisplayName(targetLab)}
                   </div>
-                  <div className="font-mono font-semibold text-base" style={{ color: '#2d6a5e' }}>
+                  <div className="font-mono font-semibold text-sm" style={{ color: '#2d6a5e' }}>
                     {targetCodes.length > 0
                       ? targetCodes.map(c => c.proprietary_code).join(', ')
                       : (
                         <div>
-                          <span className="italic font-normal text-sm" style={{ color: '#c0826a', fontFamily: 'inherit' }}>Not in database</span>
+                          <span className="italic font-normal text-xs" style={{ color: '#c0826a', fontFamily: 'inherit' }}>Not in database</span>
                           {test.cpt_codes?.length > 0 && (
-                            <div className="mt-2 text-xs font-normal rounded px-2.5 py-2" style={{ backgroundColor: '#fff8f5', border: '1px solid #e8d5cc', color: '#4a6b67' }}>
-                              Use CPT <span className="font-semibold" style={{ color: '#1a2e2b' }}>{test.cpt_codes.join(', ')}</span> — accepted at most labs
+                            <div className="mt-2 text-xs font-normal rounded px-2 py-1.5" style={{ backgroundColor: '#fff8f5', border: '1px solid #e8d5cc', color: '#4a6b67' }}>
+                              Use CPT <span className="font-semibold" style={{ color: '#1a2e2b' }}>{test.cpt_codes.join(', ')}</span>
                             </div>
                           )}
                         </div>
