@@ -73,60 +73,45 @@ function TermChip({
   }
 
   if (term.status === 'suggestion') {
-    // Pre-accepted by default — show as soft green, with quiet "change" option
+    // Full-width inline clarification — show all options, pre-selected highlighted
     return (
-      <div className="relative">
-        <div
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
-          style={{ backgroundColor: '#f0f7f6', border: '1px dashed #2d6a5e', color: '#2d6a5e' }}
-        >
-          <span className="text-xs opacity-50">~</span>
-          <span>{term.matched!.test_name}</span>
-          {term.suggestions && term.suggestions.length > 1 && (
-            <button
-              onClick={() => setShowDropdown(!showDropdown)}
-              className="ml-0.5 text-xs opacity-40 hover:opacity-80 transition-opacity"
-              title="Not this test? Change it"
-              aria-label="Change match"
-            >▾</button>
-          )}
+      <div className="w-full rounded-lg px-4 py-3" style={{ backgroundColor: '#faf8f5', border: '1px solid #e0ebe9' }}>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs" style={{ color: '#6b8c88' }}>
+            Which <strong style={{ color: '#1a2e2b' }}>{term.raw}</strong>?
+          </span>
           <button
             onClick={onRemove}
-            className="ml-0.5 opacity-40 hover:opacity-80 text-xs font-bold leading-none transition-opacity"
+            className="text-xs opacity-40 hover:opacity-70 transition-opacity"
+            style={{ color: '#6b8c88' }}
             aria-label="Remove"
-          >×</button>
-        </div>
-        {showDropdown && term.suggestions && term.suggestions.length > 0 && (
-          <div
-            className="absolute z-20 left-0 mt-1 bg-white rounded-lg shadow-lg border min-w-64"
-            style={{ borderColor: '#e0ebe9' }}
           >
-            <div
-              className="px-3 py-2 text-xs"
-              style={{ color: '#6b8c88', borderBottom: '1px solid #e0ebe9' }}
-            >
-              Not this test? Pick the right one:
-            </div>
-            {term.suggestions.map(s => (
+            remove ×
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {(term.suggestions || [term.matched!]).map(s => {
+            const isSelected = s.id === term.matched!.id
+            return (
               <button
                 key={s.id}
-                onClick={() => { onAccept(s); setShowDropdown(false) }}
-                className="w-full text-left px-3 py-2.5 text-sm border-b last:border-b-0 transition-colors hover:bg-[#f0f7f6]"
-                style={{
-                  color: '#1a2e2b',
-                  borderColor: '#e0ebe9',
-                  backgroundColor: s.id === term.matched!.id ? '#f0f7f6' : undefined,
-                  fontWeight: s.id === term.matched!.id ? 600 : undefined,
+                onClick={() => onAccept(s)}
+                className="px-3 py-1.5 rounded-full text-xs font-medium transition-all"
+                style={isSelected ? {
+                  backgroundColor: '#2d6a5e',
+                  color: 'white',
+                  border: '1px solid #2d6a5e',
+                } : {
+                  backgroundColor: 'white',
+                  color: '#4a6b67',
+                  border: '1px solid #d1d5db',
                 }}
               >
                 {s.test_name}
-                {s.id === term.matched!.id && (
-                  <span className="ml-2 text-xs font-normal opacity-50">current</span>
-                )}
               </button>
-            ))}
-          </div>
-        )}
+            )
+          })}
+        </div>
       </div>
     )
   }
@@ -762,8 +747,8 @@ export default function TranslatePage() {
             <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#6b8c88' }}>
               {confirmedTests.length} of {parsedTerms.length} ready
               {parsedTerms.some(t => t.status === 'suggestion') && (
-                <span className="ml-2 font-normal normal-case" style={{ color: '#2d6a5e' }}>
-                  · dashed = closest match, tap ▾ to change
+                <span className="ml-2 font-normal normal-case" style={{ color: '#6b8c88' }}>
+                  · tap the right test below to confirm
                 </span>
               )}
             </div>
