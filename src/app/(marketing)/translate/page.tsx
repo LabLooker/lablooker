@@ -342,7 +342,6 @@ function ResultsSection({
             <thead>
               <tr style={{ backgroundColor: '#f0f7f6', borderBottom: '2px solid #e0ebe9' }}>
                 <th className="text-left px-4 py-3 font-semibold" style={{ color: '#1a2e2b' }}>Test</th>
-                <th className="text-left px-4 py-3 font-semibold" style={{ color: '#6b8c88' }}>CPT</th>
                 <th className="text-left px-4 py-3 font-semibold" style={{ color: '#6b8c88' }}>
                   {getLabDisplayName(sourceLab)}
                 </th>
@@ -362,16 +361,18 @@ function ResultsSection({
                   <td className="px-4 py-3">
                     <a
                       href={`/search/${test.id}`}
-                      className="font-medium hover:underline"
+                      className="font-semibold hover:underline block"
                       style={{ color: '#1a2e2b' }}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       {test.test_name}
                     </a>
-                  </td>
-                  <td className="px-4 py-3 font-mono text-xs" style={{ color: '#6b8c88' }}>
-                    {test.cpt_codes?.length > 0 ? test.cpt_codes.join(', ') : '—'}
+                    {test.cpt_codes?.length > 0 && (
+                      <span className="text-xs font-mono mt-0.5 block" style={{ color: '#9ca3af' }}>
+                        CPT {test.cpt_codes.join(', ')}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3 font-mono text-xs" style={{ color: '#4a6b67' }}>
                     {sourceCodes.length > 0
@@ -397,7 +398,14 @@ function ResultsSection({
           <div className="rounded-lg overflow-hidden" style={{ border: '1px solid #e0ebe9' }}>
             <div className="px-5 py-4" style={{ backgroundColor: '#f0f7f6' }}>
               <div className="flex items-start justify-between gap-2 mb-4">
-                <div className="font-semibold text-base" style={{ color: '#1a2e2b' }}>{test.test_name}</div>
+                <div>
+                  <div className="font-semibold text-base" style={{ color: '#1a2e2b' }}>{test.test_name}</div>
+                  {test.cpt_codes?.length > 0 && (
+                    <div className="text-xs font-mono mt-0.5" style={{ color: '#9ca3af' }}>
+                      CPT {test.cpt_codes.join(', ')}
+                    </div>
+                  )}
+                </div>
                 <a
                   href={`/search/${test.id}`}
                   className="text-xs underline shrink-0"
@@ -408,13 +416,7 @@ function ResultsSection({
                   View details →
                 </a>
               </div>
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: '#6b8c88' }}>CPT Code</div>
-                  <div className="font-mono" style={{ color: '#1a2e2b' }}>
-                    {test.cpt_codes?.length > 0 ? test.cpt_codes.join(', ') : '—'}
-                  </div>
-                </div>
+              <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: '#6b8c88' }}>
                     {getLabDisplayName(sourceLab)}
