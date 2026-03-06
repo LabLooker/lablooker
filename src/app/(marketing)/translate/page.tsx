@@ -303,7 +303,7 @@ function ResultsSection({
   const isSingle = translatedTests.length === 1
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-6 mb-6" style={{ borderColor: '#e0ebe9' }}>
+    <div className="print-results bg-white rounded-xl shadow-sm border p-6 mb-6" style={{ borderColor: '#e0ebe9' }}>
 
       {/* Print-only header */}
       <div className="hidden print:block mb-6 pb-4" style={{ borderBottom: '2px solid #2d6a5e' }}>
@@ -694,14 +694,7 @@ export default function TranslatePage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#faf8f5' }}>
-      <style>{`
-        @media print {
-          nav, header, [data-radix-popper-content-wrapper] { display: none !important; }
-          body { background: white !important; padding: 0 !important; }
-          .print\\:hidden { display: none !important; }
-        }
-      `}</style>
-      <div className="max-w-3xl mx-auto px-4 pt-24 pb-12 print:pt-4">
+      <div className="max-w-3xl mx-auto px-4 pt-24 pb-12">
 
         {/* Header */}
         <div className="text-center mb-10 print:hidden">
