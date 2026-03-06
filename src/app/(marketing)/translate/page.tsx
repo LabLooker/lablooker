@@ -18,10 +18,17 @@ type LabCode = {
   code_type: string
 }
 
+type PricingRow = {
+  price: number
+  website: string | null
+  lab_name: string
+}
+
 type TranslatedTest = {
   test: TestResult
   sourceCodes: LabCode[]
   targetCodes: LabCode[]
+  pricing: PricingRow[]
 }
 
 function LabPicker({
@@ -243,11 +250,18 @@ export default function TranslatePage() {
     try {
       const testIds = selectedTests.map(t => t.id)
 
-      const { data: allCodes, error } = await supabase
-        .from('lab_codes')
-        .select('test_id, lab_name, proprietary_code, code_type')
-        .in('test_id', testIds)
-        .in('lab_name', [sourceLab, targetLab])
+      const [{ data: allCodes, error }, { data: allPricing }] = await Promise.all([
+        supabase
+          .from('lab_codes')
+          .select('test_id, lab_name, proprietary_code, code_type')
+          .in('test_id', testIds)
+          .in('lab_name', [sourceLab, targetLab]),
+        supabase
+          .from('pricing')
+          .select('test_id, price, website, labs(lab_name)')
+          .in('test_id', testIds)
+          .order('price', { ascending: true }),
+      ])
 
       if (error) {
         console.error('Translation error:', error)
@@ -257,10 +271,14 @@ export default function TranslatePage() {
 
       const results: TranslatedTest[] = selectedTests.map(test => {
         const codes = allCodes?.filter(c => c.test_id === test.id) || []
+        const pricing = (allPricing || [])
+          .filter((p: any) => p.test_id === test.id)
+          .map((p: any) => ({ price: p.price, website: p.website, lab_name: p.labs?.lab_name ?? '' }))
         return {
           test,
           sourceCodes: codes.filter(c => c.lab_name === sourceLab),
           targetCodes: codes.filter(c => c.lab_name === targetLab),
+          pricing,
         }
       })
 
@@ -432,46 +450,95 @@ export default function TranslatePage() {
             </div>
 
             <div className="space-y-4">
-              {translatedTests.map(({ test, sourceCodes, targetCodes }) => (
-                <div key={test.id} className="rounded-lg p-4" style={{ backgroundColor: '#faf8f5', border: '1px solid #e0ebe9' }}>
-                  <div className="font-semibold mb-2" style={{ color: '#1a2e2b' }}>{test.test_name}</div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-                    <div>
-                      <div className="font-medium mb-1" style={{ color: '#6b8c88' }}>CPT Code</div>
-                      <div style={{ color: '#1a2e2b' }}>
-                        {test.cpt_codes?.length > 0 ? test.cpt_codes.join(', ') : '—'}
+              {translatedTests.map(({ test, sourceCodes, targetCodes, pricing }) => {
+                const bestPrice = pricing[0] ?? null
+                return (
+                  <div key={test.id} className="rounded-lg overflow-hidden" style={{ border: '1px solid #e0ebe9' }}>
+                    {/* Code translation row */}
+                    <div className="p-4" style={{ backgroundColor: '#faf8f5' }}>
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="font-semibold" style={{ color: '#1a2e2b' }}>{test.test_name}</div>
+                        <a
+                          href={`/search/${test.id}`}
+                          className="text-xs underline shrink-0"
+                          style={{ color: '#2d6a5e' }}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View details →
+                        </a>
                       </div>
-                    </div>
-                    <div>
-                      <div className="font-medium mb-1" style={{ color: '#6b8c88' }}>{getLabDisplayName(sourceLab)}</div>
-                      <div style={{ color: '#1a2e2b' }}>
-                        {sourceCodes.length > 0
-                          ? sourceCodes.map(c => c.proprietary_code).join(', ')
-                          : <span className="italic" style={{ color: '#c0826a' }}>Not in database yet</span>
-                        }
-                      </div>
-                    </div>
-                    <div>
-                      <div className="font-medium mb-1" style={{ color: '#2d6a5e' }}>{getLabDisplayName(targetLab)}</div>
-                      <div className="font-semibold" style={{ color: '#2d6a5e' }}>
-                        {targetCodes.length > 0
-                          ? targetCodes.map(c => c.proprietary_code).join(', ')
-                          : (
-                            <div>
-                              <span className="italic font-normal" style={{ color: '#c0826a' }}>Not in database yet</span>
-                              {test.cpt_codes?.length > 0 && (
-                                <div className="mt-1 text-xs font-normal rounded px-2 py-1.5" style={{ backgroundColor: '#fff8f5', border: '1px solid #e8d5cc', color: '#4a6b67' }}>
-                                  Use CPT <span className="font-semibold" style={{ color: '#1a2e2b' }}>{test.cpt_codes.join(', ')}</span> — accepted at most labs
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                        <div>
+                          <div className="font-medium mb-1" style={{ color: '#6b8c88' }}>CPT Code</div>
+                          <div style={{ color: '#1a2e2b' }}>
+                            {test.cpt_codes?.length > 0 ? test.cpt_codes.join(', ') : '—'}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="font-medium mb-1" style={{ color: '#6b8c88' }}>{getLabDisplayName(sourceLab)}</div>
+                          <div style={{ color: '#1a2e2b' }}>
+                            {sourceCodes.length > 0
+                              ? sourceCodes.map(c => c.proprietary_code).join(', ')
+                              : <span className="italic" style={{ color: '#c0826a' }}>Not in database yet</span>
+                            }
+                          </div>
+                        </div>
+                        <div>
+                          <div className="font-medium mb-1" style={{ color: '#2d6a5e' }}>{getLabDisplayName(targetLab)}</div>
+                          <div className="font-semibold" style={{ color: '#2d6a5e' }}>
+                            {targetCodes.length > 0
+                              ? targetCodes.map(c => c.proprietary_code).join(', ')
+                              : (
+                                <div>
+                                  <span className="italic font-normal" style={{ color: '#c0826a' }}>Not in database yet</span>
+                                  {test.cpt_codes?.length > 0 && (
+                                    <div className="mt-1 text-xs font-normal rounded px-2 py-1.5" style={{ backgroundColor: '#fff8f5', border: '1px solid #e8d5cc', color: '#4a6b67' }}>
+                                      Use CPT <span className="font-semibold" style={{ color: '#1a2e2b' }}>{test.cpt_codes.join(', ')}</span> — accepted at most labs
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                          )
-                        }
+                              )
+                            }
+                          </div>
+                        </div>
                       </div>
                     </div>
+
+                    {/* Best price callout */}
+                    {bestPrice ? (
+                      <div className="flex items-center justify-between gap-3 px-4 py-3 flex-wrap" style={{ backgroundColor: '#f0fdf4', borderTop: '1px solid #bbf7d0' }}>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#15803d' }}>💰 Best self-pay price</span>
+                          <span className="text-base font-bold" style={{ color: '#1a2e2b' }}>${Number(bestPrice.price).toFixed(2)}</span>
+                          <span className="text-xs" style={{ color: '#4a6b67' }}>{bestPrice.lab_name}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <a href={`/search/${test.id}`} className="text-xs underline" style={{ color: '#2d6a5e' }}>
+                            Compare all prices →
+                          </a>
+                          {bestPrice.website && (
+                            <a
+                              href={bestPrice.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-colors"
+                              style={{ backgroundColor: '#2d6a5e' }}
+                            >
+                              Order →
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="px-4 py-2.5 text-xs flex items-center justify-between" style={{ backgroundColor: '#fafafa', borderTop: '1px solid #e0ebe9', color: '#9ca3af' }}>
+                        <span>No self-pay pricing on file for this test</span>
+                        <a href={`/search/${test.id}`} className="underline" style={{ color: '#2d6a5e' }}>View test →</a>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
 
             <div className="mt-6 rounded-lg p-4 text-xs" style={{ backgroundColor: '#fff8f5', border: '1px solid #e8d5cc', color: '#4a6b67' }}>
