@@ -139,22 +139,19 @@ export default function DashboardPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-[#1a2e2b]">
-            {profile?.full_name ? `${profile.full_name}'s Labs` : 'My Labs'}
-          </h1>
-          <p className="mt-1 text-[#4a6b67]">Log results, track trends, and monitor what matters to you.</p>
-          <div className="mt-2 flex items-center gap-3">
-            {profile && (
-              <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize ${planBadgeColor}`}>
-                {profile.plan} plan
-              </span>
-            )}
+      <div className="text-center mb-10">
+        <h1 className="text-3xl md:text-4xl font-bold text-[#1a2e2b] mb-3">
+          {profile?.full_name ? `${profile.full_name}'s Labs` : 'My Labs'}
+        </h1>
+        <p className="text-lg text-[#4a6b67]">Log results, track trends, and monitor what matters to you.</p>
+        {profile && (
+          <div className="mt-3 flex justify-center">
+            <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize ${planBadgeColor}`}>
+              {profile.plan} plan
+            </span>
           </div>
-        </div>
-
-        <div className="flex flex-wrap gap-2 sm:shrink-0">
+        )}
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
               if (isAtFreeLimit) {
@@ -163,19 +160,19 @@ export default function DashboardPage() {
               }
               openLogModal()
             }}
-            className="rounded-xl bg-[#2d6a5e] px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
+            className="rounded-xl bg-[#2d6a5e] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
           >
             + Add Result
           </button>
           <button
             onClick={() => setShowPdfImportModal(true)}
-            className="rounded-xl border border-[#2d6a5e] bg-white px-3 py-2 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
+            className="rounded-xl border border-[#2d6a5e] bg-white px-4 py-2 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
           >
             Import PDF
           </button>
           <button
             onClick={() => setShowImportModal(true)}
-            className="rounded-xl border border-[#2d6a5e] bg-white px-3 py-2 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
+            className="rounded-xl border border-[#2d6a5e] bg-white px-4 py-2 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
           >
             Import CSV
           </button>
