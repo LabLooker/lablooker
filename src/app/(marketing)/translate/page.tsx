@@ -192,7 +192,16 @@ function LabRow({
                 value={sourceQuery}
                 onChange={(e) => { setSourceQuery(e.target.value); setShowSource(true) }}
                 onFocus={() => setShowSource(true)}
-                onBlur={() => setTimeout(() => setShowSource(false), 150)}
+                onBlur={() => setTimeout(() => {
+                  setShowSource(false)
+                  if (sourceQuery.trim()) {
+                    const q = sourceQuery.toLowerCase()
+                    const filtered = allLabs.filter(l => l !== targetLab && l.toLowerCase().includes(q))
+                    const exact = filtered.find(l => l.toLowerCase() === q)
+                    const pick = exact ?? (filtered.length === 1 ? filtered[0] : null)
+                    if (pick) { onSourceChange(pick); setSourceQuery('') }
+                  }
+                }, 150)}
                 placeholder="Search lab..."
                 className="w-full px-3 py-2.5 rounded-lg border-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20"
                 style={{ borderColor: '#2d6a5e', color: '#1a2e2b' }}
@@ -239,7 +248,16 @@ function LabRow({
                 value={targetQuery}
                 onChange={(e) => { setTargetQuery(e.target.value); setShowTarget(true) }}
                 onFocus={() => setShowTarget(true)}
-                onBlur={() => setTimeout(() => setShowTarget(false), 150)}
+                onBlur={() => setTimeout(() => {
+                  setShowTarget(false)
+                  if (targetQuery.trim()) {
+                    const q = targetQuery.toLowerCase()
+                    const filtered = allLabs.filter(l => l !== sourceLab && l.toLowerCase().includes(q))
+                    const exact = filtered.find(l => l.toLowerCase() === q)
+                    const pick = exact ?? (filtered.length === 1 ? filtered[0] : null)
+                    if (pick) { onTargetChange(pick); setTargetQuery('') }
+                  }
+                }, 150)}
                 placeholder="Search lab..."
                 className="w-full px-3 py-2.5 rounded-lg border-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20"
                 style={{ borderColor: '#2d6a5e', color: '#1a2e2b' }}
