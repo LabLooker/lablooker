@@ -585,9 +585,10 @@ export default function TranslatePage() {
             codeMatches = ct || []
           }
 
+          // Name matches always take priority over code matches
           const seen = new Set<string>()
           const all: TestResult[] = []
-          for (const t of [...codeMatches, ...nameMatches]) {
+          for (const t of [...nameMatches, ...codeMatches]) {
             if (!seen.has(t.id)) { seen.add(t.id); all.push(t) }
           }
 
@@ -611,7 +612,14 @@ export default function TranslatePage() {
           })
           if (prefixMatches.length === 1) return { raw, status: 'matched', matched: prefixMatches[0] }
 
-          return { raw, status: 'suggestion', matched: all[0], suggestions: all.slice(0, 5) }
+          // For suggestions: only show tests where the name is actually relevant
+          // (contains the query words) — this prevents code matches with unrelated
+          // test names from polluting the suggestion list
+          const nameSuggestions = all.filter(t =>
+            words.some(w => t.test_name.toLowerCase().includes(w))
+          )
+          const suggestionPool = nameSuggestions.length > 0 ? nameSuggestions : all
+          return { raw, status: 'suggestion', matched: suggestionPool[0], suggestions: suggestionPool.slice(0, 5) }
         } catch {
           return { raw, status: 'notfound' }
         }
