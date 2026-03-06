@@ -83,56 +83,36 @@ function TermChip({
   }
 
   if (term.status === 'suggestion') {
-    // Pill + attached options panel — same pill shape as matched, options hang below
     const options = term.suggestions && term.suggestions.length > 0 ? term.suggestions : [term.matched!]
     return (
-      <div className="w-full" style={{ maxWidth: '380px' }}>
-        {/* Pill — identical shape to matched, bottom edges connect to panel */}
+      <div className="w-full">
+        {/* Pill — identical shape to matched, just ~ instead of ✓ */}
         <div
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium w-full"
-          style={{
-            backgroundColor: '#f0f7f6',
-            border: '1px solid #2d6a5e',
-            borderBottom: 'none',
-            borderRadius: '999px 999px 4px 4px',
-            color: '#2d6a5e',
-          }}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
+          style={{ backgroundColor: '#f0f7f6', border: '1px solid #2d6a5e', color: '#2d6a5e' }}
         >
           <span className="text-xs opacity-50">~</span>
-          <span className="flex-1 truncate">{term.matched!.test_name}</span>
+          <span>{term.matched!.test_name}</span>
           <button
             onClick={onRemove}
-            className="opacity-40 hover:opacity-80 text-xs font-bold leading-none shrink-0 transition-opacity"
+            className="ml-1 opacity-40 hover:opacity-80 text-xs font-bold leading-none transition-opacity"
             aria-label="Remove"
           >×</button>
         </div>
-        {/* Options panel — drops from pill */}
-        <div
-          style={{
-            border: '1px solid #2d6a5e',
-            borderTop: '1px solid #e0ebe9',
-            borderRadius: '0 0 12px 12px',
-            overflow: 'hidden',
-            backgroundColor: 'white',
-          }}
-        >
-          <div
-            className="px-3 py-1.5 text-xs font-medium"
-            style={{ backgroundColor: '#fafafa', borderBottom: '1px solid #f0f0f0', color: '#6b8c88' }}
-          >
-            Choose correct test:
-          </div>
+        {/* Free-floating options — no border, no background, just text */}
+        <div className="mt-2 ml-4">
+          <div className="text-xs mb-1.5" style={{ color: '#9ca3af' }}>Choose correct test:</div>
           {options.map(s => {
             const isDefault = s.id === term.matched!.id
             return (
               <button
                 key={s.id}
                 onClick={() => onAccept(s)}
-                className="w-full text-left px-3 py-2.5 text-sm border-b last:border-b-0 transition-colors hover:bg-[#f0f7f6] flex items-center gap-2"
-                style={{ borderColor: '#f5f5f5', color: isDefault ? '#2d6a5e' : '#1a2e2b' }}
+                className="flex items-center gap-2 w-full text-left py-1 text-sm transition-colors hover:opacity-100"
+                style={{ color: isDefault ? '#2d6a5e' : '#6b8c88', opacity: isDefault ? 1 : 0.75 }}
               >
-                <span className="text-xs w-2.5 shrink-0" style={{ color: '#2d6a5e' }}>
-                  {isDefault ? '●' : ''}
+                <span className="text-xs shrink-0 w-3" style={{ color: '#2d6a5e' }}>
+                  {isDefault ? '●' : '○'}
                 </span>
                 <span>{s.test_name}</span>
               </button>
