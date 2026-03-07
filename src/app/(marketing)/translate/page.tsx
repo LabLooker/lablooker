@@ -104,39 +104,40 @@ function TermChip({
   if (term.status === 'suggestion') {
     const options = term.suggestions && term.suggestions.length > 0 ? term.suggestions : [term.matched!]
     return (
-      <div className="w-full">
-        {/* Amber pill — visually distinct from matched */}
-        <div
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
+      <div className="inline-flex flex-col items-start">
+        {/* Amber pill — click to expand/collapse options */}
+        <button
+          onClick={() => setShowDropdown(d => !d)}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium cursor-pointer"
           style={{ backgroundColor: '#fffbeb', border: '1px solid #fcd34d', color: '#92400e' }}
         >
           <span className="text-xs opacity-60">~</span>
           <span>{term.matched!.test_name}</span>
-          <button
-            onClick={onRemove}
-            className="ml-1 opacity-40 hover:opacity-80 text-xs font-bold leading-none transition-opacity"
+          <span className="ml-1 text-xs opacity-50">{showDropdown ? '▲' : '▼'}</span>
+          <span
+            onClick={(e) => { e.stopPropagation(); onRemove() }}
+            className="ml-1 opacity-40 hover:opacity-80 text-xs font-bold leading-none transition-opacity cursor-pointer"
             aria-label="Remove"
-          >×</button>
-        </div>
-        {/* Options list */}
-        <div className="mt-2 ml-2">
-          {options.map(s => {
-            const isDefault = s.id === term.matched!.id
-            return (
+          >×</span>
+        </button>
+        {/* Options — only shown when expanded */}
+        {showDropdown && (
+          <div className="mt-1 ml-1 bg-white rounded-lg shadow-lg border py-1" style={{ borderColor: '#e0ebe9', minWidth: '200px' }}>
+            {options.map(s => (
               <button
                 key={s.id}
-                onClick={() => onAccept(s)}
-                className="flex items-center gap-2 w-full text-left py-1 text-sm transition-colors hover:opacity-100"
-                style={{ color: isDefault ? '#2d6a5e' : '#6b8c88', opacity: isDefault ? 1 : 0.75 }}
+                onClick={() => { onAccept(s); setShowDropdown(false) }}
+                className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm hover:bg-[#f0f7f6] transition-colors"
+                style={{ color: s.id === term.matched!.id ? '#2d6a5e' : '#1a2e2b' }}
               >
-                <span className="text-xs shrink-0 w-3" style={{ color: '#2d6a5e' }}>
-                  {isDefault ? '●' : '○'}
+                <span className="text-xs w-3 shrink-0">
+                  {s.id === term.matched!.id ? '●' : '○'}
                 </span>
-                <span>{s.test_name}</span>
+                {s.test_name}
               </button>
-            )
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     )
   }
@@ -573,8 +574,17 @@ export default function TranslatePage() {
 
     if (rawTerms.length === 0) { setIsParsing(false); return }
 
+    // Additive: skip terms already matched in existing parsedTerms
+    const existingRaws = new Set(
+      parsedTerms
+        .filter(t => t.status === 'matched' || t.status === 'suggestion')
+        .map(t => t.raw.toLowerCase())
+    )
+    const newTerms = rawTerms.filter(r => !existingRaws.has(r.toLowerCase()))
+    if (newTerms.length === 0) { setIsParsing(false); setBulkInput(''); return }
+
     const results = await Promise.all(
-      rawTerms.map(async (raw): Promise<ParsedTerm> => {
+      newTerms.map(async (raw): Promise<ParsedTerm> => {
         try {
           const words = raw.toLowerCase().split(/\s+/).filter(Boolean)
           const firstWord = words[0]
@@ -647,9 +657,11 @@ export default function TranslatePage() {
       })
     )
 
-    setParsedTerms(results)
+    // Append new results to existing terms
+    setParsedTerms(prev => [...prev.filter(t => t.status === 'matched' || t.status === 'suggestion' || t.status === 'notfound'), ...results])
+    setBulkInput('')
     setIsParsing(false)
-  }, [bulkInput])
+  }, [bulkInput, parsedTerms])
 
   const acceptSuggestion = (index: number, test: TestResult) =>
     setParsedTerms(prev => prev.map((t, i) =>
@@ -746,7 +758,6 @@ export default function TranslatePage() {
             value={bulkInput}
             onChange={(e) => {
               setBulkInput(e.target.value)
-              if (parsedTerms.length > 0) setParsedTerms([])
               if (translatedTests.length > 0) setTranslatedTests([])
             }}
             onKeyDown={(e) => {
@@ -755,7 +766,7 @@ export default function TranslatePage() {
                 parseAndMatch()
               }
             }}
-            placeholder="Type test names or codes — comma or line separated, or paste from your order..."
+            placeholder={parsedTerms.length > 0 ? "Add more tests..." : "Type test names or codes — comma or line separated, or paste from your order..."}
             rows={4}
             className="w-full px-4 py-3 rounded-lg border-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e] transition-colors"
             style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
