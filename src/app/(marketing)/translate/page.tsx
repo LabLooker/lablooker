@@ -603,7 +603,15 @@ export default function TranslatePage() {
           ])
 
           const nameMatches: TestResult[] = (nameData || []).filter((t: TestResult) =>
-            words.every(w => t.test_name.toLowerCase().includes(w))
+            words.every(w => {
+              const name = t.test_name.toLowerCase()
+              // Short words (≤2 chars): must appear as a whole token, not embedded inside another word
+              // e.g. "d" should match "Vitamin D" but not "Pyridoxine"
+              if (w.length <= 2) {
+                return new RegExp(`(^|[\\s,(/])${w}([\\s,)./]|$)`, 'i').test(name)
+              }
+              return name.includes(w)
+            })
           )
 
           let codeMatches: TestResult[] = []
@@ -647,7 +655,13 @@ export default function TranslatePage() {
           // (contains the query words) — this prevents code matches with unrelated
           // test names from polluting the suggestion list
           const nameSuggestions = all.filter(t =>
-            words.some(w => t.test_name.toLowerCase().includes(w))
+            words.some(w => {
+              const name = t.test_name.toLowerCase()
+              if (w.length <= 2) {
+                return new RegExp(`(^|[\\s,(/])${w}([\\s,)./]|$)`, 'i').test(name)
+              }
+              return name.includes(w)
+            })
           )
           const suggestionPool = nameSuggestions.length > 0 ? nameSuggestions : all
           return { raw, status: 'suggestion', matched: suggestionPool[0], suggestions: suggestionPool.slice(0, 5) }
