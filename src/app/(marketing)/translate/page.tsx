@@ -47,37 +47,56 @@ type ParsedTerm = {
 function TermChip({
   term,
   onAccept,
-  onRevert,
   onRemove,
 }: {
   term: ParsedTerm
   onAccept: (test: TestResult) => void
-  onRevert: () => void
   onRemove: () => void
 }) {
   const [showDropdown, setShowDropdown] = useState(false)
 
   if (term.status === 'matched') {
+    const hasOptions = term.suggestions && term.suggestions.length > 1
     return (
-      <div
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
-        style={{ backgroundColor: '#f0f7f6', border: '1px solid #2d6a5e', color: '#2d6a5e' }}
-      >
-        <span className="text-xs">✓</span>
-        <span>{term.matched!.test_name}</span>
-        {/* Show change link if this was previously ambiguous */}
-        {term.suggestions && term.suggestions.length > 1 && (
+      <div className="inline-flex flex-col items-start">
+        <div
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
+          style={{ backgroundColor: '#f0f7f6', border: '1px solid #2d6a5e', color: '#2d6a5e' }}
+        >
+          <span className="text-xs">✓</span>
+          <span>{term.matched!.test_name}</span>
+          {hasOptions && (
+            <button
+              onClick={() => setShowDropdown(d => !d)}
+              className="ml-1 text-xs opacity-40 hover:opacity-80 transition-opacity"
+              aria-label="Edit selection"
+              title="Click to change"
+            >✎</button>
+          )}
           <button
-            onClick={onRevert}
-            className="ml-1 text-xs opacity-50 hover:opacity-90 transition-opacity"
-            style={{ color: '#2d6a5e', textDecoration: 'underline', textUnderlineOffset: '2px' }}
-          >change</button>
+            onClick={onRemove}
+            className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none"
+            aria-label="Remove"
+          >×</button>
+        </div>
+        {/* Edit dropdown — reopens options without reverting chip state */}
+        {showDropdown && hasOptions && (
+          <div className="mt-1 ml-2 bg-white rounded-lg shadow-lg border py-1" style={{ borderColor: '#e0ebe9', minWidth: '200px', zIndex: 10 }}>
+            {term.suggestions!.map(s => (
+              <button
+                key={s.id}
+                onClick={() => { onAccept(s); setShowDropdown(false) }}
+                className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm hover:bg-[#f0f7f6] transition-colors"
+                style={{ color: s.id === term.matched!.id ? '#2d6a5e' : '#1a2e2b' }}
+              >
+                <span className="text-xs w-3 shrink-0">
+                  {s.id === term.matched!.id ? '●' : '○'}
+                </span>
+                {s.test_name}
+              </button>
+            ))}
+          </div>
         )}
-        <button
-          onClick={onRemove}
-          className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none"
-          aria-label="Remove"
-        >×</button>
       </div>
     )
   }
@@ -86,12 +105,12 @@ function TermChip({
     const options = term.suggestions && term.suggestions.length > 0 ? term.suggestions : [term.matched!]
     return (
       <div className="w-full">
-        {/* Pill — identical shape to matched, just ~ instead of ✓ */}
+        {/* Amber pill — visually distinct from matched */}
         <div
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
-          style={{ backgroundColor: '#f0f7f6', border: '1px solid #2d6a5e', color: '#2d6a5e' }}
+          style={{ backgroundColor: '#fffbeb', border: '1px solid #fcd34d', color: '#92400e' }}
         >
-          <span className="text-xs opacity-50">~</span>
+          <span className="text-xs opacity-60">~</span>
           <span>{term.matched!.test_name}</span>
           <button
             onClick={onRemove}
@@ -99,9 +118,8 @@ function TermChip({
             aria-label="Remove"
           >×</button>
         </div>
-        {/* Free-floating options — no border, no background, just text */}
-        <div className="mt-2 ml-4">
-          <div className="text-xs mb-1.5" style={{ color: '#9ca3af' }}>Choose correct test:</div>
+        {/* Options list */}
+        <div className="mt-2 ml-2">
           {options.map(s => {
             const isDefault = s.id === term.matched!.id
             return (
@@ -646,13 +664,15 @@ export default function TranslatePage() {
   const removeTerm = (index: number) =>
     setParsedTerms(prev => prev.filter((_, i) => i !== index))
 
-  // Suggestions are pre-accepted — both matched and suggestion count as ready
+  // Only fully matched tests count — unresolved suggestions must be reviewed first
   const confirmedTests = parsedTerms
-    .filter(t => (t.status === 'matched' || t.status === 'suggestion') && t.matched)
+    .filter(t => t.status === 'matched' && t.matched)
     .map(t => t.matched!)
     .filter((t, i, arr) => arr.findIndex(x => x.id === t.id) === i)
 
-  const canTranslate = confirmedTests.length > 0 && sourceLab && targetLab && sourceLab !== targetLab
+  const unresolvedCount = parsedTerms.filter(t => t.status === 'suggestion').length
+
+  const canTranslate = confirmedTests.length > 0 && unresolvedCount === 0 && sourceLab && targetLab && sourceLab !== targetLab
 
   const translate = async () => {
     if (!canTranslate) return
@@ -760,13 +780,22 @@ export default function TranslatePage() {
         {/* Parsed chips */}
         {parsedTerms.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm border p-5 mb-4 print:hidden" style={{ borderColor: '#e0ebe9' }}>
-            <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#6b8c88' }}>
-              {confirmedTests.length} of {parsedTerms.length} ready
-              {parsedTerms.some(t => t.status === 'suggestion') && (
-                <span className="ml-2 font-normal normal-case" style={{ color: '#6b8c88' }}>
-                  · pick the right test below
+
+            {/* Amber banner — shown when unresolved suggestions exist */}
+            {unresolvedCount > 0 && (
+              <div
+                className="flex items-start gap-2.5 rounded-lg px-4 py-3 mb-4 text-sm"
+                style={{ backgroundColor: '#fffbeb', border: '1px solid #fcd34d', color: '#78350f' }}
+              >
+                <span className="shrink-0">⚠️</span>
+                <span>
+                  <strong>{unresolvedCount} test{unresolvedCount !== 1 ? 's' : ''} need{unresolvedCount === 1 ? 's' : ''} your input</strong> — tap the highlighted{unresolvedCount !== 1 ? ' ones' : ' one'} to choose the right version before translating.
                 </span>
-              )}
+              </div>
+            )}
+
+            <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#6b8c88' }}>
+              {confirmedTests.length} of {parsedTerms.filter(t => t.status !== 'notfound').length} confirmed
             </div>
             <div className="flex flex-wrap gap-2">
               {parsedTerms.map((term, i) => (
@@ -774,7 +803,6 @@ export default function TranslatePage() {
                   key={i}
                   term={term}
                   onAccept={(test) => acceptSuggestion(i, test)}
-                  onRevert={() => revertToSuggestion(i)}
                   onRemove={() => removeTerm(i)}
                 />
               ))}
@@ -821,9 +849,11 @@ export default function TranslatePage() {
           >
             {isTranslating
               ? 'Translating...'
-              : !sourceLab || !targetLab
-                ? 'Select both labs to translate'
-                : `Translate ${confirmedTests.length} test${confirmedTests.length !== 1 ? 's' : ''} →`}
+              : unresolvedCount > 0
+                ? `Resolve ${unresolvedCount} test${unresolvedCount !== 1 ? 's' : ''} above to continue`
+                : !sourceLab || !targetLab
+                  ? 'Select both labs to translate'
+                  : `Translate ${confirmedTests.length} test${confirmedTests.length !== 1 ? 's' : ''} →`}
           </button>
         )}
 
