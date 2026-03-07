@@ -574,12 +574,8 @@ export default function TranslatePage() {
 
     if (rawTerms.length === 0) { setIsParsing(false); return }
 
-    // Additive: skip terms already matched in existing parsedTerms
-    const existingRaws = new Set(
-      parsedTerms
-        .filter(t => t.status === 'matched' || t.status === 'suggestion')
-        .map(t => t.raw.toLowerCase())
-    )
+    // Additive: skip terms already in existing parsedTerms (any status)
+    const existingRaws = new Set(parsedTerms.map(t => t.raw.toLowerCase()))
     const newTerms = rawTerms.filter(r => !existingRaws.has(r.toLowerCase()))
     if (newTerms.length === 0) { setIsParsing(false); setBulkInput(''); return }
 
@@ -594,7 +590,7 @@ export default function TranslatePage() {
               .from('tests')
               .select('id, test_name, cpt_codes, category')
               .ilike('test_name', `%${firstWord}%`)
-              .limit(10),
+              .limit(25),
             supabase
               .from('lab_codes')
               .select('test_id')
@@ -644,10 +640,14 @@ export default function TranslatePage() {
           // e.g. "TSH" → "TSH (Thyroid Stimulating Hormone)" or "TSH, 3rd Gen"
           const prefixMatches = all.filter(t => {
             const name = t.test_name.toLowerCase()
-            return name.startsWith(rawLower + ' ') ||
+            const starts = name.startsWith(rawLower + ' ') ||
               name.startsWith(rawLower + ',') ||
               name.startsWith(rawLower + '(') ||
               name.startsWith(rawLower + ';')
+            if (!starts) return false
+            // Don't auto-match compound panels (e.g. "Free Testosterone + Total Testosterone")
+            const remainder = name.slice(rawLower.length).trim()
+            return !/^[+&]/.test(remainder)
           })
           if (prefixMatches.length === 1) return { raw, status: 'matched', matched: prefixMatches[0] }
 
@@ -814,7 +814,7 @@ export default function TranslatePage() {
               >
                 <span className="shrink-0">⚠️</span>
                 <span>
-                  <strong>{unresolvedCount} test{unresolvedCount !== 1 ? 's' : ''} need{unresolvedCount === 1 ? 's' : ''} your input</strong> — tap the highlighted{unresolvedCount !== 1 ? ' ones' : ' one'} to choose the right version before translating.
+                  <strong>{unresolvedCount} test{unresolvedCount !== 1 ? 's' : ''} need{unresolvedCount === 1 ? 's' : ''} your input</strong> — tap the yellow pill{unresolvedCount !== 1 ? 's' : ''} below to pick the right version before translating.
                 </span>
               </div>
             )}
