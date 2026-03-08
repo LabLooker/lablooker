@@ -402,7 +402,9 @@ function ResultsSection({
                   <td className="px-4 py-3 font-mono text-sm font-semibold" style={{ color: '#2d6a5e', backgroundColor: '#f0f7f6', borderLeft: '3px solid #2d6a5e' }}>
                     {targetCodes.length > 0
                       ? targetCodes.map(c => c.proprietary_code).join(', ')
-                      : <span className="italic font-normal text-xs" style={{ color: '#c0826a', fontFamily: 'inherit' }}>N/A</span>}
+                      : test.cpt_codes?.length > 0
+                        ? <span className="font-normal text-xs" style={{ color: '#4a6b67', fontFamily: 'inherit' }}>Use CPT <span className="font-semibold" style={{ color: '#1a2e2b' }}>{test.cpt_codes.join(', ')}</span></span>
+                        : <span className="italic font-normal text-xs" style={{ color: '#c0826a', fontFamily: 'inherit' }}>N/A</span>}
                   </td>
                 </tr>
               ))}
