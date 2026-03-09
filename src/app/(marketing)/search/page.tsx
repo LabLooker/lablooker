@@ -189,6 +189,7 @@ function SearchPageInner() {
   const [symptoms, setSymptoms] = useState<Symptom[]>([])
   const [query, setQuery] = useState(searchParams.get('q') || '')
   const [loading, setLoading] = useState(true)
+  const [codeMatch, setCodeMatch] = useState<{ testId: string; testName: string; labName: string; code: string } | null>(null)
 
   // Initialize topic filter from URL on mount
   const initialTopic = searchParams.get('topic')
@@ -217,6 +218,45 @@ function SearchPageInner() {
     }
     load()
   }, [])
+
+  // Lab code lookup — when query looks like a proprietary code, search lab_codes table
+  useEffect(() => {
+    const q = query.trim()
+    // Match patterns like "140103", "004515", "P4310", "322000" (3-8 alphanumeric chars)
+    if (!q || !/^[A-Za-z0-9]{3,8}$/.test(q)) {
+      setCodeMatch(null)
+      return
+    }
+    // Don't trigger for short words that are likely test names
+    if (/^[a-zA-Z]+$/.test(q) && q.length < 5) {
+      setCodeMatch(null)
+      return
+    }
+    const supabase = createClient()
+    let cancelled = false
+    async function lookup() {
+      const { data } = await supabase
+        .from('lab_codes')
+        .select('proprietary_code, lab_name, test_id, tests(id, test_name)')
+        .eq('proprietary_code', q)
+        .limit(1)
+      if (cancelled || !data || data.length === 0) {
+        if (!cancelled) setCodeMatch(null)
+        return
+      }
+      const row = data[0] as any
+      if (row.tests) {
+        setCodeMatch({
+          testId: row.tests.id,
+          testName: row.tests.test_name,
+          labName: row.lab_name,
+          code: row.proprietary_code,
+        })
+      }
+    }
+    lookup()
+    return () => { cancelled = true }
+  }, [query])
 
   const categories = useMemo(() => {
     const cats = new Set(tests.map((t) => t.category).filter(Boolean))
@@ -450,6 +490,34 @@ function SearchPageInner() {
                 </button>
               </div>
             </div>
+
+            {/* Lab code exact match — show prominently */}
+            {codeMatch && (
+              <div className="mt-6 mx-auto max-w-5xl">
+                <Link
+                  href={`/search/${codeMatch.testId}`}
+                  className="flex items-center gap-4 rounded-xl border-2 border-[#2d6a5e] bg-[#f0f7f6] p-5 transition-all hover:shadow-md"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2d6a5e]">
+                    <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#2d6a5e] mb-0.5">
+                      Exact code match — {codeMatch.labName}
+                    </div>
+                    <div className="text-base font-bold text-[#1a2e2b]">{codeMatch.testName}</div>
+                    <div className="text-sm text-[#4a6b67] mt-0.5">
+                      Code <span className="font-mono font-semibold text-[#1a2e2b]">{codeMatch.code}</span> → View test details, pricing & lab codes
+                    </div>
+                  </div>
+                  <svg className="h-5 w-5 shrink-0 text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                  </svg>
+                </Link>
+              </div>
+            )}
 
             {/* Symptom matches — show above test results */}
             {query.trim() && matchedSymptoms.length > 0 && !showRedFlag && (
