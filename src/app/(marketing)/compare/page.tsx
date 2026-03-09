@@ -65,7 +65,7 @@ function CompareTestRow({
         selected
           ? 'border-[#2d6a5e] bg-[#f0f7f6]'
           : suggested
-          ? 'border-dashed border-[#6b8c88] bg-white hover:border-[#2d6a5e]'
+          ? 'border-dashed border-[#577572] bg-white hover:border-[#2d6a5e]'
           : 'border-[#e0ebe9] bg-white hover:border-[#2d6a5e]',
       ].join(' ')}
     >
@@ -128,15 +128,15 @@ function InfoCard({
       </div>
       <div className="px-4 py-4 flex flex-col gap-3.5 bg-white">
         <div>
-          <div className="text-[10px] font-bold tracking-wider uppercase text-[#6b8c88] mb-1">What it measures</div>
+          <div className="text-[10px] font-bold tracking-wider uppercase text-[#577572] mb-1">What it measures</div>
           <div className="text-[13px] text-[#1a2e2b] leading-relaxed">{test.measures}</div>
         </div>
         <div>
-          <div className="text-[10px] font-bold tracking-wider uppercase text-[#6b8c88] mb-1">Order this if…</div>
+          <div className="text-[10px] font-bold tracking-wider uppercase text-[#577572] mb-1">Order this if…</div>
           <div className="text-[13px] text-[#1a2e2b] leading-relaxed">{test.orderIf}</div>
         </div>
         <div>
-          <div className="text-[10px] font-bold tracking-wider uppercase text-[#6b8c88] mb-1">Best for</div>
+          <div className="text-[10px] font-bold tracking-wider uppercase text-[#577572] mb-1">Best for</div>
           <div className="flex flex-wrap gap-1.5 mt-1">
             {test.bestFor.map((tag) => (
               <span key={tag} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-[#dcfce7] text-[#166534]">{tag}</span>
@@ -144,7 +144,7 @@ function InfoCard({
           </div>
         </div>
         <div className="rounded-lg bg-[#faf8f5] border border-[#e0ebe9] px-3 py-2.5">
-          <div className="text-[10px] font-bold tracking-wider uppercase text-[#6b8c88] mb-1">Note</div>
+          <div className="text-[10px] font-bold tracking-wider uppercase text-[#577572] mb-1">Note</div>
           <div className="text-[12px] text-[#4a6b67] leading-relaxed">{test.note}</div>
         </div>
         {hasPair && test.pairWith && (
@@ -352,7 +352,7 @@ export default function ComparePage() {
           {/* Search bar */}
           <div className="relative max-w-xl mx-auto">
             <div className="flex items-center rounded-xl border-2 border-[#2d6a5e] bg-white px-4 py-3 shadow-sm focus-within:ring-2 focus-within:ring-[#2d6a5e]/20">
-              <svg className="h-5 w-5 shrink-0 text-[#6b8c88]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <svg className="h-5 w-5 shrink-0 text-[#577572]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
               </svg>
               <input
@@ -364,7 +364,7 @@ export default function ComparePage() {
                 autoFocus
               />
               {query && (
-                <button onClick={clearSearch} className="ml-2 text-[#6b8c88] hover:text-[#1a2e2b] transition-colors">
+                <button onClick={clearSearch} className="ml-2 text-[#577572] hover:text-[#1a2e2b] transition-colors">
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                   </svg>
@@ -445,7 +445,7 @@ export default function ComparePage() {
                 </div>
                 <Link
                   href={`/search/${selectedTest.id}`}
-                  className="shrink-0 text-xs text-[#6b8c88] underline hover:text-[#2d6a5e] transition-colors"
+                  className="shrink-0 text-xs text-[#577572] underline hover:text-[#2d6a5e] transition-colors"
                 >
                   Full details →
                 </Link>
@@ -464,12 +464,12 @@ export default function ComparePage() {
               <div className="flex items-center justify-between mb-1">
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-[#2d6a5e]">Self-Pay Pricing</h3>
                 {cheapestPrice !== null && (
-                  <span className="text-xs text-[#6b8c88]">
+                  <span className="text-xs text-[#577572]">
                     From <span className="font-semibold text-[#1a2e2b]">${cheapestPrice.toFixed(2)}</span>
                   </span>
                 )}
               </div>
-              <p className="mb-4 text-[11px] text-[#6b8c88]">
+              <p className="mb-4 text-[11px] text-[#577572]">
                 LabLooker may earn a commission through lab links. This does not affect pricing or rankings.
               </p>
 
@@ -501,7 +501,7 @@ export default function ComparePage() {
                             )}
                           </div>
                           {p.notes && (
-                            <p className="mt-0.5 text-[11px] text-[#6b8c88]">{p.notes}</p>
+                            <p className="mt-0.5 text-[11px] text-[#577572]">{p.notes}</p>
                           )}
                         </div>
                         <div className="ml-4 flex shrink-0 items-center gap-3">
@@ -526,7 +526,7 @@ export default function ComparePage() {
                   })}
                 </div>
               ) : (
-                <p className="py-6 text-center text-sm text-[#6b8c88]">
+                <p className="py-6 text-center text-sm text-[#577572]">
                   No self-pay pricing found for this test yet.{' '}
                   <Link href={`/search/${selectedTest.id}`} className="text-[#2d6a5e] underline">
                     View full test details →
@@ -537,7 +537,7 @@ export default function ComparePage() {
               {!userState && !isRestricted && (
                 <button
                   onClick={() => setShowStatePicker(true)}
-                  className="mt-4 text-xs text-[#6b8c88] underline hover:text-[#2d6a5e] transition-colors"
+                  className="mt-4 text-xs text-[#577572] underline hover:text-[#2d6a5e] transition-colors"
                 >
                   Set your state to check ordering availability
                 </button>
@@ -675,12 +675,12 @@ export default function ComparePage() {
                 {selectedTests.length === 1 ? selectedTests[0].testName : 'Comparing tests'}
               </h2>
               {selectedTests.length > 1 && (
-                <p className="text-xs text-[#6b8c88] mt-0.5">{selectedTests.length} tests selected</p>
+                <p className="text-xs text-[#577572] mt-0.5">{selectedTests.length} tests selected</p>
               )}
             </div>
             <button
               onClick={closeSheet}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-[#faf8f5] text-[#6b8c88] hover:text-[#1a2e2b] transition-colors text-lg font-medium"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-[#faf8f5] text-[#577572] hover:text-[#1a2e2b] transition-colors text-lg font-medium"
             >
               ×
             </button>

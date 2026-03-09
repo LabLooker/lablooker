@@ -62,7 +62,7 @@ export default function Testimonials() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-[#1a2e2b]">{t.name}</p>
-                  <p className="text-xs text-[#6b8c88]">{t.role}</p>
+                  <p className="text-xs text-[#577572]">{t.role}</p>
                 </div>
               </div>
             </div>

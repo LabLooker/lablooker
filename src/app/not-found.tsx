@@ -24,7 +24,7 @@ export default function NotFound() {
         <h1 className="mt-4 text-2xl font-bold tracking-tight text-[#1a2e2b] sm:text-3xl">
           Page not found
         </h1>
-        <p className="mt-3 text-sm leading-relaxed text-[#6b8c88]">
+        <p className="mt-3 text-sm leading-relaxed text-[#577572]">
           The page you&apos;re looking for doesn&apos;t exist or may have moved.
           Try searching for a lab test instead.
         </p>

@@ -126,7 +126,7 @@ export default function TestSummaryCard({ testId, testName, results, goal, onLog
       ? 'text-[#2d6a5e]'
       : trend === '↓'
         ? 'text-[#c0826a]'
-        : 'text-[#6b8c88]'
+        : 'text-[#577572]'
 
   return (
     <div className="rounded-xl border border-[#e0ebe9] bg-white p-5 flex flex-col gap-3 hover:border-[#2d6a5e]/30 transition-colors">
@@ -142,13 +142,13 @@ export default function TestSummaryCard({ testId, testName, results, goal, onLog
       <div className="flex items-baseline gap-2">
         <span className="text-2xl font-bold text-[#1a2e2b]">{latest.value}</span>
         {latest.unit && (
-          <span className="text-sm text-[#6b8c88]">{latest.unit}</span>
+          <span className="text-sm text-[#577572]">{latest.unit}</span>
         )}
         <span className={`ml-auto text-xl font-bold ${trendColor}`}>{trend}</span>
       </div>
 
       {/* Date */}
-      <p className="text-xs text-[#6b8c88] -mt-2">
+      <p className="text-xs text-[#577572] -mt-2">
         {formatDate(latest.drawn_at)}
         {latest.lab_name ? ` · ${latest.lab_name}` : ''}
       </p>
@@ -157,7 +157,7 @@ export default function TestSummaryCard({ testId, testName, results, goal, onLog
       {goal && progressPct !== null && (
         <div className="space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-[#6b8c88]">Goal progress</span>
+            <span className="text-xs text-[#577572]">Goal progress</span>
             <span className="text-xs font-medium text-[#2d6a5e]">{progressPct}%</span>
           </div>
           <div className="h-1.5 rounded-full bg-[#e0ebe9] overflow-hidden">

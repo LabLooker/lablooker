@@ -100,19 +100,19 @@ export default function PanelBuilderPage() {
           <h1 className="text-4xl font-bold tracking-tight text-[#1a2e2b] sm:text-5xl">
             Panel Builder
           </h1>
-          <p className="mt-4 text-lg text-[#6b8c88]">
+          <p className="mt-4 text-lg text-[#577572]">
             Build a custom lab panel, compare coverage across labs, and find the cheapest combination.
           </p>
         </div>
 
         {/* Search to add tests */}
         <div className="mx-auto mt-8 max-w-2xl">
-          <label className="mb-2 block text-sm font-medium text-[#6b8c88]">
+          <label className="mb-2 block text-sm font-medium text-[#577572]">
             Add tests to your panel
           </label>
           <div className="relative">
             <svg
-              className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#6b8c88]"
+              className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#577572]"
               fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -137,7 +137,7 @@ export default function PanelBuilderPage() {
                   >
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-[#1a2e2b]">{test.test_name}</p>
-                      <p className="text-xs text-[#6b8c88]">
+                      <p className="text-xs text-[#577572]">
                         CPT: {test.cpt_codes.join(', ')}
                         {test.category && ` · ${CATEGORY_LABELS[test.category] || test.category}`}
                       </p>
@@ -151,7 +151,7 @@ export default function PanelBuilderPage() {
             )}
           </div>
           {!isPremium && (
-            <p className="mt-2 text-xs text-[#6b8c88]">
+            <p className="mt-2 text-xs text-[#577572]">
               Free tier: {panel.length}/{FREE_TIER_LIMIT} tests.{' '}
               <Link href="/signup" className="text-primary-400 hover:underline">
                 Upgrade to Premium
@@ -162,7 +162,7 @@ export default function PanelBuilderPage() {
           {!userState && (
             <button
               onClick={() => setShowStatePicker(true)}
-              className="mt-1 text-xs text-[#6b8c88] underline hover:text-[#6b8c88]"
+              className="mt-1 text-xs text-[#577572] underline hover:text-[#577572]"
             >
               Set your state to check DTC ordering availability
             </button>
@@ -173,12 +173,12 @@ export default function PanelBuilderPage() {
         {panel.length > 0 && (
           <div className="mx-auto mt-6 max-w-2xl">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-[#6b8c88]">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-[#577572]">
                 Your Panel ({panel.length} tests)
               </h2>
               <button
                 onClick={() => setPanel([])}
-                className="text-xs text-[#6b8c88] hover:text-red-400 transition-colors"
+                className="text-xs text-[#577572] hover:text-red-400 transition-colors"
               >
                 Clear all
               </button>
@@ -196,11 +196,11 @@ export default function PanelBuilderPage() {
                     >
                       {test.test_name}
                     </Link>
-                    <p className="text-xs font-mono text-[#6b8c88]">CPT: {test.cpt_codes.join(', ')}</p>
+                    <p className="text-xs font-mono text-[#577572]">CPT: {test.cpt_codes.join(', ')}</p>
                   </div>
                   <button
                     onClick={() => removeTest(test.id)}
-                    className="ml-3 shrink-0 text-[#6b8c88] hover:text-red-400 transition-colors"
+                    className="ml-3 shrink-0 text-[#577572] hover:text-red-400 transition-colors"
                   >
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -222,10 +222,10 @@ export default function PanelBuilderPage() {
         {/* Coverage Matrix */}
         {panel.length > 0 && !isRestricted && (
           <div className="mt-10">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#6b8c88] text-center">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#577572] text-center">
               Lab Coverage Matrix
             </h2>
-            <p className="mt-1 text-center text-xs text-[#6b8c88]">
+            <p className="mt-1 text-center text-xs text-[#577572]">
               Showing which labs can run each test in your panel
             </p>
 
@@ -233,13 +233,13 @@ export default function PanelBuilderPage() {
               <table className="w-full min-w-[700px] border-collapse">
                 <thead>
                   <tr>
-                    <th className="sticky left-0 z-10 bg-[#faf8f5] px-4 py-3 text-left text-xs font-medium text-[#6b8c88] border-b border-[#e0ebe9]">
+                    <th className="sticky left-0 z-10 bg-[#faf8f5] px-4 py-3 text-left text-xs font-medium text-[#577572] border-b border-[#e0ebe9]">
                       Test
                     </th>
                     {displayLabs.map((lab) => (
                       <th
                         key={lab.id}
-                        className="px-3 py-3 text-center text-xs font-medium text-[#6b8c88] border-b border-[#e0ebe9] whitespace-nowrap"
+                        className="px-3 py-3 text-center text-xs font-medium text-[#577572] border-b border-[#e0ebe9] whitespace-nowrap"
                       >
                         {lab.lab_name}
                       </th>
@@ -262,7 +262,7 @@ export default function PanelBuilderPage() {
                             className="px-3 py-3 text-center border-b border-[#e0ebe9]"
                           >
                             {isAvailable ? (
-                              <span className="text-xs text-[#6b8c88]">Price TBD</span>
+                              <span className="text-xs text-[#577572]">Price TBD</span>
                             ) : (
                               <span className="text-[#e0ebe9]">--</span>
                             )}
@@ -279,7 +279,7 @@ export default function PanelBuilderPage() {
                     </td>
                     {displayLabs.map((lab) => (
                       <td key={lab.id} className="px-3 py-3 text-center">
-                        <span className="text-xs text-[#6b8c88]">Coming soon</span>
+                        <span className="text-xs text-[#577572]">Coming soon</span>
                       </td>
                     ))}
                   </tr>
@@ -300,7 +300,7 @@ export default function PanelBuilderPage() {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-[#1a2e2b]">Smart Optimization</h3>
-                <p className="mt-1 text-sm text-[#6b8c88]">
+                <p className="mt-1 text-sm text-[#577572]">
                   Once pricing data is loaded, we&apos;ll automatically find the cheapest lab combination for your panel — including split-ordering across labs when it saves money.
                 </p>
                 {!isPremium && (
@@ -355,12 +355,12 @@ export default function PanelBuilderPage() {
         {panel.length === 0 && !loading && (
           <div className="mx-auto mt-16 max-w-md text-center">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#faf8f5]">
-              <svg className="h-8 w-8 text-[#6b8c88]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <svg className="h-8 w-8 text-[#577572]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
               </svg>
             </div>
             <h3 className="mt-4 text-lg font-semibold text-[#1a2e2b]">Build your custom panel</h3>
-            <p className="mt-2 text-sm text-[#6b8c88]">
+            <p className="mt-2 text-sm text-[#577572]">
               Search for tests above and add them to your panel. We&apos;ll show you which labs carry
               each test and help you find the cheapest combination.
             </p>
@@ -369,7 +369,7 @@ export default function PanelBuilderPage() {
                 <button
                   key={suggestion}
                   onClick={() => setQuery(suggestion.split(' ')[0].toLowerCase())}
-                  className="rounded-full border border-[#e0ebe9] px-3 py-1.5 text-xs text-[#6b8c88] transition-colors hover:border-primary-500/30 hover:text-primary-400"
+                  className="rounded-full border border-[#e0ebe9] px-3 py-1.5 text-xs text-[#577572] transition-colors hover:border-primary-500/30 hover:text-primary-400"
                 >
                   {suggestion}
                 </button>
@@ -383,7 +383,7 @@ export default function PanelBuilderPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <div className="mx-4 w-full max-w-md rounded-2xl border border-[#e0ebe9] bg-white p-8">
               <h3 className="text-xl font-bold text-[#1a2e2b]">Upgrade to Premium</h3>
-              <p className="mt-3 text-sm text-[#6b8c88]">
+              <p className="mt-3 text-sm text-[#577572]">
                 Unlock unlimited panel building, price comparison across all labs, smart optimization,
                 PDF export, and saved panels.
               </p>
@@ -409,7 +409,7 @@ export default function PanelBuilderPage() {
                 </Button>
                 <button
                   onClick={() => setShowUpgrade(false)}
-                  className="rounded-lg border border-[#e0ebe9] px-4 py-2 text-sm text-[#6b8c88] hover:text-[#1a2e2b] transition-colors"
+                  className="rounded-lg border border-[#e0ebe9] px-4 py-2 text-sm text-[#577572] hover:text-[#1a2e2b] transition-colors"
                 >
                   Maybe later
                 </button>

@@ -72,7 +72,7 @@ export function StatePickerModal() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="mx-4 w-full max-w-sm rounded-2xl border border-[#e0ebe9] bg-white p-8 shadow-xl">
         <h3 className="text-lg font-semibold text-[#1a2e2b]">Select Your State</h3>
-        <p className="mt-1 text-sm text-[#6b8c88]">
+        <p className="mt-1 text-sm text-[#577572]">
           Some states restrict direct-to-consumer lab ordering. We&apos;ll customize your experience accordingly.
         </p>
         <select
@@ -89,7 +89,7 @@ export function StatePickerModal() {
         </select>
         <button
           onClick={() => setShowStatePicker(false)}
-          className="mt-3 w-full text-center text-xs text-[#8ba8a4] hover:text-[#6b8c88]"
+          className="mt-3 w-full text-center text-xs text-[#8ba8a4] hover:text-[#577572]"
         >
           Skip for now
         </button>

@@ -133,7 +133,7 @@ export default function SavedProviders() {
       </div>
 
       {providers.length === 0 && !showForm && (
-        <p className="text-sm text-[#6b8c88]">No saved providers yet. Add one to quickly fill in your doctor request templates.</p>
+        <p className="text-sm text-[#577572]">No saved providers yet. Add one to quickly fill in your doctor request templates.</p>
       )}
 
       {/* Provider cards */}
@@ -146,9 +146,9 @@ export default function SavedProviders() {
             <div>
               <p className="font-semibold text-sm text-[#1a2e2b]">{p.nickname}</p>
               <p className="text-sm text-[#4a6b67]">{p.provider_name}</p>
-              {p.practice_name && <p className="text-xs text-[#6b8c88]">{p.practice_name}</p>}
-              {p.fax_number && <p className="text-xs text-[#6b8c88]">Fax: {p.fax_number}</p>}
-              {p.npi && <p className="text-xs text-[#6b8c88]">NPI: {p.npi}</p>}
+              {p.practice_name && <p className="text-xs text-[#577572]">{p.practice_name}</p>}
+              {p.fax_number && <p className="text-xs text-[#577572]">Fax: {p.fax_number}</p>}
+              {p.npi && <p className="text-xs text-[#577572]">NPI: {p.npi}</p>}
             </div>
             <div className="flex gap-2 shrink-0 ml-4">
               <button onClick={() => handleEdit(p)} className="text-xs text-[#2d6a5e] hover:text-[#245a50] font-medium">Edit</button>

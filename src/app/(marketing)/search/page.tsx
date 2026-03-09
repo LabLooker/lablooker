@@ -176,7 +176,7 @@ const HEALTH_TOPICS: HealthTopic[] = [
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="pt-24 pb-20 text-center"><p className="text-[#6b8c88]">Loading...</p></div>}>
+    <Suspense fallback={<div className="pt-24 pb-20 text-center"><p className="text-[#577572]">Loading...</p></div>}>
       <SearchPageInner />
     </Suspense>
   )
@@ -355,7 +355,7 @@ function SearchPageInner() {
         <div className="mx-auto mt-8 max-w-2xl">
           <div className="relative">
             <svg
-              className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#6b8c88]"
+              className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#577572]"
               fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"
             >
               <path strokeLinecap="round" strokeLinejoin="round"
@@ -375,12 +375,12 @@ function SearchPageInner() {
                 if (e.key === 'Enter') handleSearchSubmit()
               }}
               placeholder="Search tests, CPT codes, or symptoms..."
-              className="w-full rounded-xl border-[2.5px] border-[#2d6a5e] bg-white py-4 pl-12 pr-4 text-[#1a2e2b] placeholder-[#6b8c88] transition-colors focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30"
+              className="w-full rounded-xl border-[2.5px] border-[#2d6a5e] bg-white py-4 pl-12 pr-4 text-[#1a2e2b] placeholder-[#577572] transition-colors focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30"
             />
             {query && (
               <button
                 onClick={() => { setQuery(''); setCategoryFilter(null); setKeywordFilter(null); setActiveTopicSlug(null); router.replace('/search') }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6b8c88] hover:text-[#1a2e2b]"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#577572] hover:text-[#1a2e2b]"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -394,7 +394,7 @@ function SearchPageInner() {
         {loading && (
           <div className="mt-16 text-center">
             <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#e0ebe9] border-t-[#2d6a5e]" />
-            <p className="mt-4 text-sm text-[#6b8c88]">Loading tests...</p>
+            <p className="mt-4 text-sm text-[#577572]">Loading tests...</p>
           </div>
         )}
 
@@ -403,7 +403,7 @@ function SearchPageInner() {
             {/* Health topic cards — show when browsing (no query and no active topic filter) */}
             {!query.trim() && !categoryFilter && !keywordFilter && (
               <div className="mt-8 mx-auto max-w-4xl">
-                <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-[#6b8c88] mb-4">Lab Tests by Health Topic</h2>
+                <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-[#577572] mb-4">Lab Tests by Health Topic</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {HEALTH_TOPICS.map((topic) => (
                     <button
@@ -428,7 +428,7 @@ function SearchPageInner() {
                 </div>
                 <div className="mt-6 flex items-center gap-4">
                   <div className="flex-1 border-t border-[#e0ebe9]" />
-                  <span className="text-xs text-[#6b8c88]">or browse all {tests.length} tests below</span>
+                  <span className="text-xs text-[#577572]">or browse all {tests.length} tests below</span>
                   <div className="flex-1 border-t border-[#e0ebe9]" />
                 </div>
               </div>
@@ -439,7 +439,7 @@ function SearchPageInner() {
               <div className="mt-6 mx-auto max-w-5xl flex items-center justify-between">
                 <button
                   onClick={() => { setCategoryFilter(null); setKeywordFilter(null); setActiveTopicSlug(null); router.replace('/search') }}
-                  className="flex items-center gap-2 text-sm text-[#6b8c88] hover:text-[#2d6a5e] transition-colors"
+                  className="flex items-center gap-2 text-sm text-[#577572] hover:text-[#2d6a5e] transition-colors"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -459,7 +459,7 @@ function SearchPageInner() {
 
             {/* Results count + view toggle */}
             <div className="mt-6 flex items-center justify-between mx-auto max-w-5xl">
-              <p className="text-sm text-[#6b8c88]">
+              <p className="text-sm text-[#577572]">
                 {query.trim() ? (
                   <>
                     {matchedSymptoms.length > 0 && `${matchedSymptoms.length} symptom match${matchedSymptoms.length !== 1 ? 'es' : ''} · `}
@@ -472,7 +472,7 @@ function SearchPageInner() {
               <div className="flex items-center gap-1 rounded-lg border border-[#e0ebe9] bg-white p-1">
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`rounded-md p-1.5 transition-colors ${viewMode === 'list' ? 'bg-[#2d6a5e] text-white' : 'text-[#6b8c88] hover:text-[#1a2e2b]'}`}
+                  className={`rounded-md p-1.5 transition-colors ${viewMode === 'list' ? 'bg-[#2d6a5e] text-white' : 'text-[#577572] hover:text-[#1a2e2b]'}`}
                   title="List view"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -481,7 +481,7 @@ function SearchPageInner() {
                 </button>
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`rounded-md p-1.5 transition-colors ${viewMode === 'grid' ? 'bg-[#2d6a5e] text-white' : 'text-[#6b8c88] hover:text-[#1a2e2b]'}`}
+                  className={`rounded-md p-1.5 transition-colors ${viewMode === 'grid' ? 'bg-[#2d6a5e] text-white' : 'text-[#577572] hover:text-[#1a2e2b]'}`}
                   title="Grid view"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -536,7 +536,7 @@ function SearchPageInner() {
                           <h3 className="font-semibold text-[#1a2e2b]">
                             Symptom match: {symptom.name}
                           </h3>
-                          <p className="text-xs text-[#6b8c88]">
+                          <p className="text-xs text-[#577572]">
                             {symptom.related_test_ids.length} commonly ordered tests
                           </p>
                         </div>
@@ -564,10 +564,10 @@ function SearchPageInner() {
                                 {test.test_name}
                               </h4>
                               {test.cpt_codes.length > 0 && (
-                                <span className="text-xs font-mono text-[#6b8c88]">CPT: {test.cpt_codes[0]}</span>
+                                <span className="text-xs font-mono text-[#577572]">CPT: {test.cpt_codes[0]}</span>
                               )}
                             </div>
-                            <svg className="h-4 w-4 shrink-0 text-[#6b8c88] group-hover:text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                            <svg className="h-4 w-4 shrink-0 text-[#577572] group-hover:text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                             </svg>
                           </Link>
@@ -581,7 +581,7 @@ function SearchPageInner() {
                 {filteredTests.length > 0 && (
                   <div className="flex items-center gap-4 my-4">
                     <div className="flex-1 border-t border-[#e0ebe9]" />
-                    <span className="text-xs text-[#6b8c88]">Test results</span>
+                    <span className="text-xs text-[#577572]">Test results</span>
                     <div className="flex-1 border-t border-[#e0ebe9]" />
                   </div>
                 )}
@@ -607,8 +607,8 @@ function SearchPageInner() {
 
                 {filteredTests.length === 0 && matchedSymptoms.length === 0 && (
                   <div className="mt-16 text-center">
-                    <p className="text-lg text-[#6b8c88]">No results found.</p>
-                    <p className="mt-2 text-sm text-[#6b8c88]">
+                    <p className="text-lg text-[#577572]">No results found.</p>
+                    <p className="mt-2 text-sm text-[#577572]">
                       Try a different search term or browse by category.
                     </p>
                   </div>
@@ -654,7 +654,7 @@ function SearchPageInner() {
                 </a>
               )}
 
-              <p className="mt-4 text-xs leading-relaxed text-[#6b8c88]">
+              <p className="mt-4 text-xs leading-relaxed text-[#577572]">
                 LabLooker is a research tool, not a substitute for emergency medical care.
               </p>
 
@@ -698,7 +698,7 @@ function TestListItem({ test }: { test: Test }) {
           )}
         </div>
         {test.description && (
-          <p className="mt-1 text-xs leading-relaxed text-[#6b8c88] line-clamp-1">
+          <p className="mt-1 text-xs leading-relaxed text-[#577572] line-clamp-1">
             {test.description}
           </p>
         )}
@@ -714,7 +714,7 @@ function TestListItem({ test }: { test: Test }) {
             {CATEGORY_LABELS[test.category] || test.category}
           </span>
         )}
-        <svg className="h-4 w-4 text-[#6b8c88] group-hover:text-[#2d6a5e] transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <svg className="h-4 w-4 text-[#577572] group-hover:text-[#2d6a5e] transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
         </svg>
       </div>
@@ -744,13 +744,13 @@ function TestCard({ test }: { test: Test }) {
         </p>
       )}
       {test.description && (
-        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-[#6b8c88]">
+        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-[#577572]">
           {test.description}
         </p>
       )}
       <div className="mt-3 flex items-center justify-between">
         {test.category && (
-          <span className="rounded-full bg-[#e0ebe9] px-2 py-0.5 text-xs text-[#6b8c88]">
+          <span className="rounded-full bg-[#e0ebe9] px-2 py-0.5 text-xs text-[#577572]">
             {CATEGORY_LABELS[test.category] || test.category}
           </span>
         )}

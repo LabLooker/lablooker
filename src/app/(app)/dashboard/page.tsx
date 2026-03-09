@@ -134,7 +134,7 @@ export default function DashboardPage() {
       ? 'bg-amber-500/10 text-amber-600 border-amber-500/20'
       : profile?.plan === 'pro'
         ? 'bg-[#2d6a5e]/10 text-[#2d6a5e] border-[#2d6a5e]/20'
-        : 'bg-[#faf8f5] text-[#6b8c88] border-[#e0ebe9]'
+        : 'bg-[#faf8f5] text-[#577572] border-[#e0ebe9]'
 
   return (
     <div>
@@ -205,7 +205,7 @@ export default function DashboardPage() {
             </svg>
           </div>
           <h2 className="text-lg font-semibold text-[#1a2e2b]">No results yet</h2>
-          <p className="mt-2 max-w-sm text-sm text-[#6b8c88]">
+          <p className="mt-2 max-w-sm text-sm text-[#577572]">
             Log your first result to start your lab history. Add more over time and you&rsquo;ll see your trends here.
           </p>
 

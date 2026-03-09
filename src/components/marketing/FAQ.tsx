@@ -39,7 +39,7 @@ export default function FAQ() {
                     {faq.q}
                   </span>
                   <svg
-                    className={`h-5 w-5 shrink-0 text-[#6b8c88] transition-transform duration-200 ${
+                    className={`h-5 w-5 shrink-0 text-[#577572] transition-transform duration-200 ${
                       isOpen ? 'rotate-180' : ''
                     }`}
                     fill="none"
@@ -59,7 +59,7 @@ export default function FAQ() {
                     isOpen ? 'max-h-96 pb-5' : 'max-h-0'
                   }`}
                 >
-                  <p className="px-6 text-sm leading-relaxed text-[#6b8c88]">
+                  <p className="px-6 text-sm leading-relaxed text-[#577572]">
                     {faq.a}
                   </p>
                 </div>

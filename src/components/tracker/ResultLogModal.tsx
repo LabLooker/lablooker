@@ -142,7 +142,7 @@ export default function ResultLogModal({
           <h2 className="text-lg font-semibold text-[#1a2e2b]">Log Lab Result</h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-[#6b8c88] hover:bg-[#faf8f5] hover:text-[#1a2e2b] transition-colors"
+            className="rounded-lg p-1.5 text-[#577572] hover:bg-[#faf8f5] hover:text-[#1a2e2b] transition-colors"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -164,7 +164,7 @@ export default function ResultLogModal({
                   setTestName('')
                 }}
                 placeholder="Search for a test..."
-                className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none"
+                className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
                 autoComplete="off"
               />
               {showTestDropdown && testResults.length > 0 && (
@@ -203,7 +203,7 @@ export default function ResultLogModal({
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder="e.g. 29"
-                className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none"
+                className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
                 required
               />
             </div>
@@ -219,7 +219,7 @@ export default function ResultLogModal({
                 onFocus={() => setShowUnitDropdown(true)}
                 onBlur={() => setTimeout(() => setShowUnitDropdown(false), 150)}
                 placeholder="e.g. ng/mL"
-                className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none"
+                className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
                 autoComplete="off"
               />
               {showUnitDropdown && (
@@ -270,7 +270,7 @@ export default function ResultLogModal({
               onFocus={() => setShowLabSuggestions(true)}
               onBlur={() => setTimeout(() => setShowLabSuggestions(false), 150)}
               placeholder="Quest Diagnostics, LabCorp, or type your own..."
-              className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none"
+              className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
             />
             {showLabSuggestions && (
               <div className="absolute z-10 mt-1 w-full rounded-lg border border-[#e0ebe9] bg-white shadow-lg">
@@ -296,7 +296,7 @@ export default function ResultLogModal({
           {/* Ref range */}
           <div>
             <label className="mb-1 block text-xs font-medium text-[#4a6b67]">
-              Reference Range <span className="text-[#6b8c88] font-normal">(optional, from your lab slip)</span>
+              Reference Range <span className="text-[#577572] font-normal">(optional, from your lab slip)</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
               <input
@@ -305,7 +305,7 @@ export default function ResultLogModal({
                 value={refRangeLow}
                 onChange={(e) => setRefRangeLow(e.target.value)}
                 placeholder="Low"
-                className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none"
+                className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
               />
               <input
                 type="number"
@@ -313,7 +313,7 @@ export default function ResultLogModal({
                 value={refRangeHigh}
                 onChange={(e) => setRefRangeHigh(e.target.value)}
                 placeholder="High"
-                className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none"
+                className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
               />
             </div>
           </div>
@@ -321,14 +321,14 @@ export default function ResultLogModal({
           {/* Notes */}
           <div>
             <label className="mb-1 block text-xs font-medium text-[#4a6b67]">
-              Notes <span className="text-[#6b8c88] font-normal">(optional)</span>
+              Notes <span className="text-[#577572] font-normal">(optional)</span>
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g., fasting, 3 hours post-medication"
               rows={3}
-              className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none resize-none"
+              className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none resize-none"
             />
           </div>
 

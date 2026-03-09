@@ -39,7 +39,7 @@ export default function LoginPage() {
   return (
     <div className="w-full max-w-sm">
       <h1 className="text-2xl font-bold text-[#1a2e2b] text-center">Welcome back</h1>
-      <p className="mt-2 text-sm text-[#6b8c88] text-center">
+      <p className="mt-2 text-sm text-[#577572] text-center">
         Sign in to access your lab tracker and saved results
       </p>
 
@@ -85,7 +85,7 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[#6b8c88]">
+      <p className="mt-6 text-center text-sm text-[#577572]">
         Don&apos;t have an account?{' '}
         <Link href="/signup" className="text-[#2d6a5e] hover:text-[#245a50]">
           Sign up

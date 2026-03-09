@@ -83,11 +83,11 @@ function CustomTooltip({ active, payload }: any) {
   return (
     <div className="rounded-xl border border-[#e0ebe9] bg-white p-3 shadow-lg text-xs space-y-1">
       <p className="font-semibold text-[#1a2e2b]">{d.value}{d.unit ? ` ${d.unit}` : ''}</p>
-      <p className="text-[#6b8c88]">{formatDate(d.date)}</p>
+      <p className="text-[#577572]">{formatDate(d.date)}</p>
       {d.lab && <p className="text-[#4a6b67]">{d.lab}</p>}
-      {d.notes && <p className="italic text-[#6b8c88] max-w-[200px]">{d.notes}</p>}
+      {d.notes && <p className="italic text-[#577572] max-w-[200px]">{d.notes}</p>}
       {d.ref_low !== null && d.ref_high !== null && (
-        <p className="text-[#6b8c88]">Ref: {d.ref_low}–{d.ref_high}</p>
+        <p className="text-[#577572]">Ref: {d.ref_low}–{d.ref_high}</p>
       )}
     </div>
   )
@@ -254,7 +254,7 @@ export default function TrackerDetailPage() {
       {/* Back link */}
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1.5 text-sm text-[#6b8c88] hover:text-[#2d6a5e] transition-colors mb-6"
+        className="inline-flex items-center gap-1.5 text-sm text-[#577572] hover:text-[#2d6a5e] transition-colors mb-6"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
@@ -266,7 +266,7 @@ export default function TrackerDetailPage() {
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-[#1a2e2b]">{testName}</h1>
-          <p className="mt-1 text-sm text-[#6b8c88]">
+          <p className="mt-1 text-sm text-[#577572]">
             {results.length} result{results.length !== 1 ? 's' : ''} tracked
             {!isPremium && ' · Free plan: last 3 months shown'}
           </p>
@@ -300,7 +300,7 @@ export default function TrackerDetailPage() {
             <p className="text-xs font-semibold text-[#2d6a5e]">Share link copied to clipboard!</p>
             <p className="text-xs text-[#4a6b67] mt-0.5 break-all">{shareLink}</p>
           </div>
-          <button onClick={() => setShareLink('')} className="shrink-0 text-xs text-[#6b8c88] hover:text-[#1a2e2b]">✕</button>
+          <button onClick={() => setShareLink('')} className="shrink-0 text-xs text-[#577572] hover:text-[#1a2e2b]">✕</button>
         </div>
       )}
 
@@ -311,7 +311,7 @@ export default function TrackerDetailPage() {
           className={`rounded-full px-4 py-1.5 text-xs font-medium border transition-colors ${
             showLabRange
               ? 'bg-gray-200 border-gray-300 text-gray-800'
-              : 'bg-white border-[#e0ebe9] text-[#6b8c88] hover:border-gray-300'
+              : 'bg-white border-[#e0ebe9] text-[#577572] hover:border-gray-300'
           }`}
         >
           Lab Range
@@ -322,7 +322,7 @@ export default function TrackerDetailPage() {
           className={`rounded-full px-4 py-1.5 text-xs font-medium border transition-colors ${
             showFunctional && funcMatch
               ? 'bg-amber-100 border-amber-300 text-amber-800'
-              : 'bg-white border-[#e0ebe9] text-[#6b8c88] hover:border-amber-200 disabled:opacity-40 disabled:cursor-not-allowed'
+              : 'bg-white border-[#e0ebe9] text-[#577572] hover:border-amber-200 disabled:opacity-40 disabled:cursor-not-allowed'
           }`}
           title={!funcMatch ? 'No functional medicine range available for this test' : undefined}
         >
@@ -334,7 +334,7 @@ export default function TrackerDetailPage() {
           className={`rounded-full px-4 py-1.5 text-xs font-medium border transition-colors ${
             showGoal && goal
               ? 'bg-[#2d6a5e]/10 border-[#2d6a5e]/30 text-[#2d6a5e]'
-              : 'bg-white border-[#e0ebe9] text-[#6b8c88] hover:border-[#2d6a5e]/20 disabled:opacity-40 disabled:cursor-not-allowed'
+              : 'bg-white border-[#e0ebe9] text-[#577572] hover:border-[#2d6a5e]/20 disabled:opacity-40 disabled:cursor-not-allowed'
           }`}
           title={!goal ? 'No goal set for this test' : undefined}
         >
@@ -345,7 +345,7 @@ export default function TrackerDetailPage() {
       {/* Chart */}
       {results.length === 0 ? (
         <div className="rounded-xl border border-dashed border-[#e0ebe9] bg-white py-16 text-center">
-          <p className="text-sm text-[#6b8c88]">No results yet. Log your first result above.</p>
+          <p className="text-sm text-[#577572]">No results yet. Log your first result above.</p>
         </div>
       ) : (
         <div className="rounded-xl border border-[#e0ebe9] bg-white p-6">
@@ -354,14 +354,14 @@ export default function TrackerDetailPage() {
               <CartesianGrid stroke="#e0ebe9" strokeDasharray="4 4" />
               <XAxis
                 dataKey="date"
-                tick={{ fontSize: 11, fill: '#6b8c88' }}
+                tick={{ fontSize: 11, fill: '#577572' }}
                 tickFormatter={formatDate}
                 tickLine={false}
                 axisLine={{ stroke: '#e0ebe9' }}
               />
               <YAxis
                 domain={[yMin, yMax]}
-                tick={{ fontSize: 11, fill: '#6b8c88' }}
+                tick={{ fontSize: 11, fill: '#577572' }}
                 tickLine={false}
                 axisLine={false}
                 unit={unit ? ` ${unit}` : undefined}
@@ -441,24 +441,24 @@ export default function TrackerDetailPage() {
                     {r.value}{r.unit ? ` ${r.unit}` : ''}
                   </span>
                   {r.ref_range_low !== null && r.ref_range_high !== null && (
-                    <span className="ml-2 text-xs text-[#6b8c88]">
+                    <span className="ml-2 text-xs text-[#577572]">
                       (ref: {r.ref_range_low}–{r.ref_range_high})
                     </span>
                   )}
                   {r.notes && (
-                    <p className="text-xs text-[#6b8c88] mt-0.5 italic truncate">{r.notes}</p>
+                    <p className="text-xs text-[#577572] mt-0.5 italic truncate">{r.notes}</p>
                   )}
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-xs font-medium text-[#4a6b67]">{formatDate(r.drawn_at)}</p>
-                  {r.lab_name && <p className="text-xs text-[#6b8c88]">{r.lab_name}</p>}
+                  {r.lab_name && <p className="text-xs text-[#577572]">{r.lab_name}</p>}
                 </div>
               </div>
             ))}
           </div>
           {!isPremium && (
             <div className="px-5 py-3 bg-[#faf8f5] border-t border-[#e0ebe9]">
-              <p className="text-xs text-[#6b8c88]">
+              <p className="text-xs text-[#577572]">
                 Showing last 3 months only.{' '}
                 <a href="/pricing" className="text-[#2d6a5e] underline hover:no-underline">Upgrade to Premium</a>
                 {' '}to see full history.

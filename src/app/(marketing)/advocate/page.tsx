@@ -248,7 +248,7 @@ export default function AdvocatePage() {
             <p className="text-lg" style={{ color: '#4a6b67' }}>
               Generate a printable document to bring to your doctor requesting specific lab tests.
               <br />
-              <span className="text-sm" style={{ color: '#6b8c88' }}>This is a communication tool — not a medical order.</span>
+              <span className="text-sm" style={{ color: '#577572' }}>This is a communication tool — not a medical order.</span>
             </p>
           </div>
 
@@ -258,7 +258,7 @@ export default function AdvocatePage() {
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>1</span>
               Your information
             </h2>
-            <p className="text-sm mb-1 ml-9" style={{ color: '#6b8c88' }}>
+            <p className="text-sm mb-1 ml-9" style={{ color: '#577572' }}>
               Optional — pre-fill the template so you don&apos;t have to hand-write it later.
             </p>
             <p className="text-xs mb-4 ml-9 italic" style={{ color: '#a3bfbb' }}>
@@ -315,7 +315,7 @@ export default function AdvocatePage() {
                     </select>
                   </div>
                 ) : !isSignedIn ? (
-                  <p className="text-xs mb-2" style={{ color: '#6b8c88' }}>
+                  <p className="text-xs mb-2" style={{ color: '#577572' }}>
                     <a href="/login" className="underline hover:text-[#2d6a5e]">Sign in</a> to use saved providers
                   </p>
                 ) : null}
@@ -349,7 +349,7 @@ export default function AdvocatePage() {
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>2</span>
               What tests do you want to request?
             </h2>
-            <p className="text-sm mb-4 ml-9" style={{ color: '#6b8c88' }}>
+            <p className="text-sm mb-4 ml-9" style={{ color: '#577572' }}>
               Search and add the lab tests you&apos;d like your doctor to consider.
             </p>
 
@@ -363,7 +363,7 @@ export default function AdvocatePage() {
                 style={{ borderColor: '#2d6a5e', color: '#1a2e2b', backgroundColor: 'white' }}
               />
               {isSearching && (
-                <div className="absolute right-3 top-3.5 text-sm" style={{ color: '#6b8c88' }}>Searching...</div>
+                <div className="absolute right-3 top-3.5 text-sm" style={{ color: '#577572' }}>Searching...</div>
               )}
               {searchResults.length > 0 && (
                 <div className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg max-h-60 overflow-y-auto" style={{ borderColor: '#e0ebe9' }}>
@@ -376,7 +376,7 @@ export default function AdvocatePage() {
                     >
                       <div className="font-medium" style={{ color: '#1a2e2b' }}>{test.test_name}</div>
                       {test.cpt_codes?.length > 0 && (
-                        <div className="text-xs mt-0.5" style={{ color: '#6b8c88' }}>CPT: {test.cpt_codes.join(', ')}</div>
+                        <div className="text-xs mt-0.5" style={{ color: '#577572' }}>CPT: {test.cpt_codes.join(', ')}</div>
                       )}
                     </button>
                   ))}
@@ -395,7 +395,7 @@ export default function AdvocatePage() {
                     <div>
                       <span className="font-medium" style={{ color: '#1a2e2b' }}>{test.test_name}</span>
                       {test.cpt_codes?.length > 0 && (
-                        <span className="text-xs ml-2" style={{ color: '#6b8c88' }}>CPT: {test.cpt_codes.join(', ')}</span>
+                        <span className="text-xs ml-2" style={{ color: '#577572' }}>CPT: {test.cpt_codes.join(', ')}</span>
                       )}
                     </div>
                     <button
@@ -415,7 +415,7 @@ export default function AdvocatePage() {
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>3</span>
               Why are you requesting these tests?
             </h2>
-            <p className="text-sm mb-4 ml-9" style={{ color: '#6b8c88' }}>
+            <p className="text-sm mb-4 ml-9" style={{ color: '#577572' }}>
               Optional — describe your symptoms or reasons. This helps your doctor understand your concerns.
             </p>
             <div className="ml-9">
@@ -436,7 +436,7 @@ export default function AdvocatePage() {
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>4</span>
               Generate your template
             </h2>
-            <p className="text-sm mb-4 ml-9" style={{ color: '#6b8c88' }}>
+            <p className="text-sm mb-4 ml-9" style={{ color: '#577572' }}>
               Create a formatted document to print or copy.
             </p>
             <div className="ml-9">
@@ -446,7 +446,7 @@ export default function AdvocatePage() {
                 className="w-full py-4 rounded-xl text-lg font-semibold transition-all"
                 style={{
                   backgroundColor: selectedTests.length > 0 ? '#2d6a5e' : '#e0ebe9',
-                  color: selectedTests.length > 0 ? 'white' : '#6b8c88',
+                  color: selectedTests.length > 0 ? 'white' : '#577572',
                   cursor: selectedTests.length > 0 ? 'pointer' : 'not-allowed',
                 }}
               >
@@ -562,7 +562,7 @@ export default function AdvocatePage() {
                           <tr style={{ backgroundColor: '#f5f5f0' }}>
                             <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>Test Name</th>
                             <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>CPT Code</th>
-                            <th className="text-left px-3 py-2 border font-semibold" title="ICD-10 codes justify medical necessity to insurance. Your doctor confirms which applies." style={{ borderColor: '#ccc', color: '#1a2e2b' }}>ICD-10 Codes <span className="font-normal text-xs" style={{ color: '#6b8c88' }}>(why it&apos;s needed)</span></th>
+                            <th className="text-left px-3 py-2 border font-semibold" title="ICD-10 codes justify medical necessity to insurance. Your doctor confirms which applies." style={{ borderColor: '#ccc', color: '#1a2e2b' }}>ICD-10 Codes <span className="font-normal text-xs" style={{ color: '#577572' }}>(why it&apos;s needed)</span></th>
                           </tr>
                         </thead>
                         <tbody>

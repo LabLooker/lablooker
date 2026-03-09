@@ -46,7 +46,7 @@ export default function FeedbackForm() {
                   </svg>
                 </div>
                 <h3 className="mt-4 text-lg font-semibold text-[#1a2e2b]">Thank you!</h3>
-                <p className="mt-1 text-sm text-[#6b8c88]">Your email client should open with your feedback.</p>
+                <p className="mt-1 text-sm text-[#577572]">Your email client should open with your feedback.</p>
               </div>
             ) : (
               <>
@@ -61,7 +61,7 @@ export default function FeedbackForm() {
                     </svg>
                   </button>
                 </div>
-                <p className="mt-1 text-sm text-[#6b8c88]">
+                <p className="mt-1 text-sm text-[#577572]">
                   We&apos;d love to hear from you. Bug reports, feature requests, or just a hello.
                 </p>
                 <form onSubmit={handleSubmit} className="mt-5 space-y-4">

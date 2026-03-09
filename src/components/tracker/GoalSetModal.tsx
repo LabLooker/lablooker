@@ -109,7 +109,7 @@ export default function GoalSetModal({
           <h2 className="text-lg font-semibold text-[#1a2e2b]">Set Goal</h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-[#6b8c88] hover:bg-[#faf8f5] hover:text-[#1a2e2b] transition-colors"
+            className="rounded-lg p-1.5 text-[#577572] hover:bg-[#faf8f5] hover:text-[#1a2e2b] transition-colors"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -152,10 +152,10 @@ export default function GoalSetModal({
                 value={targetValue}
                 onChange={(e) => setTargetValue(e.target.value)}
                 placeholder={direction === 'above' ? 'e.g. 50 (aim for ≥ this)' : 'e.g. 2.5 (aim for ≤ this)'}
-                className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none"
+                className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
                 required
               />
-              <p className="mt-1 text-xs text-[#6b8c88]">
+              <p className="mt-1 text-xs text-[#577572]">
                 {direction === 'above'
                   ? 'You aim to reach or exceed this value.'
                   : 'You aim to stay at or below this value.'}
@@ -171,7 +171,7 @@ export default function GoalSetModal({
                   value={targetLow}
                   onChange={(e) => setTargetLow(e.target.value)}
                   placeholder="Low"
-                  className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none"
+                  className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
                   required
                 />
                 <input
@@ -180,7 +180,7 @@ export default function GoalSetModal({
                   value={targetHigh}
                   onChange={(e) => setTargetHigh(e.target.value)}
                   placeholder="High"
-                  className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none"
+                  className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
                   required
                 />
               </div>
@@ -190,14 +190,14 @@ export default function GoalSetModal({
           {/* Notes */}
           <div>
             <label className="mb-1 block text-xs font-medium text-[#4a6b67]">
-              Note <span className="text-[#6b8c88] font-normal">(optional)</span>
+              Note <span className="text-[#577572] font-normal">(optional)</span>
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. Functional medicine target based on Dr. Smith's recommendation"
               rows={2}
-              className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#6b8c88] focus:border-[#2d6a5e] focus:outline-none resize-none"
+              className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none resize-none"
             />
           </div>
 

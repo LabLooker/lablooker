@@ -43,7 +43,7 @@ export default function Problem() {
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#1a2e2b] sm:text-4xl">
             The system isn&apos;t built for patients. LabLooker is.
           </h2>
-          <p className="mt-4 text-lg text-[#6b8c88]">
+          <p className="mt-4 text-lg text-[#577572]">
             Here&apos;s what patients face every day — and exactly how LabLooker fixes it.
           </p>
         </div>
@@ -61,7 +61,7 @@ export default function Problem() {
               <h3 className="mb-2 text-lg font-semibold text-[#1a2e2b]">
                 {point.title}
               </h3>
-              <p className="text-sm leading-relaxed text-[#6b8c88]">
+              <p className="text-sm leading-relaxed text-[#577572]">
                 {point.description}
               </p>
               <div className="mt-4 border-t border-[#e0ebe9] pt-4">

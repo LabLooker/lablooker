@@ -151,7 +151,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
           <h2 className="text-lg font-semibold text-[#1a2e2b]">Import from PDF</h2>
           <button
             onClick={handleClose}
-            className="rounded-lg p-1.5 text-[#6b8c88] hover:bg-[#faf8f5] hover:text-[#1a2e2b] transition-colors"
+            className="rounded-lg p-1.5 text-[#577572] hover:bg-[#faf8f5] hover:text-[#1a2e2b] transition-colors"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -183,10 +183,10 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                 ) : (
                   <>
                     <p className="text-sm font-medium text-[#1a2e2b]">Upload your lab results PDF</p>
-                    <p className="mt-1 text-xs text-[#6b8c88]">Drag & drop or click to browse</p>
+                    <p className="mt-1 text-xs text-[#577572]">Drag & drop or click to browse</p>
                   </>
                 )}
-                <p className="mt-3 text-xs text-[#6b8c88]">
+                <p className="mt-3 text-xs text-[#577572]">
                   Supports Quest, LabCorp, CPL, and most standard lab formats
                 </p>
               </div>
@@ -205,7 +205,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
               {parsing && (
                 <div className="flex items-center justify-center gap-2 py-4">
                   <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#e0ebe9] border-t-[#2d6a5e]" />
-                  <span className="text-sm text-[#6b8c88]">Parsing PDF...</span>
+                  <span className="text-sm text-[#577572]">Parsing PDF...</span>
                 </div>
               )}
 
@@ -254,8 +254,8 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                         </td>
                         <td className="px-2 py-2 text-[#1a2e2b]">{r.rawTestName}</td>
                         <td className="px-2 py-2 text-[#1a2e2b] font-medium">{r.value}</td>
-                        <td className="px-2 py-2 text-[#6b8c88]">{r.unit || '—'}</td>
-                        <td className="px-2 py-2 text-[#6b8c88]">{r.referenceRange || '—'}</td>
+                        <td className="px-2 py-2 text-[#577572]">{r.unit || '—'}</td>
+                        <td className="px-2 py-2 text-[#577572]">{r.referenceRange || '—'}</td>
                         <td className="px-2 py-2 text-[#4a6b67]">
                           {r.matchedTest ? r.matchedTest.test_name : (
                             <span className="text-amber-600">No match — will skip</span>
@@ -281,7 +281,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={() => { setStep('upload'); setResults([]); setFileName(''); setError('') }}
-                  className="rounded-xl border border-[#e0ebe9] px-4 py-2.5 text-sm font-semibold text-[#6b8c88] transition-colors hover:bg-[#faf8f5]"
+                  className="rounded-xl border border-[#e0ebe9] px-4 py-2.5 text-sm font-semibold text-[#577572] transition-colors hover:bg-[#faf8f5]"
                 >
                   Back
                 </button>

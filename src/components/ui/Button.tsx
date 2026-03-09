@@ -9,7 +9,7 @@ const variantStyles: Record<Variant, string> = {
     'bg-[#2d6a5e] text-white hover:bg-[#245a50] shadow-lg shadow-[#2d6a5e]/25',
   secondary:
     'bg-white text-[#1a2e2b] hover:bg-[#f0eeeb] border border-[#e0ebe9]',
-  ghost: 'text-[#6b8c88] hover:text-[#1a2e2b] hover:bg-[#e0ebe9]/50',
+  ghost: 'text-[#577572] hover:text-[#1a2e2b] hover:bg-[#e0ebe9]/50',
 }
 
 const sizeStyles: Record<Size, string> = {

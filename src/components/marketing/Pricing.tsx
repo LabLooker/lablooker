@@ -51,14 +51,14 @@ export default function Pricing() {
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#1a2e2b] sm:text-4xl">
             Research your labs for free. Upgrade when you need more.
           </h2>
-          <p className="mt-4 text-lg text-[#6b8c88]">
+          <p className="mt-4 text-lg text-[#577572]">
             No account required to search. Premium unlocks full price comparison and doctor tools.
           </p>
         </div>
 
         {/* Billing toggle */}
         <div className="mt-10 flex items-center justify-center gap-3">
-          <span className={`text-sm ${!annual ? 'text-[#1a2e2b]' : 'text-[#6b8c88]'}`}>
+          <span className={`text-sm ${!annual ? 'text-[#1a2e2b]' : 'text-[#577572]'}`}>
             Monthly
           </span>
           <button
@@ -75,7 +75,7 @@ export default function Pricing() {
               }`}
             />
           </button>
-          <span className={`text-sm ${annual ? 'text-[#1a2e2b]' : 'text-[#6b8c88]'}`}>
+          <span className={`text-sm ${annual ? 'text-[#1a2e2b]' : 'text-[#577572]'}`}>
             Annual
           </span>
           {annual && (
@@ -118,21 +118,21 @@ export default function Pricing() {
                   </span>
                 )}
                 {tier.price > 0 && (
-                  <span className="text-sm text-[#6b8c88]">{tier.key === 'pro' && annual ? '/year' : '/month'}</span>
+                  <span className="text-sm text-[#577572]">{tier.key === 'pro' && annual ? '/year' : '/month'}</span>
                 )}
               </div>
               {tier.key === 'pro' && annual && (
-                <p className="mt-1 text-xs text-[#6b8c88]">
+                <p className="mt-1 text-xs text-[#577572]">
                   ~$4/mo · save $22 vs monthly
                 </p>
               )}
               {tier.key === 'pro' && !annual && (
-                <p className="mt-1 text-xs text-[#6b8c88]">
+                <p className="mt-1 text-xs text-[#577572]">
                   Cancel anytime
                 </p>
               )}
               {tier.key === 'free' && (
-                <p className="mt-1 text-xs text-[#6b8c88]">
+                <p className="mt-1 text-xs text-[#577572]">
                   Forever free
                 </p>
               )}

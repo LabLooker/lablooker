@@ -51,19 +51,19 @@ function MiniChart({ results, testName }: { results: LabResult[]; testName: stri
     <div className="rounded-xl border border-[#e0ebe9] bg-white p-5">
       <h3 className="text-sm font-semibold text-[#1a2e2b] mb-4">{testName}</h3>
       {data.length === 0 ? (
-        <p className="text-xs text-[#6b8c88] text-center py-6">No results available</p>
+        <p className="text-xs text-[#577572] text-center py-6">No results available</p>
       ) : (
         <ResponsiveContainer width="100%" height={180}>
           <LineChart data={data} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
             <CartesianGrid stroke="#e0ebe9" strokeDasharray="4 4" />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 10, fill: '#6b8c88' }}
+              tick={{ fontSize: 10, fill: '#577572' }}
               tickFormatter={formatDate}
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 10, fill: '#6b8c88' }}
+              tick={{ fontSize: 10, fill: '#577572' }}
               tickLine={false}
               axisLine={false}
               unit={unit ? ` ${unit}` : undefined}
@@ -76,7 +76,7 @@ function MiniChart({ results, testName }: { results: LabResult[]; testName: stri
                 return (
                   <div className="rounded-lg border border-[#e0ebe9] bg-white p-2 shadow text-xs">
                     <p className="font-semibold text-[#1a2e2b]">{d.value}{d.unit ? ` ${d.unit}` : ''}</p>
-                    <p className="text-[#6b8c88]">{formatDate(d.date)}</p>
+                    <p className="text-[#577572]">{formatDate(d.date)}</p>
                   </div>
                 )
               }}
@@ -101,7 +101,7 @@ function MiniChart({ results, testName }: { results: LabResult[]; testName: stri
               <span className="font-medium text-[#1a2e2b]">
                 {r.value}{r.unit ? ` ${r.unit}` : ''}
               </span>
-              <span className="text-[#6b8c88]">{formatDate(r.drawn_at)}</span>
+              <span className="text-[#577572]">{formatDate(r.drawn_at)}</span>
             </div>
           ))}
       </div>
@@ -179,7 +179,7 @@ export default function SharedResultsPage() {
       <section className="pt-28 pb-20 sm:pt-36">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#e0ebe9] border-t-[#2d6a5e]" />
-          <p className="mt-4 text-sm text-[#6b8c88]">Loading shared results...</p>
+          <p className="mt-4 text-sm text-[#577572]">Loading shared results...</p>
         </div>
       </section>
     )
@@ -190,7 +190,7 @@ export default function SharedResultsPage() {
       <section className="pt-28 pb-20 sm:pt-36">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h1 className="text-2xl font-bold text-[#1a2e2b]">Link not found</h1>
-          <p className="mt-2 text-[#6b8c88]">{error || 'This share link could not be loaded.'}</p>
+          <p className="mt-2 text-[#577572]">{error || 'This share link could not be loaded.'}</p>
           <Link href="/" className="mt-6 inline-block text-sm font-medium text-[#2d6a5e] underline hover:no-underline">
             Go to LabLooker
           </Link>
@@ -206,8 +206,8 @@ export default function SharedResultsPage() {
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Link href="/" className="text-sm font-bold text-[#2d6a5e]">LabLooker</Link>
-            <span className="text-[#6b8c88] text-sm">/</span>
-            <span className="text-sm text-[#6b8c88]">Shared Results</span>
+            <span className="text-[#577572] text-sm">/</span>
+            <span className="text-sm text-[#577572]">Shared Results</span>
           </div>
           <h1 className="text-2xl font-bold text-[#1a2e2b]">
             {shareData.title || 'Shared Lab Results'}
@@ -215,7 +215,7 @@ export default function SharedResultsPage() {
           {shareData.note && (
             <p className="mt-2 text-[#4a6b67] text-sm">{shareData.note}</p>
           )}
-          <p className="mt-2 text-xs text-[#6b8c88]">
+          <p className="mt-2 text-xs text-[#577572]">
             Read-only · Shared via LabLooker
           </p>
         </div>
@@ -241,7 +241,7 @@ export default function SharedResultsPage() {
           </Link>
         </div>
 
-        <p className="mt-8 text-center text-xs text-[#6b8c88]">
+        <p className="mt-8 text-center text-xs text-[#577572]">
           For informational purposes only. Not medical advice.
         </p>
       </div>

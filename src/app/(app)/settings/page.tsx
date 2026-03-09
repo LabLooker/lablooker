@@ -110,7 +110,7 @@ export default function SettingsPage() {
               type="email"
               value={profile?.email || ''}
               disabled
-              className="mt-1 block w-full rounded-md border border-[#e0ebe9] bg-[#faf8f5] px-4 py-2.5 text-sm text-[#6b8c88] cursor-not-allowed"
+              className="mt-1 block w-full rounded-md border border-[#e0ebe9] bg-[#faf8f5] px-4 py-2.5 text-sm text-[#577572] cursor-not-allowed"
             />
           </div>
           <div className="flex items-center gap-3">
@@ -134,7 +134,7 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-4 py-3">
             <div>
               <p className="text-sm font-medium text-[#1a2e2b]">Current Plan</p>
-              <p className="text-xs text-[#6b8c88]">
+              <p className="text-xs text-[#577572]">
                 {planLabel} plan
                 {profile?.plan_status === 'canceled' && ' (cancels at period end)'}
               </p>
@@ -143,7 +143,7 @@ export default function SettingsPage() {
               className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
                 profile?.plan === 'pro' || profile?.plan === 'business'
                   ? 'bg-[#2d6a5e]/10 text-[#2d6a5e]'
-                  : 'bg-[#faf8f5] text-[#6b8c88]'
+                  : 'bg-[#faf8f5] text-[#577572]'
               }`}
             >
               {planLabel}

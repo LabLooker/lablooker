@@ -52,7 +52,7 @@ export default function Hero() {
         </h1>
 
         {/* Subheadline */}
-        <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-[#6b8c88] sm:text-xl">
+        <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-[#577572] sm:text-xl">
           The only tool that helps you understand, compare, translate, and track your labs — so you can advocate for the care you deserve.
         </p>
 
@@ -72,7 +72,7 @@ export default function Hero() {
               </svg>
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Translate</h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
+            <p className="mt-1.5 text-xs leading-relaxed text-[#577572]">
               Codes are lab-specific. We translate yours across 14+ laboratories so you're never locked in.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
@@ -92,7 +92,7 @@ export default function Hero() {
               </svg>
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Compare</h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
+            <p className="mt-1.5 text-xs leading-relaxed text-[#577572]">
               Find the lowest self-pay price at 15+ providers and order directly.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
@@ -112,7 +112,7 @@ export default function Hero() {
               </svg>
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Advocate</h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
+            <p className="mt-1.5 text-xs leading-relaxed text-[#577572]">
               Generate a document to request specific labs from your provider. Print directly, or copy clean text to paste into a portal message or email.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
@@ -132,7 +132,7 @@ export default function Hero() {
               </svg>
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">My Labs</h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-[#6b8c88]">
+            <p className="mt-1.5 text-xs leading-relaxed text-[#577572]">
               Log results, set goals, and visualize trends over time. Free account keeps your history private and secure.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
@@ -141,7 +141,7 @@ export default function Hero() {
 
         {/* Search bar */}
         <div className="mx-auto mt-10 max-w-xl">
-          <p className="mb-3 text-sm text-[#6b8c88]">Or search directly:</p>
+          <p className="mb-3 text-sm text-[#577572]">Or search directly:</p>
           <form onSubmit={handleSearch} className="flex items-center gap-0">
             <input
               type="text"
@@ -190,7 +190,7 @@ export default function Hero() {
 
         {/* Value prop mini */}
         <div className="mt-10 flex flex-col items-center gap-4">
-          <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-[#6b8c88]">
+          <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-[#577572]">
             <span className="flex items-center gap-1.5">
               <svg className="h-4 w-4 text-primary-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />

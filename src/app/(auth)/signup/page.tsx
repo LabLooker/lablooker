@@ -77,11 +77,11 @@ export default function SignupPage() {
           </div>
         </div>
         <h1 className="text-2xl font-bold text-[#1a2e2b]">Check your email</h1>
-        <p className="mt-3 text-sm text-[#6b8c88]">
+        <p className="mt-3 text-sm text-[#577572]">
           We sent a confirmation link to <span className="font-semibold text-[#1a2e2b]">{email}</span>.
           Click the link to activate your account.
         </p>
-        <p className="mt-3 text-xs text-[#6b8c88]">
+        <p className="mt-3 text-xs text-[#577572]">
           Don&apos;t see it? Check your spam folder.
         </p>
         <div className="mt-6">
@@ -96,7 +96,7 @@ export default function SignupPage() {
   return (
     <div className="w-full max-w-sm">
       <h1 className="text-2xl font-bold text-[#1a2e2b] text-center">Create your free account</h1>
-      <p className="mt-2 text-sm text-[#6b8c88] text-center">
+      <p className="mt-2 text-sm text-[#577572] text-center">
         Track your results, set goals, and spot trends over time — free to start
       </p>
 
@@ -155,7 +155,7 @@ export default function SignupPage() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b8c88] hover:text-[#1a2e2b] transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#577572] hover:text-[#1a2e2b] transition-colors"
               tabIndex={-1}
             >
               <EyeIcon open={showPassword} />
@@ -180,7 +180,7 @@ export default function SignupPage() {
             <button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b8c88] hover:text-[#1a2e2b] transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#577572] hover:text-[#1a2e2b] transition-colors"
               tabIndex={-1}
             >
               <EyeIcon open={showConfirm} />
@@ -193,7 +193,7 @@ export default function SignupPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[#6b8c88]">
+      <p className="mt-6 text-center text-sm text-[#577572]">
         Already have an account?{' '}
         <Link href="/login" className="text-[#2d6a5e] hover:text-[#245a50]">
           Sign in

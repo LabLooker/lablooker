@@ -189,14 +189,14 @@ function LabRow({
 
   return (
     <div className="bg-white rounded-xl shadow-sm border p-5 mb-4" style={{ borderColor: '#e0ebe9' }}>
-      <div className="text-sm font-semibold mb-3" style={{ color: '#6b8c88' }}>
+      <div className="text-sm font-semibold mb-3" style={{ color: '#577572' }}>
         Translate between labs
       </div>
       <div className="flex items-end gap-3">
 
         {/* Source */}
         <div className="flex-1 relative">
-          <div className="text-xs font-medium mb-1.5" style={{ color: '#6b8c88' }}>From</div>
+          <div className="text-xs font-medium mb-1.5" style={{ color: '#577572' }}>From</div>
           {sourceLab ? (
             <button
               onClick={() => onSourceChange('')}
@@ -248,11 +248,11 @@ function LabRow({
           )}
         </div>
 
-        <div className="text-xl font-light pb-2.5" style={{ color: '#6b8c88' }}>→</div>
+        <div className="text-xl font-light pb-2.5" style={{ color: '#577572' }}>→</div>
 
         {/* Target */}
         <div className="flex-1 relative">
-          <div className="text-xs font-medium mb-1.5" style={{ color: '#6b8c88' }}>To</div>
+          <div className="text-xs font-medium mb-1.5" style={{ color: '#577572' }}>To</div>
           {targetLab ? (
             <button
               onClick={() => onTargetChange('')}
@@ -343,7 +343,7 @@ function ResultsSection({
           <h2 className="text-xl font-bold" style={{ color: '#1a2e2b' }}>Translation Results</h2>
           <div className="flex items-center gap-2 mt-1 text-sm">
             <span className="font-semibold" style={{ color: '#1a2e2b' }}>{getLabDisplayName(sourceLab)}</span>
-            <span style={{ color: '#6b8c88' }}>→</span>
+            <span style={{ color: '#577572' }}>→</span>
             <span className="font-semibold" style={{ color: '#2d6a5e' }}>{getLabDisplayName(targetLab)}</span>
           </div>
         </div>
@@ -363,7 +363,7 @@ function ResultsSection({
             <thead>
               <tr style={{ backgroundColor: '#f0f7f6', borderBottom: '2px solid #e0ebe9' }}>
                 <th className="text-left px-4 py-3 font-semibold" style={{ color: '#1a2e2b' }}>Test</th>
-                <th className="text-left px-4 py-3 font-semibold" style={{ color: '#6b8c88' }}>
+                <th className="text-left px-4 py-3 font-semibold" style={{ color: '#577572' }}>
                   {getLabDisplayName(sourceLab)}
                 </th>
                 <th className="text-left px-4 py-3 font-semibold" style={{ color: '#2d6a5e', borderLeft: '3px solid #2d6a5e' }}>
@@ -442,7 +442,7 @@ function ResultsSection({
               <div className="grid grid-cols-2 gap-3">
                 {/* Source */}
                 <div className="rounded-lg px-3 py-2.5" style={{ backgroundColor: 'white', border: '1px solid #e0ebe9' }}>
-                  <div className="text-xs font-semibold uppercase tracking-wide mb-1.5 leading-tight" style={{ color: '#6b8c88' }}>
+                  <div className="text-xs font-semibold uppercase tracking-wide mb-1.5 leading-tight" style={{ color: '#577572' }}>
                     {getLabDisplayName(sourceLab)}
                   </div>
                   <div className="font-mono text-sm" style={{ color: '#4a6b67' }}>
@@ -480,7 +480,7 @@ function ResultsSection({
       {/* Price highlights — screen only */}
       {translatedTests.some(t => t.pricing.length > 0) && (
         <div className="mt-5 print:hidden">
-          <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#6b8c88' }}>
+          <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#577572' }}>
             💰 Best self-pay prices
           </div>
           <div className="space-y-2">
@@ -795,7 +795,7 @@ export default function TranslatePage() {
               className="px-5 py-2 rounded-lg text-sm font-semibold transition-all"
               style={{
                 backgroundColor: bulkInput.trim() && !isParsing ? '#2d6a5e' : '#e0ebe9',
-                color: bulkInput.trim() && !isParsing ? 'white' : '#6b8c88',
+                color: bulkInput.trim() && !isParsing ? 'white' : '#577572',
                 cursor: bulkInput.trim() && !isParsing ? 'pointer' : 'not-allowed',
               }}
             >
@@ -821,7 +821,7 @@ export default function TranslatePage() {
               </div>
             )}
 
-            <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#6b8c88' }}>
+            <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#577572' }}>
               {confirmedTests.length} of {parsedTerms.filter(t => t.status !== 'notfound').length} confirmed
             </div>
             <div className="flex flex-wrap gap-2">
@@ -870,7 +870,7 @@ export default function TranslatePage() {
             className="w-full py-4 rounded-xl text-base font-semibold transition-all mb-8 print:hidden"
             style={{
               backgroundColor: canTranslate ? '#2d6a5e' : '#e0ebe9',
-              color: canTranslate ? 'white' : '#6b8c88',
+              color: canTranslate ? 'white' : '#577572',
               cursor: canTranslate ? 'pointer' : 'not-allowed',
             }}
           >
@@ -897,7 +897,7 @@ export default function TranslatePage() {
 
         {/* Help text */}
         {translatedTests.length === 0 && (
-          <div className="text-center text-sm mt-6 print:hidden" style={{ color: '#6b8c88' }}>
+          <div className="text-center text-sm mt-6 print:hidden" style={{ color: '#577572' }}>
             <p className="mb-2">
               <strong>How it works:</strong> Each lab uses its own internal codes for the same test.
               We translate them so you can walk into any lab with the right code.

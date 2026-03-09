@@ -202,7 +202,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
           <h2 className="text-lg font-semibold text-[#1a2e2b]">Import from CSV</h2>
           <button
             onClick={handleClose}
-            className="rounded-lg p-1.5 text-[#6b8c88] hover:bg-[#faf8f5] hover:text-[#1a2e2b] transition-colors"
+            className="rounded-lg p-1.5 text-[#577572] hover:bg-[#faf8f5] hover:text-[#1a2e2b] transition-colors"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -222,7 +222,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
                   Test Name, Value, Unit, Date Drawn, Lab Name, Notes
                 </p>
               </div>
-              <ul className="text-xs text-[#6b8c88] space-y-1 list-disc pl-4">
+              <ul className="text-xs text-[#577572] space-y-1 list-disc pl-4">
                 <li>Test Name and Value are required</li>
                 <li>Date format: YYYY-MM-DD (defaults to today if empty)</li>
                 <li>Test names are matched to our database automatically</li>
@@ -300,8 +300,8 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
                         <td className="px-3 py-2 text-[#1a2e2b]">{r.testName}</td>
                         <td className="px-3 py-2 text-[#4a6b67]">{r.matchedTest?.test_name ?? '—'}</td>
                         <td className="px-3 py-2 text-[#1a2e2b]">{r.value}</td>
-                        <td className="px-3 py-2 text-[#6b8c88]">{r.unit || '—'}</td>
-                        <td className="px-3 py-2 text-[#6b8c88]">{r.date || 'today'}</td>
+                        <td className="px-3 py-2 text-[#577572]">{r.unit || '—'}</td>
+                        <td className="px-3 py-2 text-[#577572]">{r.date || 'today'}</td>
                         <td className="px-3 py-2">
                           {r.status === 'ready' && <span className="text-[#2d6a5e]">✅ Ready</span>}
                           {r.status === 'no_match' && <span className="text-amber-600">⚠️ No match</span>}
@@ -323,7 +323,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="rounded-xl border border-[#e0ebe9] px-4 py-2.5 text-sm font-semibold text-[#6b8c88] transition-colors hover:bg-[#faf8f5]"
+                  className="rounded-xl border border-[#e0ebe9] px-4 py-2.5 text-sm font-semibold text-[#577572] transition-colors hover:bg-[#faf8f5]"
                 >
                   Cancel
                 </button>

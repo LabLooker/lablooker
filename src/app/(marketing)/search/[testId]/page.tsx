@@ -165,7 +165,7 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
       <section className="pt-28 pb-20 sm:pt-36">
         <div className="mx-auto max-w-4xl px-6 text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#e0ebe9] border-t-[#2d6a5e]" />
-          <p className="mt-4 text-sm text-[#6b8c88]">Loading test details...</p>
+          <p className="mt-4 text-sm text-[#577572]">Loading test details...</p>
         </div>
       </section>
     )
@@ -176,7 +176,7 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
       <section className="pt-28 pb-20 sm:pt-36">
         <div className="mx-auto max-w-4xl px-6 text-center">
           <h1 className="text-2xl font-bold text-[#1a2e2b]">Test not found</h1>
-          <p className="mt-2 text-[#6b8c88]">This test may have been removed or the link is invalid.</p>
+          <p className="mt-2 text-[#577572]">This test may have been removed or the link is invalid.</p>
           <Button href="/search" className="mt-6">Back to Search</Button>
         </div>
       </section>
@@ -187,7 +187,7 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
     <section className="pt-28 pb-20 sm:pt-36">
       <div className="mx-auto max-w-4xl px-6">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-[#6b8c88]">
+        <nav className="flex items-center gap-2 text-sm text-[#577572]">
           <Link href="/search" className="hover:text-[#2d6a5e] transition-colors">Search</Link>
           <span>/</span>
           {test.category && (
@@ -295,12 +295,12 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
                   <span className="text-sm font-semibold" style={{ color: '#c0826a' }}>💬 Patient Community Notes</span>
                 </div>
                 <p className="text-sm leading-relaxed" style={{ color: '#4a6b67' }}>{test.community_notes}</p>
-                <p className="mt-2 text-xs italic" style={{ color: '#6b8c88' }}>
+                <p className="mt-2 text-xs italic" style={{ color: '#577572' }}>
                   Reflects common practices in thyroid, BHRT, and functional medicine communities. This may differ from standard clinical guidelines. Not medical advice — always discuss with your provider.
                 </p>
               </div>
             )}
-            <p className="mt-3 text-xs italic" style={{ color: '#6b8c88' }}>
+            <p className="mt-3 text-xs italic" style={{ color: '#577572' }}>
               General guidelines only. Requirements vary by lab and individual. Confirm with your provider before adjusting any medications.
             </p>
           </div>
@@ -324,7 +324,7 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
             <h2 className="text-sm font-semibold uppercase tracking-wider text-[#2d6a5e]">
               ICD-10 Codes
             </h2>
-            <p className="mt-1 text-xs text-[#6b8c88]">
+            <p className="mt-1 text-xs text-[#577572]">
               Common diagnosis codes associated with this test. Codes are assigned by your provider.
             </p>
             <div className="mt-4 space-y-2">
@@ -362,7 +362,7 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
             </div>
           ) : pricing.length > 0 ? (
             <>
-              <p className="mt-1 text-[11px] text-[#6b8c88]">
+              <p className="mt-1 text-[11px] text-[#577572]">
                 LabLooker may earn a commission through lab links. This does not affect pricing or rankings.
               </p>
               <div className="mt-3 space-y-2">
@@ -374,7 +374,7 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
                     <div className="min-w-0 flex-1">
                       <span className="text-sm font-medium text-[#1a2e2b]">{p.lab_name}</span>
                       {p.notes && (
-                        <p className="mt-0.5 text-[11px] text-[#6b8c88]">{p.notes}</p>
+                        <p className="mt-0.5 text-[11px] text-[#577572]">{p.notes}</p>
                       )}
                     </div>
                     <div className="ml-4 flex shrink-0 items-center gap-3">
@@ -399,7 +399,7 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
               {trackerLoaded && !trackerUser && (
                 <div className="mt-4 rounded-xl border border-[#e0ebe9] bg-white px-4 py-3 text-center">
                   <p className="text-sm font-semibold text-[#1a2e2b]">Track this test over time</p>
-                  <p className="mt-0.5 text-xs text-[#6b8c88]">Log results, spot trends, set goals — free account, no credit card</p>
+                  <p className="mt-0.5 text-xs text-[#577572]">Log results, spot trends, set goals — free account, no credit card</p>
                   <a href="/signup" className="mt-3 inline-block rounded-xl bg-[#2d6a5e] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549]">
                     Sign up free →
                   </a>
@@ -408,10 +408,10 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
             </>
           ) : (
             <>
-              <p className="mt-2 text-xs text-[#6b8c88]">
+              <p className="mt-2 text-xs text-[#577572]">
                 Price comparison across labs will be available soon. Here are the labs we&apos;ll cover:
               </p>
-              <p className="mt-1 text-[11px] text-[#6b8c88]">
+              <p className="mt-1 text-[11px] text-[#577572]">
                 LabLooker may earn a commission through lab links. This does not affect pricing or rankings.
               </p>
               <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -421,7 +421,7 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
                     className="flex items-center justify-between rounded-lg bg-[#faf8f5] border border-[#e0ebe9] px-4 py-3"
                   >
                     <span className="text-sm text-[#1a2e2b]">{lab}</span>
-                    <span className="text-xs text-[#6b8c88]">--</span>
+                    <span className="text-xs text-[#577572]">--</span>
                   </div>
                 ))}
               </div>
@@ -431,7 +431,7 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
           {!userState && (
             <button
               onClick={() => setShowStatePicker(true)}
-              className="mt-3 text-xs text-[#6b8c88] underline hover:text-[#2d6a5e]"
+              className="mt-3 text-xs text-[#577572] underline hover:text-[#2d6a5e]"
             >
               Set your state to check DTC availability
             </button>
@@ -454,15 +454,15 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
               <div className="mt-3">
                 <div className="flex items-baseline gap-2 mb-1">
                   <span className="text-2xl font-bold text-[#1a2e2b]">{latestResult.value}</span>
-                  {latestResult.unit && <span className="text-sm text-[#6b8c88]">{latestResult.unit}</span>}
-                  <span className="text-xs text-[#6b8c88] ml-auto">
+                  {latestResult.unit && <span className="text-sm text-[#577572]">{latestResult.unit}</span>}
+                  <span className="text-xs text-[#577572] ml-auto">
                     {new Date(latestResult.drawn_at + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </span>
                 </div>
                 {trackerGoal && trackerGoal.target_value !== null && (
                   <div className="mt-2">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-[#6b8c88]">Goal progress</span>
+                      <span className="text-xs text-[#577572]">Goal progress</span>
                       <span className="text-xs font-medium text-[#2d6a5e]">
                         {Math.min(100, Math.round(
                           trackerGoal.target_direction === 'above'
@@ -521,7 +521,7 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
         {labCodes.length > 0 && (
           <div className="mt-6 rounded-xl border border-[#e0ebe9] bg-white p-6">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-[#2d6a5e]">Lab Codes</h2>
-            <p className="mt-1 text-xs text-[#6b8c88]">Proprietary codes used by each lab for this test.</p>
+            <p className="mt-1 text-xs text-[#577572]">Proprietary codes used by each lab for this test.</p>
             <div className="mt-4 space-y-2">
               {labCodes.map((lc, i) => (
                 <div
@@ -532,7 +532,7 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-sm font-medium text-[#2d6a5e]">{lc.proprietary_code}</span>
                     {lc.code_type && (
-                      <span className="text-[11px] text-[#6b8c88]">({lc.code_type})</span>
+                      <span className="text-[11px] text-[#577572]">({lc.code_type})</span>
                     )}
                   </div>
                 </div>
@@ -577,10 +577,10 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
                       {rt.test_name}
                     </p>
                     {rt.cpt_codes.length > 0 && (
-                      <p className="text-xs font-mono text-[#6b8c88]">CPT: {rt.cpt_codes.join(', ')}</p>
+                      <p className="text-xs font-mono text-[#577572]">CPT: {rt.cpt_codes.join(', ')}</p>
                     )}
                   </div>
-                  <svg className="h-4 w-4 shrink-0 text-[#6b8c88] group-hover:text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <svg className="h-4 w-4 shrink-0 text-[#577572] group-hover:text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                   </svg>
                 </Link>

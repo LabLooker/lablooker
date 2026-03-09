@@ -46,7 +46,7 @@ export default function Solution() {
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#1a2e2b] sm:text-4xl">
             Finally, a tool built for patients
           </h2>
-          <p className="mt-4 text-lg text-[#6b8c88]">
+          <p className="mt-4 text-lg text-[#577572]">
             One place to research, compare, and understand your lab work.
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function Solution() {
               <h3 className="mb-2 text-lg font-semibold text-[#1a2e2b]">
                 {feature.title}
               </h3>
-              <p className="text-sm leading-relaxed text-[#6b8c88]">
+              <p className="text-sm leading-relaxed text-[#577572]">
                 {feature.description}
               </p>
             </div>
