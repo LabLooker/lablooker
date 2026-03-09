@@ -125,7 +125,7 @@ export default function SavedProviders() {
         <h2 className="text-lg font-semibold text-[#1a2e2b]">Saved Providers</h2>
         {!showForm && (
           atLimit ? (
-            <p className="text-xs text-[#c0826a]">Upgrade to Premium to save unlimited providers</p>
+            <p className="text-xs text-[#4a6b67]">Upgrade to Premium to save unlimited providers</p>
           ) : (
             <Button size="sm" onClick={() => setShowForm(true)}>Add Provider</Button>
           )

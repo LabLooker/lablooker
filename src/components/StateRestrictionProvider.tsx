@@ -89,7 +89,7 @@ export function StatePickerModal() {
         </select>
         <button
           onClick={() => setShowStatePicker(false)}
-          className="mt-3 w-full text-center text-xs text-[#8ba8a4] hover:text-[#577572]"
+          className="mt-3 w-full text-center text-xs text-[#577572] hover:text-[#577572]"
         >
           Skip for now
         </button>

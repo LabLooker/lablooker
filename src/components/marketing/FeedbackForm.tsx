@@ -54,7 +54,7 @@ export default function FeedbackForm() {
                   <h3 className="text-lg font-semibold text-[#1a2e2b]">Send Feedback</h3>
                   <button
                     onClick={() => setOpen(false)}
-                    className="text-[#8ba8a4] hover:text-[#1a2e2b] transition-colors"
+                    className="text-[#577572] hover:text-[#1a2e2b] transition-colors"
                   >
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -67,7 +67,7 @@ export default function FeedbackForm() {
                 <form onSubmit={handleSubmit} className="mt-5 space-y-4">
                   <div>
                     <label htmlFor="feedback-email" className="block text-sm font-medium text-[#3d5a56]">
-                      Email <span className="text-[#8ba8a4]">(optional)</span>
+                      Email <span className="text-[#577572]">(optional)</span>
                     </label>
                     <input
                       id="feedback-email"

@@ -104,7 +104,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 type HealthTopic = {
   slug: string
-  icon: string
+  icon?: string
   label: string
   categories?: string[]
   keywords?: string[]
@@ -113,72 +113,72 @@ type HealthTopic = {
 
 const HEALTH_TOPICS: HealthTopic[] = [
   {
-    slug: 'thyroid', icon: '🦋', label: 'Thyroid & Endocrine',
+    slug: 'thyroid', label: 'Thyroid & Endocrine',
     categories: ['thyroid'],
     priority: ['Free T3', 'Free T4', 'Reverse T3', 'Anti-TPO', 'Anti-Thyroglobulin', 'Thyroglobulin Antibod', 'TSH', 'Total T3', 'Total T4', 'Thyroid Panel', 'T3 Uptake'],
   },
   {
-    slug: 'heart', icon: '❤️', label: 'Heart & Cholesterol',
+    slug: 'heart', label: 'Heart & Cholesterol',
     categories: ['cardiovascular', 'lipids'],
     priority: ['ApoB', 'Apolipoprotein B', 'Lp(a)', 'Lipoprotein(a)', 'hs-CRP', 'Homocysteine', 'Oxidized LDL', 'Small Dense LDL', 'Triglycerides', 'HDL', 'LDL', 'Omega', 'Fibrinogen', 'Total Cholesterol', 'Lipid Panel', 'Lipoprotein'],
   },
   {
-    slug: 'testosterone', icon: '💪', label: 'Testosterone & TRT',
+    slug: 'testosterone', label: 'Testosterone & TRT',
     keywords: ['testosterone', 'shbg', 'free testosterone', 'estradiol', 'prolactin', 'dht', 'dihydrotestosterone', 'bioavailable testosterone'],
     priority: ['Total Testosterone', 'Testosterone, Total', 'Free Testosterone', 'Testosterone, Free', 'SHBG', 'Estradiol', 'LH', 'FSH', 'Prolactin', 'PSA', 'DHEA', 'DHT', 'Dihydrotestosterone', 'Hematocrit', 'CBC', 'Cortisol', 'Bioavailable'],
   },
   {
-    slug: 'bhrt', icon: '🌸', label: 'Menopause & BHRT',
+    slug: 'bhrt', label: 'Menopause & BHRT',
     keywords: ['estradiol', 'progesterone', 'fsh', 'lh', 'dhea', 'shbg', 'amh', 'menopause', 'estrone', 'estriol', 'estrogen', 'sex hormone panel, female', 'testosterone', 'cortisol', 'pregnenolone'],
     priority: ['Estradiol', 'Progesterone', 'Testosterone', 'DHEA', 'SHBG', 'FSH', 'LH', 'Cortisol', 'Free T3', 'TSH', 'AMH', 'Estrone', 'Vitamin D', 'Pregnenolone'],
   },
   {
-    slug: 'inflammation', icon: '🔥', label: 'Inflammation & Autoimmune',
+    slug: 'inflammation', label: 'Inflammation & Autoimmune',
     categories: ['inflammation', 'autoimmune'],
     priority: ['hs-CRP', 'CRP', 'ESR', 'Homocysteine', 'Ferritin', 'Fibrinogen', 'ANA', 'Anti-TPO', 'Anti-Thyroglobulin', 'Anti-dsDNA', 'RF', 'Anti-CCP', 'Complement', 'TNF', 'IL-6', 'Interleukin'],
   },
   {
-    slug: 'metabolism', icon: '⚖️', label: 'Weight & Metabolism',
+    slug: 'metabolism', label: 'Weight & Metabolism',
     categories: ['metabolic'],
     priority: ['Insulin', 'Fasting Insulin', 'HOMA', 'HbA1c', 'Hemoglobin A1c', 'Glucose', 'Leptin', 'Free T3', 'TSH', 'Cortisol', 'Triglycerides', 'DHEA', 'Adiponectin', 'Testosterone', 'Reverse T3', 'Lipid'],
   },
   {
-    slug: 'iron', icon: '🩸', label: 'Iron & Anemia',
+    slug: 'iron', label: 'Iron & Anemia',
     categories: ['iron', 'hematology'],
     priority: ['Ferritin', 'Serum Iron', 'Iron', 'TIBC', 'Transferrin Saturation', 'Iron Saturation', 'Transferrin', 'CBC', 'Reticulocyte', 'Hemoglobin', 'Hematocrit', 'RBC', 'MCV', 'MCH', 'RDW'],
   },
   {
-    slug: 'vitamins', icon: '💊', label: 'Vitamins & Minerals',
+    slug: 'vitamins', label: 'Vitamins & Minerals',
     categories: ['vitamins', 'minerals'],
     priority: ['Vitamin D', '25-OH', 'B12', 'Cobalamin', 'Magnesium, RBC', 'RBC Magnesium', 'Folate', 'Methylmalonic', 'Zinc', 'Selenium', 'Iodine', 'Omega', 'Copper', 'Magnesium', 'Vitamin A', 'Retinol', 'Vitamin K', 'Ceruloplasmin'],
   },
   {
-    slug: 'mental-health', icon: '🧠', label: 'Mood & Mental Health',
+    slug: 'mental-health', label: 'Mood & Mental Health',
     keywords: ['cortisol', 'dhea', 'b12', 'folate', 'vitamin d', 'magnesium', 'zinc', 'omega', 'serotonin', 'melatonin', 'homocysteine', 'ferritin', 'free t3', 'tsh', 'insulin', 'glucose'],
     priority: ['Vitamin D', 'B12', 'Ferritin', 'Free T3', 'TSH', 'Folate', 'Homocysteine', 'Cortisol', 'DHEA', 'Magnesium', 'RBC Magnesium', 'Zinc', 'Omega', 'Iron', 'Insulin', 'HbA1c'],
   },
   {
-    slug: 'diabetes', icon: '🍬', label: 'Diabetes & Blood Sugar',
+    slug: 'diabetes', label: 'Diabetes & Blood Sugar',
     keywords: ['glucose', 'a1c', 'insulin', 'hba1c', 'glycated', 'diabetes', 'c-peptide', 'homa-ir', 'fructosamine', 'ogtt', 'adiponectin', 'uric acid'],
     priority: ['Insulin', 'Fasting Insulin', 'HbA1c', 'Hemoglobin A1c', 'Glucose', 'HOMA', 'C-Peptide', 'Fructosamine', 'Triglycerides', 'Uric Acid', 'Adiponectin'],
   },
   {
-    slug: 'kidney-liver', icon: '🫘', label: 'Kidney & Liver',
+    slug: 'kidney-liver', label: 'Kidney & Liver',
     categories: ['kidney', 'liver'],
     priority: ['GGT', 'ALT', 'AST', 'Albumin', 'Bilirubin', 'ALP', 'Alkaline Phosphatase', 'Creatinine', 'BUN', 'eGFR', 'Cystatin', 'Uric Acid', 'CMP', 'BMP', 'Phosphorus', 'Total Protein'],
   },
   {
-    slug: 'immune', icon: '🛡️', label: 'Immune & Infections',
+    slug: 'immune', label: 'Immune & Infections',
     categories: ['immune', 'infectious'],
     priority: ['Vitamin D', 'CBC', 'WBC', 'Lymphocyte', 'Neutrophil', 'IgG', 'IgA', 'IgM', 'NK Cell', 'CD4', 'CD8', 'ANA', 'EBV', 'Epstein', 'Complement', 'Zinc', 'Ferritin'],
   },
   {
-    slug: 'sexual-health', icon: '🔒', label: 'Sexual Health & STD',
+    slug: 'sexual-health', label: 'Sexual Health & STD',
     keywords: ['hiv', 'chlamydia', 'gonorrhea', 'syphilis', 'herpes', 'hsv', 'hepatitis', 'trichomonas', 'std', 'sti', 'sexual health', 'std panel', 'bacterial vaginosis'],
     priority: ['HIV', 'Chlamydia', 'Gonorrhea', 'Syphilis', 'Herpes Simplex', 'HSV', 'Hepatitis B', 'Hepatitis C', 'Trichomonas', 'Bacterial Vaginosis'],
   },
   {
-    slug: 'compliance', icon: '📋', label: 'Immunity Tests',
+    slug: 'compliance', label: 'Immunity Tests',
     keywords: ['titer', 'immunity', 'mmr', 'varicella', 'rubella', 'measles', 'mumps', 'rabies', 'hepatitis b antibody', 'tuberculosis', 'quantiferon'],
     priority: ['MMR Titer', 'Varicella', 'Rubella', 'Measles', 'Mumps', 'Rabies', 'Hepatitis B Surface Antibody', 'QuantiFERON'],
   },
@@ -431,7 +431,6 @@ function SearchPageInner() {
                       }}
                       className="group flex flex-col items-center gap-2 rounded-xl border border-[#e0ebe9] bg-white p-4 transition-all hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5"
                     >
-                      <span className="text-2xl">{topic.icon}</span>
                       <span className="text-sm font-medium text-[#1a2e2b] group-hover:text-[#2d6a5e] text-center leading-tight">{topic.label}</span>
                     </button>
                   ))}
@@ -460,7 +459,7 @@ function SearchPageInner() {
                   const t = HEALTH_TOPICS.find(t => t.slug === activeTopicSlug)
                   return t ? (
                     <span className="text-sm font-semibold text-[#1a2e2b]">
-                      {t.icon} {t.label}
+                      {t.label}
                     </span>
                   ) : null
                 })()}
