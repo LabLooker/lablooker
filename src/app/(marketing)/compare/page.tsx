@@ -594,7 +594,7 @@ export default function ComparePage() {
                       : 'bg-white text-[#4a6b67] border-[#e0ebe9] hover:border-[#2d6a5e] hover:text-[#2d6a5e]',
                   ].join(' ')}
                 >
-                  <span>{group.emoji}</span>
+                  {group.emoji && <span>{group.emoji}</span>}
                   <span>{group.label}</span>
                 </button>
               ))}

@@ -32,7 +32,7 @@ export const COMPARE_GROUPS: CompareGroup[] = [
   {
     id: 'testosterone',
     label: 'Testosterone',
-    emoji: '⚡',
+    emoji: '',
     description: 'Understand which testosterone test fits your situation — from basic screening to BHRT monitoring.',
     tests: [
       {
@@ -123,7 +123,7 @@ export const COMPARE_GROUPS: CompareGroup[] = [
   {
     id: 'thyroid',
     label: 'Thyroid',
-    emoji: '🦋',
+    emoji: '',
     description: 'Navigate thyroid testing — from initial TSH screening to the advanced markers your integrative provider wants.',
     tests: [
       {
@@ -221,7 +221,7 @@ export const COMPARE_GROUPS: CompareGroup[] = [
   {
     id: 'iron',
     label: 'Iron',
-    emoji: '🩸',
+    emoji: '',
     description: 'Iron testing is more than just "check my iron." Ferritin, serum iron, TIBC, and saturation each tell a different part of the story.',
     tests: [
       {
@@ -305,7 +305,7 @@ export const COMPARE_GROUPS: CompareGroup[] = [
   {
     id: 'vitamin-d',
     label: 'Vitamin D',
-    emoji: '☀️',
+    emoji: '',
     description: 'Most people need the standard 25-OH test. The "active" form (1,25) is a specialty test for specific conditions — knowing which one to order matters.',
     tests: [
       {
@@ -352,7 +352,7 @@ export const COMPARE_GROUPS: CompareGroup[] = [
   {
     id: 'cortisol',
     label: 'Cortisol',
-    emoji: '💊',
+    emoji: '',
     description: 'Cortisol testing varies by method and timing. The right test depends on what your provider is looking for — screening, rhythm, or 24-hour output.',
     tests: [
       {
@@ -432,7 +432,7 @@ export const COMPARE_GROUPS: CompareGroup[] = [
   {
     id: 'estrogen',
     label: 'Estrogen',
-    emoji: '🌸',
+    emoji: '',
     description: 'Estrogen testing varies by hormone (E1, E2, E3), method (immunoassay vs LC/MS/MS), and clinical context. The right test depends on whether you\'re on BHRT, investigating symptoms, or screening.',
     tests: [
       {
