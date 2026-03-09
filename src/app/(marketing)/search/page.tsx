@@ -172,6 +172,16 @@ const HEALTH_TOPICS: HealthTopic[] = [
     categories: ['immune', 'infectious'],
     priority: ['Vitamin D', 'CBC', 'WBC', 'Lymphocyte', 'Neutrophil', 'IgG', 'IgA', 'IgM', 'NK Cell', 'CD4', 'CD8', 'ANA', 'EBV', 'Epstein', 'Complement', 'Zinc', 'Ferritin'],
   },
+  {
+    slug: 'sexual-health', icon: '🔒', label: 'Sexual Health & STD',
+    keywords: ['hiv', 'chlamydia', 'gonorrhea', 'syphilis', 'herpes', 'hsv', 'hepatitis', 'trichomonas', 'std', 'sti', 'sexual health', 'std panel', 'bacterial vaginosis'],
+    priority: ['HIV', 'Chlamydia', 'Gonorrhea', 'Syphilis', 'Herpes Simplex', 'HSV', 'Hepatitis B', 'Hepatitis C', 'Trichomonas', 'Bacterial Vaginosis'],
+  },
+  {
+    slug: 'compliance', icon: '📋', label: 'Titers & Compliance',
+    keywords: ['titer', 'immunity', 'mmr', 'varicella', 'rubella', 'measles', 'mumps', 'rabies', 'hepatitis b antibody', 'tuberculosis', 'quantiferon'],
+    priority: ['MMR Titer', 'Varicella', 'Rubella', 'Measles', 'Mumps', 'Rabies', 'Hepatitis B Surface Antibody', 'QuantiFERON'],
+  },
 ]
 
 export default function SearchPage() {
