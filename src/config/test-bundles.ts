@@ -130,12 +130,12 @@ export const TEST_BUNDLES: TestBundle[] = [
     notes: 'Ferritin is the most important single marker. Optimal is 50-150 for women — many labs flag "normal" at 12+, which is NOT optimal. If ferritin is low despite supplementation, check for absorption issues or occult bleeding.',
   },
   {
-    slug: 'longevity-baseline',
-    name: 'Longevity & Prevention Baseline',
-    shortName: 'Longevity Baseline',
+    slug: 'preventive-health',
+    name: 'Preventive Health Panel',
+    shortName: 'Preventive Health',
     icon: '🧬',
-    description: 'The proactive annual panel for people who want to catch problems early. Covers metabolic health, cardiovascular risk, inflammation, and key nutrients.',
-    whoNeeds: 'Health-conscious adults who want comprehensive annual bloodwork beyond what most doctors order.',
+    description: 'The comprehensive annual panel for catching what your doctor might miss. Covers metabolic health, cardiovascular risk, inflammation, and key nutrients.',
+    whoNeeds: 'Adults who want thorough annual bloodwork beyond the standard checkup. Especially if you have a family history of heart disease, diabetes, or autoimmune conditions.',
     tests: [
       'CBC (Complete Blood Count) with Differential',
       'CMP (Comprehensive Metabolic Panel)',
