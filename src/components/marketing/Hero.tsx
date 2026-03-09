@@ -178,7 +178,7 @@ export default function Hero() {
             { label: 'Kidney & Liver', slug: 'kidney-liver' },
             { label: 'Immune & Infections', slug: 'immune' },
             { label: 'Sexual Health & STD', slug: 'sexual-health' },
-            { label: 'Titers & Compliance', slug: 'compliance' },
+            { label: 'Immunity Tests', slug: 'compliance' },
           ].map((topic) => (
             <a
               key={topic.label}

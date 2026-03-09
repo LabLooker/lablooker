@@ -178,7 +178,7 @@ const HEALTH_TOPICS: HealthTopic[] = [
     priority: ['HIV', 'Chlamydia', 'Gonorrhea', 'Syphilis', 'Herpes Simplex', 'HSV', 'Hepatitis B', 'Hepatitis C', 'Trichomonas', 'Bacterial Vaginosis'],
   },
   {
-    slug: 'compliance', icon: '📋', label: 'Titers & Compliance',
+    slug: 'compliance', icon: '📋', label: 'Immunity Tests',
     keywords: ['titer', 'immunity', 'mmr', 'varicella', 'rubella', 'measles', 'mumps', 'rabies', 'hepatitis b antibody', 'tuberculosis', 'quantiferon'],
     priority: ['MMR Titer', 'Varicella', 'Rubella', 'Measles', 'Mumps', 'Rabies', 'Hepatitis B Surface Antibody', 'QuantiFERON'],
   },
