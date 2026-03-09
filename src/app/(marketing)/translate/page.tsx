@@ -61,7 +61,7 @@ function TermChip({
       <div className="inline-flex flex-col items-start">
         <div
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
-          style={{ backgroundColor: '#f0f7f6', border: '1px solid #2d6a5e', color: '#2d6a5e' }}
+          style={{ backgroundColor: '#dcfce7', border: '1.5px solid #bbf7d0', color: '#166534' }}
         >
           <span className="text-xs">✓</span>
           <span>{term.matched!.test_name}</span>
@@ -109,7 +109,7 @@ function TermChip({
         <button
           onClick={() => setShowDropdown(d => !d)}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium cursor-pointer"
-          style={{ backgroundColor: '#fffbeb', border: '1px solid #fcd34d', color: '#92400e' }}
+          style={{ backgroundColor: '#fffbeb', border: '1.5px solid #fcd34d', color: '#92400e' }}
         >
           <span className="text-xs opacity-60">~</span>
           <span>{term.matched!.test_name}</span>
@@ -146,7 +146,7 @@ function TermChip({
   return (
     <div
       className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
-      style={{ backgroundColor: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626' }}
+      style={{ backgroundColor: '#fee2e2', border: '1.5px solid #fecaca', color: '#991b1b' }}
     >
       <span className="text-xs">✕</span>
       <span>{term.raw}</span>
@@ -700,6 +700,10 @@ export default function TranslatePage() {
 
   const unresolvedCount = parsedTerms.filter(t => t.status === 'suggestion').length
 
+  const matchedWithIndex = parsedTerms.map((t, i) => ({ term: t, index: i })).filter(({ term }) => term.status === 'matched')
+  const suggestionsWithIndex = parsedTerms.map((t, i) => ({ term: t, index: i })).filter(({ term }) => term.status === 'suggestion')
+  const notfoundWithIndex = parsedTerms.map((t, i) => ({ term: t, index: i })).filter(({ term }) => term.status === 'notfound')
+
   const canTranslate = confirmedTests.length > 0 && unresolvedCount === 0 && sourceLab && targetLab && sourceLab !== targetLab
 
   const translate = async () => {
@@ -824,21 +828,63 @@ export default function TranslatePage() {
             <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#577572' }}>
               {confirmedTests.length} of {parsedTerms.filter(t => t.status !== 'notfound').length} confirmed
             </div>
-            <div className="flex flex-wrap gap-2">
-              {parsedTerms.map((term, i) => (
-                <TermChip
-                  key={i}
-                  term={term}
-                  onAccept={(test) => acceptSuggestion(i, test)}
-                  onRemove={() => removeTerm(i)}
-                />
-              ))}
+
+            {/* 3-column grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* Ready (green) */}
+              <div className="rounded-xl p-3.5 order-1 md:order-none" style={{ backgroundColor: '#f0fdf4', border: '1.5px solid #bbf7d0' }}>
+                <div className="flex items-center gap-1.5 mb-2.5" style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: '#15803d' }}>
+                  <span>✓ Ready</span>
+                  {matchedWithIndex.length > 0 && <span style={{ fontWeight: 400, opacity: 0.7 }}>({matchedWithIndex.length})</span>}
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {matchedWithIndex.length === 0 ? (
+                    <p className="text-xs italic" style={{ color: '#9ca3af', padding: '4px 0' }}>No tests matched yet</p>
+                  ) : (
+                    matchedWithIndex.map(({ term, index }) => (
+                      <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} />
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Needs input (amber) — first on mobile */}
+              <div className="rounded-xl p-3.5 order-first md:order-none" style={{ backgroundColor: '#fffbeb', border: '1.5px solid #fcd34d' }}>
+                <div className="flex items-center gap-1.5 mb-2.5" style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: '#92400e' }}>
+                  <span>~ Needs your input</span>
+                  {suggestionsWithIndex.length > 0 && <span style={{ fontWeight: 400, opacity: 0.7 }}>({suggestionsWithIndex.length})</span>}
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {suggestionsWithIndex.length === 0 ? (
+                    <p className="text-xs italic" style={{ color: '#9ca3af', padding: '4px 0' }}>All resolved ✓</p>
+                  ) : (
+                    suggestionsWithIndex.map(({ term, index }) => (
+                      <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} />
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Not found (red) */}
+              <div className="rounded-xl p-3.5 order-2 md:order-none" style={{ backgroundColor: '#fef2f2', border: '1.5px solid #fecaca' }}>
+                <div className="flex items-center gap-1.5 mb-2.5" style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: '#991b1b' }}>
+                  <span>✕ Not found</span>
+                  {notfoundWithIndex.length > 0 && <span style={{ fontWeight: 400, opacity: 0.7 }}>({notfoundWithIndex.length})</span>}
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {notfoundWithIndex.length === 0 ? (
+                    <p className="text-xs italic" style={{ color: '#9ca3af', padding: '4px 0' }}>None — all terms recognized</p>
+                  ) : (
+                    <>
+                      {notfoundWithIndex.map(({ term, index }) => (
+                        <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} />
+                      ))}
+                      <p className="mt-1.5" style={{ fontSize: '11px', color: '#991b1b', opacity: 0.7 }}>Try a different name or remove.</p>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
-            {parsedTerms.some(t => t.status === 'notfound') && (
-              <p className="text-xs mt-3" style={{ color: '#c0826a' }}>
-                Terms shown in red weren&apos;t recognized — remove them or try an alternate name.
-              </p>
-            )}
           </div>
         )}
 
