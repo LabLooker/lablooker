@@ -25,3 +25,5 @@ node_modules/
 .next/
 insert-codes.js
 *.scripts.js
+tools/cpl-extractor/venv/
+tools/cpl-extractor/data/

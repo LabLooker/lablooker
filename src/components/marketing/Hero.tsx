@@ -80,7 +80,7 @@ export default function Hero() {
 
           {/* Compare */}
           <Link
-            href="/search"
+            href="/compare"
             className="group relative rounded-xl bg-white p-6 text-center transition-all overflow-hidden"
             style={{ border: '1.5px solid #e0ebe9' }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#2d6a5e'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(45,106,94,.1)' }}
