@@ -399,20 +399,7 @@ export default function ComparePage() {
             )}
           </div>
 
-          {/* Popular searches — only show when no test selected and no group active */}
-          {!selectedTest && !activeGroup && (
-            <div className="flex flex-wrap justify-center gap-2 mt-4">
-              {['Ferritin', 'TSH', 'Vitamin D', 'Testosterone', 'HbA1c', 'Free T3'].map((name) => (
-                <button
-                  key={name}
-                  onClick={() => { setQuery(name); search(name) }}
-                  className="rounded-full border border-[#e0ebe9] bg-white px-3.5 py-1.5 text-xs font-medium text-[#4a6b67] transition-colors hover:border-[#2d6a5e] hover:text-[#2d6a5e]"
-                >
-                  {name}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Popular search pills removed — search bar + group comparison is sufficient */}
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════════
