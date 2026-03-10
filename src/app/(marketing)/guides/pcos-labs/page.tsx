@@ -18,19 +18,19 @@ export const metadata: Metadata = {
 const FAQ = [
   {
     q: 'What blood tests diagnose PCOS?',
-    a: 'PCOS is diagnosed using the Rotterdam criteria (2 of 3: irregular periods, elevated androgens, polycystic ovaries on ultrasound). Key blood tests include Total Testosterone, Free Testosterone, DHEA-S, LH, FSH, and 17-OH Progesterone. Many providers also check AMH, insulin, and HbA1c since insulin resistance drives most PCOS symptoms.',
+    a: 'PCOS is usually diagnosed using the Rotterdam criteria: two of the following three findings are present — irregular periods, elevated androgens, or polycystic ovaries on ultrasound. Common blood tests include total testosterone, free testosterone, DHEA-S, LH, FSH, and 17-OH progesterone. Many clinicians also look at AMH, fasting insulin, and HbA1c because insulin resistance is so common in PCOS.',
   },
   {
     q: 'Why is the LH:FSH ratio important in PCOS?',
-    a: 'In classic PCOS, LH is often elevated while FSH is normal or low, creating an LH:FSH ratio above 2:1. This imbalance disrupts ovulation. However, a normal ratio does not rule out PCOS — the diagnosis is based on the full clinical picture, not a single lab value.',
+    a: 'In classic PCOS, LH is often elevated while FSH stays normal or low, which can create an LH:FSH ratio above 2:1. That pattern can interfere with ovulation. A normal ratio does not rule out PCOS, though. The diagnosis depends on the full clinical picture, not one lab value.',
   },
   {
     q: 'Should I test insulin levels for PCOS?',
-    a: 'Absolutely. Fasting insulin is the single most underordered PCOS test. About 70% of women with PCOS have insulin resistance — even at a normal weight. Your glucose and HbA1c can look completely normal for years while fasting insulin is already elevated. A fasting insulin above 8-10 µIU/mL suggests insulin resistance.',
+    a: 'Yes. Fasting insulin is often one of the most useful tests in a PCOS workup, especially when glucose and HbA1c still look normal. Many women with PCOS have insulin resistance, including some who are not overweight. An elevated fasting insulin can show up long before glucose markers become abnormal.',
   },
   {
     q: 'When in my cycle should I get PCOS labs drawn?',
-    a: 'If you have regular cycles, draw LH, FSH, and estradiol on cycle day 2-4. Testosterone, DHEA-S, and insulin can be drawn anytime but should be fasting. If your cycles are irregular (common in PCOS), your provider may test at any point since timing is less predictable. AMH can be drawn at any time.',
+    a: 'If your cycles are regular, LH, FSH, and estradiol are usually drawn on cycle days 2 through 4. Testosterone, DHEA-S, and insulin can usually be drawn at any time, though insulin should be fasting. If your cycles are irregular, timing is less predictable, so testing may be done whenever it is practical. AMH can be drawn at any point in the cycle.',
   },
 ]
 
@@ -50,19 +50,19 @@ export default function PcosLabsGuide() {
           PCOS bloodwork: which tests to order
         </h1>
         <p className="mt-4 text-lg text-[#4a6b67] leading-relaxed">
-          Polycystic ovary syndrome affects 1 in 10 women, yet many are under-tested. Here&apos;s the comprehensive lab panel for diagnosing and managing PCOS — and what your results actually mean.
+          Polycystic ovary syndrome affects about 1 in 10 women, and a lot of people still do not get a complete workup. A useful PCOS lab panel should help with both diagnosis and ongoing management.
         </p>
 
         {/* Content */}
         <div className="mt-10 space-y-6 text-[#4a6b67] leading-relaxed">
           <p>
-            PCOS is a hormonal and metabolic condition, so the lab panel needs to cover both. The hormonal side includes androgens (testosterone, DHEA-S), reproductive hormones (LH, FSH, estradiol, progesterone, AMH), and prolactin. The metabolic side — which many providers skip — includes fasting insulin, glucose, HbA1c, and a lipid panel, because <strong>insulin resistance is the driving force behind most PCOS symptoms</strong>.
+            PCOS affects both hormones and metabolism, so the lab work needs to cover both. On the hormone side, that usually includes androgens such as testosterone and DHEA-S, along with reproductive hormones like LH, FSH, estradiol, progesterone, AMH, and prolactin. On the metabolic side, it should include fasting insulin, glucose, HbA1c, and a lipid panel, since insulin resistance plays a major role in many PCOS cases.
           </p>
           <p>
-            A common frustration: many women are told &ldquo;your labs look fine&rdquo; when their provider only checked a basic metabolic panel and TSH. PCOS-specific labs — particularly <strong>Free Testosterone</strong>, <strong>DHEA-S</strong>, and <strong>Fasting Insulin</strong> — are rarely included in routine bloodwork but are essential for diagnosis. The PCOS panel below covers all the markers recommended by endocrine and reproductive medicine guidelines.
+            A lot of people get told their labs look normal after only a basic metabolic panel and TSH. That leaves out many of the markers most relevant to PCOS. Free testosterone, DHEA-S, and fasting insulin are often missing from routine bloodwork even though they are some of the most useful pieces of the picture. The panel below includes the markers commonly used to evaluate PCOS more thoroughly.
           </p>
           <p>
-            It&apos;s also critical to rule out other conditions that mimic PCOS. <strong>17-OH Progesterone</strong> screens for non-classic congenital adrenal hyperplasia (NCAH), which presents identically to PCOS but requires different treatment. <strong>TSH and Free T3</strong> rule out thyroid dysfunction, and <strong>Prolactin</strong> rules out pituitary causes of irregular periods.
+            Other conditions can look a lot like PCOS, so ruling those out matters too. 17-OH progesterone helps screen for non-classic congenital adrenal hyperplasia. TSH and Free T3 help evaluate thyroid function. Prolactin helps rule out pituitary-related causes of irregular cycles.
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export default function PcosLabsGuide() {
         <div className="mt-10 rounded-2xl border border-[#e0ebe9] bg-[#faf8f5] p-6 sm:p-8 text-center">
           <h2 className="text-lg font-bold text-[#1a2e2b]">Compare PCOS lab prices</h2>
           <p className="mt-2 text-sm text-[#4a6b67]">
-            Ordering PCOS labs through your doctor and insurance can be expensive and incomplete. Direct-order labs let you get the full panel at transparent prices.
+            Getting PCOS labs through a doctor and insurance can be expensive, and sometimes the workup is still incomplete. Direct-order labs can make it easier to get a broader panel with transparent pricing.
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
             <Link
