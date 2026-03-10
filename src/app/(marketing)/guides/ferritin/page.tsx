@@ -18,19 +18,19 @@ export const metadata: Metadata = {
 const FAQ = [
   {
     q: 'What is a good ferritin level?',
-    a: 'Standard lab ranges flag ferritin as "normal" at 12+ ng/mL for women, but functional and integrative medicine practitioners consider optimal ferritin to be 50-150 ng/mL. Below 30, most people experience symptoms like fatigue, hair loss, and brain fog. Below 50, symptoms are common but often attributed to other causes.',
+    a: 'A lab may mark ferritin as normal at 12+ ng/mL for women, but symptom relief often happens at higher levels. Ferritin under 30 is commonly associated with symptoms. Between 30 and 50 can still be low enough to matter, especially in people with fatigue, hair loss, or restless legs. Many clinicians focused on symptom improvement aim for roughly 50 to 150 ng/mL.',
   },
   {
     q: 'Why is my ferritin low even though I take iron supplements?',
-    a: 'Common reasons include: poor absorption (take iron on an empty stomach with vitamin C, never with coffee, tea, or calcium), celiac disease or gut inflammation blocking absorption, ongoing blood loss (heavy periods, GI bleeding), or taking the wrong form of iron. Ferrous bisglycinate is typically better absorbed and tolerated than ferrous sulfate.',
+    a: 'A few common reasons: poor absorption, ongoing blood loss, gut issues that interfere with absorption, or a form of iron that is hard to tolerate or absorb well. Iron is usually absorbed better away from coffee, tea, and calcium. Some people also do better with ferrous bisglycinate than ferrous sulfate.',
   },
   {
     q: 'Can ferritin be too high?',
-    a: 'Yes. Ferritin above 200 ng/mL in women or 300 ng/mL in men warrants investigation. High ferritin can indicate hemochromatosis (iron overload), inflammation, liver disease, or infection. Notably, ferritin is also an acute-phase reactant — it rises with inflammation regardless of iron status. If ferritin is high, check hs-CRP and transferrin saturation to distinguish iron overload from inflammation.',
+    a: 'Yes. Elevated ferritin can point to iron overload, but it can also rise with inflammation, liver disease, or infection. Ferritin is an acute-phase reactant, so a high result does not automatically mean excess iron. When ferritin is elevated, transferrin saturation and an inflammatory marker such as hs-CRP help put it in context.',
   },
   {
     q: 'What tests should I order alongside ferritin?',
-    a: 'Ferritin alone doesn\'t tell the whole iron story. A complete iron panel includes Serum Iron, TIBC (Total Iron Binding Capacity), Transferrin Saturation, CBC with Differential, Reticulocyte Count, Vitamin B12, and Folate. This distinguishes iron deficiency from other causes of anemia and identifies whether iron stores, absorption, or utilization is the issue.',
+    a: 'Ferritin is useful, but it is only one part of the picture. A fuller iron workup often includes serum iron, TIBC, transferrin saturation, CBC with differential, reticulocyte count, vitamin B12, and folate. That makes it easier to tell iron deficiency apart from other causes of anemia and to see whether the problem is storage, absorption, or utilization.',
   },
 ]
 
@@ -50,19 +50,19 @@ export default function FerritinGuide() {
           Ferritin test: what your doctor isn&apos;t telling you
         </h1>
         <p className="mt-4 text-lg text-[#4a6b67] leading-relaxed">
-          Ferritin is the single most important — and most misinterpreted — lab test for fatigue. Here&apos;s why &ldquo;normal&rdquo; doesn&apos;t mean optimal, and what to do about it.
+          Ferritin is one of the most useful lab tests for fatigue, and one of the easiest to misread. A result can fall inside the lab&apos;s reference range and still be low enough to cause symptoms.
         </p>
 
         {/* Content */}
         <div className="mt-10 space-y-6 text-[#4a6b67] leading-relaxed">
           <p>
-            Ferritin measures your body&apos;s iron <em>stores</em> — how much iron you have in reserve. It&apos;s the earliest marker to drop when iron is becoming depleted, and it falls long before your hemoglobin does. This means you can have significant iron deficiency <strong>without being &ldquo;anemic&rdquo; by standard lab criteria</strong>.
+            Ferritin measures iron stores — the iron your body has in reserve. It is often the first marker to drop when iron is running low, well before hemoglobin changes. That means someone can have iron deficiency symptoms without meeting the usual definition of anemia.
           </p>
           <p>
-            The problem is reference ranges. Most labs consider ferritin &ldquo;normal&rdquo; anywhere from 12 to 150 ng/mL for women. But the medical literature and functional medicine consensus is clear: <strong>ferritin below 30 causes symptoms in most people, and optimal function requires 50-150</strong>. Hair loss studies show significant improvement only when ferritin reaches 70+. If your ferritin is 15 and your doctor says it&apos;s fine, they&apos;re reading the lab range, not the research.
+            The problem is the reference range. Many labs list ferritin as &ldquo;normal&rdquo; from about 12 to 150 ng/mL for women. In practice, that range is broad enough to include levels that are technically in range but still associated with symptoms. Ferritin under 30 is commonly linked to fatigue, hair shedding, brain fog, and exercise intolerance. Many clinicians aiming for symptom improvement look for ferritin in a higher range, often around 50 to 150, with some hair-loss discussions using 70+ as a practical target. If a ferritin of 15 gets dismissed as &ldquo;fine,&rdquo; that usually reflects the lab range, not symptom-based interpretation.
           </p>
           <p>
-            Women of reproductive age are especially affected — between menstrual blood loss and often inadequate dietary iron, low ferritin is extremely common. Yet it&apos;s frequently missed because providers check CBC (which shows anemia only at the late stage) and skip ferritin entirely. If you have unexplained fatigue, hair loss, restless legs, poor concentration, dizziness, or exercise intolerance, <strong>ferritin should be the first test you order</strong>.
+            Women of reproductive age are especially likely to deal with low ferritin because of menstrual blood loss and, in many cases, lower iron intake. It also gets missed often. A CBC may stay normal until iron depletion is more advanced, so ferritin never gets checked. In someone with unexplained fatigue, hair loss, restless legs, dizziness, poor focus, or reduced exercise tolerance, ferritin is often one of the first labs worth checking.
           </p>
         </div>
 
