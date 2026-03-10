@@ -18,19 +18,19 @@ export const metadata: Metadata = {
 const FAQ = [
   {
     q: 'What labs should I get before starting TRT?',
-    a: 'Before starting testosterone replacement therapy, get a baseline panel including: Total Testosterone, Free Testosterone, Estradiol (E2), SHBG, LH, FSH, Prolactin, PSA, CBC with Differential, CMP, Lipid Panel, and HbA1c. This establishes your pre-treatment baseline for comparison.',
+    a: 'Before starting testosterone replacement therapy, it helps to get a baseline panel that includes Total Testosterone, Free Testosterone, Estradiol (E2), SHBG, LH, FSH, Prolactin, PSA, CBC with Differential, CMP, Lipid Panel, and HbA1c. That gives you a pre-treatment baseline for comparison later.',
   },
   {
     q: 'How often should I test on TRT?',
-    a: 'Test at 6-8 weeks after starting or adjusting dose (at trough, right before your next injection). Once stable, every 3-6 months. Always check CBC — hematocrit rising above 54% is a common TRT side effect that requires intervention.',
+    a: 'A common schedule is 6 to 8 weeks after starting treatment or changing the dose, with labs drawn at trough before the next injection. Once things are stable, testing is often repeated every 3 to 6 months. CBC is especially important because hematocrit can rise on TRT and may need attention if it gets too high.',
   },
   {
     q: 'Why do I need to check estradiol on TRT?',
-    a: 'Testosterone converts to estradiol via the aromatase enzyme. Too-high estradiol causes water retention, mood changes, and gynecomastia. Too-low estradiol (from over-use of aromatase inhibitors) causes joint pain, fatigue, and low libido. Monitoring lets you manage this balance.',
+    a: 'Some testosterone converts to estradiol through aromatase. Higher estradiol can contribute to water retention, mood changes, or gynecomastia. Estradiol that is too low can also cause problems, including joint pain, fatigue, and low libido. Checking it helps put symptoms in context.',
   },
   {
     q: 'Can I order TRT monitoring labs myself?',
-    a: 'Yes, in most US states. Direct-to-consumer lab ordering lets you get the same tests your TRT clinic orders, often at a lower price. LabLooker helps you compare prices for the exact tests you need across multiple lab providers.',
+    a: 'In most US states, yes. Direct-order lab services often let you buy the same kinds of tests used for TRT monitoring without going through a clinic first. LabLooker helps compare pricing across providers.',
   },
 ]
 
@@ -50,19 +50,19 @@ export default function TrtLabsGuide() {
           TRT monitoring labs explained
         </h1>
         <p className="mt-4 text-lg text-[#4a6b67] leading-relaxed">
-          Testosterone replacement therapy requires regular bloodwork to ensure safety and effectiveness. Here&apos;s exactly what to test, when to test, and what the results mean.
+          Testosterone replacement therapy requires regular bloodwork to track both safety and effectiveness. The right panel helps show how treatment is working and whether anything needs to be adjusted.
         </p>
 
         {/* Content */}
         <div className="mt-10 space-y-6 text-[#4a6b67] leading-relaxed">
           <p>
-            TRT monitoring goes beyond just checking your testosterone level. A comprehensive panel tracks how your body responds to treatment — including red blood cell production (which can become dangerously elevated), estrogen conversion (which affects how you feel on TRT), liver and kidney function, cardiovascular markers, and prostate health.
+            TRT monitoring includes more than testosterone alone. A useful panel looks at how your body is responding overall, including red blood cell production, estrogen conversion, liver and kidney function, cardiovascular markers, and prostate-related screening.
           </p>
           <p>
-            The most common monitoring mistake is only checking Total Testosterone. <strong>Free Testosterone</strong> is what your body actually uses, and it can be low even when Total T looks adequate — especially if SHBG (sex hormone binding globulin) is high. Estradiol (E2) management is equally critical: symptoms like water retention, mood swings, and low libido often trace back to estradiol being too high or too low.
+            One of the most common mistakes is checking only Total Testosterone. Free Testosterone is the biologically active portion, and it can be low even when Total Testosterone looks adequate, especially if SHBG is elevated. Estradiol matters too. Water retention, mood changes, low libido, and other symptoms can show up when estradiol is either too high or too low.
           </p>
           <p>
-            <strong>Timing matters.</strong> For injectable TRT, always test at trough — the morning of your next injection, before injecting. This gives your lowest point and helps your provider dose accurately. Testing at peak (1-2 days after injection) will show artificially high numbers that don&apos;t reflect your average level.
+            Timing matters. For injectable TRT, labs are usually drawn at trough — the morning of your next injection, before you inject. That gives the lowest point in the dosing cycle and makes results easier to interpret. Testing one to two days after an injection can make levels look higher than they usually are.
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export default function TrtLabsGuide() {
         <div className="mt-10 rounded-2xl border border-[#e0ebe9] bg-[#faf8f5] p-6 sm:p-8 text-center">
           <h2 className="text-lg font-bold text-[#1a2e2b]">Compare TRT lab prices</h2>
           <p className="mt-2 text-sm text-[#4a6b67]">
-            TRT clinics often charge $200-400+ for monitoring labs. Direct-order labs can be significantly cheaper for the exact same tests.
+            TRT clinics often charge a premium for monitoring labs. Direct-order options can be less expensive for the same core tests.
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
             <Link
