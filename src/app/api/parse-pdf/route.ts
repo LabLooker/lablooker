@@ -240,7 +240,6 @@ function parseLabResults(text: string): ParsedResult[] {
   const unitsPat = new RegExp(UNITS_PATTERN, 'i')
 
   // Pattern 1: Quest-style — name (2+ spaces) value (spaces) ref-range (spaces) unit
-  // Also handles: name (2+ spaces) value (spaces) unit (spaces) ref-range
   const questPattern = new RegExp(
     `^([A-Za-z][A-Za-z0-9\\s,\\(\\)\\/\\-\\.]+?)\\s{2,}(\\d+\\.?\\d*)\\s+(${UNITS_PATTERN.slice(3)}\\s+([\\d\\.]+\\s*[-–]\\s*[\\d\\.]+|[<>]\\s*[\\d\\.]+)?`,
     'i'
@@ -258,13 +257,101 @@ function parseLabResults(text: string): ParsedResult[] {
     'i'
   )
 
+  // ─── Quest PDF two-line pattern ───
+  // Many Quest PDFs extract as: "TESTNAME<value>" on line N, "Reference Range: low-high unit" on line N+1
+  // Also handles: value on same line with no space, unit on next line, ref range on next line
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim()
+
+    // Match: TESTNAME followed immediately by a number (no space or minimal space)
+    // e.g. "GLUCOSE79" or "CREATININE0.64" or "HS CRP1.8"
+    const twoLineMatch = trimmed.match(/^([A-Za-z][A-Za-z0-9\s,\(\)\/\-\.%]+?)(\d+\.?\d*)$/)
+    if (twoLineMatch) {
+      const name = twoLineMatch[1].trim()
+      const val = parseFloat(twoLineMatch[2])
+
+      // Skip headers, footers, page numbers, dates, IDs, false positives
+      if (!name || name.length < 2 || isNaN(val)) continue
+      if (/^(page|patient|name|dob|date|address|physician|doctor|provider|accession|specimen|lab\s*#|requisition|fax|phone|npi|russell|wempe|trinity|georgetown|client|report|fasting|sex|age|in|non-pregnant|pregnant|postmenopausal|lewisville|irving|san juan|suite)/i.test(name)) continue
+      if (/^\d/.test(name)) continue
+      if (/AnalyteValue/i.test(trimmed)) continue
+      // Skip lines that look like address fragments or reference range descriptions
+      if (/\b(TX|CA|NY|FL)\s*$/i.test(name)) continue
+      if (/^\w+\s+(TX|CA|NY|FL|OH|PA)$/i.test(name)) continue
+      // Skip Z SCORE with negative sign attached to name
+      if (/Z SCORE.*-$/i.test(name)) continue
+
+      // Look ahead up to 3 lines for reference range and unit
+      let unit = ''
+      let ref: string | null = null
+      for (let j = i + 1; j < Math.min(i + 4, lines.length); j++) {
+        const nextLine = lines[j].trim()
+
+        // "Reference Range: 65-99 mg/dL" or "Reference Range: 0.50-1.03 mg/dL"
+        const refWithUnit = nextLine.match(new RegExp(
+          `Reference Range\\s*:?\\s*([\\d\\.]+\\s*[-–]\\s*[\\d\\.]+)\\s+(${UNITS_PATTERN.slice(3)}`,
+          'i'
+        ))
+        if (refWithUnit) {
+          ref = refWithUnit[1].replace(/\s/g, '')
+          unit = refWithUnit[2] || ''
+          break
+        }
+
+        // "Reference Range: > OR = 60 mL/min/1.73m2" or "Reference Range < or = 18.4"
+        const refGtLt = nextLine.match(new RegExp(
+          `Reference Range\\s*:?\\s*([<>]\\s*(?:OR\\s*=\\s*|or\\s*=\\s*)?[\\d\\.]+)\\s*(${UNITS_PATTERN.slice(3)}`,
+          'i'
+        ))
+        if (refGtLt) {
+          ref = refGtLt[1].replace(/\s+/g, '').replace(/OR=/gi, '=')
+          unit = refGtLt[2] || ''
+          break
+        }
+
+        // "Reference Range: <101 pg/mL" — simple inequality
+        const refSimple = nextLine.match(new RegExp(
+          `Reference Range\\s*:?\\s*([<>]=?\\s*[\\d\\.]+)\\s*(${UNITS_PATTERN.slice(3)}`,
+          'i'
+        ))
+        if (refSimple) {
+          ref = refSimple[1].replace(/\s/g, '')
+          unit = refSimple[2] || ''
+          break
+        }
+
+        // Standalone unit line: "mg/L" or "ng/mL"
+        const unitOnly = nextLine.match(new RegExp(`^(${UNITS_PATTERN.slice(3)}$`, 'i'))
+        if (unitOnly) {
+          unit = unitOnly[1]
+          continue
+        }
+
+        // "Reference Range" without colon, followed by range info — skip interpretive text
+        if (/^Reference Range/i.test(nextLine) && !/[\d]/.test(nextLine.replace(/Reference Range\s*:?\s*/i, '').slice(0, 5))) {
+          continue
+        }
+
+        // Stop if we hit another test name or section header
+        if (/^[A-Z][A-Z\s,\(\)\/\-\.]+\d/.test(nextLine) || /^(Analyte|Performing|Quest|Laboratory|This test|Jellinger|Pearson|For ages)/i.test(nextLine)) {
+          break
+        }
+      }
+
+      const key = `${name.toLowerCase()}|${val}`
+      if (!seen.has(key)) {
+        seen.add(key)
+        results.push({ rawTestName: name, value: val, unit, referenceRange: ref, matchedTest: null })
+      }
+      continue
+    }
+  }
+
   // Pattern 4: Generic — "Test Name: X\nResult: Y unit\nReference Range: Z"
-  // Handle multi-line generic format
   for (let i = 0; i < lines.length; i++) {
     const testNameMatch = lines[i].match(/^Test\s*Name\s*:\s*(.+)/i)
     if (testNameMatch) {
       const name = testNameMatch[1].trim()
-      // Look at next few lines for result and reference
       let value: number | null = null
       let unit = ''
       let ref: string | null = null
@@ -287,17 +374,15 @@ function parseLabResults(text: string): ParsedResult[] {
     }
   }
 
-  // Line-by-line patterns
+  // Line-by-line patterns (single-line formats)
   for (const line of lines) {
     const trimmed = line.trim()
     if (!trimmed || trimmed.length < 3 || trimmed.length > 200) continue
-    // Skip headers/footers
     if (/^(page|patient|name|dob|date of birth|address|physician|doctor|provider|accession|specimen|lab\s*#|requisition|fax|phone|npi)/i.test(trimmed)) continue
     if (/^\d+\s*of\s*\d+$/.test(trimmed)) continue
 
     let matched = false
 
-    // Try LabCorp pattern first (more specific)
     const lcMatch = trimmed.match(labcorpPattern)
     if (lcMatch) {
       const name = lcMatch[1].trim()
@@ -313,7 +398,6 @@ function parseLabResults(text: string): ParsedResult[] {
     }
 
     if (!matched) {
-      // Quest pattern 2: name value refrange unit
       const q2Match = trimmed.match(questPattern2)
       if (q2Match) {
         const name = q2Match[1].trim()
@@ -330,7 +414,6 @@ function parseLabResults(text: string): ParsedResult[] {
     }
 
     if (!matched) {
-      // Quest pattern 1: name value unit refrange
       const q1Match = trimmed.match(questPattern)
       if (q1Match) {
         const name = q1Match[1].trim()
@@ -347,7 +430,6 @@ function parseLabResults(text: string): ParsedResult[] {
     }
 
     if (!matched) {
-      // Fallback: any line with test-name-like start, a number, and optionally a unit
       const fallback = trimmed.match(new RegExp(
         `^([A-Za-z][A-Za-z0-9\\s,\\(\\)\\/\\-\\.]{2,40})\\s*[:\\|]?\\s*(\\d+\\.?\\d*)\\s*(${UNITS_PATTERN.slice(3)}\\s*((?:[\\d\\.]+\\s*[-–]\\s*[\\d\\.]+)|(?:[<>]\\s*[\\d\\.]+))?`,
         'i'
@@ -357,7 +439,6 @@ function parseLabResults(text: string): ParsedResult[] {
         const val = parseFloat(fallback[2])
         const u = fallback[3] || ''
         const ref = fallback[4]?.replace(/\s/g, '') || null
-        // Ignore if name looks like a number or date
         if (!isNaN(val) && !/^\d/.test(name) && name.length > 1) {
           const key = `${name.toLowerCase()}|${val}`
           if (!seen.has(key)) {
