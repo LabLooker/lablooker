@@ -7,7 +7,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = 'https://cbeazeiehgiwhklxtdir.supabase.co';
-const SUPABASE_KEY = 'sb_secret_xT7abHdrbszgED4H4vNQ0A_OeFe-uLT';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ─── All unique ICD-10 codes ──────────────────────────────────────────────────

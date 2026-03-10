@@ -8,7 +8,7 @@
  */
 
 const SUPABASE_URL = 'https://cbeazeiehgiwhklxtdir.supabase.co';
-const SERVICE_KEY = 'sb_secret_xT7abHdrbszgED4H4vNQ0A_OeFe-uLT';
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const headers = {
   'apikey': SERVICE_KEY,

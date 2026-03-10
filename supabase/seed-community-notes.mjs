@@ -11,7 +11,7 @@
  */
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://cbeazeiehgiwhklxtdir.supabase.co'
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'sb_secret_xT7abHdrbszgED4H4vNQ0A_OeFe-uLT'
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
 
 // ---------------------------------------------------------------------------
 // Community notes lookup — keyed by search terms (lowercase)

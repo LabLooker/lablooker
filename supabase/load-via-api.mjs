@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   'https://cbeazeiehgiwhklxtdir.supabase.co',
-  'sb_secret_xT7abHdrbszgED4H4vNQ0A_OeFe-uLT'
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 // Step 1: Fetch all tests to build name→id map
