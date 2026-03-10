@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import type { Test, Symptom } from '@/types/database'
+import { TEST_BUNDLES, type TestBundle } from '@/config/test-bundles'
 
 type RedFlagGroup = {
   keywords: string[]
@@ -184,6 +185,27 @@ const HEALTH_TOPICS: HealthTopic[] = [
   },
 ]
 
+// Map health topic slugs → best matching bundle slug
+const TOPIC_BUNDLE_MAP: Record<string, string> = {
+  'thyroid': 'thyroid-complete',
+  'bhrt': 'hormone-baseline',
+  'testosterone': 'trt-monitoring',
+  'iron': 'energy-fatigue',
+  'metabolism': 'weight-metabolism',
+  'inflammation': 'inflammation-immune',
+}
+
+// Topics that map to two bundles (show first only)
+const TOPIC_BUNDLE_ALT: Record<string, string> = {
+  'iron': 'iron-deep-dive',
+}
+
+function getBundleForTopic(topicSlug: string): TestBundle | null {
+  const bundleSlug = TOPIC_BUNDLE_MAP[topicSlug]
+  if (!bundleSlug) return null
+  return TEST_BUNDLES.find(b => b.slug === bundleSlug) ?? null
+}
+
 export default function SearchPage() {
   return (
     <Suspense fallback={<div className="pt-24 pb-20 text-center"><p className="text-[#577572]">Loading...</p></div>}>
@@ -200,6 +222,7 @@ function SearchPageInner() {
   const [query, setQuery] = useState(searchParams.get('q') || '')
   const [loading, setLoading] = useState(true)
   const [codeMatch, setCodeMatch] = useState<{ testId: string; testName: string; labName: string; code: string } | null>(null)
+  const [testMap, setTestMap] = useState<Record<string, string>>({})
 
   // Initialize topic filter from URL on mount
   const initialTopic = searchParams.get('topic')
@@ -222,7 +245,12 @@ function SearchPageInner() {
         supabase.from('tests').select('*').order('test_name'),
         supabase.from('symptoms').select('*').order('name'),
       ])
-      if (testsRes.data) setTests(testsRes.data)
+      if (testsRes.data) {
+        setTests(testsRes.data)
+        const map: Record<string, string> = {}
+        testsRes.data.forEach((t: Test) => { map[t.test_name] = t.id })
+        setTestMap(map)
+      }
       if (symptomsRes.data) setSymptoms(symptomsRes.data)
       setLoading(false)
     }
@@ -465,6 +493,12 @@ function SearchPageInner() {
                 })()}
               </div>
             )}
+
+            {/* Contextual bundle card — show when a topic pill is active and has a mapped bundle */}
+            {activeTopicSlug && !query.trim() && (() => {
+              const bundle = getBundleForTopic(activeTopicSlug)
+              return bundle ? <TopicBundleCard bundle={bundle} testMap={testMap} /> : null
+            })()}
 
             {/* Results count + view toggle */}
             <div className="mt-6 flex items-center justify-between mx-auto max-w-5xl">
@@ -768,5 +802,145 @@ function TestCard({ test }: { test: Test }) {
         </span>
       </div>
     </Link>
+  )
+}
+
+function TopicBundleCard({
+  bundle,
+  testMap,
+}: {
+  bundle: TestBundle
+  testMap: Record<string, string>
+}) {
+  const [expanded, setExpanded] = useState(false)
+
+  function getTestMatches() {
+    return bundle.tests.map(name => {
+      let id = testMap[name] || null
+      if (!id) {
+        const lower = name.toLowerCase()
+        const entry = Object.entries(testMap).find(([k]) => k.toLowerCase().includes(lower) || lower.includes(k.toLowerCase()))
+        if (entry) id = entry[1]
+      }
+      return { name, id, found: !!id }
+    })
+  }
+
+  const matches = getTestMatches()
+
+  return (
+    <div className="mx-auto max-w-5xl mt-6">
+      <div
+        className={`rounded-2xl border-[1.5px] transition-all ${
+          expanded ? 'border-[#2d6a5e] shadow-lg shadow-[#2d6a5e]/5' : 'border-[#2d6a5e]/30'
+        }`}
+        style={{ backgroundColor: '#f0f7f6' }}
+      >
+        {/* Card header */}
+        <button
+          onClick={() => setExpanded(e => !e)}
+          className="w-full text-left p-5 sm:p-6 cursor-pointer"
+        >
+          <div className="flex items-start gap-4">
+            <span className="text-2xl flex-shrink-0 mt-0.5">{bundle.icon}</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#2d6a5e]">
+                  Recommended panel
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-base font-bold text-[#1a2e2b] sm:text-lg">
+                  {bundle.name}
+                </h3>
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  <span className="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-medium text-[#2d6a5e]">
+                    {bundle.tests.length} tests
+                  </span>
+                  <svg
+                    className={`h-5 w-5 text-[#577572] transition-transform ${expanded ? 'rotate-180' : ''}`}
+                    fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </div>
+              </div>
+              <p className="mt-1.5 text-sm text-[#4a6b67] leading-relaxed">
+                {bundle.description}
+              </p>
+            </div>
+          </div>
+        </button>
+
+        {/* Expanded content */}
+        {expanded && (
+          <div className="px-5 pb-5 sm:px-6 sm:pb-6 border-t border-[#2d6a5e]/10">
+            {/* Who needs this */}
+            <div className="mt-5 rounded-xl bg-white p-4 sm:p-5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#2d6a5e] mb-2">
+                Who should order this?
+              </p>
+              <p className="text-sm text-[#4a6b67] leading-relaxed">
+                {bundle.whoNeeds}
+              </p>
+            </div>
+
+            {/* Test list */}
+            <div className="mt-5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#577572] mb-3">
+                Tests included
+              </p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {matches.map((test, i) => (
+                  <div key={i} className="flex items-center gap-2.5">
+                    <svg className="h-4 w-4 text-[#2d6a5e] flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    {test.id ? (
+                      <a
+                        href={`/search/${test.id}`}
+                        className="text-sm text-[#4a6b67] hover:text-[#2d6a5e] transition-colors"
+                      >
+                        {test.name}
+                      </a>
+                    ) : (
+                      <span className="text-sm text-[#4a6b67]">{test.name}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Notes */}
+            {bundle.notes && (
+              <div className="mt-5 flex gap-3 rounded-xl border border-[#e0ebe9] bg-white p-4">
+                <svg className="h-5 w-5 text-[#c0826a] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                </svg>
+                <p className="text-sm text-[#4a6b67] leading-relaxed">
+                  {bundle.notes}
+                </p>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link
+                href={`/bundles#${bundle.slug}`}
+                className="inline-flex items-center gap-2 rounded-lg bg-[#2d6a5e] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#245a50]"
+              >
+                View full panel
+              </Link>
+              <Link
+                href="/compare"
+                className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-[#2d6a5e] transition-colors hover:bg-[#e0ebe9]"
+              >
+                Compare prices
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
