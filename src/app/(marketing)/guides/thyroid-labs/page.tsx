@@ -18,19 +18,19 @@ export const metadata: Metadata = {
 const FAQ = [
   {
     q: 'Is TSH enough to check my thyroid?',
-    a: 'No. TSH alone misses many thyroid problems. You can have a "normal" TSH while your Free T3 is low, which directly causes fatigue, brain fog, and weight gain. A complete thyroid panel includes TSH, Free T3, Free T4, Reverse T3, and thyroid antibodies (Anti-TPO and Anti-Thyroglobulin).',
+    a: 'No. TSH is useful, but it does not tell the whole story. A more complete thyroid panel usually includes TSH, Free T3, Free T4, Reverse T3, and thyroid antibodies such as Anti-TPO and Anti-Thyroglobulin.',
   },
   {
     q: 'What is Reverse T3 and why does it matter?',
-    a: 'Reverse T3 (rT3) is an inactive form of T3. When your body is under stress, illness, or caloric restriction, it converts T4 into Reverse T3 instead of active Free T3. High rT3 with low Free T3 can explain persistent thyroid symptoms even when TSH looks normal.',
+    a: 'Reverse T3 is an inactive form of T3. During stress, illness, or caloric restriction, the body may convert more T4 into Reverse T3 instead of active T3. In the right context, that can help explain ongoing symptoms even when TSH does not look alarming.',
   },
   {
     q: 'Can I order thyroid labs without a doctor?',
-    a: 'In most US states, yes. Direct-to-consumer lab companies like Quest, LabCorp (via third-party ordering), and others let you order and pay for thyroid panels yourself. LabLooker helps you compare prices across providers.',
+    a: 'In most US states, yes. Direct-to-consumer lab companies and third-party ordering services often let you order thyroid panels yourself. LabLooker helps compare prices across providers.',
   },
   {
     q: 'How often should I retest thyroid levels?',
-    a: 'If you\'re on thyroid medication or just starting treatment, retest every 6-8 weeks until stable. Once stable, every 3-6 months. If you\'re checking for the first time, a single comprehensive panel establishes your baseline.',
+    a: 'If you are starting thyroid medication or adjusting a dose, retesting every 6 to 8 weeks is common until levels are stable. After that, many people recheck every 3 to 6 months. If this is your first thyroid workup, a comprehensive panel can serve as a baseline.',
   },
 ]
 
@@ -50,19 +50,19 @@ export default function ThyroidLabsGuide() {
           What thyroid labs should I ask for?
         </h1>
         <p className="mt-4 text-lg text-[#4a6b67] leading-relaxed">
-          If your doctor only checks TSH, you&apos;re getting an incomplete picture. Here&apos;s what a complete thyroid panel looks like — and why each test matters.
+          If your doctor only checks TSH, the picture is incomplete. A fuller thyroid panel can show issues that TSH alone may miss.
         </p>
 
         {/* Content */}
         <div className="mt-10 space-y-6 text-[#4a6b67] leading-relaxed">
           <p>
-            TSH (thyroid stimulating hormone) is the standard screening test, but it&apos;s a pituitary hormone, not a thyroid hormone. It tells you what your brain <em>thinks</em> about your thyroid — not what your thyroid is actually producing. That&apos;s why many patients with classic thyroid symptoms (fatigue, weight gain, hair loss, brain fog, cold intolerance) are told their labs are &ldquo;normal&rdquo; based on TSH alone.
+            TSH (thyroid stimulating hormone) is the standard screening test, but it is a pituitary signal, not a thyroid hormone. It reflects how the brain is signaling the thyroid rather than showing the full hormone picture directly. That is one reason some patients with fatigue, weight gain, hair loss, brain fog, or cold intolerance are told their labs are normal based on TSH alone.
           </p>
           <p>
-            A complete thyroid evaluation adds <strong>Free T3</strong> (the active hormone your cells use), <strong>Free T4</strong> (the storage hormone), <strong>Reverse T3</strong> (an inactive form that blocks Free T3), and <strong>thyroid antibodies</strong> (Anti-TPO and Anti-Thyroglobulin) which detect Hashimoto&apos;s — the most common cause of hypothyroidism, often missed for years.
+            A more complete thyroid evaluation adds Free T3, Free T4, Reverse T3, and thyroid antibodies such as Anti-TPO and Anti-Thyroglobulin. Together, those markers give a broader view of thyroid hormone production, conversion, and autoimmune thyroid activity.
           </p>
           <p>
-            Functional medicine practitioners consider optimal ranges narrower than standard lab reference ranges. For example, many labs flag TSH as &ldquo;normal&rdquo; up to 4.5-5.0, while optimal is typically 1.0-2.0. Free T3 in the upper quarter of the reference range is associated with better energy and metabolism.
+            Some clinicians use narrower target ranges than the standard lab reference range. For example, many labs still mark TSH as normal up to about 4.5 to 5.0, while some practitioners prefer to see it lower. Free T3 is also often interpreted in context rather than by range alone. The point is that a result can be technically in range without fully matching the symptom picture.
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export default function ThyroidLabsGuide() {
         <div className="mt-10 rounded-2xl border border-[#e0ebe9] bg-[#faf8f5] p-6 sm:p-8 text-center">
           <h2 className="text-lg font-bold text-[#1a2e2b]">Compare thyroid panel prices</h2>
           <p className="mt-2 text-sm text-[#4a6b67]">
-            Prices for the same thyroid tests vary 2-5x between labs. See who offers the best deal.
+            Prices for the same thyroid tests can vary a lot between providers. Compare options side by side.
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
             <Link
