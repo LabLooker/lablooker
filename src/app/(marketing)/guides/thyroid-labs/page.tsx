@@ -87,7 +87,7 @@ export default function ThyroidLabsGuide() {
             </Link>
             <Link
               href="/search?topic=thyroid"
-              className="inline-flex items-center gap-2 rounded-lg bg-white border border-[#e0ebe9] px-5 py-3 text-sm font-medium text-[#2d6a5e] transition-colors hover:bg-[#f0f7f6]"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#f0f7f6] border border-[#cfe0dc] px-5 py-3 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#e0ebe9]"
             >
               Browse all thyroid tests
             </Link>
