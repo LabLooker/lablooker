@@ -224,8 +224,7 @@ function LabRow({
                   }
                 }, 150)}
                 placeholder="Search lab..."
-                className="w-full px-3 py-2.5 rounded-lg border-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20"
-                style={{ borderColor: '#2d6a5e', color: '#1a2e2b' }}
+                className="w-full px-3 py-2.5 rounded-lg border-2 border-[#2d6a5e] text-sm text-[#1a2e2b] placeholder-[#577572] focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20"
               />
               {showSource && sourceFiltered.length > 0 && (
                 <div
@@ -280,8 +279,7 @@ function LabRow({
                   }
                 }, 150)}
                 placeholder="Search lab..."
-                className="w-full px-3 py-2.5 rounded-lg border-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20"
-                style={{ borderColor: '#2d6a5e', color: '#1a2e2b' }}
+                className="w-full px-3 py-2.5 rounded-lg border-2 border-[#2d6a5e] text-sm text-[#1a2e2b] placeholder-[#577572] focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20"
               />
               {showTarget && targetFiltered.length > 0 && (
                 <div
@@ -788,8 +786,7 @@ export default function TranslatePage() {
             }}
             placeholder={parsedTerms.length > 0 ? "Add more tests..." : "Type test names or codes — comma or line separated, or paste from your order..."}
             rows={4}
-            className="w-full px-4 py-3 rounded-lg border-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e] transition-colors"
-            style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+            className="w-full px-4 py-3 rounded-lg border-2 border-[#2d6a5e] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white resize-none focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 transition-colors"
           />
           <div className="flex items-center justify-between mt-3">
             <p className="text-xs" style={{ color: '#9ca3af' }}>⌘+Enter to search</p>

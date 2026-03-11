@@ -361,7 +361,7 @@ export default function ComparePage() {
                 value={query}
                 onChange={(e) => { setQuery(e.target.value); search(e.target.value) }}
                 placeholder="Search a test — Ferritin, TSH, Vitamin D…"
-                className="ml-3 flex-1 bg-transparent text-[#1a2e2b] placeholder-[#a3bfbb] focus:outline-none"
+                className="ml-3 flex-1 bg-transparent text-[#1a2e2b] placeholder-[#577572] focus:outline-none"
                 autoFocus
               />
               {query && (
