@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import { useStateRestriction } from '@/components/StateRestrictionProvider'
 import { COMPARE_GROUPS, type CompareGroup, type CompareTestContent } from '@/config/compare-content'
+import { trackAffiliateClick } from '@/lib/track-click'
 
 // ─── Awin Affiliate Config ────────────────────────────────────────────────────
 const AWIN_PUBLISHER_ID = '2796790'
@@ -498,6 +499,7 @@ export default function ComparePage() {
                               href={orderUrl}
                               target="_blank"
                               rel="noopener noreferrer sponsored"
+                              onClick={() => trackAffiliateClick(p.lab_name, selectedTest?.test_name, 'compare')}
                               className={`rounded-lg px-4 py-1.5 text-xs font-semibold text-white transition-colors ${
                                 isCheapest
                                   ? 'bg-[#2d6a5e] hover:bg-[#245549]'

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { TEST_BUNDLES, type TestBundle } from '@/config/test-bundles'
 import { createClient } from '@/lib/supabase'
+import { trackAffiliateClick } from '@/lib/track-click'
 
 type TestMatch = {
   name: string
@@ -132,6 +133,7 @@ export default function BundlesPage() {
                             {test.id ? (
                               <a
                                 href={`/search/${test.id}`}
+                                onClick={() => trackAffiliateClick('Test Detail', test.name, 'bundle')}
                                 className="text-sm text-[#4a6b67] hover:text-[#2d6a5e] transition-colors"
                               >
                                 {test.name}
@@ -160,6 +162,7 @@ export default function BundlesPage() {
                     <div className="mt-6 flex flex-wrap gap-3">
                       <a
                         href={`/search?q=${encodeURIComponent(bundle.shortName)}`}
+                        onClick={() => trackAffiliateClick('Search', bundle.shortName, 'bundle')}
                         className="inline-flex items-center gap-2 rounded-lg bg-[#2d6a5e] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#245a50]"
                       >
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -169,6 +172,7 @@ export default function BundlesPage() {
                       </a>
                       <a
                         href="/compare"
+                        onClick={() => trackAffiliateClick('Compare', bundle.shortName, 'bundle')}
                         className="inline-flex items-center gap-2 rounded-lg bg-[#f0f7f6] px-4 py-2.5 text-sm font-medium text-[#2d6a5e] transition-colors hover:bg-[#e0ebe9]"
                       >
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
