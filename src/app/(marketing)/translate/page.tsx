@@ -941,17 +941,53 @@ export default function TranslatePage() {
           </div>
         )}
 
-        {/* Help text */}
-        {translatedTests.length === 0 && (
-          <div className="text-center text-sm mt-6 print:hidden" style={{ color: '#577572' }}>
-            <p className="mb-2">
-              <strong>How it works:</strong> Each lab uses its own internal codes for the same test.
-              We translate them so you can walk into any lab with the right code.
-            </p>
-            <p>
-              <Link href="/search" className="underline" style={{ color: '#2d6a5e' }}>
+        {/* Empty state helper */}
+        {translatedTests.length === 0 && parsedTerms.length === 0 && (
+          <div className="mt-8 print:hidden">
+            <div className="rounded-xl border border-[#e0ebe9] bg-white p-6 max-w-2xl mx-auto">
+              <div className="grid gap-5 sm:grid-cols-3">
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#2d6a5e] mb-2">What you can paste</div>
+                  <p className="text-sm text-[#4a6b67] leading-relaxed">
+                    A doctor&apos;s test list, lab order codes, test names from a requisition or patient portal.
+                  </p>
+                </div>
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#2d6a5e] mb-2">What you&apos;ll get</div>
+                  <p className="text-sm text-[#4a6b67] leading-relaxed">
+                    Equivalent test names, matching lab-specific codes, and CPT code context when available.
+                  </p>
+                </div>
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#2d6a5e] mb-2">Example</div>
+                  <p className="text-sm font-mono text-[#1a2e2b] leading-relaxed">
+                    CBC, ferritin, TSH, free T4, vitamin D
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 pt-5 border-t border-[#e0ebe9]">
+                <p className="text-sm text-[#577572]">
+                  <strong className="text-[#1a2e2b]">How it works:</strong> Each lab uses its own internal codes for the same test.
+                  Paste what you were given — we&apos;ll match it across providers so you can find the equivalent test anywhere.
+                </p>
+              </div>
+            </div>
+
+            <p className="text-center mt-4 text-sm text-[#577572]">
+              Free research tool. No account required.{' '}
+              <Link href="/search" className="underline text-[#2d6a5e]">
                 Browse all tests →
               </Link>
+            </p>
+          </div>
+        )}
+
+        {/* Post-parse help text (when chips are showing but no translation yet) */}
+        {translatedTests.length === 0 && parsedTerms.length > 0 && (
+          <div className="text-center text-sm mt-6 print:hidden" style={{ color: '#577572' }}>
+            <p>
+              Confirm your tests above, then pick source and target labs to translate.
             </p>
           </div>
         )}

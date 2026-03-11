@@ -400,7 +400,25 @@ export default function ComparePage() {
             )}
           </div>
 
-          {/* Popular search pills removed — search bar + group comparison is sufficient */}
+          {/* Quick examples — only when no test selected */}
+          {!selectedTest && !activeGroup && (
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {['Ferritin', 'TSH', 'Vitamin D', 'Testosterone', 'CMP', 'Lipid Panel'].map((name) => (
+                <button
+                  key={name}
+                  onClick={() => { setQuery(name); search(name) }}
+                  className="rounded-full border border-[#e0ebe9] bg-white px-3 py-1.5 text-xs font-medium text-[#4a6b67] transition-colors hover:border-[#2d6a5e] hover:text-[#2d6a5e]"
+                >
+                  {name}
+                </button>
+              ))}
+            </div>
+          )}
+          {!selectedTest && !activeGroup && (
+            <p className="mt-3 text-xs text-[#9ca3af]">
+              Free research tool. No account required. Always confirm final pricing before ordering.
+            </p>
+          )}
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════════
