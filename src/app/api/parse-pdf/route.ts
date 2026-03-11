@@ -5,10 +5,12 @@ import { createClient } from '@supabase/supabase-js'
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pdfParse = require('pdf-parse/lib/pdf-parse.js')
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 type TestRecord = { id: string; test_name: string }
 
@@ -485,7 +487,7 @@ export async function POST(req: NextRequest) {
     const results = parseLabResults(text)
 
     // Fetch all tests for matching
-    const { data: allTests } = await supabase
+    const { data: allTests } = await getSupabase()
       .from('tests')
       .select('id, test_name')
       .limit(5000)
