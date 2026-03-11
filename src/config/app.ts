@@ -59,10 +59,11 @@ export const APP_CONFIG = {
   },
 
   nav: [
-    { label: 'Translate', href: '/translate' },
+    { label: 'Search Tests', href: '/search' },
+    { label: 'Compare Prices', href: '/compare' },
+    { label: 'Translate Codes', href: '/translate' },
     { label: 'Advocate', href: '/advocate' },
-    { label: 'My Labs', href: '/dashboard' },
-    { label: 'Compare', href: '/compare' },
+    { label: 'Track Results', href: '/dashboard' },
     { label: 'Plans', href: '/pricing' },
   ],
 

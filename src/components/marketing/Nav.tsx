@@ -63,14 +63,6 @@ export default function Nav() {
               {link.label}
             </Link>
           ))}
-          {user && (
-            <Link
-              href="/dashboard"
-              className="text-sm text-[#577572] transition-colors hover:text-[#1a2e2b]"
-            >
-              Track
-            </Link>
-          )}
         </div>
 
         {/* Desktop CTA */}
@@ -180,15 +172,6 @@ export default function Nav() {
                 {link.label}
               </Link>
             ))}
-            {user && (
-              <Link
-                href="/dashboard"
-                className="text-sm text-[#577572] transition-colors hover:text-[#1a2e2b]"
-                onClick={() => setMobileOpen(false)}
-              >
-                Track
-              </Link>
-            )}
             <div className="flex flex-col gap-2 pt-4 border-t border-[#e0ebe9]">
               {user ? (
                 <>

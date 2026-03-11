@@ -8,7 +8,7 @@ export default function Footer() {
       title: 'Tools',
       links: [
         { label: 'Search Tests', href: '/search' },
-        { label: 'Translate Orders', href: '/translate' },
+        { label: 'Translate Codes', href: '/translate' },
         { label: 'Compare Prices', href: '/compare' },
         { label: 'Test Panels', href: '/bundles' },
         { label: 'Plans', href: '/pricing' },
