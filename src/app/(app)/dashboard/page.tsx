@@ -379,7 +379,7 @@ export default function DashboardPage() {
             <span className="font-semibold text-[#c0826a]">{belowGoal}</span>
           </div>
           <div className="flex shrink-0 items-center gap-2 rounded-lg bg-[#577572]/10 px-3 py-2">
-            <span className="text-sm text-[#577572]">Needs update (>90 days)</span>
+            <span className="text-sm text-[#577572]">Needs update (&gt;90 days)</span>
             <span className="font-semibold text-[#577572]">{needsUpdate}</span>
           </div>
         </div>

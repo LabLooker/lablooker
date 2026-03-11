@@ -286,9 +286,9 @@ export default function TrackerDetailPage() {
   if (showLabRange && labRefLow !== null) allRefs.push(labRefLow)
   if (showLabRange && labRefHigh !== null) allRefs.push(labRefHigh)
   if (showFunctional && funcMatch) { allRefs.push(funcMatch.low, funcMatch.high) }
-  if (showGoal && goal?.target_value !== null && goal?.target_value !== undefined) allRefs.push(goal.target_value)
+  if (showGoal && goal?.target_value !== null && goal?.target_value !== undefined) allRefs.push(goal!.target_value!)
   if (showGoal && goal?.target_low !== null && goal?.target_high !== null) {
-    allRefs.push(goal.target_low, goal.target_high)
+    allRefs.push(goal!.target_low!, goal!.target_high!)
   }
   const allY = [...vals, ...allRefs]
   const yMin = allY.length ? Math.floor(Math.min(...allY) * 0.9) : 0
