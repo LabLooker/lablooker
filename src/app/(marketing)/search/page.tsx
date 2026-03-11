@@ -392,39 +392,38 @@ function SearchPageInner() {
         {/* Search bar */}
         <div className="mx-auto mt-8 max-w-2xl">
           <div className="relative">
-            <svg
-              className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#577572]"
-              fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round"
-                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value)
-                setCategoryFilter(null)
-                setKeywordFilter(null)
-                setActiveTopicSlug(null)
-                if (!e.target.value) router.replace('/search')
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSearchSubmit()
-              }}
-              placeholder="Search tests, CPT codes, or symptoms..."
-              className="w-full rounded-xl border-[2.5px] border-[#2d6a5e] bg-white py-4 pl-12 pr-4 text-[#1a2e2b] placeholder-[#577572] transition-colors focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30"
-            />
-            {query && (
-              <button
-                onClick={() => { setQuery(''); setCategoryFilter(null); setKeywordFilter(null); setActiveTopicSlug(null); router.replace('/search') }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#577572] hover:text-[#1a2e2b]"
-              >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
+            <div className="flex items-center rounded-xl border-2 border-[#2d6a5e] bg-white px-4 py-3 shadow-sm focus-within:ring-2 focus-within:ring-[#2d6a5e]/20">
+              <svg className="h-5 w-5 shrink-0 text-[#577572]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value)
+                  setCategoryFilter(null)
+                  setKeywordFilter(null)
+                  setActiveTopicSlug(null)
+                  if (!e.target.value) router.replace('/search')
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSearchSubmit()
+                }}
+                placeholder="Search tests, CPT codes, or symptoms..."
+                className="ml-3 flex-1 bg-transparent text-[#1a2e2b] placeholder-[#577572] focus:outline-none"
+              />
+              {query && (
+                <button
+                  onClick={() => { setQuery(''); setCategoryFilter(null); setKeywordFilter(null); setActiveTopicSlug(null); router.replace('/search') }}
+                  className="ml-2 text-[#577572] hover:text-[#1a2e2b] transition-colors"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
