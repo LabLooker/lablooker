@@ -145,7 +145,7 @@ export default function TrackerDetailPage() {
   const [showGoalModal, setShowGoalModal] = useState(false)
 
   // Goal setting state
-  const [goalDirection, setGoalDirection] = useState<'above' | 'below' | 'range'>('above')
+  const [goalType, setGoalType] = useState<'target' | 'range'>('target')
   const [goalValue, setGoalValue] = useState('')
   const [goalLow, setGoalLow] = useState('')
   const [goalHigh, setGoalHigh] = useState('')
@@ -201,7 +201,7 @@ export default function TrackerDetailPage() {
 
     // Pre-fill goal form if editing
     if (goalResult) {
-      setGoalDirection(goalResult.target_direction as 'above' | 'below' | 'range')
+      setGoalType(goalResult.target_direction === 'range' ? 'range' : 'target')
       setGoalValue(goalResult.target_value?.toString() ?? '')
       setGoalLow(goalResult.target_low?.toString() ?? '')
       setGoalHigh(goalResult.target_high?.toString() ?? '')
@@ -236,11 +236,11 @@ export default function TrackerDetailPage() {
     const goalData: any = {
       user_id: user.id,
       test_id: testId,
-      target_direction: goalDirection,
+      target_direction: goalType,
       notes: goalNote || null
     }
 
-    if (goalDirection === 'range') {
+    if (goalType === 'range') {
       goalData.target_low = parseFloat(goalLow) || null
       goalData.target_high = parseFloat(goalHigh) || null
       goalData.target_value = null
@@ -461,18 +461,9 @@ export default function TrackerDetailPage() {
                 )}
 
                 {/* Goal line/range */}
-                {showGoal && goal?.target_direction === 'above' && goal.target_value !== null && (
+                {showGoal && goal?.target_direction !== 'range' && goal?.target_value !== null && (
                   <ReferenceLine
-                    y={goal.target_value}
-                    stroke="#2d6a5e"
-                    strokeDasharray="6 3"
-                    strokeWidth={1.5}
-                    label={{ value: 'My goal', position: 'insideTopRight', fontSize: 10, fill: '#2d6a5e' }}
-                  />
-                )}
-                {showGoal && goal?.target_direction === 'below' && goal.target_value !== null && (
-                  <ReferenceLine
-                    y={goal.target_value}
+                    y={goal!.target_value!}
                     stroke="#2d6a5e"
                     strokeDasharray="6 3"
                     strokeWidth={1.5}
@@ -508,52 +499,57 @@ export default function TrackerDetailPage() {
 
       {/* Goal setting card */}
       <div className="rounded-xl border border-[#e0ebe9] bg-white p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-[#1a2e2b]">Goal Setting</h2>
+        <h2 className="text-lg font-semibold text-[#1a2e2b]">Set Your Goal</h2>
 
         <div className="space-y-4">
-          {/* Direction selector */}
+          {/* Goal type selector */}
           <div>
-            <label className="block text-sm font-medium text-[#1a2e2b] mb-2">Direction</label>
+            <label className="block text-sm font-medium text-[#1a2e2b] mb-2">Goal Type</label>
             <div className="flex gap-2">
-              {(['above', 'below', 'range'] as const).map((direction) => (
+              {(['target', 'range'] as const).map((t) => (
                 <button
-                  key={direction}
-                  onClick={() => setGoalDirection(direction)}
+                  key={t}
+                  onClick={() => setGoalType(t)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    goalDirection === direction
+                    goalType === t
                       ? 'bg-[#2d6a5e] text-white'
                       : 'bg-[#f0f7f6] text-[#577572] hover:bg-[#e0ebe9]'
                   }`}
                 >
-                  {direction === 'range' ? 'Between' : direction === 'above' ? 'Above' : 'Below'}
+                  {t === 'target' ? 'Target' : 'Range'}
                 </button>
               ))}
             </div>
+            <p className="mt-1.5 text-xs text-[#577572]">
+              {goalType === 'target'
+                ? "A single number you're aiming for (e.g. Ferritin → 50)"
+                : "A window you want to stay within (e.g. Calcium → 8.5–10.0)"}
+            </p>
           </div>
 
           {/* Value fields */}
-          {goalDirection === 'range' ? (
+          {goalType === 'range' ? (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[#1a2e2b] mb-2">Min value</label>
+                <label className="block text-sm font-medium text-[#1a2e2b] mb-2">Low</label>
                 <input
                   type="number"
                   step="0.01"
                   value={goalLow}
                   onChange={(e) => setGoalLow(e.target.value)}
                   className="w-full rounded-lg border border-[#e0ebe9] px-3 py-2 text-sm focus:border-[#2d6a5e] focus:outline-none"
-                  placeholder="Min"
+                  placeholder="e.g. 8.5"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#1a2e2b] mb-2">Max value</label>
+                <label className="block text-sm font-medium text-[#1a2e2b] mb-2">High</label>
                 <input
                   type="number"
                   step="0.01"
                   value={goalHigh}
                   onChange={(e) => setGoalHigh(e.target.value)}
                   className="w-full rounded-lg border border-[#e0ebe9] px-3 py-2 text-sm focus:border-[#2d6a5e] focus:outline-none"
-                  placeholder="Max"
+                  placeholder="e.g. 10.0"
                 />
               </div>
             </div>
@@ -566,7 +562,7 @@ export default function TrackerDetailPage() {
                 value={goalValue}
                 onChange={(e) => setGoalValue(e.target.value)}
                 className="w-full rounded-lg border border-[#e0ebe9] px-3 py-2 text-sm focus:border-[#2d6a5e] focus:outline-none"
-                placeholder={`Target ${goalDirection === 'above' ? 'minimum' : 'maximum'}`}
+                placeholder="e.g. 50"
               />
             </div>
           )}

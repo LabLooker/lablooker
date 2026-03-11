@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 
-type Direction = 'above' | 'below' | 'range'
+type GoalType = 'target' | 'range'
 
 type Props = {
   isOpen: boolean
@@ -30,8 +30,8 @@ export default function GoalSetModal({
 }: Props) {
   const supabase = createClient()
 
-  const [direction, setDirection] = useState<Direction>(
-    (existingGoal?.target_direction as Direction) ?? 'above'
+  const [goalType, setGoalType] = useState<GoalType>(
+    existingGoal?.target_direction === 'range' ? 'range' : 'target'
   )
   const [targetValue, setTargetValue] = useState(existingGoal?.target_value?.toString() ?? '')
   const [targetLow, setTargetLow] = useState(existingGoal?.target_low?.toString() ?? '')
@@ -42,7 +42,7 @@ export default function GoalSetModal({
 
   useEffect(() => {
     if (isOpen) {
-      setDirection((existingGoal?.target_direction as Direction) ?? 'above')
+      setGoalType(existingGoal?.target_direction === 'range' ? 'range' : 'target')
       setTargetValue(existingGoal?.target_value?.toString() ?? '')
       setTargetLow(existingGoal?.target_low?.toString() ?? '')
       setTargetHigh(existingGoal?.target_high?.toString() ?? '')
@@ -55,12 +55,12 @@ export default function GoalSetModal({
     e.preventDefault()
     setError('')
 
-    if (direction !== 'range' && !targetValue) {
+    if (goalType === 'target' && !targetValue) {
       setError('Please enter a target value.')
       return
     }
-    if (direction === 'range' && (!targetLow || !targetHigh)) {
-      setError('Please enter both low and high values for a range goal.')
+    if (goalType === 'range' && (!targetLow || !targetHigh)) {
+      setError('Please enter both low and high values for your range.')
       return
     }
 
@@ -71,10 +71,10 @@ export default function GoalSetModal({
     const payload = {
       user_id: user.id,
       test_id: testId,
-      target_direction: direction,
-      target_value: direction !== 'range' && targetValue ? Number(targetValue) : null,
-      target_low: direction === 'range' && targetLow ? Number(targetLow) : null,
-      target_high: direction === 'range' && targetHigh ? Number(targetHigh) : null,
+      target_direction: goalType === 'range' ? 'range' : 'target',
+      target_value: goalType === 'target' && targetValue ? Number(targetValue) : null,
+      target_low: goalType === 'range' && targetLow ? Number(targetLow) : null,
+      target_high: goalType === 'range' && targetHigh ? Number(targetHigh) : null,
       notes: notes || null,
       updated_at: new Date().toISOString(),
     }
@@ -94,9 +94,9 @@ export default function GoalSetModal({
 
   if (!isOpen) return null
 
-  const pillClass = (d: Direction) =>
+  const pillClass = (t: GoalType) =>
     `flex-1 rounded-full py-2 text-sm font-medium transition-colors ${
-      direction === d
+      goalType === t
         ? 'bg-[#2d6a5e] text-white'
         : 'bg-[#faf8f5] border border-[#e0ebe9] text-[#4a6b67] hover:border-[#2d6a5e]/40'
     }`
@@ -106,7 +106,7 @@ export default function GoalSetModal({
       <div className="relative w-full max-w-sm rounded-2xl border border-[#e0ebe9] bg-white shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#e0ebe9] px-6 py-4">
-          <h2 className="text-lg font-semibold text-[#1a2e2b]">Set Goal</h2>
+          <h2 className="text-lg font-semibold text-[#1a2e2b]">Set Your Goal</h2>
           <button
             onClick={onClose}
             className="rounded-lg p-1.5 text-[#577572] hover:bg-[#faf8f5] hover:text-[#1a2e2b] transition-colors"
@@ -124,24 +124,26 @@ export default function GoalSetModal({
             <p className="text-sm font-semibold text-[#1a2e2b]">{testName}</p>
           </div>
 
-          {/* Direction pills */}
+          {/* Goal type toggle */}
           <div>
-            <label className="mb-2 block text-xs font-medium text-[#4a6b67]">Goal Direction</label>
+            <label className="mb-2 block text-xs font-medium text-[#4a6b67]">Goal Type</label>
             <div className="flex gap-2">
-              <button type="button" className={pillClass('above')} onClick={() => setDirection('above')}>
-                Above ↑
+              <button type="button" className={pillClass('target')} onClick={() => setGoalType('target')}>
+                Target
               </button>
-              <button type="button" className={pillClass('below')} onClick={() => setDirection('below')}>
-                Below ↓
-              </button>
-              <button type="button" className={pillClass('range')} onClick={() => setDirection('range')}>
-                Range ↔
+              <button type="button" className={pillClass('range')} onClick={() => setGoalType('range')}>
+                Range
               </button>
             </div>
+            <p className="mt-1.5 text-xs text-[#577572]">
+              {goalType === 'target'
+                ? "A single number you're aiming for (e.g. Ferritin → 50)"
+                : "A window you want to stay within (e.g. Calcium → 8.5–10.0)"}
+            </p>
           </div>
 
           {/* Value inputs */}
-          {direction !== 'range' ? (
+          {goalType === 'target' ? (
             <div>
               <label className="mb-1 block text-xs font-medium text-[#4a6b67]">
                 Target Value *
@@ -151,26 +153,21 @@ export default function GoalSetModal({
                 step="any"
                 value={targetValue}
                 onChange={(e) => setTargetValue(e.target.value)}
-                placeholder={direction === 'above' ? 'e.g. 50 (aim for ≥ this)' : 'e.g. 2.5 (aim for ≤ this)'}
+                placeholder="e.g. 50"
                 className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
                 required
               />
-              <p className="mt-1 text-xs text-[#577572]">
-                {direction === 'above'
-                  ? 'You aim to reach or exceed this value.'
-                  : 'You aim to stay at or below this value.'}
-              </p>
             </div>
           ) : (
             <div>
-              <label className="mb-1 block text-xs font-medium text-[#4a6b67]">Target Range *</label>
+              <label className="mb-1 block text-xs font-medium text-[#4a6b67]">Range *</label>
               <div className="grid grid-cols-2 gap-3">
                 <input
                   type="number"
                   step="any"
                   value={targetLow}
                   onChange={(e) => setTargetLow(e.target.value)}
-                  placeholder="Low"
+                  placeholder="Low (e.g. 8.5)"
                   className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
                   required
                 />
@@ -179,7 +176,7 @@ export default function GoalSetModal({
                   step="any"
                   value={targetHigh}
                   onChange={(e) => setTargetHigh(e.target.value)}
-                  placeholder="High"
+                  placeholder="High (e.g. 10.0)"
                   className="w-full rounded-lg border border-[#e0ebe9] bg-[#faf8f5] px-3 py-2 text-sm text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
                   required
                 />
