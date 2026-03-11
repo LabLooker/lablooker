@@ -75,6 +75,44 @@ export default function SettingsPage() {
     router.refresh()
   }
 
+  async function handleDeleteAllData() {
+    const confirmation = prompt('This will permanently delete all your data. Type "DELETE" to confirm:')
+    if (confirmation !== 'DELETE') return
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    // Delete all user data
+    await supabase.from('lab_results').delete().eq('user_id', user.id)
+    await supabase.from('lab_goals').delete().eq('user_id', user.id)
+    await supabase.from('lab_reports').delete().eq('user_id', user.id)
+    await supabase.from('lab_shares').delete().eq('user_id', user.id)
+
+    alert('All your data has been deleted.')
+    router.push('/dashboard')
+  }
+
+  async function handleDeleteAccount() {
+    const confirmation = prompt('This will permanently delete your account and all data. Type "DELETE MY ACCOUNT" to confirm:')
+    if (confirmation !== 'DELETE MY ACCOUNT') return
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    // Delete all user data
+    await supabase.from('lab_results').delete().eq('user_id', user.id)
+    await supabase.from('lab_goals').delete().eq('user_id', user.id)
+    await supabase.from('lab_reports').delete().eq('user_id', user.id)
+    await supabase.from('lab_shares').delete().eq('user_id', user.id)
+    await supabase.from('profiles').delete().eq('id', user.id)
+
+    // Sign out
+    await supabase.auth.signOut()
+
+    alert('Your account has been deleted.')
+    router.push('/')
+  }
+
   const planLabel =
     profile?.plan === 'business'
       ? 'Business'
@@ -169,7 +207,43 @@ export default function SettingsPage() {
         </div>
       </Card>
 
-      {/* Danger Zone */}
+      {/* Data Management */}
+      <Card className="mb-6">
+        <h2 className="mb-4 text-lg font-semibold text-[#1a2e2b]">Data Management</h2>
+        <div className="space-y-4">
+          <div className="rounded-lg border border-[#c0826a]/30 bg-[#c0826a]/5 p-4">
+            <h3 className="text-sm font-semibold text-[#c0826a] mb-2">Delete All My Data</h3>
+            <p className="text-xs text-[#577572] mb-3">
+              This will permanently delete all your lab results, goals, reports, and shares. Your account will remain active.
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDeleteAllData}
+              className="text-[#c0826a] hover:bg-[#c0826a]/10"
+            >
+              Delete All My Data
+            </Button>
+          </div>
+
+          <div className="rounded-lg border border-red-300 bg-red-50 p-4">
+            <h3 className="text-sm font-semibold text-red-800 mb-2">Delete My Account</h3>
+            <p className="text-xs text-red-700 mb-3">
+              This will permanently delete your account and all associated data. This action cannot be undone.
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDeleteAccount}
+              className="text-red-800 hover:bg-red-100"
+            >
+              Delete My Account
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Account */}
       <Card>
         <h2 className="mb-4 text-lg font-semibold text-[#1a2e2b]">Account</h2>
         <Button variant="ghost" size="sm" onClick={handleSignOut}>

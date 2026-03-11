@@ -15,7 +15,6 @@ import {
   ReferenceLine,
   ReferenceArea,
   ResponsiveContainer,
-  Dot,
 } from 'recharts'
 import { createClient } from '@/lib/supabase'
 import ResultLogModal from '@/components/tracker/ResultLogModal'
@@ -77,6 +76,23 @@ function formatDate(dateStr: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })
 }
 
+function formatFullDate(dateStr: string): string {
+  const d = new Date(dateStr + 'T12:00:00Z')
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+function getStatus(result: LabResult): { status: string; color: string } {
+  const { value, ref_range_low, ref_range_high } = result
+
+  if (ref_range_low !== null && ref_range_high !== null) {
+    if (value < ref_range_low) return { status: 'Low', color: 'text-[#c0826a] bg-[#c0826a]/10' }
+    if (value > ref_range_high) return { status: 'High', color: 'text-[#c0826a] bg-[#c0826a]/10' }
+    return { status: 'In Range', color: 'text-[#2d6a5e] bg-[#2d6a5e]/10' }
+  }
+
+  return { status: 'No Range', color: 'text-[#577572] bg-[#577572]/10' }
+}
+
 function CustomTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null
   const d = payload[0].payload as ChartPoint
@@ -115,10 +131,11 @@ export default function TrackerDetailPage() {
   const supabase = createClient()
 
   const [testName, setTestName] = useState('')
+  const [alternateNames, setAlternateNames] = useState<string[]>([])
   const [results, setResults] = useState<LabResult[]>([])
   const [goal, setGoal] = useState<LabGoal | null>(null)
   const [loading, setLoading] = useState(true)
-  const [isPremium, setIsPremium] = useState(false)
+  const [timeRange, setTimeRange] = useState<'all' | '1y' | '6m' | '3m'>('all')
 
   const [showLabRange, setShowLabRange] = useState(true)
   const [showFunctional, setShowFunctional] = useState(false)
@@ -126,21 +143,20 @@ export default function TrackerDetailPage() {
 
   const [showLogModal, setShowLogModal] = useState(false)
   const [showGoalModal, setShowGoalModal] = useState(false)
-  const [shareLoading, setShareLoading] = useState(false)
-  const [shareLink, setShareLink] = useState('')
+
+  // Goal setting state
+  const [goalDirection, setGoalDirection] = useState<'above' | 'below' | 'range'>('above')
+  const [goalValue, setGoalValue] = useState('')
+  const [goalLow, setGoalLow] = useState('')
+  const [goalHigh, setGoalHigh] = useState('')
+  const [goalNote, setGoalNote] = useState('')
 
   const loadData = useCallback(async () => {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { router.push('/login'); return }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('plan')
-      .eq('id', user.id)
-      .single()
-    setIsPremium(profile?.plan === 'pro' || profile?.plan === 'business')
-
+    // Load test data
     const { data: testData } = await supabase
       .from('tests')
       .select('test_name')
@@ -148,11 +164,7 @@ export default function TrackerDetailPage() {
       .single()
     setTestName(testData?.test_name ?? 'Unknown Test')
 
-    // Free tier: limit to 3 months of history
-    const limitDate = isPremium
-      ? null
-      : new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-
+    // Load all results (no more free tier limit per task requirements)
     let query = supabase
       .from('lab_results')
       .select('id, value, unit, drawn_at, lab_name, ref_range_low, ref_range_high, notes')
@@ -160,49 +172,89 @@ export default function TrackerDetailPage() {
       .eq('test_id', testId)
       .order('drawn_at', { ascending: true })
 
-    if (limitDate) {
-      query = query.gte('drawn_at', limitDate)
+    // Apply time range filter
+    if (timeRange !== 'all') {
+      const days = timeRange === '1y' ? 365 : timeRange === '6m' ? 180 : 90
+      const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      query = query.gte('drawn_at', cutoffDate)
     }
 
     const { data: resultsData } = await query
     setResults(resultsData ?? [])
 
+    // Get alternate names from imported results (different lab naming)
+    const uniqueTestNames = new Set<string>()
+    // We'd need to store original test names during import to show alternatives
+    // For now, just show the canonical name
+    setAlternateNames([])
+
+    // Load goal
     const { data: goalData } = await supabase
       .from('lab_goals')
       .select('target_value, target_direction, target_low, target_high, notes')
       .eq('user_id', user.id)
       .eq('test_id', testId)
       .single()
-    setGoal(goalData ?? null)
+
+    const goalResult = goalData ?? null
+    setGoal(goalResult)
+
+    // Pre-fill goal form if editing
+    if (goalResult) {
+      setGoalDirection(goalResult.target_direction as 'above' | 'below' | 'range')
+      setGoalValue(goalResult.target_value?.toString() ?? '')
+      setGoalLow(goalResult.target_low?.toString() ?? '')
+      setGoalHigh(goalResult.target_high?.toString() ?? '')
+      setGoalNote(goalResult.notes ?? '')
+    }
 
     setLoading(false)
-  }, [supabase, testId, router, isPremium])
+  }, [supabase, testId, router, timeRange])
 
   useEffect(() => {
     loadData()
   }, [loadData])
 
-  async function handleShare() {
-    setShareLoading(true)
+  const handleDeleteResult = async (resultId: string) => {
+    if (!confirm('Are you sure you want to delete this result?')) return
+
+    await supabase.from('lab_results').delete().eq('id', resultId)
+    loadData()
+  }
+
+  const handleDeleteAllMarkerData = async () => {
+    if (!confirm(`Are you sure you want to delete all ${testName} data? This cannot be undone.`)) return
+
+    await supabase.from('lab_results').delete().eq('test_id', testId)
+    router.push('/dashboard')
+  }
+
+  const handleSaveGoal = async () => {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setShareLoading(false); return }
+    if (!user) return
 
-    const { data } = await supabase
-      .from('lab_shares')
-      .insert({
-        user_id: user.id,
-        test_ids: [testId],
-        title: testName,
-      })
-      .select('share_token')
-      .single()
-
-    setShareLoading(false)
-    if (data?.share_token) {
-      const url = `${window.location.origin}/shared/${data.share_token}`
-      setShareLink(url)
-      navigator.clipboard.writeText(url).catch(() => {})
+    const goalData: any = {
+      user_id: user.id,
+      test_id: testId,
+      target_direction: goalDirection,
+      notes: goalNote || null
     }
+
+    if (goalDirection === 'range') {
+      goalData.target_low = parseFloat(goalLow) || null
+      goalData.target_high = parseFloat(goalHigh) || null
+      goalData.target_value = null
+    } else {
+      goalData.target_value = parseFloat(goalValue) || null
+      goalData.target_low = null
+      goalData.target_high = null
+    }
+
+    await supabase
+      .from('lab_goals')
+      .upsert(goalData, { onConflict: 'user_id,test_id' })
+
+    loadData()
   }
 
   // Build chart data
@@ -235,11 +287,16 @@ export default function TrackerDetailPage() {
   if (showLabRange && labRefHigh !== null) allRefs.push(labRefHigh)
   if (showFunctional && funcMatch) { allRefs.push(funcMatch.low, funcMatch.high) }
   if (showGoal && goal?.target_value !== null && goal?.target_value !== undefined) allRefs.push(goal.target_value)
+  if (showGoal && goal?.target_low !== null && goal?.target_high !== null) {
+    allRefs.push(goal.target_low, goal.target_high)
+  }
   const allY = [...vals, ...allRefs]
   const yMin = allY.length ? Math.floor(Math.min(...allY) * 0.9) : 0
   const yMax = allY.length ? Math.ceil(Math.max(...allY) * 1.1) : 100
 
   const unit = results[0]?.unit ?? ''
+  const latestResult = results[results.length - 1]
+  const uniqueLabs = Array.from(new Set(results.map(r => r.lab_name).filter(Boolean)))
 
   if (loading) {
     return (
@@ -250,11 +307,11 @@ export default function TrackerDetailPage() {
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       {/* Back link */}
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1.5 text-sm text-[#577572] hover:text-[#2d6a5e] transition-colors mb-6"
+        className="inline-flex items-center gap-1.5 text-sm text-[#577572] hover:text-[#2d6a5e] transition-colors"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
@@ -263,211 +320,359 @@ export default function TrackerDetailPage() {
       </Link>
 
       {/* Header */}
-      <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
+      <div className="space-y-3">
         <div>
           <h1 className="text-2xl font-bold text-[#1a2e2b]">{testName}</h1>
-          <p className="mt-1 text-sm text-[#577572]">
-            {results.length} result{results.length !== 1 ? 's' : ''} tracked
-            {!isPremium && ' · Free plan: last 3 months shown'}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setShowLogModal(true)}
-            className="rounded-xl border border-[#e0ebe9] bg-white px-4 py-2 text-sm font-medium text-[#4a6b67] hover:border-[#2d6a5e]/40 hover:text-[#1a2e2b] transition-colors"
-          >
-            Log new result
-          </button>
-          <button
-            onClick={() => setShowGoalModal(true)}
-            className="rounded-xl border border-[#e0ebe9] bg-white px-4 py-2 text-sm font-medium text-[#4a6b67] hover:border-[#2d6a5e]/40 hover:text-[#1a2e2b] transition-colors"
-          >
-            {goal ? 'Edit goal' : 'Set goal'}
-          </button>
-          <button
-            onClick={handleShare}
-            disabled={shareLoading}
-            className="rounded-xl bg-[#2d6a5e] px-4 py-2 text-sm font-medium text-white hover:bg-[#245549] transition-colors disabled:opacity-60"
-          >
-            {shareLoading ? 'Creating link...' : 'Share results'}
-          </button>
-        </div>
-      </div>
-
-      {shareLink && (
-        <div className="mb-6 rounded-xl border border-[#2d6a5e]/20 bg-[#2d6a5e]/5 px-4 py-3 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold text-[#2d6a5e]">Share link copied to clipboard!</p>
-            <p className="text-xs text-[#4a6b67] mt-0.5 break-all">{shareLink}</p>
-          </div>
-          <button onClick={() => setShareLink('')} className="shrink-0 text-xs text-[#577572] hover:text-[#1a2e2b]">✕</button>
-        </div>
-      )}
-
-      {/* Toggle pills */}
-      <div className="mb-4 flex flex-wrap gap-2">
-        <button
-          onClick={() => setShowLabRange((v) => !v)}
-          className={`rounded-full px-4 py-1.5 text-xs font-medium border transition-colors ${
-            showLabRange
-              ? 'bg-gray-200 border-gray-300 text-gray-800'
-              : 'bg-white border-[#e0ebe9] text-[#577572] hover:border-gray-300'
-          }`}
-        >
-          Lab Range
-        </button>
-        <button
-          onClick={() => setShowFunctional((v) => !v)}
-          disabled={!funcMatch}
-          className={`rounded-full px-4 py-1.5 text-xs font-medium border transition-colors ${
-            showFunctional && funcMatch
-              ? 'bg-amber-100 border-amber-300 text-amber-800'
-              : 'bg-white border-[#e0ebe9] text-[#577572] hover:border-amber-200 disabled:opacity-40 disabled:cursor-not-allowed'
-          }`}
-          title={!funcMatch ? 'No functional medicine range available for this test' : undefined}
-        >
-          Functional Medicine {!funcMatch && '(N/A)'}
-        </button>
-        <button
-          onClick={() => setShowGoal((v) => !v)}
-          disabled={!goal}
-          className={`rounded-full px-4 py-1.5 text-xs font-medium border transition-colors ${
-            showGoal && goal
-              ? 'bg-[#2d6a5e]/10 border-[#2d6a5e]/30 text-[#2d6a5e]'
-              : 'bg-white border-[#e0ebe9] text-[#577572] hover:border-[#2d6a5e]/20 disabled:opacity-40 disabled:cursor-not-allowed'
-          }`}
-          title={!goal ? 'No goal set for this test' : undefined}
-        >
-          My Goal {!goal && '(none set)'}
-        </button>
-      </div>
-
-      {/* Chart */}
-      {results.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[#e0ebe9] bg-white py-16 text-center">
-          <p className="text-sm text-[#577572]">No results yet. Log your first result above.</p>
-        </div>
-      ) : (
-        <div className="rounded-xl border border-[#e0ebe9] bg-white p-6">
-          <ResponsiveContainer width="100%" height={320}>
-            <LineChart data={chartData} margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
-              <CartesianGrid stroke="#e0ebe9" strokeDasharray="4 4" />
-              <XAxis
-                dataKey="date"
-                tick={{ fontSize: 11, fill: '#577572' }}
-                tickFormatter={formatDate}
-                tickLine={false}
-                axisLine={{ stroke: '#e0ebe9' }}
-              />
-              <YAxis
-                domain={[yMin, yMax]}
-                tick={{ fontSize: 11, fill: '#577572' }}
-                tickLine={false}
-                axisLine={false}
-                unit={unit ? ` ${unit}` : undefined}
-                width={70}
-              />
-              <Tooltip content={<CustomTooltip />} />
-
-              {/* Lab ref range band */}
-              {showLabRange && labRefLow !== null && labRefHigh !== null && (
-                <ReferenceArea
-                  y1={labRefLow}
-                  y2={labRefHigh}
-                  fill="#94a3b8"
-                  fillOpacity={0.12}
-                  label={{ value: 'Lab range', position: 'insideTopRight', fontSize: 10, fill: '#94a3b8' }}
-                />
-              )}
-
-              {/* Functional medicine band */}
-              {showFunctional && funcMatch && (
-                <ReferenceArea
-                  y1={funcMatch.low}
-                  y2={funcMatch.high}
-                  fill="#f59e0b"
-                  fillOpacity={0.1}
-                  label={{ value: 'FM range', position: 'insideBottomRight', fontSize: 10, fill: '#d97706' }}
-                />
-              )}
-
-              {/* Goal line */}
-              {showGoal && goal?.target_value !== null && goal?.target_value !== undefined && (
-                <ReferenceLine
-                  y={goal.target_value}
-                  stroke="#2d6a5e"
-                  strokeDasharray="6 3"
-                  strokeWidth={1.5}
-                  label={{ value: 'My goal', position: 'insideTopRight', fontSize: 10, fill: '#2d6a5e' }}
-                />
-              )}
-              {showGoal && goal?.target_direction === 'range' && goal.target_low !== null && goal.target_high !== null && (
-                <ReferenceArea
-                  y1={goal.target_low}
-                  y2={goal.target_high}
-                  fill="#2d6a5e"
-                  fillOpacity={0.08}
-                  stroke="#2d6a5e"
-                  strokeDasharray="4 4"
-                  strokeOpacity={0.4}
-                  label={{ value: 'My goal range', position: 'insideTopRight', fontSize: 10, fill: '#2d6a5e' }}
-                />
-              )}
-
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#2d6a5e"
-                strokeWidth={2}
-                dot={<CustomDot />}
-                activeDot={{ r: 7, fill: '#2d6a5e', stroke: 'white', strokeWidth: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Result history table */}
-      {results.length > 0 && (
-        <div className="mt-6 rounded-xl border border-[#e0ebe9] bg-white overflow-hidden">
-          <div className="px-5 py-4 border-b border-[#e0ebe9]">
-            <h2 className="text-sm font-semibold text-[#1a2e2b]">Result History</h2>
-          </div>
-          <div className="divide-y divide-[#e0ebe9]">
-            {[...results].reverse().map((r) => (
-              <div key={r.id} className="px-5 py-3 flex items-center gap-4">
-                <div className="flex-1 min-w-0">
-                  <span className="text-sm font-semibold text-[#1a2e2b]">
-                    {r.value}{r.unit ? ` ${r.unit}` : ''}
-                  </span>
-                  {r.ref_range_low !== null && r.ref_range_high !== null && (
-                    <span className="ml-2 text-xs text-[#577572]">
-                      (ref: {r.ref_range_low}–{r.ref_range_high})
-                    </span>
-                  )}
-                  {r.notes && (
-                    <p className="text-xs text-[#577572] mt-0.5 italic truncate">{r.notes}</p>
-                  )}
-                </div>
-                <div className="text-right shrink-0">
-                  <p className="text-xs font-medium text-[#4a6b67]">{formatDate(r.drawn_at)}</p>
-                  {r.lab_name && <p className="text-xs text-[#577572]">{r.lab_name}</p>}
-                </div>
-              </div>
-            ))}
-          </div>
-          {!isPremium && (
-            <div className="px-5 py-3 bg-[#faf8f5] border-t border-[#e0ebe9]">
-              <p className="text-xs text-[#577572]">
-                Showing last 3 months only.{' '}
-                <a href="/pricing" className="text-[#2d6a5e] underline hover:no-underline">Upgrade to Premium</a>
-                {' '}to see full history.
-              </p>
-            </div>
+          {alternateNames.length > 0 && (
+            <p className="text-sm text-[#577572]">
+              Also imported as: {alternateNames.join(', ')}
+            </p>
           )}
         </div>
+
+        {/* Compact summary */}
+        <div className="flex flex-wrap items-center gap-4 text-sm text-[#577572]">
+          <span>{results.length} result{results.length !== 1 ? 's' : ''}</span>
+          <span>•</span>
+          <span>{uniqueLabs.length} lab{uniqueLabs.length !== 1 ? 's' : ''}</span>
+          {latestResult && (
+            <>
+              <span>•</span>
+              <span>Last drawn {formatFullDate(latestResult.drawn_at)}</span>
+            </>
+          )}
+        </div>
+
+        {/* Latest value with status */}
+        {latestResult && (
+          <div className="flex items-center gap-3">
+            <span className="text-2xl font-bold text-[#1a2e2b]">
+              {latestResult.value}{latestResult.unit ? ` ${latestResult.unit}` : ''}
+            </span>
+            <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${getStatus(latestResult).color}`}>
+              {getStatus(latestResult).status}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Chart section */}
+      {results.length > 0 && (
+        <div className="space-y-4">
+          {/* Range toggle chips and time selector */}
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setShowLabRange((v) => !v)}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium border transition-colors ${
+                  showLabRange
+                    ? 'bg-gray-200 border-gray-300 text-gray-800'
+                    : 'bg-white border-[#e0ebe9] text-[#577572] hover:border-gray-300'
+                }`}
+              >
+                Standard range
+              </button>
+              <button
+                onClick={() => setShowFunctional((v) => !v)}
+                disabled={!funcMatch}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium border transition-colors ${
+                  showFunctional && funcMatch
+                    ? 'bg-amber-100 border-amber-300 text-amber-800'
+                    : 'bg-white border-[#e0ebe9] text-[#577572] hover:border-amber-200 disabled:opacity-40 disabled:cursor-not-allowed'
+                }`}
+                title={!funcMatch ? 'No functional medicine range available for this test' : undefined}
+              >
+                Functional range 🔒
+              </button>
+              <button
+                onClick={() => setShowGoal((v) => !v)}
+                disabled={!goal}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium border transition-colors ${
+                  showGoal && goal
+                    ? 'bg-[#2d6a5e]/10 border-[#2d6a5e]/30 text-[#2d6a5e]'
+                    : 'bg-white border-[#e0ebe9] text-[#577572] hover:border-[#2d6a5e]/20 disabled:opacity-40 disabled:cursor-not-allowed'
+                }`}
+                title={!goal ? 'No goal set for this test' : undefined}
+              >
+                My goal
+              </button>
+            </div>
+
+            {/* Time range selector */}
+            <div className="flex rounded-lg border border-[#e0ebe9] bg-white">
+              {(['all', '1y', '6m', '3m'] as const).map((range) => (
+                <button
+                  key={range}
+                  onClick={() => setTimeRange(range)}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors first:rounded-l-lg last:rounded-r-lg ${
+                    timeRange === range
+                      ? 'bg-[#2d6a5e] text-white'
+                      : 'text-[#577572] hover:text-[#1a2e2b]'
+                  }`}
+                >
+                  {range === 'all' ? 'All time' : range.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Chart */}
+          <div className="rounded-xl border border-[#e0ebe9] bg-white p-6">
+            <ResponsiveContainer width="100%" height={320}>
+              <LineChart data={chartData} margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
+                <CartesianGrid stroke="#e0ebe9" strokeDasharray="4 4" />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 11, fill: '#577572' }}
+                  tickFormatter={formatDate}
+                  tickLine={false}
+                  axisLine={{ stroke: '#e0ebe9' }}
+                />
+                <YAxis
+                  domain={[yMin, yMax]}
+                  tick={{ fontSize: 11, fill: '#577572' }}
+                  tickLine={false}
+                  axisLine={false}
+                  unit={unit ? ` ${unit}` : undefined}
+                  width={70}
+                />
+                <Tooltip content={<CustomTooltip />} />
+
+                {/* Lab ref range band */}
+                {showLabRange && labRefLow !== null && labRefHigh !== null && (
+                  <ReferenceArea
+                    y1={labRefLow}
+                    y2={labRefHigh}
+                    fill="#94a3b8"
+                    fillOpacity={0.12}
+                    label={{ value: 'Lab range', position: 'insideTopRight', fontSize: 10, fill: '#94a3b8' }}
+                  />
+                )}
+
+                {/* Functional medicine band */}
+                {showFunctional && funcMatch && (
+                  <ReferenceArea
+                    y1={funcMatch.low}
+                    y2={funcMatch.high}
+                    fill="#f59e0b"
+                    fillOpacity={0.1}
+                    label={{ value: 'FM range', position: 'insideBottomRight', fontSize: 10, fill: '#d97706' }}
+                  />
+                )}
+
+                {/* Goal line/range */}
+                {showGoal && goal?.target_direction === 'above' && goal.target_value !== null && (
+                  <ReferenceLine
+                    y={goal.target_value}
+                    stroke="#2d6a5e"
+                    strokeDasharray="6 3"
+                    strokeWidth={1.5}
+                    label={{ value: 'My goal', position: 'insideTopRight', fontSize: 10, fill: '#2d6a5e' }}
+                  />
+                )}
+                {showGoal && goal?.target_direction === 'below' && goal.target_value !== null && (
+                  <ReferenceLine
+                    y={goal.target_value}
+                    stroke="#2d6a5e"
+                    strokeDasharray="6 3"
+                    strokeWidth={1.5}
+                    label={{ value: 'My goal', position: 'insideTopRight', fontSize: 10, fill: '#2d6a5e' }}
+                  />
+                )}
+                {showGoal && goal?.target_direction === 'range' && goal.target_low !== null && goal.target_high !== null && (
+                  <ReferenceArea
+                    y1={goal.target_low}
+                    y2={goal.target_high}
+                    fill="#2d6a5e"
+                    fillOpacity={0.08}
+                    stroke="#2d6a5e"
+                    strokeDasharray="4 4"
+                    strokeOpacity={0.4}
+                    label={{ value: 'My goal range', position: 'insideTopRight', fontSize: 10, fill: '#2d6a5e' }}
+                  />
+                )}
+
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#2d6a5e"
+                  strokeWidth={2}
+                  dot={<CustomDot />}
+                  activeDot={{ r: 7, fill: '#2d6a5e', stroke: 'white', strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       )}
 
+      {/* Goal setting card */}
+      <div className="rounded-xl border border-[#e0ebe9] bg-white p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-[#1a2e2b]">Goal Setting</h2>
+
+        <div className="space-y-4">
+          {/* Direction selector */}
+          <div>
+            <label className="block text-sm font-medium text-[#1a2e2b] mb-2">Direction</label>
+            <div className="flex gap-2">
+              {(['above', 'below', 'range'] as const).map((direction) => (
+                <button
+                  key={direction}
+                  onClick={() => setGoalDirection(direction)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    goalDirection === direction
+                      ? 'bg-[#2d6a5e] text-white'
+                      : 'bg-[#f0f7f6] text-[#577572] hover:bg-[#e0ebe9]'
+                  }`}
+                >
+                  {direction === 'range' ? 'Between' : direction === 'above' ? 'Above' : 'Below'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Value fields */}
+          {goalDirection === 'range' ? (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[#1a2e2b] mb-2">Min value</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={goalLow}
+                  onChange={(e) => setGoalLow(e.target.value)}
+                  className="w-full rounded-lg border border-[#e0ebe9] px-3 py-2 text-sm focus:border-[#2d6a5e] focus:outline-none"
+                  placeholder="Min"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1a2e2b] mb-2">Max value</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={goalHigh}
+                  onChange={(e) => setGoalHigh(e.target.value)}
+                  className="w-full rounded-lg border border-[#e0ebe9] px-3 py-2 text-sm focus:border-[#2d6a5e] focus:outline-none"
+                  placeholder="Max"
+                />
+              </div>
+            </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium text-[#1a2e2b] mb-2">Target value</label>
+              <input
+                type="number"
+                step="0.01"
+                value={goalValue}
+                onChange={(e) => setGoalValue(e.target.value)}
+                className="w-full rounded-lg border border-[#e0ebe9] px-3 py-2 text-sm focus:border-[#2d6a5e] focus:outline-none"
+                placeholder={`Target ${goalDirection === 'above' ? 'minimum' : 'maximum'}`}
+              />
+            </div>
+          )}
+
+          {/* Note field */}
+          <div>
+            <label className="block text-sm font-medium text-[#1a2e2b] mb-2">Note (optional)</label>
+            <input
+              type="text"
+              value={goalNote}
+              onChange={(e) => setGoalNote(e.target.value)}
+              className="w-full rounded-lg border border-[#e0ebe9] px-3 py-2 text-sm focus:border-[#2d6a5e] focus:outline-none"
+              placeholder="Why is this your goal?"
+            />
+          </div>
+
+          {/* Save button */}
+          <button
+            onClick={handleSaveGoal}
+            className="rounded-xl bg-[#2d6a5e] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
+          >
+            Save Goal
+          </button>
+        </div>
+      </div>
+
+      {/* Result history table with delete functionality */}
+      {results.length > 0 && (
+        <div className="rounded-xl border border-[#e0ebe9] bg-white overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#e0ebe9] flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-[#1a2e2b]">Result History</h2>
+            <button
+              onClick={handleDeleteAllMarkerData}
+              className="text-sm text-[#c0826a] hover:text-[#1a2e2b] transition-colors"
+            >
+              Delete All {testName} Data
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="border-b border-[#e0ebe9]">
+                <tr className="text-left">
+                  <th className="px-6 py-3 text-sm font-semibold text-[#1a2e2b]">Date</th>
+                  <th className="px-6 py-3 text-sm font-semibold text-[#1a2e2b]">Value</th>
+                  <th className="px-6 py-3 text-sm font-semibold text-[#1a2e2b]">Reference Range</th>
+                  <th className="px-6 py-3 text-sm font-semibold text-[#1a2e2b]">Status</th>
+                  <th className="px-6 py-3 text-sm font-semibold text-[#1a2e2b]">Lab</th>
+                  <th className="px-6 py-3 text-sm font-semibold text-[#1a2e2b]">Source Label</th>
+                  <th className="px-6 py-3 text-sm font-semibold text-[#1a2e2b]">Notes</th>
+                  <th className="px-6 py-3 text-sm font-semibold text-[#1a2e2b]"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#e0ebe9]">
+                {[...results].reverse().map((result) => {
+                  const status = getStatus(result)
+                  return (
+                    <tr key={result.id} className="hover:bg-[#f0f7f6] transition-colors">
+                      <td className="px-6 py-4 text-sm text-[#1a2e2b]">{formatFullDate(result.drawn_at)}</td>
+                      <td className="px-6 py-4 text-sm font-medium text-[#1a2e2b]">
+                        {result.value}{result.unit ? ` ${result.unit}` : ''}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#577572]">
+                        {result.ref_range_low !== null && result.ref_range_high !== null
+                          ? `${result.ref_range_low}–${result.ref_range_high}`
+                          : '—'
+                        }
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${status.color}`}>
+                          {status.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#577572]">{result.lab_name || '—'}</td>
+                      <td className="px-6 py-4 text-sm text-[#577572]">—</td>
+                      <td className="px-6 py-4 text-sm text-[#577572]">{result.notes || '—'}</td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => handleDeleteResult(result.id)}
+                          className="text-[#c0826a] hover:text-[#1a2e2b] transition-colors p-1"
+                          title="Delete result"
+                        >
+                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Action buttons */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setShowLogModal(true)}
+          className="rounded-xl bg-[#2d6a5e] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
+        >
+          Log New Result
+        </button>
+      </div>
+
+      {/* Modals */}
       <ResultLogModal
         isOpen={showLogModal}
         onClose={() => setShowLogModal(false)}
@@ -475,15 +680,6 @@ export default function TrackerDetailPage() {
         prefillTestId={testId}
         prefillTestName={testName}
         prefillUnit={results[0]?.unit}
-      />
-
-      <GoalSetModal
-        isOpen={showGoalModal}
-        onClose={() => setShowGoalModal(false)}
-        onSuccess={loadData}
-        testId={testId}
-        testName={testName}
-        existingGoal={goal}
       />
     </div>
   )
