@@ -343,7 +343,7 @@ export default function ComparePage() {
 
         {/* ── Hero ── */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-[#1a2e2b] mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#1a2e2b] mb-3">
             Compare self-pay lab prices
           </h1>
           <p className="text-[#4a6b67] mb-6">

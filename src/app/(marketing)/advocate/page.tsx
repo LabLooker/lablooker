@@ -242,8 +242,8 @@ export default function AdvocatePage() {
 
           {/* Header */}
           <div className="text-center mb-10 no-print">
-            <h1 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: '#1a2e2b' }}>
-              Doctor Request Template
+            <h1 className="text-3xl md:text-4xl font-bold text-[#1a2e2b] mb-3">
+              Create a doctor request letter
             </h1>
             <p className="text-lg" style={{ color: '#4a6b67' }}>
               Generate a printable document to bring to your doctor requesting specific lab tests.
@@ -450,7 +450,7 @@ export default function AdvocatePage() {
                   cursor: selectedTests.length > 0 ? 'pointer' : 'not-allowed',
                 }}
               >
-                Generate Template ({selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''})
+                {selectedTests.length === 0 ? 'Add tests above to generate' : `Generate Template (${selectedTests.length} test${selectedTests.length !== 1 ? 's' : ''})`}
               </button>
             </div>
           </div>

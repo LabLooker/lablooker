@@ -320,8 +320,8 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1a2e2b]">Track</h1>
-          <p className="text-sm text-[#577572]">Monitor your biomarkers and lab reports</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-[#1a2e2b]">Track your lab results</h1>
+          <p className="text-sm text-[#577572] mt-1">Monitor your biomarkers and lab reports over time</p>
         </div>
         <div className="flex gap-2">
           <button

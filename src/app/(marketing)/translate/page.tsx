@@ -761,8 +761,8 @@ export default function TranslatePage() {
 
         {/* Header */}
         <div className="text-center mb-10 print:hidden">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: '#1a2e2b' }}>
-            Lab Code Translator
+          <h1 className="text-3xl md:text-4xl font-bold text-[#1a2e2b] mb-3">
+            Translate lab codes
           </h1>
           <p className="text-lg" style={{ color: '#4a6b67' }}>
             Type or paste your ordered tests — we&apos;ll translate the codes for any lab.

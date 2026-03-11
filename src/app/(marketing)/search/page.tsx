@@ -382,7 +382,7 @@ function SearchPageInner() {
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-[#1a2e2b] mb-3">
-            Search Lab Tests
+            Search lab tests
           </h1>
           <p className="text-lg text-[#4a6b67]">
             Search by test name, CPT code, symptom, or lab code. Free, no account required.
