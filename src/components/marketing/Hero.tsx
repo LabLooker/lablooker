@@ -53,7 +53,7 @@ export default function Hero() {
 
         {/* Subheadline */}
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-[#577572] sm:text-xl">
-          The only tool that helps you understand, compare, translate, and track your labs — so you can advocate for the care you deserve.
+          The only tool that helps you search, compare, translate, and understand your labs — with an optional personal dashboard for tracking over time.
         </p>
 
         {/* Four action cards */}
@@ -133,7 +133,7 @@ export default function Hero() {
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">My Labs</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-[#577572]">
-              Log results, set goals, and visualize trends over time. Free account keeps your history private and secure.
+              Save results, track markers, and visualize trends over time with Premium. Your personal dashboard, private and organized.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
           </Link>
@@ -197,13 +197,13 @@ export default function Hero() {
               <svg className="h-4 w-4 text-primary-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
               </svg>
-              370+ lab tests
+              390+ lab tests
             </span>
             <span className="flex items-center gap-1.5">
               <svg className="h-4 w-4 text-primary-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
               </svg>
-              1,000+ lab codes translated
+              1,400+ lab codes translated
             </span>
             <span className="flex items-center gap-1.5">
               <svg className="h-4 w-4 text-primary-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">

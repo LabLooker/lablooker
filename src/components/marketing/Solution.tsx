@@ -47,7 +47,7 @@ export default function Solution() {
             Finally, a tool built for patients
           </h2>
           <p className="mt-4 text-lg text-[#577572]">
-            One place to research, compare, and understand your lab work.
+            One place to research your labs for free — and track your own results over time when you're ready.
           </p>
         </div>
 
