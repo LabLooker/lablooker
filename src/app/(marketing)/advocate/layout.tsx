@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Doctor Request Letter Generator',
-  description: 'Generate a professional letter to request specific lab tests from your doctor. Includes test names, CPT codes, ICD-10 codes, and clinical rationale.',
+  title: 'Lab Test Request Generator',
+  description: 'Generate a coded request letter for specific lab tests to give your doctor. Includes test names, CPT codes, and optional ICD-10 and lab-specific codes.',
   openGraph: {
-    title: 'Doctor Request Letter Generator | LabLooker',
-    description: 'Generate a professional letter to request specific lab tests from your doctor.',
+    title: 'Lab Test Request Generator | LabLooker',
+    description: 'Generate a coded request letter for specific lab tests to give your doctor.',
   },
 }
 

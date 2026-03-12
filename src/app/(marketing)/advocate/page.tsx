@@ -243,10 +243,10 @@ export default function AdvocatePage() {
           {/* Header */}
           <div className="text-center mb-10 no-print">
             <h1 className="text-3xl md:text-4xl font-bold text-[#1a2e2b] mb-3">
-              Create a doctor request letter
+              Generate a lab test request
             </h1>
             <p className="text-lg" style={{ color: '#4a6b67' }}>
-              Generate a printable document to bring to your doctor requesting specific lab tests.
+              Generate a coded request letter to give your doctor — print it, copy it, or paste it into a patient portal.
               <br />
               <span className="text-sm" style={{ color: '#577572' }}>This is a communication tool — not a medical order.</span>
             </p>

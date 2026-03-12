@@ -10,7 +10,7 @@ const FEATURE_MATRIX = [
   { feature: 'Bundles and guides', free: true, premium: true },
   { feature: 'PDF import parsing', free: 'Preview only', premium: 'Save to tracker' },
   { feature: 'Share results', free: 'One-time links', premium: 'Ongoing data + exports' },
-  { feature: 'Doctor request letters', free: 'Basic template', premium: 'Personalized' },
+  { feature: 'Lab test request letters', free: 'Names + CPT codes', premium: 'Full coded (ICD-10 + lab codes)' },
   { feature: 'Save results', free: false, premium: true },
   { feature: 'Track over time', free: false, premium: true },
   { feature: 'Trend charts', free: false, premium: true },
