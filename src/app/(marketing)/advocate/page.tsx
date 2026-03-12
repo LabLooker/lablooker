@@ -21,8 +21,14 @@ type ICD10Code = {
   description: string
 }
 
+type LabCode = {
+  lab_name: string
+  proprietary_code: string
+}
+
 type SelectedTest = TestResult & {
   icd10Codes: ICD10Code[]
+  labCodes: LabCode[]
 }
 
 export default function AdvocatePage() {
@@ -34,6 +40,10 @@ export default function AdvocatePage() {
   const [showTemplate, setShowTemplate] = useState(false)
   const [copied, setCopied] = useState(false)
   const [outputMode, setOutputMode] = useState<'form' | 'portal'>('form')
+  const [includeICD10, setIncludeICD10] = useState(false)
+  const [includeLabCodes, setIncludeLabCodes] = useState(false)
+  const [selectedLab, setSelectedLab] = useState('')
+  const [availableLabs, setAvailableLabs] = useState<string[]>([])
   const templateRef = useRef<HTMLDivElement>(null)
 
   // Patient info fields
@@ -62,6 +72,20 @@ export default function AdvocatePage() {
       if (data) setSavedProviders(data)
     }
     loadSavedProviders()
+  }, [supabase])
+
+  // Load available lab names for lab code selector
+  useEffect(() => {
+    async function loadLabs() {
+      const { data } = await supabase
+        .from('lab_codes')
+        .select('lab_name')
+      if (data) {
+        const unique = [...new Set(data.map((r: { lab_name: string }) => r.lab_name))].sort()
+        setAvailableLabs(unique)
+      }
+    }
+    loadLabs()
   }, [supabase])
 
   // Auto-populate today's date on mount
@@ -126,7 +150,18 @@ export default function AdvocatePage() {
     } catch (e) {
       console.error('ICD-10 fetch error:', e)
     }
-    setSelectedTests(prev => [...prev, { ...test, icd10Codes }])
+    // Fetch lab codes for this test
+    let labCodes: LabCode[] = []
+    try {
+      const { data: lcData } = await supabase
+        .from('lab_codes')
+        .select('lab_name, proprietary_code')
+        .eq('test_id', test.id)
+      if (lcData) labCodes = lcData
+    } catch (e) {
+      console.error('Lab code fetch error:', e)
+    }
+    setSelectedTests(prev => [...prev, { ...test, icd10Codes, labCodes }])
     setShowTemplate(false)
   }
 
@@ -154,15 +189,26 @@ export default function AdvocatePage() {
     lines.push('')
     lines.push('REQUESTED TESTS:')
     lines.push('')
-    // Simple text table
-    const nameW = 28, cptW = 12
-    lines.push(`${'Test Name'.padEnd(nameW)} ${'CPT Code'.padEnd(cptW)} ICD-10 Codes`)
-    lines.push('─'.repeat(60))
+    // Build header
+    const nameW = 26, cptW = 12
+    let header = `${'Test Name'.padEnd(nameW)} ${'CPT Code'.padEnd(cptW)}`
+    if (includeICD10) header += ` ${'ICD-10'.padEnd(14)}`
+    if (includeLabCodes && selectedLab) header += ` ${selectedLab}`
+    lines.push(header)
+    lines.push('─'.repeat(header.length + 10))
     selectedTests.forEach(test => {
       const name = test.test_name.slice(0, nameW - 1).padEnd(nameW)
       const cpt = (test.cpt_codes?.length > 0 ? test.cpt_codes.join(', ') : '—').padEnd(cptW)
-      const icd = test.icd10Codes.length > 0 ? test.icd10Codes.map(c => c.code).join(', ') : '—'
-      lines.push(`${name} ${cpt} ${icd}`)
+      let row = `${name} ${cpt}`
+      if (includeICD10) {
+        const icd = test.icd10Codes.length > 0 ? test.icd10Codes.map(c => c.code).join(', ') : '—'
+        row += ` ${icd.padEnd(14)}`
+      }
+      if (includeLabCodes && selectedLab) {
+        const labCode = test.labCodes.find(lc => lc.lab_name === selectedLab)
+        row += ` ${labCode ? labCode.proprietary_code : '—'}`
+      }
+      lines.push(row)
     })
     lines.push('')
     if (reason.trim()) {
@@ -187,7 +233,10 @@ export default function AdvocatePage() {
     lines.push('')
     selectedTests.forEach(test => {
       const cpt = test.cpt_codes?.length > 0 ? ` (CPT: ${test.cpt_codes.join(', ')})` : ''
-      lines.push(`• ${test.test_name}${cpt}`)
+      const icd = includeICD10 && test.icd10Codes.length > 0 ? ` [ICD-10: ${test.icd10Codes.map(c => c.code).join(', ')}]` : ''
+      const labCode = includeLabCodes && selectedLab ? test.labCodes.find(lc => lc.lab_name === selectedLab) : null
+      const lc = labCode ? ` {${selectedLab}: ${labCode.proprietary_code}}` : ''
+      lines.push(`• ${test.test_name}${cpt}${icd}${lc}`)
     })
     lines.push('')
     if (reason.trim()) {
@@ -430,11 +479,83 @@ export default function AdvocatePage() {
             </div>
           </div>
 
-          {/* Step 4: Generate */}
+          {/* Step 4: Code options */}
           <div className="bg-white rounded-xl shadow-sm border p-6 mb-6 no-print" style={{ borderColor: '#e0ebe9' }}>
             <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#1a2e2b' }}>
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>4</span>
-              Generate your template
+              Customize your request
+            </h2>
+            <p className="text-sm mb-4 ml-9" style={{ color: '#577572' }}>
+              CPT codes are always included. Toggle additional coding options below.
+            </p>
+
+            <div className="ml-9 space-y-4">
+              {/* ICD-10 toggle */}
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <div className="relative mt-0.5">
+                  <input
+                    type="checkbox"
+                    checked={includeICD10}
+                    onChange={(e) => setIncludeICD10(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-10 h-6 rounded-full bg-[#e0ebe9] peer-checked:bg-[#2d6a5e] transition-colors" />
+                  <div className="absolute left-0.5 top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-[#1a2e2b]">Include diagnostic codes (ICD-10)</div>
+                  <div className="text-xs text-[#577572] mt-0.5">Adds billing justification codes — helps with insurance coverage and medical necessity.</div>
+                </div>
+              </label>
+
+              {/* Lab-specific codes toggle */}
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <div className="relative mt-0.5">
+                  <input
+                    type="checkbox"
+                    checked={includeLabCodes}
+                    onChange={(e) => {
+                      setIncludeLabCodes(e.target.checked)
+                      if (!e.target.checked) setSelectedLab('')
+                    }}
+                    className="sr-only peer"
+                  />
+                  <div className="w-10 h-6 rounded-full bg-[#e0ebe9] peer-checked:bg-[#2d6a5e] transition-colors" />
+                  <div className="absolute left-0.5 top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-[#1a2e2b]">Include lab-specific order codes</div>
+                  <div className="text-xs text-[#577572] mt-0.5">Adds the exact order code for a specific lab provider (e.g., Quest, LabCorp).</div>
+                </div>
+              </label>
+
+              {/* Lab selector — shows when lab codes toggle is on */}
+              {includeLabCodes && (
+                <div className="ml-[52px]">
+                  <select
+                    value={selectedLab}
+                    onChange={(e) => setSelectedLab(e.target.value)}
+                    className="w-full max-w-xs px-4 py-2.5 rounded-lg border-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
+                    style={{ borderColor: selectedLab ? '#2d6a5e' : '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+                  >
+                    <option value="">Select a lab...</option>
+                    {availableLabs.map(lab => (
+                      <option key={lab} value={lab}>{lab}</option>
+                    ))}
+                  </select>
+                  {!selectedLab && (
+                    <p className="text-xs text-amber-600 mt-1.5">Choose a lab to include their specific order codes.</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Step 5: Generate */}
+          <div className="bg-white rounded-xl shadow-sm border p-6 mb-6 no-print" style={{ borderColor: '#e0ebe9' }}>
+            <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#1a2e2b' }}>
+              <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>5</span>
+              Generate your request
             </h2>
             <p className="text-sm mb-4 ml-9" style={{ color: '#577572' }}>
               Create a formatted document to print or copy.
@@ -506,7 +627,12 @@ export default function AdvocatePage() {
 
               {/* Code explainer */}
               <div className="mb-4 rounded-xl px-4 py-3 text-sm no-print" style={{ backgroundColor: '#f0f7f5', border: '1px solid #c8e0da', color: '#2d6a5e' }}>
-                <p><strong>CPT codes</strong> tell the lab what test to run. <strong>ICD-10 codes</strong> tell your insurance <em>why</em> it&apos;s medically necessary — without a matching code, claims can be denied. The codes below are the most commonly used for each test. Your doctor will confirm which applies to your situation.</p>
+                <p>
+                  <strong>CPT codes</strong> tell the lab what test to run.
+                  {includeICD10 && <> <strong>ICD-10 codes</strong> tell your insurance <em>why</em> it&apos;s medically necessary — without a matching code, claims can be denied.</>}
+                  {includeLabCodes && selectedLab && <> <strong>{selectedLab} codes</strong> are that lab&apos;s internal order numbers for each test.</>}
+                  {' '}Your doctor will confirm which codes apply to your situation.
+                </p>
               </div>
 
               {/* Printable Form */}
@@ -562,25 +688,40 @@ export default function AdvocatePage() {
                           <tr style={{ backgroundColor: '#f5f5f0' }}>
                             <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>Test Name</th>
                             <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>CPT Code</th>
-                            <th className="text-left px-3 py-2 border font-semibold" title="ICD-10 codes justify medical necessity to insurance. Your doctor confirms which applies." style={{ borderColor: '#ccc', color: '#1a2e2b' }}>ICD-10 Codes <span className="font-normal text-xs" style={{ color: '#577572' }}>(why it&apos;s needed)</span></th>
+                            {includeICD10 && (
+                              <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>ICD-10 <span className="font-normal text-xs" style={{ color: '#577572' }}>(why it&apos;s needed)</span></th>
+                            )}
+                            {includeLabCodes && selectedLab && (
+                              <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>{selectedLab} Code</th>
+                            )}
                           </tr>
                         </thead>
                         <tbody>
-                          {selectedTests.map(test => (
-                            <tr key={test.id}>
-                              <td className="px-3 py-2 border font-medium" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>
-                                {test.test_name}
-                              </td>
-                              <td className="px-3 py-2 border" style={{ borderColor: '#ccc', color: '#4a6b67' }}>
-                                {test.cpt_codes?.length > 0 ? test.cpt_codes.join(', ') : '—'}
-                              </td>
-                              <td className="px-3 py-2 border text-xs" style={{ borderColor: '#ccc', color: '#4a6b67' }}>
-                                {test.icd10Codes.length > 0
-                                  ? test.icd10Codes.map(c => `${c.code} — ${c.description}`).join('; ')
-                                  : '—'}
-                              </td>
-                            </tr>
-                          ))}
+                          {selectedTests.map(test => {
+                            const labCode = selectedLab ? test.labCodes.find(lc => lc.lab_name === selectedLab) : null
+                            return (
+                              <tr key={test.id}>
+                                <td className="px-3 py-2 border font-medium" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>
+                                  {test.test_name}
+                                </td>
+                                <td className="px-3 py-2 border" style={{ borderColor: '#ccc', color: '#4a6b67' }}>
+                                  {test.cpt_codes?.length > 0 ? test.cpt_codes.join(', ') : '—'}
+                                </td>
+                                {includeICD10 && (
+                                  <td className="px-3 py-2 border text-xs" style={{ borderColor: '#ccc', color: '#4a6b67' }}>
+                                    {test.icd10Codes.length > 0
+                                      ? test.icd10Codes.map(c => `${c.code} — ${c.description}`).join('; ')
+                                      : '—'}
+                                  </td>
+                                )}
+                                {includeLabCodes && selectedLab && (
+                                  <td className="px-3 py-2 border" style={{ borderColor: '#ccc', color: '#4a6b67' }}>
+                                    {labCode ? labCode.proprietary_code : '—'}
+                                  </td>
+                                )}
+                              </tr>
+                            )
+                          })}
                         </tbody>
                       </table>
                     </div>
