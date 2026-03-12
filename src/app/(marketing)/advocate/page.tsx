@@ -189,9 +189,15 @@ export default function AdvocatePage() {
     lines.push('')
     lines.push('REQUESTED TESTS:')
     lines.push('')
-    // Build header
-    const nameW = 26, cptW = 12
-    let header = `${'Test Name'.padEnd(nameW)} ${'CPT Code'.padEnd(cptW)}`
+    selectedTests.forEach(test => {
+      lines.push(`  • ${test.test_name}`)
+    })
+    lines.push('')
+    // Code reference section
+    lines.push('CODE REFERENCE:')
+    lines.push('')
+    const nameW = 24, cptW = 12
+    let header = `${'Test'.padEnd(nameW)} ${'CPT'.padEnd(cptW)}`
     if (includeICD10) header += ` ${'ICD-10'.padEnd(14)}`
     if (includeLabCodes && selectedLab) header += ` ${selectedLab}`
     lines.push(header)
@@ -322,8 +328,7 @@ export default function AdvocatePage() {
                   value={patientName}
                   onChange={(e) => setPatientName(e.target.value)}
                   placeholder="Jane Smith"
-                  className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
-                  style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+                  className="w-full px-4 py-2.5 rounded-lg border border-[#e0ebe9] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
                 />
               </div>
               <div>
@@ -340,8 +345,7 @@ export default function AdvocatePage() {
                   }}
                   placeholder="MM/DD/YYYY"
                   maxLength={10}
-                  className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
-                  style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+                  className="w-full px-4 py-2.5 rounded-lg border border-[#e0ebe9] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
                 />
               </div>
               <div>
@@ -354,8 +358,7 @@ export default function AdvocatePage() {
                         if (p) setDoctorName(p.provider_name)
                       }}
                       defaultValue=""
-                      className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
-                      style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+                      className="w-full px-4 py-2.5 rounded-lg border border-[#e0ebe9] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
                     >
                       <option value="" disabled>Select a saved provider...</option>
                       {savedProviders.map(sp => (
@@ -374,8 +377,7 @@ export default function AdvocatePage() {
                   value={doctorName}
                   onChange={(e) => setDoctorName(e.target.value)}
                   placeholder="Dr. Smith or practice name"
-                  className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
-                  style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+                  className="w-full px-4 py-2.5 rounded-lg border border-[#e0ebe9] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
                 />
               </div>
               <div>
@@ -385,8 +387,7 @@ export default function AdvocatePage() {
                   value={requestDate}
                   onChange={(e) => setRequestDate(e.target.value)}
                   placeholder="Today's date"
-                  className="w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
-                  style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+                  className="w-full px-4 py-2.5 rounded-lg border border-[#e0ebe9] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
                 />
               </div>
             </div>
@@ -408,8 +409,7 @@ export default function AdvocatePage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for a test (e.g., TSH, CBC, Vitamin D)..."
-                className="w-full px-4 py-3 rounded-lg border-2 text-base focus:outline-none focus:ring-2"
-                style={{ borderColor: '#2d6a5e', color: '#1a2e2b', backgroundColor: 'white' }}
+                className="w-full px-4 py-3 rounded-lg border-2 border-[#2d6a5e] text-base text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30"
               />
               {isSearching && (
                 <div className="absolute right-3 top-3.5 text-sm" style={{ color: '#577572' }}>Searching...</div>
@@ -456,6 +456,65 @@ export default function AdvocatePage() {
                 ))}
               </div>
             )}
+
+            {/* Code toggles — inline with test selection */}
+            {selectedTests.length > 0 && (
+              <div className="mt-5 ml-9 pt-5 border-t border-[#e0ebe9]">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#577572] mb-3">Include in your request</p>
+                <div className="space-y-3">
+                  {/* ICD-10 toggle */}
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={includeICD10}
+                        onChange={(e) => setIncludeICD10(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 rounded-full bg-[#e0ebe9] peer-checked:bg-[#2d6a5e] transition-colors" />
+                      <div className="absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-[#1a2e2b]">Diagnostic codes (ICD-10)</span>
+                      <span className="text-xs text-[#577572] ml-1.5">— billing justification</span>
+                    </div>
+                  </label>
+
+                  {/* Lab-specific codes toggle */}
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={includeLabCodes}
+                        onChange={(e) => {
+                          setIncludeLabCodes(e.target.checked)
+                          if (!e.target.checked) setSelectedLab('')
+                        }}
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 rounded-full bg-[#e0ebe9] peer-checked:bg-[#2d6a5e] transition-colors" />
+                      <div className="absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-medium text-[#1a2e2b]">Lab-specific order codes</span>
+                      {includeLabCodes && (
+                        <select
+                          value={selectedLab}
+                          onChange={(e) => setSelectedLab(e.target.value)}
+                          className="px-3 py-1 rounded-lg border text-xs text-[#1a2e2b] focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30"
+                          style={{ borderColor: selectedLab ? '#2d6a5e' : '#e0ebe9' }}
+                        >
+                          <option value="">Select lab...</option>
+                          {availableLabs.map(lab => (
+                            <option key={lab} value={lab}>{lab}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  </label>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Step 3: Reason/symptoms */}
@@ -473,88 +532,15 @@ export default function AdvocatePage() {
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="e.g., I've been experiencing fatigue and want to check my thyroid levels..."
                 rows={4}
-                className="w-full px-4 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e] resize-vertical"
-                style={{ borderColor: '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
+                className="w-full px-4 py-3 rounded-lg border border-[#e0ebe9] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e] resize-vertical"
               />
             </div>
           </div>
 
-          {/* Step 4: Code options */}
+          {/* Step 4: Generate */}
           <div className="bg-white rounded-xl shadow-sm border p-6 mb-6 no-print" style={{ borderColor: '#e0ebe9' }}>
             <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#1a2e2b' }}>
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>4</span>
-              Customize your request
-            </h2>
-            <p className="text-sm mb-4 ml-9" style={{ color: '#577572' }}>
-              CPT codes are always included. Toggle additional coding options below.
-            </p>
-
-            <div className="ml-9 space-y-4">
-              {/* ICD-10 toggle */}
-              <label className="flex items-start gap-3 cursor-pointer group">
-                <div className="relative mt-0.5">
-                  <input
-                    type="checkbox"
-                    checked={includeICD10}
-                    onChange={(e) => setIncludeICD10(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-10 h-6 rounded-full bg-[#e0ebe9] peer-checked:bg-[#2d6a5e] transition-colors" />
-                  <div className="absolute left-0.5 top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-[#1a2e2b]">Include diagnostic codes (ICD-10)</div>
-                  <div className="text-xs text-[#577572] mt-0.5">Adds billing justification codes — helps with insurance coverage and medical necessity.</div>
-                </div>
-              </label>
-
-              {/* Lab-specific codes toggle */}
-              <label className="flex items-start gap-3 cursor-pointer group">
-                <div className="relative mt-0.5">
-                  <input
-                    type="checkbox"
-                    checked={includeLabCodes}
-                    onChange={(e) => {
-                      setIncludeLabCodes(e.target.checked)
-                      if (!e.target.checked) setSelectedLab('')
-                    }}
-                    className="sr-only peer"
-                  />
-                  <div className="w-10 h-6 rounded-full bg-[#e0ebe9] peer-checked:bg-[#2d6a5e] transition-colors" />
-                  <div className="absolute left-0.5 top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-[#1a2e2b]">Include lab-specific order codes</div>
-                  <div className="text-xs text-[#577572] mt-0.5">Adds the exact order code for a specific lab provider (e.g., Quest, LabCorp).</div>
-                </div>
-              </label>
-
-              {/* Lab selector — shows when lab codes toggle is on */}
-              {includeLabCodes && (
-                <div className="ml-[52px]">
-                  <select
-                    value={selectedLab}
-                    onChange={(e) => setSelectedLab(e.target.value)}
-                    className="w-full max-w-xs px-4 py-2.5 rounded-lg border-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
-                    style={{ borderColor: selectedLab ? '#2d6a5e' : '#e0ebe9', color: '#1a2e2b', backgroundColor: 'white' }}
-                  >
-                    <option value="">Select a lab...</option>
-                    {availableLabs.map(lab => (
-                      <option key={lab} value={lab}>{lab}</option>
-                    ))}
-                  </select>
-                  {!selectedLab && (
-                    <p className="text-xs text-amber-600 mt-1.5">Choose a lab to include their specific order codes.</p>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Step 5: Generate */}
-          <div className="bg-white rounded-xl shadow-sm border p-6 mb-6 no-print" style={{ borderColor: '#e0ebe9' }}>
-            <h2 className="text-lg font-semibold mb-1 flex items-center gap-2" style={{ color: '#1a2e2b' }}>
-              <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>5</span>
               Generate your request
             </h2>
             <p className="text-sm mb-4 ml-9" style={{ color: '#577572' }}>
@@ -679,20 +665,33 @@ export default function AdvocatePage() {
                     </div>
                   </div>
 
-                  {/* Tests table */}
+                  {/* Part 1: Clean test list */}
                   <div className="mb-6">
-                    <h3 className="text-sm font-bold uppercase tracking-wide mb-2" style={{ color: '#1a2e2b' }}>Requested Tests</h3>
+                    <h3 className="text-sm font-bold uppercase tracking-wide mb-3" style={{ color: '#1a2e2b' }}>Requested Tests</h3>
+                    <ul className="space-y-1.5 ml-1">
+                      {selectedTests.map(test => (
+                        <li key={test.id} className="text-sm" style={{ color: '#1a2e2b' }}>
+                          <span className="mr-2">•</span>
+                          <span className="font-medium">{test.test_name}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Part 2: Code reference table */}
+                  <div className="mb-6 pt-4 border-t" style={{ borderColor: '#ddd' }}>
+                    <h3 className="text-xs font-bold uppercase tracking-wide mb-2" style={{ color: '#577572' }}>Code Reference</h3>
                     <div className="overflow-x-auto">
-                      <table className="w-full text-sm border-collapse">
+                      <table className="w-full text-xs border-collapse">
                         <thead>
                           <tr style={{ backgroundColor: '#f5f5f0' }}>
-                            <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>Test Name</th>
-                            <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>CPT Code</th>
+                            <th className="text-left px-2 py-1.5 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>Test</th>
+                            <th className="text-left px-2 py-1.5 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>CPT</th>
                             {includeICD10 && (
-                              <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>ICD-10 <span className="font-normal text-xs" style={{ color: '#577572' }}>(why it&apos;s needed)</span></th>
+                              <th className="text-left px-2 py-1.5 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>ICD-10</th>
                             )}
                             {includeLabCodes && selectedLab && (
-                              <th className="text-left px-3 py-2 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>{selectedLab} Code</th>
+                              <th className="text-left px-2 py-1.5 border font-semibold" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>{selectedLab}</th>
                             )}
                           </tr>
                         </thead>
@@ -701,21 +700,21 @@ export default function AdvocatePage() {
                             const labCode = selectedLab ? test.labCodes.find(lc => lc.lab_name === selectedLab) : null
                             return (
                               <tr key={test.id}>
-                                <td className="px-3 py-2 border font-medium" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>
+                                <td className="px-2 py-1.5 border" style={{ borderColor: '#ccc', color: '#1a2e2b' }}>
                                   {test.test_name}
                                 </td>
-                                <td className="px-3 py-2 border" style={{ borderColor: '#ccc', color: '#4a6b67' }}>
+                                <td className="px-2 py-1.5 border font-mono" style={{ borderColor: '#ccc', color: '#4a6b67' }}>
                                   {test.cpt_codes?.length > 0 ? test.cpt_codes.join(', ') : '—'}
                                 </td>
                                 {includeICD10 && (
-                                  <td className="px-3 py-2 border text-xs" style={{ borderColor: '#ccc', color: '#4a6b67' }}>
+                                  <td className="px-2 py-1.5 border" style={{ borderColor: '#ccc', color: '#4a6b67' }}>
                                     {test.icd10Codes.length > 0
                                       ? test.icd10Codes.map(c => `${c.code} — ${c.description}`).join('; ')
                                       : '—'}
                                   </td>
                                 )}
                                 {includeLabCodes && selectedLab && (
-                                  <td className="px-3 py-2 border" style={{ borderColor: '#ccc', color: '#4a6b67' }}>
+                                  <td className="px-2 py-1.5 border font-mono" style={{ borderColor: '#ccc', color: '#4a6b67' }}>
                                     {labCode ? labCode.proprietary_code : '—'}
                                   </td>
                                 )}

@@ -21,7 +21,7 @@ export default function Footer() {
         { label: 'TRT Monitoring', href: '/guides/trt-labs' },
         { label: 'PCOS Bloodwork', href: '/guides/pcos-labs' },
         { label: 'Ferritin Testing', href: '/guides/ferritin' },
-        { label: 'Request Generator', href: '/advocate' },
+        { label: 'Generate Request', href: '/advocate' },
       ],
     },
     {
