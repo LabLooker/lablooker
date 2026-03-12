@@ -118,11 +118,19 @@ export default function AdvocatePage() {
     loadLabs()
   }, [supabase])
 
-  // Auto-populate today's date on mount
+  // Auto-populate today's date on mount (YYYY-MM-DD for date input)
   useEffect(() => {
-    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    const today = new Date().toISOString().split('T')[0]
     setRequestDate(today)
   }, [])
+
+  // Format date for display (YYYY-MM-DD → readable)
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return ''
+    const d = new Date(dateStr + 'T00:00:00')
+    if (isNaN(d.getTime())) return dateStr
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  }
 
   const searchTests = useCallback(async (query: string) => {
     if (query.length < 2) {
@@ -223,8 +231,8 @@ export default function AdvocatePage() {
     lines.push('PATIENT LAB TEST REQUEST')
     lines.push('─'.repeat(52))
     lines.push('')
-    lines.push(`Patient: ${patientName.trim() || blank(25)}      Date: ${requestDate.trim() || blank(20)}`)
-    lines.push(`Date of Birth: ${dateOfBirth.trim() || blank(20)}   Provider: ${doctorName.trim() || blank(20)}`)
+    lines.push(`Patient: ${patientName.trim() || blank(25)}      Date: ${formatDate(requestDate) || blank(20)}`)
+    lines.push(`Date of Birth: ${formatDate(dateOfBirth) || blank(20)}   Provider: ${doctorName.trim() || blank(20)}`)
     lines.push('')
     lines.push('REQUESTED TESTS:')
     lines.push('')
@@ -373,17 +381,9 @@ export default function AdvocatePage() {
               <div>
                 <label className="block text-sm font-medium mb-1" style={{ color: '#4a6b67' }}>Date of birth</label>
                 <input
-                  type="text"
+                  type="date"
                   value={dateOfBirth}
-                  onChange={(e) => {
-                    const digits = e.target.value.replace(/\D/g, '').slice(0, 8)
-                    let formatted = digits
-                    if (digits.length > 2) formatted = `${digits.slice(0, 2)}/${digits.slice(2)}`
-                    if (digits.length > 4) formatted = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`
-                    setDateOfBirth(formatted)
-                  }}
-                  placeholder="MM/DD/YYYY"
-                  maxLength={10}
+                  onChange={(e) => setDateOfBirth(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-lg border border-[#e0ebe9] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
                 />
               </div>
@@ -422,10 +422,9 @@ export default function AdvocatePage() {
               <div>
                 <label className="block text-sm font-medium mb-1" style={{ color: '#4a6b67' }}>Date of request</label>
                 <input
-                  type="text"
+                  type="date"
                   value={requestDate}
                   onChange={(e) => setRequestDate(e.target.value)}
-                  placeholder="Today's date"
                   className="w-full px-4 py-2.5 rounded-lg border border-[#e0ebe9] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
                 />
               </div>
@@ -728,8 +727,8 @@ export default function AdvocatePage() {
                       </div>
                       <div className="flex gap-2 flex-1 items-baseline">
                         <span className="font-semibold shrink-0">Date:</span>
-                        {requestDate.trim()
-                          ? <span>{requestDate.trim()}</span>
+                        {requestDate
+                          ? <span>{formatDate(requestDate)}</span>
                           : <span className="border-b flex-1" style={{ borderColor: '#999' }}>&nbsp;</span>
                         }
                       </div>
@@ -737,8 +736,8 @@ export default function AdvocatePage() {
                     <div className="flex gap-8">
                       <div className="flex gap-2 flex-1 items-baseline">
                         <span className="font-semibold shrink-0">Date of Birth:</span>
-                        {dateOfBirth.trim()
-                          ? <span>{dateOfBirth.trim()}</span>
+                        {dateOfBirth
+                          ? <span>{formatDate(dateOfBirth)}</span>
                           : <span className="border-b flex-1" style={{ borderColor: '#999' }}>&nbsp;</span>
                         }
                       </div>
