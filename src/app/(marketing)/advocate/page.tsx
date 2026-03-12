@@ -88,12 +88,24 @@ export default function AdvocatePage() {
 
   const supabase = createClient()
 
-  // Check auth and load saved providers
+  // Check auth, load saved providers, and pre-fill user info
   useEffect(() => {
-    async function loadSavedProviders() {
+    async function loadUserData() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       setIsSignedIn(true)
+
+      // Load profile for name pre-fill
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single()
+      if (profile?.full_name && !patientName) {
+        setPatientName(profile.full_name)
+      }
+
+      // Load saved providers
       const { data } = await supabase
         .from('saved_providers')
         .select('id, nickname, provider_name')
@@ -101,7 +113,7 @@ export default function AdvocatePage() {
         .order('created_at', { ascending: true })
       if (data) setSavedProviders(data)
     }
-    loadSavedProviders()
+    loadUserData()
   }, [supabase])
 
   // Load available lab names for lab code selector
