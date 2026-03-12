@@ -148,7 +148,7 @@ export default function Hero() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search tests, CPT codes, or symptoms..."
-              className="h-12 flex-1 rounded-l-lg border-[2.5px] border-[#2d6a5e] border-r-0 bg-white px-4 text-[#1a2e2b] placeholder-[#a3bfbb] outline-none focus:ring-2 focus:ring-[#2d6a5e]/20 transition-colors"
+              className="h-12 flex-1 rounded-l-lg border-2 border-[#2d6a5e] border-r-0 bg-white px-4 text-[#1a2e2b] placeholder-[#577572] outline-none focus:ring-2 focus:ring-[#2d6a5e]/20 transition-colors"
             />
             <button
               type="submit"

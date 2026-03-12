@@ -193,7 +193,7 @@ export default function BundlesPage() {
           <p className="text-sm text-[#577572]">
             Don't see what you need?{' '}
             <a href="/search" className="font-medium text-[#2d6a5e] hover:underline">
-              Search our full database of 370+ tests →
+              Search our full database of 390+ tests →
             </a>
           </p>
         </div>
