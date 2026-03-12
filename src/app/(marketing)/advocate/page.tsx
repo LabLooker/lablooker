@@ -107,6 +107,7 @@ export default function AdvocatePage() {
         .from('tests')
         .select('id, test_name, cpt_codes, category')
         .ilike('test_name', `%${firstWord}%`)
+        .order('test_name')
         .limit(50)
       if (!error && data) {
         const selectedIds = new Set(selectedTests.map(t => t.id))
@@ -114,6 +115,14 @@ export default function AdvocatePage() {
           !selectedIds.has(t.id) &&
           words.every(w => t.test_name.toLowerCase().includes(w))
         )
+        // Sort: starts-with first, then alphabetical
+        const q = query.trim().toLowerCase()
+        matched.sort((a, b) => {
+          const aStarts = a.test_name.toLowerCase().startsWith(q) ? 0 : 1
+          const bStarts = b.test_name.toLowerCase().startsWith(q) ? 0 : 1
+          if (aStarts !== bStarts) return aStarts - bStarts
+          return a.test_name.localeCompare(b.test_name)
+        })
         setSearchResults(matched.slice(0, 10))
       }
     } catch (e) {
