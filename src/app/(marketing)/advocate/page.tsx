@@ -2,6 +2,36 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase'
+import { TEST_BUNDLES, type TestBundle } from '@/config/test-bundles'
+
+// Keyword → bundle slug mapping for search suggestions
+const BUNDLE_KEYWORDS: Record<string, string[]> = {
+  'thyroid-complete': ['thyroid', 'hashimoto', 'hypothyroid', 'hyperthyroid', 'tsh'],
+  'hormone-baseline': ['bhrt', 'menopause', 'perimenopause', 'hrt', 'hormone replacement', 'hot flash'],
+  'bhrt-monitoring': ['bhrt monitoring', 'hormone monitoring'],
+  'trt-monitoring': ['trt', 'low t', 'testosterone replacement', 'low testosterone'],
+  'weight-metabolism': ['weight loss', 'weight gain', 'metabolism', 'metabolic', 'obesity', 'insulin resistance'],
+  'iron-deep-dive': ['iron', 'anemia', 'ferritin low', 'iron deficiency', 'tired all the time'],
+  'pcos-panel': ['pcos', 'irregular period', 'hirsutism', 'polycystic'],
+  'energy-fatigue': ['fatigue', 'tired', 'energy', 'exhausted', 'burnout', 'no energy'],
+  'inflammation-immune': ['inflammation', 'autoimmune', 'lupus', 'rheumatoid', 'ra ', 'joint pain'],
+  'gut-health': ['gut', 'digestive', 'ibs', 'sibo', 'bloating', 'celiac'],
+  'nutrient-deficiencies': ['vitamin', 'deficiency', 'nutrient', 'supplement', 'malabsorption'],
+  'mood-brain-health': ['mood', 'depression', 'anxiety', 'brain fog', 'mental health', 'focus', 'cognitive'],
+  'preventive-health': ['longevity', 'preventive', 'annual', 'checkup', 'baseline', 'wellness'],
+  'cycle-health': ['cycle', 'fertility', 'ovulation', 'period', 'menstrual'],
+}
+
+function findMatchingBundle(query: string): TestBundle | null {
+  const q = query.toLowerCase().trim()
+  if (q.length < 3) return null
+  for (const [slug, keywords] of Object.entries(BUNDLE_KEYWORDS)) {
+    if (keywords.some(kw => q.includes(kw))) {
+      return TEST_BUNDLES.find(b => b.slug === slug) ?? null
+    }
+  }
+  return null
+}
 
 type SavedProviderOption = {
   id: string
@@ -441,6 +471,54 @@ export default function AdvocatePage() {
                 </div>
               )}
             </div>
+
+            {/* Bundle suggestion card */}
+            {searchQuery.trim().length >= 3 && (() => {
+              const bundle = findMatchingBundle(searchQuery)
+              if (!bundle) return null
+              const alreadyAdded = bundle.tests.every(name =>
+                selectedTests.some(st => st.test_name === name)
+              )
+              if (alreadyAdded) return null
+              return (
+                <div className="mt-3 ml-9 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-xl">{bundle.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-[#1a2e2b]">
+                        Looking for a full panel? Try the {bundle.name}
+                      </div>
+                      <p className="text-xs text-[#4a6b67] mt-0.5 leading-relaxed">
+                        {bundle.tests.length} tests — {bundle.description.split('.')[0]}.
+                      </p>
+                      <button
+                        onClick={async () => {
+                          setSearchQuery('')
+                          setSearchResults([])
+                          // Add all bundle tests that aren't already selected
+                          const existingIds = new Set(selectedTests.map(t => t.id))
+                          const supabase = createClient()
+                          for (const testName of bundle.tests) {
+                            const { data } = await supabase
+                              .from('tests')
+                              .select('id, test_name, cpt_codes, category')
+                              .eq('test_name', testName)
+                              .limit(1)
+                            if (data && data.length > 0 && !existingIds.has(data[0].id)) {
+                              await addTest(data[0])
+                              existingIds.add(data[0].id)
+                            }
+                          }
+                        }}
+                        className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-[#2d6a5e] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#245a50] transition-colors"
+                      >
+                        + Add all {bundle.tests.length} tests
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
 
             {selectedTests.length > 0 && (
               <div className="mt-4 ml-9 space-y-2">
