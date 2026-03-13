@@ -11,6 +11,7 @@ export default function Footer() {
         { label: 'Translate Codes', href: '/translate' },
         { label: 'Compare Prices', href: '/compare' },
         { label: 'Test Panels', href: '/bundles' },
+        { label: 'Generate Request', href: '/advocate' },
         { label: 'Plans', href: '/pricing' },
       ],
     },
@@ -21,7 +22,6 @@ export default function Footer() {
         { label: 'TRT Monitoring', href: '/guides/trt-labs' },
         { label: 'PCOS Bloodwork', href: '/guides/pcos-labs' },
         { label: 'Ferritin Testing', href: '/guides/ferritin' },
-        { label: 'Generate Request', href: '/advocate' },
       ],
     },
     {
