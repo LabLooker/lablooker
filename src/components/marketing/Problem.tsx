@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function Problem() {
   const painPoints = [
     {
@@ -9,6 +11,8 @@ export default function Problem() {
       title: "You don't know what to order",
       description: "Doctors use codes you've never heard of. Insurance denies tests without explanation. You're left Googling at midnight.",
       solution: "LabLooker lets you search by symptom — fatigue, hair loss, brain fog — and shows exactly which tests are commonly ordered and why.",
+      href: '/bundles',
+      cta: 'Browse test panels →',
     },
     {
       icon: (
@@ -19,6 +23,8 @@ export default function Problem() {
       title: 'Lab prices are a black box',
       description: 'The same ferritin test costs $28 at one lab and $400 at another. Self-pay options exist — but nobody tells you where to find them.',
       solution: "LabLooker compares real self-pay prices across 15+ labs side by side, so you can find the lowest price before you order.",
+      href: '/compare',
+      cta: 'Compare prices →',
     },
     {
       icon: (
@@ -29,6 +35,8 @@ export default function Problem() {
       title: "Talking to your doctor is hard",
       description: "You know something's wrong. But walking in without the right test names, CPT codes, or ICD-10 diagnoses means getting dismissed.",
       solution: "LabLooker generates a ready-to-send doctor request with the exact tests, codes, and clinical reasons — so you walk in prepared.",
+      href: '/advocate',
+      cta: 'Generate a request →',
     },
   ]
 
@@ -51,9 +59,10 @@ export default function Problem() {
         {/* Pain points */}
         <div className="mt-16 grid gap-8 sm:grid-cols-3">
           {painPoints.map((point, i) => (
-            <div
+            <Link
               key={i}
-              className="group relative rounded-xl border border-[#e0ebe9] bg-white p-8 transition-all duration-300 hover:border-red-400/30 hover:bg-red-50/50"
+              href={point.href}
+              className="group relative rounded-xl border border-[#e0ebe9] bg-white p-8 transition-all duration-300 hover:border-[#2d6a5e]/30 hover:shadow-lg hover:shadow-[#2d6a5e]/5"
             >
               <div className="mb-4 inline-flex rounded-lg bg-red-500/10 p-3 text-red-400">
                 {point.icon}
@@ -68,8 +77,11 @@ export default function Problem() {
                 <p className="text-sm leading-relaxed text-primary-500">
                   ✓ {point.solution}
                 </p>
+                <span className="mt-3 inline-block text-sm font-semibold text-[#2d6a5e] group-hover:underline">
+                  {point.cta}
+                </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
