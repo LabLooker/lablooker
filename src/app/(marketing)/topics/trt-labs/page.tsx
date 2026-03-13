@@ -6,12 +6,12 @@ export const metadata: Metadata = {
   title: 'TRT Monitoring Labs Explained — What to Test and When',
   description:
     'Essential lab tests for testosterone replacement therapy. Learn what to monitor (total T, free T, estradiol, hematocrit, PSA), when to test, and how to compare lab prices.',
-  alternates: { canonical: 'https://lablooker.com/guides/trt-labs' },
+  alternates: { canonical: 'https://lablooker.com/topics/trt-labs' },
   openGraph: {
     title: 'TRT Monitoring Labs Explained',
     description:
       'Essential lab tests for testosterone replacement therapy. Learn what to monitor, when to test, and how to compare prices.',
-    url: 'https://lablooker.com/guides/trt-labs',
+    url: 'https://lablooker.com/topics/trt-labs',
   },
 }
 
@@ -42,7 +42,7 @@ export default function TrtLabsGuide() {
         <nav className="flex items-center gap-2 text-sm text-[#577572] mb-8">
           <Link href="/search" className="hover:text-[#2d6a5e] transition-colors">Tests</Link>
           <span>/</span>
-          <Link href="/guides/trt-labs" className="text-[#1a2e2b] font-medium">TRT Labs Guide</Link>
+          <Link href="/topics/trt-labs" className="text-[#1a2e2b] font-medium">TRT Labs Topic</Link>
         </nav>
 
         {/* Hero */}

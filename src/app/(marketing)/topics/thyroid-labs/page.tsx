@@ -6,12 +6,12 @@ export const metadata: Metadata = {
   title: 'What Thyroid Labs Should I Ask For? — Complete Guide',
   description:
     'Go beyond TSH. Learn which thyroid tests to order (Free T3, Free T4, Reverse T3, antibodies), why they matter, and how to compare prices across labs.',
-  alternates: { canonical: 'https://lablooker.com/guides/thyroid-labs' },
+  alternates: { canonical: 'https://lablooker.com/topics/thyroid-labs' },
   openGraph: {
     title: 'What Thyroid Labs Should I Ask For?',
     description:
       'Go beyond TSH. Learn which thyroid tests to order, why they matter, and how to compare prices across labs.',
-    url: 'https://lablooker.com/guides/thyroid-labs',
+    url: 'https://lablooker.com/topics/thyroid-labs',
   },
 }
 
@@ -42,7 +42,7 @@ export default function ThyroidLabsGuide() {
         <nav className="flex items-center gap-2 text-sm text-[#577572] mb-8">
           <Link href="/search" className="hover:text-[#2d6a5e] transition-colors">Tests</Link>
           <span>/</span>
-          <Link href="/guides/thyroid-labs" className="text-[#1a2e2b] font-medium">Thyroid Labs Guide</Link>
+          <Link href="/topics/thyroid-labs" className="text-[#1a2e2b] font-medium">Thyroid Labs Topic</Link>
         </nav>
 
         {/* Hero */}

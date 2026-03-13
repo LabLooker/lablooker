@@ -6,12 +6,12 @@ export const metadata: Metadata = {
   title: 'Ferritin Test: What Your Doctor Isn\'t Telling You',
   description:
     'Why ferritin is the most important iron marker, what "normal" really means (hint: lab ranges are too wide), and the full iron panel you actually need.',
-  alternates: { canonical: 'https://lablooker.com/guides/ferritin' },
+  alternates: { canonical: 'https://lablooker.com/topics/ferritin' },
   openGraph: {
     title: 'Ferritin Test: What Your Doctor Isn\'t Telling You',
     description:
       'Why ferritin is the most important iron marker, what "normal" really means, and the full iron panel you actually need.',
-    url: 'https://lablooker.com/guides/ferritin',
+    url: 'https://lablooker.com/topics/ferritin',
   },
 }
 
@@ -42,7 +42,7 @@ export default function FerritinGuide() {
         <nav className="flex items-center gap-2 text-sm text-[#577572] mb-8">
           <Link href="/search" className="hover:text-[#2d6a5e] transition-colors">Tests</Link>
           <span>/</span>
-          <Link href="/guides/ferritin" className="text-[#1a2e2b] font-medium">Ferritin Guide</Link>
+          <Link href="/topics/ferritin" className="text-[#1a2e2b] font-medium">Ferritin Topic</Link>
         </nav>
 
         {/* Hero */}

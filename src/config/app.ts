@@ -14,7 +14,7 @@ export const APP_CONFIG = {
         'Search the full lab database',
         'Translate test names and lab-specific codes',
         'Compare self-pay prices across labs',
-        'Explore bundles and guides',
+        'Explore bundles and topics',
         'Import lab PDFs for parsed preview',
         'Share one-time result summaries',
         'Basic doctor request letter template',

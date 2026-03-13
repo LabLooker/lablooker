@@ -7,7 +7,7 @@ const FEATURE_MATRIX = [
   { feature: 'Search tests', free: true, premium: true },
   { feature: 'Translate codes', free: true, premium: true },
   { feature: 'Compare prices', free: true, premium: true },
-  { feature: 'Bundles and guides', free: true, premium: true },
+  { feature: 'Bundles and topics', free: true, premium: true },
   { feature: 'PDF import parsing', free: 'Preview only', premium: 'Save to tracker' },
   { feature: 'Share results', free: 'One-time links', premium: 'Ongoing data + exports' },
   { feature: 'Lab test request letters', free: 'Names + CPT codes', premium: 'Full coded (ICD-10 + lab codes)' },

@@ -6,12 +6,12 @@ export const metadata: Metadata = {
   title: 'PCOS Bloodwork: Which Tests to Order — Complete Guide',
   description:
     'The complete PCOS lab panel — testosterone, DHEA-S, insulin, AMH, and more. Learn which tests diagnose and monitor polycystic ovary syndrome and how to compare prices.',
-  alternates: { canonical: 'https://lablooker.com/guides/pcos-labs' },
+  alternates: { canonical: 'https://lablooker.com/topics/pcos-labs' },
   openGraph: {
     title: 'PCOS Bloodwork: Which Tests to Order',
     description:
       'The complete PCOS lab panel — testosterone, DHEA-S, insulin, AMH, and more. Learn which tests to order and compare prices.',
-    url: 'https://lablooker.com/guides/pcos-labs',
+    url: 'https://lablooker.com/topics/pcos-labs',
   },
 }
 
@@ -42,7 +42,7 @@ export default function PcosLabsGuide() {
         <nav className="flex items-center gap-2 text-sm text-[#577572] mb-8">
           <Link href="/search" className="hover:text-[#2d6a5e] transition-colors">Tests</Link>
           <span>/</span>
-          <Link href="/guides/pcos-labs" className="text-[#1a2e2b] font-medium">PCOS Labs Guide</Link>
+          <Link href="/topics/pcos-labs" className="text-[#1a2e2b] font-medium">PCOS Labs Topic</Link>
         </nav>
 
         {/* Hero */}

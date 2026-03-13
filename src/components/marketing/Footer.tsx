@@ -16,12 +16,12 @@ export default function Footer() {
       ],
     },
     {
-      title: 'Guides',
+      title: 'Topics',
       links: [
-        { label: 'Thyroid Labs', href: '/guides/thyroid-labs' },
-        { label: 'TRT Monitoring', href: '/guides/trt-labs' },
-        { label: 'PCOS Bloodwork', href: '/guides/pcos-labs' },
-        { label: 'Ferritin Testing', href: '/guides/ferritin' },
+        { label: 'Thyroid Labs', href: '/topics/thyroid-labs' },
+        { label: 'TRT Monitoring', href: '/topics/trt-labs' },
+        { label: 'PCOS Bloodwork', href: '/topics/pcos-labs' },
+        { label: 'Ferritin Testing', href: '/topics/ferritin' },
       ],
     },
     {
