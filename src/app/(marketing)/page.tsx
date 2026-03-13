@@ -12,10 +12,10 @@ export default function LandingPage() {
       <Hero />
       <Problem />
       <Solution />
-      <FounderStory />
-      <EmailCapture />
       <Pricing />
       <FAQ />
+      <FounderStory />
+      <EmailCapture />
     </>
   )
 }
