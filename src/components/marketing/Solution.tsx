@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function Solution() {
   const features = [
     {
@@ -9,6 +11,8 @@ export default function Solution() {
       title: 'Search by symptom or test name',
       description:
         "Find what you need whether you know the test name or just your symptoms. LabLooker maps both to the right lab tests.",
+      href: '/search',
+      cta: 'Search tests →',
     },
     {
       icon: (
@@ -19,6 +23,8 @@ export default function Solution() {
       title: 'Compare real self-pay prices',
       description:
         'See prices from Quest, LabCorp, Ulta Lab Tests, Walk-In Lab, and 10+ more, side by side.',
+      href: '/compare',
+      cta: 'Compare prices →',
     },
     {
       icon: (
@@ -29,6 +35,8 @@ export default function Solution() {
       title: 'Understand the codes',
       description:
         'Every test includes its CPT code, common ICD-10 diagnosis codes, and a plain-English explanation of what it measures and why.',
+      href: '/translate',
+      cta: 'Translate codes →',
     },
   ]
 
@@ -54,9 +62,10 @@ export default function Solution() {
         {/* Features */}
         <div className="mt-16 grid gap-8 sm:grid-cols-3">
           {features.map((feature, i) => (
-            <div
+            <Link
               key={i}
-              className="group relative rounded-xl border border-[#e0ebe9] bg-white p-8 transition-all duration-300 hover:border-primary-500/30 hover:bg-primary-500/5"
+              href={feature.href}
+              className="group relative rounded-xl border border-[#e0ebe9] bg-white p-8 transition-all duration-300 hover:border-[#2d6a5e]/30 hover:shadow-lg hover:shadow-[#2d6a5e]/5"
             >
               <div className="mb-4 inline-flex rounded-lg bg-primary-500/10 p-3 text-primary-400">
                 {feature.icon}
@@ -67,7 +76,10 @@ export default function Solution() {
               <p className="text-sm leading-relaxed text-[#577572]">
                 {feature.description}
               </p>
-            </div>
+              <span className="mt-4 inline-block text-sm font-semibold text-[#2d6a5e] group-hover:underline">
+                {feature.cta}
+              </span>
+            </Link>
           ))}
         </div>
       </div>
