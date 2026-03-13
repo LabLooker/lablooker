@@ -141,6 +141,12 @@ export function GuideBundleCard({ bundleSlug }: { bundleSlug: string }) {
             >
               Compare prices
             </Link>
+            <Link
+              href="/advocate"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#f0f7f6] px-4 py-2.5 text-sm font-medium text-[#2d6a5e] transition-colors hover:bg-[#e0ebe9]"
+            >
+              Generate a request letter
+            </Link>
           </div>
         </div>
       )}

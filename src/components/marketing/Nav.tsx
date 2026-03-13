@@ -48,8 +48,8 @@ export default function Nav() {
     <header className="fixed top-0 z-50 w-full border-b border-[#e0ebe9] bg-[#faf8f5]/80 backdrop-blur-xl">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-[#1a2e2b]">
-          {APP_CONFIG.name}
+        <Link href="/" className="flex items-center">
+          <img src="/logo-nav.png" alt={APP_CONFIG.name} className="h-8" />
         </Link>
 
         {/* Desktop nav */}
