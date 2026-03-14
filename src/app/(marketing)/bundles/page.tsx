@@ -149,7 +149,7 @@ export default function BundlesPage() {
                     {/* Actions */}
                     <div className="mt-5 flex flex-wrap gap-3">
                       <a
-                        href={`/search?q=${encodeURIComponent(bundle.shortName)}`}
+                        href={`/search?q=${encodeURIComponent(bundle.tests[0])}`}
                         onClick={() => trackAffiliateClick('Search', bundle.shortName, 'bundle')}
                         className="inline-flex items-center gap-2 rounded-lg bg-[#2d6a5e] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#245a50]"
                       >

@@ -584,32 +584,28 @@ export default function ComparePage() {
         ══════════════════════════════════════════════════════════════════════ */}
         {!selectedTest && (
           <>
-            {/* Divider */}
-            <div className="flex items-center gap-3 my-6">
-              <div className="flex-1 h-px bg-[#e0ebe9]" />
-              <span className="text-xs font-semibold text-[#9ca3af] uppercase tracking-wider">
-                Not sure which test to order?
-              </span>
-              <div className="flex-1 h-px bg-[#e0ebe9]" />
-            </div>
-
-            {/* Group pills */}
-            <div className="flex flex-wrap gap-2 mb-5">
-              {COMPARE_GROUPS.map((group) => (
-                <button
-                  key={group.id}
-                  onClick={() => switchGroup(group)}
-                  className={[
-                    'flex items-center gap-1.5 px-4 py-2 rounded-full border-[1.5px] text-sm font-semibold transition-all',
-                    activeGroup?.id === group.id
-                      ? 'bg-[#2d6a5e] text-white border-[#2d6a5e]'
-                      : 'bg-white text-[#4a6b67] border-[#e0ebe9] hover:border-[#2d6a5e] hover:text-[#2d6a5e]',
-                  ].join(' ')}
-                >
-                  {group.emoji && <span>{group.emoji}</span>}
-                  <span>{group.label}</span>
-                </button>
-              ))}
+            {/* Browse by category */}
+            <div className="mt-8 mb-6">
+              <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-[#577572] mb-4">Compare prices by category</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {COMPARE_GROUPS.map((group) => (
+                  <button
+                    key={group.id}
+                    onClick={() => switchGroup(group)}
+                    className={[
+                      'group flex flex-col items-center gap-1 rounded-xl border p-4 transition-all cursor-pointer',
+                      activeGroup?.id === group.id
+                        ? 'border-[#2d6a5e] bg-[#2d6a5e]/5 shadow-sm'
+                        : 'border-[#e0ebe9] bg-white hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5',
+                    ].join(' ')}
+                  >
+                    <span className={[
+                      'text-sm font-medium text-center leading-tight',
+                      activeGroup?.id === group.id ? 'text-[#2d6a5e]' : 'text-[#1a2e2b] group-hover:text-[#2d6a5e]',
+                    ].join(' ')}>{group.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Active group content */}
