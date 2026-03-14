@@ -11,17 +11,8 @@ type TestMatch = {
   found: boolean
 }
 
-const CATEGORIES = [
-  { key: 'all', label: 'All' },
-  { key: 'hormones', label: 'Hormones' },
-  { key: 'thyroid-energy', label: 'Thyroid & Energy' },
-  { key: 'nutrition', label: 'Nutrition' },
-  { key: 'wellness', label: 'Wellness' },
-] as const
-
 export default function BundlesPage() {
   const [expandedSlug, setExpandedSlug] = useState<string | null>(null)
-  const [activeCategory, setActiveCategory] = useState<string>('all')
   const [testMap, setTestMap] = useState<Record<string, string>>({}) // test_name -> id
 
   // Load all test names + ids for linking
@@ -34,11 +25,6 @@ export default function BundlesPage() {
       setTestMap(map)
     })
   }, [])
-
-  const filteredBundles = useMemo(() => {
-    if (activeCategory === 'all') return TEST_BUNDLES
-    return TEST_BUNDLES.filter(b => b.category === activeCategory)
-  }, [activeCategory])
 
   function toggle(slug: string) {
     setExpandedSlug(prev => prev === slug ? null : slug)
@@ -73,72 +59,34 @@ export default function BundlesPage() {
           </p>
         </div>
 
-        {/* Category filter cards */}
-        <div className="mx-auto max-w-3xl mb-10">
-          <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-[#577572] mb-4">Browse by category</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {CATEGORIES.filter(c => c.key !== 'all').map(cat => (
-              <button
-                key={cat.key}
-                onClick={() => { setActiveCategory(activeCategory === cat.key ? 'all' : cat.key); setExpandedSlug(null) }}
-                className={`group flex flex-col items-center gap-1 rounded-xl border p-4 transition-all cursor-pointer ${
-                  activeCategory === cat.key
-                    ? 'border-[#2d6a5e] bg-[#2d6a5e]/5 shadow-sm'
-                    : 'border-[#e0ebe9] bg-white hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5'
-                }`}
-              >
-                <span className={`text-sm font-medium text-center leading-tight ${
-                  activeCategory === cat.key ? 'text-[#2d6a5e]' : 'text-[#1a2e2b] group-hover:text-[#2d6a5e]'
-                }`}>{cat.label}</span>
-              </button>
-            ))}
-          </div>
-          {activeCategory !== 'all' && (
-            <div className="mt-4 text-center">
-              <button
-                onClick={() => { setActiveCategory('all'); setExpandedSlug(null) }}
-                className="text-sm text-[#577572] hover:text-[#2d6a5e] transition-colors cursor-pointer"
-              >
-                ← Show all panels
-              </button>
-            </div>
-          )}
-          <div className="mt-6 flex items-center gap-4">
-            <div className="flex-1 border-t border-[#e0ebe9]" />
-            <span className="text-xs text-[#577572]">{filteredBundles.length} panels</span>
-            <div className="flex-1 border-t border-[#e0ebe9]" />
-          </div>
-        </div>
-
-        {/* Card grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredBundles.map((bundle) => {
+        {/* Panel grid */}
+        <div className="mx-auto max-w-4xl grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {TEST_BUNDLES.map((bundle) => {
             const isExpanded = expandedSlug === bundle.slug
             const matches = getTestMatches(bundle)
 
             return (
               <div
                 key={bundle.slug}
-                className={`rounded-2xl border-[1.5px] bg-white transition-all ${
+                className={`rounded-xl transition-all ${
                   isExpanded
-                    ? 'border-[#2d6a5e] shadow-lg shadow-[#2d6a5e]/5 col-span-2 lg:col-span-3'
-                    : 'border-[#e0ebe9] hover:border-[#2d6a5e]/30'
+                    ? 'border border-[#2d6a5e] bg-[#2d6a5e]/5 shadow-sm col-span-2 sm:col-span-3 lg:col-span-4'
+                    : 'border border-[#e0ebe9] bg-white hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5'
                 }`}
               >
                 {/* Card face */}
                 <button
                   onClick={() => toggle(bundle.slug)}
-                  className="w-full text-left p-4 sm:p-5 cursor-pointer"
+                  className="group w-full text-left p-4 cursor-pointer"
                 >
-                  <div className="flex flex-col gap-2">
-                    <span className="text-2xl">{bundle.icon}</span>
-                    <h2 className="text-sm font-bold text-[#1a2e2b] sm:text-base leading-tight">
-                      {bundle.shortName}
-                    </h2>
-                    <span className="inline-flex self-start items-center rounded-full bg-[#f0f7f6] px-2.5 py-0.5 text-xs font-medium text-[#2d6a5e]">
-                      {bundle.tests.length} tests
-                    </span>
-                  </div>
+                  <span className={`text-sm font-medium text-center leading-tight block ${
+                    isExpanded ? 'text-[#2d6a5e]' : 'text-[#1a2e2b] group-hover:text-[#2d6a5e]'
+                  }`}>
+                    {bundle.shortName}
+                  </span>
+                  <span className="block text-center text-xs text-[#577572] mt-1">
+                    {bundle.tests.length} tests
+                  </span>
                 </button>
 
                 {/* Expanded content */}
