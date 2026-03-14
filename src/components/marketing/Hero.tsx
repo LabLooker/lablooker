@@ -53,7 +53,7 @@ export default function Hero() {
 
         {/* Subheadline */}
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-[#577572] sm:text-xl">
-          The only tool that helps you search, compare, translate, and understand your labs — with an optional personal dashboard for tracking over time.
+          The only tool that helps you research, compare, translate, and request lab tests — with a personal dashboard to track results over time.
         </p>
 
         {/* Four action cards */}
