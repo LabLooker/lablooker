@@ -1,7 +1,11 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { APP_CONFIG } from '@/config/app'
 import Button from '@/components/ui/Button'
+import { createClient } from '@/lib/supabase'
+import type { User } from '@supabase/supabase-js'
 
 const FEATURE_MATRIX = [
   { feature: 'Search tests', free: true, premium: true },
@@ -49,8 +53,76 @@ function CellValue({ value }: { value: boolean | string }) {
   return <span className="text-xs text-[#577572]">{value}</span>
 }
 
+function BillingToggle({ isAnnual, onToggle }: { isAnnual: boolean; onToggle: () => void }) {
+  return (
+    <div className="mt-4 flex items-center justify-center gap-3">
+      <span className={`text-sm font-medium ${!isAnnual ? 'text-[#1a2e2b]' : 'text-[#577572]'}`}>Monthly</span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={isAnnual}
+        onClick={onToggle}
+        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ${
+          isAnnual ? 'bg-[#2d6a5e]' : 'bg-[#c5d8d5]'
+        }`}
+      >
+        <span
+          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ${
+            isAnnual ? 'translate-x-5' : 'translate-x-0'
+          }`}
+        />
+      </button>
+      <span className={`text-sm font-medium ${isAnnual ? 'text-[#1a2e2b]' : 'text-[#577572]'}`}>Annual</span>
+    </div>
+  )
+}
+
 export default function Pricing() {
   const { plans } = APP_CONFIG
+  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null)
+  const [isAnnual, setIsAnnual] = useState(false)
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  async function handlePremiumCheckout() {
+    if (!user) {
+      router.push('/signup?redirect=/pricing')
+      return
+    }
+
+    setCheckoutLoading(true)
+    try {
+      const priceId = isAnnual
+        ? process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID
+        : process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID
+
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId }),
+      })
+
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      }
+    } catch (error) {
+      console.error('Checkout error:', error)
+    } finally {
+      setCheckoutLoading(false)
+    }
+  }
 
   const tiers = [
     {
@@ -66,11 +138,10 @@ export default function Pricing() {
     {
       key: 'pro' as const,
       plan: plans.pro,
-      price: '$8',
-      period: '/month',
-      annualNote: '$59/year (save 39%)',
-      cta: 'Start Premium',
-      href: '/signup',
+      price: isAnnual ? '$59' : '$8',
+      period: isAnnual ? '/year' : '/month',
+      annualNote: isAnnual ? 'Save 39% vs monthly' : '$59/year (save 39%)',
+      cta: checkoutLoading ? 'Loading...' : 'Start Premium',
       featured: true,
       comingSoon: false,
     },
@@ -151,13 +222,30 @@ export default function Pricing() {
                 <p className="mt-1.5 text-sm font-medium text-[#2d6a5e]">{(tier as any).annualNote}</p>
               )}
 
-              <Button
-                variant={tier.featured ? 'primary' : 'secondary'}
-                className="mt-6 w-full"
-                href={tier.href}
-              >
-                {tier.cta}
-              </Button>
+              {/* Billing toggle on Premium card */}
+              {tier.key === 'pro' && (
+                <BillingToggle isAnnual={isAnnual} onToggle={() => setIsAnnual(!isAnnual)} />
+              )}
+
+              {/* CTA */}
+              {tier.key === 'pro' ? (
+                <Button
+                  variant="primary"
+                  className="mt-6 w-full"
+                  onClick={handlePremiumCheckout}
+                  disabled={checkoutLoading}
+                >
+                  {tier.cta}
+                </Button>
+              ) : (
+                <Button
+                  variant={tier.featured ? 'primary' : 'secondary'}
+                  className="mt-6 w-full"
+                  href={(tier as any).href}
+                >
+                  {tier.cta}
+                </Button>
+              )}
 
               {/* Features */}
               <ul className="mt-8 space-y-3">

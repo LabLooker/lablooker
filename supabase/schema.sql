@@ -11,6 +11,10 @@ create table profiles (
   updated_at timestamptz default now()
 );
 
+-- Run in Supabase SQL editor:
+-- ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_premium BOOLEAN DEFAULT false;
+-- ALTER TABLE profiles ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT;
+
 -- Enable RLS
 alter table profiles enable row level security;
 create policy "Users can view own profile" on profiles for select using (auth.uid() = id);
