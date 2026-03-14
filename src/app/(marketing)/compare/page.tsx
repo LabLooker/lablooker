@@ -193,6 +193,7 @@ export default function ComparePage() {
 
   // ── Group comparison state ──
   const [activeGroup, setActiveGroup] = useState<CompareGroup | null>(null)
+  const [showGroups, setShowGroups] = useState(false)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [sheetOpen, setSheetOpen] = useState(false)
   const [groupPrices, setGroupPrices] = useState<PriceMap>({})
@@ -352,7 +353,7 @@ export default function ComparePage() {
             Compare self-pay lab prices
           </h1>
           <p className="text-[#4a6b67] mb-6">
-            Search any test to compare pricing across labs — or explore test groups if you&apos;re not sure what to order.
+            Search a test name to see prices across labs.
           </p>
 
           {/* Search bar */}
@@ -405,22 +406,25 @@ export default function ComparePage() {
             )}
           </div>
 
-          {/* Quick examples — only when no test selected */}
+          {/* Popular searches — only when no test selected */}
           {!selectedTest && !activeGroup && (
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-              {['Ferritin', 'TSH', 'Vitamin D', 'Testosterone', 'CMP', 'Lipid Panel'].map((name) => (
-                <button
-                  key={name}
-                  onClick={() => { setQuery(name); search(name) }}
-                  className="rounded-full border border-[#e0ebe9] bg-white px-3 py-1.5 text-xs font-medium text-[#4a6b67] transition-colors hover:border-[#2d6a5e] hover:text-[#2d6a5e]"
-                >
-                  {name}
-                </button>
+            <p className="mt-4 text-sm text-[#577572]">
+              Popular:{' '}
+              {['Ferritin', 'TSH', 'Vitamin D', 'Testosterone'].map((name, i) => (
+                <span key={name}>
+                  {i > 0 && ' · '}
+                  <button
+                    onClick={() => { setQuery(name); search(name) }}
+                    className="text-[#2d6a5e] hover:underline cursor-pointer"
+                  >
+                    {name}
+                  </button>
+                </span>
               ))}
-            </div>
+            </p>
           )}
           {!selectedTest && !activeGroup && (
-            <p className="mt-3 text-xs text-[#9ca3af]">
+            <p className="mt-2 text-xs text-[#9ca3af]">
               Free research tool. No account required. Always confirm final pricing before ordering.
             </p>
           )}
@@ -584,28 +588,32 @@ export default function ComparePage() {
         ══════════════════════════════════════════════════════════════════════ */}
         {!selectedTest && (
           <>
-            {/* Browse by category */}
-            <div className="mt-8 mb-6">
-              <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-[#577572] mb-4">Compare prices by category</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                {COMPARE_GROUPS.map((group) => (
-                  <button
-                    key={group.id}
-                    onClick={() => switchGroup(group)}
-                    className={[
-                      'group flex flex-col items-center gap-1 rounded-xl border p-4 transition-all cursor-pointer',
-                      activeGroup?.id === group.id
-                        ? 'border-[#2d6a5e] bg-[#2d6a5e]/5 shadow-sm'
-                        : 'border-[#e0ebe9] bg-white hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5',
-                    ].join(' ')}
-                  >
-                    <span className={[
-                      'text-sm font-medium text-center leading-tight',
-                      activeGroup?.id === group.id ? 'text-[#2d6a5e]' : 'text-[#1a2e2b] group-hover:text-[#2d6a5e]',
-                    ].join(' ')}>{group.label}</span>
-                  </button>
-                ))}
-              </div>
+            {/* Browse common test groups — collapsible */}
+            <div className="mt-6 mb-6 text-center">
+              <button
+                onClick={() => setShowGroups(prev => !prev)}
+                className="text-sm font-medium text-[#2d6a5e] hover:underline cursor-pointer"
+              >
+                {showGroups ? 'Hide' : 'Browse'} common test groups {showGroups ? '▾' : '▸'}
+              </button>
+              {showGroups && (
+                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                  {COMPARE_GROUPS.map((group) => (
+                    <button
+                      key={group.id}
+                      onClick={() => switchGroup(group)}
+                      className={[
+                        'px-4 py-2 rounded-full border text-sm font-medium transition-all cursor-pointer',
+                        activeGroup?.id === group.id
+                          ? 'bg-[#2d6a5e] text-white border-[#2d6a5e]'
+                          : 'bg-white text-[#4a6b67] border-[#e0ebe9] hover:border-[#2d6a5e] hover:text-[#2d6a5e]',
+                      ].join(' ')}
+                    >
+                      {group.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Active group content */}
