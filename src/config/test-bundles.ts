@@ -11,6 +11,7 @@ export type TestBundle = {
   name: string
   shortName: string
   icon: string
+  category: 'hormones' | 'thyroid-energy' | 'nutrition' | 'wellness'
   description: string
   whoNeeds: string
   tests: string[]  // test_name values (must match DB exactly)
@@ -23,6 +24,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'Thyroid Complete Panel',
     shortName: 'Thyroid Complete',
     icon: '🦋',
+    category: 'thyroid-energy',
     description: 'The full thyroid picture — not just TSH. Includes free hormones, antibodies, and reverse T3 for a complete assessment.',
     whoNeeds: 'Anyone with thyroid symptoms, Hashimoto\'s, hypothyroidism, or on thyroid medication. Especially if your doctor only checks TSH.',
     tests: [
@@ -40,6 +42,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'Hormone Baseline Panel (Female)',
     shortName: 'Hormone Baseline',
     icon: '🌸',
+    category: 'hormones',
     description: 'Baseline hormone panel before starting bioidentical hormone replacement therapy. Establishes your starting point for estrogen, progesterone, testosterone, and supporting markers.',
     whoNeeds: 'Women considering or starting BHRT, perimenopause, or menopause hormone therapy.',
     tests: [
@@ -64,6 +67,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'TRT Monitoring Panel (Male)',
     shortName: 'TRT Monitoring',
     icon: '💪',
+    category: 'hormones',
     description: 'Essential monitoring labs for men on testosterone replacement therapy. Tracks hormone levels, red blood cell count, and organ function.',
     whoNeeds: 'Men currently on TRT or considering it. Should be run before starting, at 6-8 weeks, then every 3-6 months.',
     tests: [
@@ -87,6 +91,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'PCOS Support Panel',
     shortName: 'PCOS Support',
     icon: '🎀',
+    category: 'hormones',
     description: 'Comprehensive panel for diagnosing and monitoring polycystic ovary syndrome. Covers hormones, insulin resistance, and commonly missed markers.',
     whoNeeds: 'Women with suspected or diagnosed PCOS. Also useful for irregular periods, acne, hirsutism, or unexplained weight gain.',
     tests: [
@@ -114,6 +119,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'Iron & Anemia Deep Dive',
     shortName: 'Iron Deep Dive',
     icon: '🩸',
+    category: 'nutrition',
     description: 'Goes beyond basic iron to find the root cause of anemia or iron issues. Includes storage, transport, and production markers.',
     whoNeeds: 'Anyone with low ferritin, anemia symptoms (fatigue, brain fog, hair loss), heavy periods, or unexplained low iron despite supplementation.',
     tests: [
@@ -134,6 +140,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'Preventive Health Panel',
     shortName: 'Preventive Health',
     icon: '🧬',
+    category: 'wellness',
     description: 'The comprehensive annual panel for catching what your doctor might miss. Covers metabolic health, cardiovascular risk, inflammation, and key nutrients.',
     whoNeeds: 'Adults who want thorough annual bloodwork beyond the standard checkup. Especially if you have a family history of heart disease, diabetes, or autoimmune conditions.',
     tests: [
@@ -161,6 +168,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'Energy & Fatigue Panel',
     shortName: 'Energy & Fatigue',
     icon: '⚡',
+    category: 'thyroid-energy',
     description: 'The "why am I so tired?" panel. Covers the most common — and commonly missed — causes of fatigue: iron, thyroid, blood sugar, hormones, and key nutrients.',
     whoNeeds: 'Anyone dealing with persistent fatigue, brain fog, low motivation, or energy crashes that don\'t improve with sleep.',
     tests: [
@@ -186,6 +194,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'Gut Health Panel',
     shortName: 'Gut Health',
     icon: '🫁',
+    category: 'nutrition',
     description: 'Tests for common gut issues including celiac, H. pylori, inflammation, and malabsorption markers. Pairs well with the Nutrient Deficiencies panel.',
     whoNeeds: 'People with chronic bloating, IBS symptoms, food sensitivities, unexplained nutrient deficiencies, or suspected celiac/SIBO.',
     tests: [
@@ -209,6 +218,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'Nutrient Deficiencies Panel',
     shortName: 'Nutrient Deficiencies',
     icon: '💊',
+    category: 'nutrition',
     description: 'Checks the nutrients most commonly depleted in modern diets and chronic illness. Many of these are missed in standard bloodwork.',
     whoNeeds: 'Anyone with fatigue, hair loss, brain fog, muscle cramps, mood changes, or on medications that deplete nutrients (PPIs, metformin, birth control).',
     tests: [
@@ -232,6 +242,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'Cycle Health & Fertility Baseline',
     shortName: 'Cycle Health',
     icon: '🌙',
+    category: 'hormones',
     description: 'Hormone panel for understanding your menstrual cycle, investigating irregular periods, or establishing a fertility baseline. Timing matters — see notes.',
     whoNeeds: 'Women with irregular cycles, heavy periods, trying to conceive, or wanting to understand their hormonal health.',
     tests: [
@@ -256,6 +267,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'Inflammation & Immune Health Panel',
     shortName: 'Inflammation & Immune',
     icon: '🔬',
+    category: 'wellness',
     description: 'Screens for systemic inflammation and autoimmune markers. Useful for investigating unexplained symptoms, joint pain, or family history of autoimmune disease.',
     whoNeeds: 'Anyone with unexplained joint pain, rashes, fatigue, or family history of lupus, RA, Hashimoto\'s, or other autoimmune conditions.',
     tests: [
@@ -279,6 +291,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'BHRT Monitoring Panel (Female)',
     shortName: 'BHRT Monitoring',
     icon: '🌺',
+    category: 'hormones',
     description: 'Ongoing monitoring panel for women on bioidentical hormone replacement therapy. Tracks hormone levels, thyroid, metabolic markers, and safety labs.',
     whoNeeds: 'Women currently on BHRT, pellets, creams, or patches. Run every 3-6 months or when adjusting doses.',
     tests: [
@@ -304,6 +317,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'Weight & Metabolism Panel',
     shortName: 'Weight & Metabolism',
     icon: '⚖️',
+    category: 'nutrition',
     description: 'The "why can\'t I lose weight?" panel. Covers insulin resistance, thyroid function, cortisol, and metabolic markers that are often missed in standard bloodwork.',
     whoNeeds: 'Anyone struggling with unexplained weight gain, weight loss resistance, or metabolic symptoms despite diet and exercise changes.',
     tests: [
@@ -331,6 +345,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     name: 'Mood & Brain Health Panel',
     shortName: 'Mood & Brain Health',
     icon: '🧠',
+    category: 'wellness',
     description: 'Key biomarkers linked to mood, cognition, and mental health. Many mood disorders have underlying nutritional or hormonal causes that go untested.',
     whoNeeds: 'Anyone experiencing depression, anxiety, brain fog, poor focus, or mood swings — especially if standard treatments haven\'t fully worked. Also useful for anyone on psychiatric medication who wants a fuller picture.',
     tests: [

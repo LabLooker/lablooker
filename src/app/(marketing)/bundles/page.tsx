@@ -11,9 +11,18 @@ type TestMatch = {
   found: boolean
 }
 
+const CATEGORIES = [
+  { key: 'all', label: 'All' },
+  { key: 'hormones', label: 'Hormones' },
+  { key: 'thyroid-energy', label: 'Thyroid & Energy' },
+  { key: 'nutrition', label: 'Nutrition' },
+  { key: 'wellness', label: 'Wellness' },
+] as const
+
 export default function BundlesPage() {
   const [expandedSlug, setExpandedSlug] = useState<string | null>(null)
-  const [testMap, setTestMap] = useState<Record<string, string>>({}) // test_name → id
+  const [activeCategory, setActiveCategory] = useState<string>('all')
+  const [testMap, setTestMap] = useState<Record<string, string>>({}) // test_name -> id
 
   // Load all test names + ids for linking
   useEffect(() => {
@@ -25,6 +34,11 @@ export default function BundlesPage() {
       setTestMap(map)
     })
   }, [])
+
+  const filteredBundles = useMemo(() => {
+    if (activeCategory === 'all') return TEST_BUNDLES
+    return TEST_BUNDLES.filter(b => b.category === activeCategory)
+  }, [activeCategory])
 
   function toggle(slug: string) {
     setExpandedSlug(prev => prev === slug ? null : slug)
@@ -45,9 +59,9 @@ export default function BundlesPage() {
 
   return (
     <div className="pt-28 pb-20">
-      <div className="mx-auto max-w-4xl px-6">
+      <div className="mx-auto max-w-5xl px-6">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-10">
           <p className="text-xs font-semibold uppercase tracking-[1.5px] text-[#2d6a5e] mb-3">
             Recommended Panels
           </p>
@@ -59,9 +73,26 @@ export default function BundlesPage() {
           </p>
         </div>
 
-        {/* Bundle cards */}
-        <div className="space-y-4">
-          {TEST_BUNDLES.map((bundle) => {
+        {/* Category filter pills */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat.key}
+              onClick={() => { setActiveCategory(cat.key); setExpandedSlug(null) }}
+              className={`rounded-full border px-4 py-2 text-sm font-medium transition-all cursor-pointer ${
+                activeCategory === cat.key
+                  ? 'border-[#2d6a5e] bg-[#2d6a5e] text-white'
+                  : 'border-[#e0ebe9] bg-white text-[#577572] hover:border-[#2d6a5e]/30 hover:text-[#2d6a5e]'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Card grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredBundles.map((bundle) => {
             const isExpanded = expandedSlug === bundle.slug
             const matches = getTestMatches(bundle)
 
@@ -69,48 +100,40 @@ export default function BundlesPage() {
               <div
                 key={bundle.slug}
                 className={`rounded-2xl border-[1.5px] bg-white transition-all ${
-                  isExpanded ? 'border-[#2d6a5e] shadow-lg shadow-[#2d6a5e]/5' : 'border-[#e0ebe9]'
+                  isExpanded
+                    ? 'border-[#2d6a5e] shadow-lg shadow-[#2d6a5e]/5 col-span-2 lg:col-span-3'
+                    : 'border-[#e0ebe9] hover:border-[#2d6a5e]/30'
                 }`}
               >
-                {/* Card header — always visible */}
+                {/* Card face */}
                 <button
                   onClick={() => toggle(bundle.slug)}
-                  className="w-full text-left p-6 sm:p-8 cursor-pointer"
+                  className="w-full text-left p-4 sm:p-5 cursor-pointer"
                 >
-                  <div className="flex items-start gap-4">
-                    <span className="text-3xl flex-shrink-0 mt-0.5">{bundle.icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-3">
-                        <h2 className="text-lg font-bold text-[#1a2e2b] sm:text-xl">
-                          {bundle.name}
-                        </h2>
-                        <div className="flex items-center gap-3 flex-shrink-0">
-                          <span className="hidden sm:inline-flex items-center rounded-full bg-[#f0f7f6] px-3 py-1 text-xs font-medium text-[#2d6a5e]">
-                            {bundle.tests.length} tests
-                          </span>
-                          <svg
-                            className={`h-5 w-5 text-[#577572] transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                            fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                          </svg>
-                        </div>
-                      </div>
-                      <p className="mt-2 text-sm text-[#577572] leading-relaxed">
-                        {bundle.description}
-                      </p>
-                      <span className="sm:hidden inline-flex items-center mt-2 rounded-full bg-[#f0f7f6] px-3 py-1 text-xs font-medium text-[#2d6a5e]">
-                        {bundle.tests.length} tests
-                      </span>
-                    </div>
+                  <div className="flex flex-col gap-2">
+                    <span className="text-2xl">{bundle.icon}</span>
+                    <h2 className="text-sm font-bold text-[#1a2e2b] sm:text-base leading-tight">
+                      {bundle.shortName}
+                    </h2>
+                    <span className="inline-flex self-start items-center rounded-full bg-[#f0f7f6] px-2.5 py-0.5 text-xs font-medium text-[#2d6a5e]">
+                      {bundle.tests.length} tests
+                    </span>
+                    <p className="text-xs text-[#577572] leading-relaxed line-clamp-2">
+                      {bundle.description.slice(0, 60)}{bundle.description.length > 60 ? '...' : ''}
+                    </p>
                   </div>
                 </button>
 
                 {/* Expanded content */}
                 {isExpanded && (
-                  <div className="px-6 pb-6 sm:px-8 sm:pb-8 border-t border-[#e0ebe9]">
+                  <div className="px-4 pb-4 sm:px-6 sm:pb-6 border-t border-[#e0ebe9]">
+                    {/* Full description */}
+                    <p className="mt-4 text-sm text-[#577572] leading-relaxed">
+                      {bundle.description}
+                    </p>
+
                     {/* Who needs this */}
-                    <div className="mt-6 rounded-xl bg-[#f0f7f6] p-4 sm:p-5">
+                    <div className="mt-5 rounded-xl bg-[#f0f7f6] p-4 sm:p-5">
                       <p className="text-xs font-semibold uppercase tracking-wider text-[#2d6a5e] mb-2">
                         Who should order this?
                       </p>
@@ -120,7 +143,7 @@ export default function BundlesPage() {
                     </div>
 
                     {/* Test list */}
-                    <div className="mt-6">
+                    <div className="mt-5">
                       <p className="text-xs font-semibold uppercase tracking-wider text-[#577572] mb-3">
                         Tests included
                       </p>
@@ -148,7 +171,7 @@ export default function BundlesPage() {
 
                     {/* Notes */}
                     {bundle.notes && (
-                      <div className="mt-6 flex gap-3 rounded-xl border border-[#e0ebe9] p-4">
+                      <div className="mt-5 flex gap-3 rounded-xl border border-[#e0ebe9] p-4">
                         <svg className="h-5 w-5 text-[#b85c5c] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
                         </svg>
@@ -159,7 +182,7 @@ export default function BundlesPage() {
                     )}
 
                     {/* Actions */}
-                    <div className="mt-6 flex flex-wrap gap-3">
+                    <div className="mt-5 flex flex-wrap gap-3">
                       <a
                         href={`/search?q=${encodeURIComponent(bundle.shortName)}`}
                         onClick={() => trackAffiliateClick('Search', bundle.shortName, 'bundle')}
