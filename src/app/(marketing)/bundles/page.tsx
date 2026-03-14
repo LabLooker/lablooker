@@ -118,9 +118,6 @@ export default function BundlesPage() {
                     <span className="inline-flex self-start items-center rounded-full bg-[#f0f7f6] px-2.5 py-0.5 text-xs font-medium text-[#2d6a5e]">
                       {bundle.tests.length} tests
                     </span>
-                    <p className="text-xs text-[#577572] leading-relaxed line-clamp-2">
-                      {bundle.description.slice(0, 60)}{bundle.description.length > 60 ? '...' : ''}
-                    </p>
                   </div>
                 </button>
 
