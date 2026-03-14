@@ -104,8 +104,8 @@ export default function Pricing() {
     setCheckoutLoading(true)
     try {
       const priceId = isAnnual
-        ? process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID
-        : process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID
+        ? (process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID || 'price_1TAvGEA5UDbT7PJWsJAvXDG3')
+        : (process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID || 'price_1TAvGEA5UDbT7PJWkiqgvTMl')
 
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
