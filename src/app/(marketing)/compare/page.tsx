@@ -302,6 +302,11 @@ export default function ComparePage() {
     document.body.style.overflow = ''
   }
 
+  // Clean up scroll lock on unmount (navigation away)
+  useEffect(() => {
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
   // Find the compare group that matches the selected test's category
   function findNudgeGroup(): CompareGroup | null {
     if (!selectedTest) return null
