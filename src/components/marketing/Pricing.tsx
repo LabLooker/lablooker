@@ -66,9 +66,10 @@ export default function Pricing() {
     {
       key: 'pro' as const,
       plan: plans.pro,
-      price: 'TBD',
-      period: 'Pricing coming soon',
-      cta: 'Join Premium Waitlist',
+      price: '$8',
+      period: '/month',
+      annualNote: '$59/year (save 39%)',
+      cta: 'Start Premium',
       href: '/signup',
       featured: true,
       comingSoon: false,
@@ -146,6 +147,9 @@ export default function Pricing() {
                   <span className="text-sm text-[#577572]">{tier.period}</span>
                 )}
               </div>
+              {'annualNote' in tier && (
+                <p className="mt-1.5 text-sm font-medium text-[#2d6a5e]">{(tier as any).annualNote}</p>
+              )}
 
               <Button
                 variant={tier.featured ? 'primary' : 'secondary'}
