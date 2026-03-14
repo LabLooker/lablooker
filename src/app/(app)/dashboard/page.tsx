@@ -70,8 +70,8 @@ function getStatus(result: MarkerResult): { status: string; color: string } {
   const { value, ref_range_low, ref_range_high } = result
 
   if (ref_range_low !== null && ref_range_high !== null) {
-    if (value < ref_range_low) return { status: 'Low', color: 'text-[#c0826a] bg-[#c0826a]/10' }
-    if (value > ref_range_high) return { status: 'High', color: 'text-[#c0826a] bg-[#c0826a]/10' }
+    if (value < ref_range_low) return { status: 'Low', color: 'text-[#b85c5c] bg-[#b85c5c]/10' }
+    if (value > ref_range_high) return { status: 'High', color: 'text-[#b85c5c] bg-[#b85c5c]/10' }
     return { status: 'In Range', color: 'text-[#2d6a5e] bg-[#2d6a5e]/10' }
   }
 
@@ -89,7 +89,7 @@ function getTrend(results: MarkerResult[]): { trend: string; color: string } {
   if (Math.abs(diff) < 0.001) return { trend: '→', color: 'text-[#577572]' }
 
   if (diff > 0) return { trend: '↑', color: 'text-[#2d6a5e]' }
-  return { trend: '↓', color: 'text-[#c0826a]' }
+  return { trend: '↓', color: 'text-[#b85c5c]' }
 }
 
 function getGoalStatus(result: MarkerResult, goal: MarkerGoal | null): { goal: string; met: boolean } {
@@ -348,7 +348,7 @@ export default function DashboardPage() {
 
       {/* Free limit warning */}
       {isAtFreeLimit && (
-        <div className="rounded-xl border border-[#c0826a]/30 bg-[#c0826a]/5 px-5 py-4">
+        <div className="rounded-xl border border-[#b85c5c]/30 bg-[#b85c5c]/5 px-5 py-4">
           <p className="text-sm text-[#1a2e2b]">
             <span className="font-semibold">You&apos;ve tracked {FREE_LIMIT} tests</span> — that&apos;s the free plan limit.{' '}
             <a href="/pricing" className="font-medium text-[#2d6a5e] underline hover:no-underline">
@@ -370,13 +370,13 @@ export default function DashboardPage() {
             <span className="text-sm text-[#2d6a5e]">In range</span>
             <span className="font-semibold text-[#2d6a5e]">{inRange}</span>
           </div>
-          <div className="flex shrink-0 items-center gap-2 rounded-lg bg-[#c0826a]/10 px-3 py-2">
-            <span className="text-sm text-[#c0826a]">Out of range</span>
-            <span className="font-semibold text-[#c0826a]">{outOfRange}</span>
+          <div className="flex shrink-0 items-center gap-2 rounded-lg bg-[#b85c5c]/10 px-3 py-2">
+            <span className="text-sm text-[#b85c5c]">Out of range</span>
+            <span className="font-semibold text-[#b85c5c]">{outOfRange}</span>
           </div>
-          <div className="flex shrink-0 items-center gap-2 rounded-lg bg-[#c0826a]/10 px-3 py-2">
-            <span className="text-sm text-[#c0826a]">Below goal</span>
-            <span className="font-semibold text-[#c0826a]">{belowGoal}</span>
+          <div className="flex shrink-0 items-center gap-2 rounded-lg bg-[#b85c5c]/10 px-3 py-2">
+            <span className="text-sm text-[#b85c5c]">Below goal</span>
+            <span className="font-semibold text-[#b85c5c]">{belowGoal}</span>
           </div>
           <div className="flex shrink-0 items-center gap-2 rounded-lg bg-[#577572]/10 px-3 py-2">
             <span className="text-sm text-[#577572]">Needs update (&gt;90 days)</span>
@@ -424,7 +424,7 @@ export default function DashboardPage() {
               onClick={() => setFilters(prev => ({ ...prev, outOfRange: !prev.outOfRange }))}
               className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
                 filters.outOfRange
-                  ? 'bg-[#c0826a] text-white'
+                  ? 'bg-[#b85c5c] text-white'
                   : 'bg-[#f0f7f6] text-[#577572] hover:bg-[#e0ebe9]'
               }`}
             >
@@ -434,7 +434,7 @@ export default function DashboardPage() {
               onClick={() => setFilters(prev => ({ ...prev, belowGoal: !prev.belowGoal }))}
               className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
                 filters.belowGoal
-                  ? 'bg-[#c0826a] text-white'
+                  ? 'bg-[#b85c5c] text-white'
                   : 'bg-[#f0f7f6] text-[#577572] hover:bg-[#e0ebe9]'
               }`}
             >
@@ -509,7 +509,7 @@ export default function DashboardPage() {
                         <span className={`text-lg font-bold ${marker.trendColor}`}>{marker.trend}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`text-sm ${marker.goalMet ? 'text-[#2d6a5e]' : marker.goal === '—' ? 'text-[#577572]' : 'text-[#c0826a]'}`}>
+                        <span className={`text-sm ${marker.goalMet ? 'text-[#2d6a5e]' : marker.goal === '—' ? 'text-[#577572]' : 'text-[#b85c5c]'}`}>
                           {marker.goal}
                         </span>
                       </td>
@@ -559,7 +559,7 @@ export default function DashboardPage() {
                         {report.importMethod.toUpperCase()}
                       </span>
                       {report.unmatchedCount > 0 && (
-                        <span className="text-xs text-[#c0826a]">
+                        <span className="text-xs text-[#b85c5c]">
                           {report.unmatchedCount} unmatched
                         </span>
                       )}
@@ -568,7 +568,7 @@ export default function DashboardPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleDeleteReport(report.id)}
-                      className="rounded-lg border border-[#e0ebe9] bg-white px-3 py-1.5 text-xs font-medium text-[#c0826a] hover:border-[#c0826a] hover:bg-[#c0826a]/5 transition-colors"
+                      className="rounded-lg border border-[#e0ebe9] bg-white px-3 py-1.5 text-xs font-medium text-[#b85c5c] hover:border-[#b85c5c] hover:bg-[#b85c5c]/5 transition-colors"
                     >
                       Delete
                     </button>

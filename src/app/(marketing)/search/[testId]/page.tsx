@@ -292,7 +292,7 @@ export default function TestDetailPage({ params }: { params: Promise<{ testId: s
             {test.community_notes && (
               <div className="mt-4 rounded-lg p-4" style={{ backgroundColor: '#fdf8f5', border: '1px solid #e8d5cc' }}>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm font-semibold" style={{ color: '#c0826a' }}>💬 Patient Community Notes</span>
+                  <span className="text-sm font-semibold" style={{ color: '#b85c5c' }}>💬 Patient Community Notes</span>
                 </div>
                 <p className="text-sm leading-relaxed" style={{ color: '#4a6b67' }}>{test.community_notes}</p>
                 <p className="mt-2 text-xs italic" style={{ color: '#577572' }}>

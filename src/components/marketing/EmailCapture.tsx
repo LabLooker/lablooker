@@ -68,7 +68,7 @@ export default function EmailCapture() {
             <button
               type="submit"
               disabled={status === 'loading'}
-              className="h-12 rounded-xl bg-[#c0826a] px-6 font-medium text-white transition-colors hover:bg-[#ab6f59] disabled:opacity-60"
+              className="h-12 rounded-xl bg-[#b85c5c] px-6 font-medium text-white transition-colors hover:bg-[#a04f4f] disabled:opacity-60"
             >
               {status === 'loading' ? 'Joining...' : 'Notify me'}
             </button>

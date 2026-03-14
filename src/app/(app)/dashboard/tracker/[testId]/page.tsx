@@ -85,8 +85,8 @@ function getStatus(result: LabResult): { status: string; color: string } {
   const { value, ref_range_low, ref_range_high } = result
 
   if (ref_range_low !== null && ref_range_high !== null) {
-    if (value < ref_range_low) return { status: 'Low', color: 'text-[#c0826a] bg-[#c0826a]/10' }
-    if (value > ref_range_high) return { status: 'High', color: 'text-[#c0826a] bg-[#c0826a]/10' }
+    if (value < ref_range_low) return { status: 'Low', color: 'text-[#b85c5c] bg-[#b85c5c]/10' }
+    if (value > ref_range_high) return { status: 'High', color: 'text-[#b85c5c] bg-[#b85c5c]/10' }
     return { status: 'In Range', color: 'text-[#2d6a5e] bg-[#2d6a5e]/10' }
   }
 
@@ -596,7 +596,7 @@ export default function TrackerDetailPage() {
             <h2 className="text-lg font-semibold text-[#1a2e2b]">Result History</h2>
             <button
               onClick={handleDeleteAllMarkerData}
-              className="text-sm text-[#c0826a] hover:text-[#1a2e2b] transition-colors"
+              className="text-sm text-[#b85c5c] hover:text-[#1a2e2b] transition-colors"
             >
               Delete All {testName} Data
             </button>
@@ -641,7 +641,7 @@ export default function TrackerDetailPage() {
                       <td className="px-6 py-4">
                         <button
                           onClick={() => handleDeleteResult(result.id)}
-                          className="text-[#c0826a] hover:text-[#1a2e2b] transition-colors p-1"
+                          className="text-[#b85c5c] hover:text-[#1a2e2b] transition-colors p-1"
                           title="Delete result"
                         >
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">

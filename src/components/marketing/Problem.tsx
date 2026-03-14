@@ -64,7 +64,7 @@ export default function Problem() {
               href={point.href}
               className="group relative rounded-xl border border-[#e0ebe9] bg-white p-8 transition-all duration-300 hover:border-[#2d6a5e]/30 hover:shadow-lg hover:shadow-[#2d6a5e]/5"
             >
-              <div className="mb-4 inline-flex rounded-lg bg-red-500/10 p-3 text-red-400">
+              <div className="mb-4 inline-flex rounded-lg bg-[#b85c5c]/10 p-3 text-[#b85c5c]">
                 {point.icon}
               </div>
               <h3 className="mb-2 text-lg font-semibold text-[#1a2e2b]">

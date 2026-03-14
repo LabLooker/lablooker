@@ -211,8 +211,8 @@ export default function SettingsPage() {
       <Card className="mb-6">
         <h2 className="mb-4 text-lg font-semibold text-[#1a2e2b]">Data Management</h2>
         <div className="space-y-4">
-          <div className="rounded-lg border border-[#c0826a]/30 bg-[#c0826a]/5 p-4">
-            <h3 className="text-sm font-semibold text-[#c0826a] mb-2">Delete All My Data</h3>
+          <div className="rounded-lg border border-[#b85c5c]/30 bg-[#b85c5c]/5 p-4">
+            <h3 className="text-sm font-semibold text-[#b85c5c] mb-2">Delete All My Data</h3>
             <p className="text-xs text-[#577572] mb-3">
               This will permanently delete all your lab results, goals, reports, and shares. Your account will remain active.
             </p>
@@ -220,7 +220,7 @@ export default function SettingsPage() {
               variant="ghost"
               size="sm"
               onClick={handleDeleteAllData}
-              className="text-[#c0826a] hover:bg-[#c0826a]/10"
+              className="text-[#b85c5c] hover:bg-[#b85c5c]/10"
             >
               Delete All My Data
             </Button>

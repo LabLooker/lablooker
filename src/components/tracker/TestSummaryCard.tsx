@@ -125,7 +125,7 @@ export default function TestSummaryCard({ testId, testName, results, goal, onLog
     trend === '↑'
       ? 'text-[#2d6a5e]'
       : trend === '↓'
-        ? 'text-[#c0826a]'
+        ? 'text-[#b85c5c]'
         : 'text-[#577572]'
 
   return (

@@ -395,14 +395,14 @@ function ResultsSection({
                   <td className="px-4 py-3 font-mono text-xs" style={{ color: '#4a6b67' }}>
                     {sourceCodes.length > 0
                       ? sourceCodes.map(c => c.proprietary_code).join(', ')
-                      : <span className="italic not-italic" style={{ color: '#c0826a', fontFamily: 'inherit' }}>N/A</span>}
+                      : <span className="italic not-italic" style={{ color: '#b85c5c', fontFamily: 'inherit' }}>N/A</span>}
                   </td>
                   <td className="px-4 py-3 font-mono text-sm font-semibold" style={{ color: '#2d6a5e', backgroundColor: '#f0f7f6', borderLeft: '3px solid #2d6a5e' }}>
                     {targetCodes.length > 0
                       ? targetCodes.map(c => c.proprietary_code).join(', ')
                       : test.cpt_codes?.length > 0
                         ? <span className="font-normal text-xs" style={{ color: '#4a6b67', fontFamily: 'inherit' }}>Use CPT <span className="font-semibold" style={{ color: '#1a2e2b' }}>{test.cpt_codes.join(', ')}</span></span>
-                        : <span className="italic font-normal text-xs" style={{ color: '#c0826a', fontFamily: 'inherit' }}>N/A</span>}
+                        : <span className="italic font-normal text-xs" style={{ color: '#b85c5c', fontFamily: 'inherit' }}>N/A</span>}
                   </td>
                 </tr>
               ))}
@@ -446,7 +446,7 @@ function ResultsSection({
                   <div className="font-mono text-sm" style={{ color: '#4a6b67' }}>
                     {sourceCodes.length > 0
                       ? sourceCodes.map(c => c.proprietary_code).join(', ')
-                      : <span className="italic text-xs" style={{ color: '#c0826a', fontFamily: 'inherit' }}>Not in database</span>}
+                      : <span className="italic text-xs" style={{ color: '#b85c5c', fontFamily: 'inherit' }}>Not in database</span>}
                   </div>
                 </div>
                 {/* Target */}
@@ -459,7 +459,7 @@ function ResultsSection({
                       ? targetCodes.map(c => c.proprietary_code).join(', ')
                       : (
                         <div>
-                          <span className="italic font-normal text-xs" style={{ color: '#c0826a', fontFamily: 'inherit' }}>Not in database</span>
+                          <span className="italic font-normal text-xs" style={{ color: '#b85c5c', fontFamily: 'inherit' }}>Not in database</span>
                           {test.cpt_codes?.length > 0 && (
                             <div className="mt-2 text-xs font-normal rounded px-2 py-1.5" style={{ backgroundColor: '#fff8f5', border: '1px solid #e8d5cc', color: '#4a6b67' }}>
                               Use CPT <span className="font-semibold" style={{ color: '#1a2e2b' }}>{test.cpt_codes.join(', ')}</span>
@@ -524,7 +524,7 @@ function ResultsSection({
 
       {/* Disclaimer */}
       <div className="mt-5 rounded-lg p-4 text-xs" style={{ backgroundColor: '#fff8f5', border: '1px solid #e8d5cc', color: '#4a6b67' }}>
-        <p className="font-semibold mb-1" style={{ color: '#c0826a' }}>
+        <p className="font-semibold mb-1" style={{ color: '#b85c5c' }}>
           ⚠️ REFERENCE DOCUMENT — NOT A PHYSICIAN&apos;S ORDER
         </p>
         <p>

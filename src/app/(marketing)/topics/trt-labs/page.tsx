@@ -81,7 +81,7 @@ export default function TrtLabsGuide() {
           <div className="mt-5 flex flex-wrap justify-center gap-3">
             <Link
               href="/compare"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#c0826a] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#ab6f59]"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#b85c5c] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#a04f4f]"
             >
               Compare prices
             </Link>

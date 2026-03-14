@@ -913,7 +913,7 @@ function TopicBundleCard({
             {/* Notes */}
             {bundle.notes && (
               <div className="mt-5 flex gap-3 rounded-xl border border-[#e0ebe9] bg-white p-4">
-                <svg className="h-5 w-5 text-[#c0826a] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <svg className="h-5 w-5 text-[#b85c5c] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
                 </svg>
                 <p className="text-sm text-[#4a6b67] leading-relaxed">
