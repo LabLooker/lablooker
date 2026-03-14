@@ -73,21 +73,41 @@ export default function BundlesPage() {
           </p>
         </div>
 
-        {/* Category filter pills */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.key}
-              onClick={() => { setActiveCategory(cat.key); setExpandedSlug(null) }}
-              className={`rounded-full border px-4 py-2 text-sm font-medium transition-all cursor-pointer ${
-                activeCategory === cat.key
-                  ? 'border-[#2d6a5e] bg-[#2d6a5e] text-white'
-                  : 'border-[#e0ebe9] bg-white text-[#577572] hover:border-[#2d6a5e]/30 hover:text-[#2d6a5e]'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
+        {/* Category filter cards */}
+        <div className="mx-auto max-w-3xl mb-10">
+          <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-[#577572] mb-4">Browse by category</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {CATEGORIES.filter(c => c.key !== 'all').map(cat => (
+              <button
+                key={cat.key}
+                onClick={() => { setActiveCategory(activeCategory === cat.key ? 'all' : cat.key); setExpandedSlug(null) }}
+                className={`group flex flex-col items-center gap-1 rounded-xl border p-4 transition-all cursor-pointer ${
+                  activeCategory === cat.key
+                    ? 'border-[#2d6a5e] bg-[#2d6a5e]/5 shadow-sm'
+                    : 'border-[#e0ebe9] bg-white hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5'
+                }`}
+              >
+                <span className={`text-sm font-medium text-center leading-tight ${
+                  activeCategory === cat.key ? 'text-[#2d6a5e]' : 'text-[#1a2e2b] group-hover:text-[#2d6a5e]'
+                }`}>{cat.label}</span>
+              </button>
+            ))}
+          </div>
+          {activeCategory !== 'all' && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => { setActiveCategory('all'); setExpandedSlug(null) }}
+                className="text-sm text-[#577572] hover:text-[#2d6a5e] transition-colors cursor-pointer"
+              >
+                ← Show all panels
+              </button>
+            </div>
+          )}
+          <div className="mt-6 flex items-center gap-4">
+            <div className="flex-1 border-t border-[#e0ebe9]" />
+            <span className="text-xs text-[#577572]">{filteredBundles.length} panels</span>
+            <div className="flex-1 border-t border-[#e0ebe9]" />
+          </div>
         </div>
 
         {/* Card grid */}
