@@ -116,9 +116,13 @@ export default function Pricing() {
       const data = await res.json()
       if (data.url) {
         window.location.href = data.url
+      } else {
+        console.error('Checkout failed:', res.status, data)
+        alert(`Checkout error: ${data.error || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Checkout error:', error)
+      alert(`Checkout error: ${error}`)
     } finally {
       setCheckoutLoading(false)
     }
