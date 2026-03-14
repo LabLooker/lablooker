@@ -38,6 +38,35 @@
 
 <div class="grid" id="grid"></div>
 
+<div style="max-width:500px;margin:32px auto 0;background:white;border:1px solid #e0ebe9;border-radius:16px;padding:24px;">
+  <h2 style="color:#1a2e2b;font-size:18px;margin-bottom:16px;text-align:center;">Side-by-side: Sage + Pink accent</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:16px;">
+    <button style="background:#2d6a5e;color:white;padding:10px 24px;border-radius:10px;border:none;font-weight:600;font-size:14px;">Primary (sage)</button>
+    <button style="background:#f87171;color:white;padding:10px 24px;border-radius:10px;border:none;font-weight:600;font-size:14px;">Accent (pink)</button>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:16px;">
+    <span style="background:rgba(45,106,94,0.1);color:#2d6a5e;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;">In range</span>
+    <span style="background:rgba(248,113,113,0.1);color:#f87171;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;">Out of range</span>
+    <span style="background:rgba(248,113,113,0.1);color:#f87171;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;">High</span>
+    <span style="background:rgba(248,113,113,0.1);color:#f87171;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;">Low</span>
+  </div>
+  <div style="display:flex;gap:12px;margin-bottom:12px;">
+    <div style="flex:1;background:rgba(45,106,94,0.08);border:1px solid rgba(45,106,94,0.15);border-radius:10px;padding:12px;">
+      <h4 style="color:#2d6a5e;font-size:13px;">✓ Ferritin is optimal</h4>
+      <p style="color:#577572;font-size:12px;margin-top:4px;">96 ng/mL — within range</p>
+    </div>
+    <div style="flex:1;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.15);border-radius:10px;padding:12px;">
+      <h4 style="color:#f87171;font-size:13px;">⚠ Vitamin D is low</h4>
+      <p style="color:#577572;font-size:12px;margin-top:4px;">32 ng/mL — target 50-70</p>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:12px;">
+    <a href="#" style="color:#2d6a5e;font-size:13px;font-weight:600;text-decoration:none;">View all results →</a>
+    <span style="margin:0 8px;color:#e0ebe9;">|</span>
+    <a href="#" style="color:#f87171;font-size:13px;font-weight:600;text-decoration:none;">3 out of range →</a>
+  </div>
+</div>
+
 <script>
 const colors = [
   { name: 'Current Terracotta', hex: '#c0826a', current: true },
