@@ -63,7 +63,7 @@ export default function EmailCapture() {
               value={email}
               onChange={(e) => { setEmail(e.target.value); setStatus('idle') }}
               placeholder="you@example.com"
-              className="h-12 flex-1 rounded-xl border border-[#e0ebe9] bg-white px-5 text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none focus:ring-1 focus:ring-[#2d6a5e] sm:max-w-sm"
+              className="h-12 flex-1 rounded-xl border border-[#e0ebe9] bg-white px-5 py-3 text-[#1a2e2b] placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none focus:ring-1 focus:ring-[#2d6a5e] sm:max-w-sm"
             />
             <button
               type="submit"
