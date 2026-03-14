@@ -958,7 +958,7 @@ export default function TranslatePage() {
                 <div>
                   <div className="text-xs font-bold uppercase tracking-wider text-[#2d6a5e] mb-2">Example</div>
                   <p className="text-sm font-mono text-[#1a2e2b] leading-relaxed">
-                    CBC, ferritin, TSH, free T4, vitamin D
+                    CBC, ferritin, 84443, free T4, 005199
                   </p>
                 </div>
               </div>
