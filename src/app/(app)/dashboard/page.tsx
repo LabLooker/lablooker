@@ -13,6 +13,7 @@ type Profile = {
   full_name: string | null
   plan: string
   plan_status: string
+  is_premium?: boolean
 }
 
 type MarkerResult = {
@@ -304,8 +305,7 @@ export default function DashboardPage() {
   const belowGoal = markers.filter(m => !m.goalMet && m.goal !== '—').length
   const needsUpdate = markers.filter(m => m.daysSinceUpdate > 90).length
 
-  const FREE_LIMIT = 5
-  const isAtFreeLimit = profile?.plan === 'free' && totalMarkers >= FREE_LIMIT
+  const isPremium = profile?.is_premium === true
 
   if (loading) {
     return (
@@ -323,39 +323,43 @@ export default function DashboardPage() {
           <h1 className="text-3xl md:text-4xl font-bold text-[#1a2e2b]">Track your lab results</h1>
           <p className="text-sm text-[#577572] mt-1">Monitor your biomarkers and lab reports over time</p>
         </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowLogModal(true)}
-            disabled={isAtFreeLimit}
-            className="rounded-xl bg-[#2d6a5e] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549] disabled:opacity-60"
-          >
-            Log Result
-          </button>
-          <button
-            onClick={() => setShowPdfImportModal(true)}
-            className="rounded-xl border border-[#2d6a5e] bg-white px-4 py-2 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
-          >
-            Import PDF
-          </button>
-          <button
-            onClick={() => setShowImportModal(true)}
-            className="rounded-xl border border-[#2d6a5e] bg-white px-4 py-2 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
-          >
-            Import CSV
-          </button>
-        </div>
+        {isPremium && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowLogModal(true)}
+              className="rounded-xl bg-[#2d6a5e] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
+            >
+              Log Result
+            </button>
+            <button
+              onClick={() => setShowPdfImportModal(true)}
+              className="rounded-xl border border-[#2d6a5e] bg-white px-4 py-2 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
+            >
+              Import PDF
+            </button>
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="rounded-xl border border-[#2d6a5e] bg-white px-4 py-2 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
+            >
+              Import CSV
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Free limit warning */}
-      {isAtFreeLimit && (
-        <div className="rounded-xl border border-[#b85c5c]/30 bg-[#b85c5c]/5 px-5 py-4">
-          <p className="text-sm text-[#1a2e2b]">
-            <span className="font-semibold">You&apos;ve tracked {FREE_LIMIT} tests</span> — that&apos;s the free plan limit.{' '}
-            <a href="/pricing" className="font-medium text-[#2d6a5e] underline hover:no-underline">
-              Upgrade to Premium
-            </a>{' '}
-            to track unlimited tests.
+      {/* Premium upgrade nudge */}
+      {!isPremium && (
+        <div className="rounded-xl border border-[#2d6a5e]/20 bg-[#f0f7f6] px-6 py-5 text-center">
+          <h3 className="text-lg font-semibold text-[#1a2e2b]">Your results are ready.</h3>
+          <p className="mt-2 text-sm text-[#577572]">
+            Upgrade to Premium to save them to your dashboard and track changes over time.
           </p>
+          <a
+            href="/pricing"
+            className="mt-4 inline-block rounded-xl bg-[#2d6a5e] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
+          >
+            Upgrade — $8/month or $59/year
+          </a>
         </div>
       )}
 
