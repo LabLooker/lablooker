@@ -237,6 +237,7 @@ function SearchPageInner() {
   const [redFlagDismissed, setRedFlagDismissed] = useState(false)
   const [redFlagTriggered, setRedFlagTriggered] = useState(false)
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     const supabase = createClient()
@@ -356,6 +357,33 @@ function SearchPageInner() {
         (t.category && t.category.toLowerCase().includes(q))
     )
   }, [tests, query, categoryFilter, keywordFilter, activeTopicSlug])
+
+  // Group tests by category for browse-all view
+  const groupedByCategory = useMemo(() => {
+    const groups: { category: string; label: string; tests: Test[] }[] = []
+    const catMap = new Map<string, Test[]>()
+    filteredTests.forEach(t => {
+      const cat = t.category || 'other'
+      if (!catMap.has(cat)) catMap.set(cat, [])
+      catMap.get(cat)!.push(t)
+    })
+    const sorted = Array.from(catMap.entries()).sort((a, b) => a[0].localeCompare(b[0]))
+    for (const [cat, catTests] of sorted) {
+      groups.push({ category: cat, label: CATEGORY_LABELS[cat] || cat, tests: catTests })
+    }
+    return groups
+  }, [filteredTests])
+
+  const isBrowseAll = !query.trim() && !categoryFilter && !keywordFilter
+
+  function toggleCategory(cat: string) {
+    setExpandedCategories(prev => {
+      const next = new Set(prev)
+      if (next.has(cat)) next.delete(cat)
+      else next.add(cat)
+      return next
+    })
+  }
 
   // Match symptoms to query
   const matchedSymptoms = useMemo(() => {
@@ -633,7 +661,42 @@ function SearchPageInner() {
             {/* Test results */}
             {!showRedFlag && (
               <>
-                {viewMode === 'grid' ? (
+                {isBrowseAll ? (
+                  /* Browse-all: collapsible category groups */
+                  <div className="mt-4 mx-auto max-w-5xl flex flex-col gap-2">
+                    {groupedByCategory.map(({ category, label, tests: catTests }) => {
+                      const isOpen = expandedCategories.has(category)
+                      return (
+                        <div key={category}>
+                          <button
+                            onClick={() => toggleCategory(category)}
+                            className="w-full flex items-center justify-between rounded-lg border border-[#e0ebe9] bg-white px-5 py-3.5 transition-all hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5 cursor-pointer"
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm font-semibold text-[#1a2e2b]">{label}</span>
+                              <span className="rounded-full bg-[#f0f7f6] px-2.5 py-0.5 text-xs font-medium text-[#2d6a5e]">
+                                {catTests.length} test{catTests.length !== 1 ? 's' : ''}
+                              </span>
+                            </div>
+                            <svg
+                              className={`h-4 w-4 text-[#577572] transition-transform ${isOpen ? 'rotate-90' : ''}`}
+                              fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                          </button>
+                          {isOpen && (
+                            <div className="ml-2 mt-1 mb-2 flex flex-col gap-1.5 border-l-2 border-[#e0ebe9] pl-4">
+                              {catTests.map((test) => (
+                                <TestListItem key={test.id} test={test} />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : viewMode === 'grid' ? (
                   <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {filteredTests.map((test) => (
                       <TestCard key={test.id} test={test} />
