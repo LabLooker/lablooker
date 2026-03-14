@@ -966,7 +966,7 @@ export default function TranslatePage() {
               <div className="mt-5 pt-5 border-t border-[#e0ebe9]">
                 <p className="text-sm text-[#577572]">
                   <strong className="text-[#1a2e2b]">How it works:</strong> Each lab uses its own internal codes for the same test.
-                  Paste what you were given — we&apos;ll match it across providers so you can find the equivalent test anywhere.
+                  Enter what you were given — we&apos;ll match it across providers so you can find the equivalent test anywhere.
                 </p>
               </div>
             </div>
