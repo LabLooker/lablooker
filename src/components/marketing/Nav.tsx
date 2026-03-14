@@ -12,6 +12,7 @@ export default function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
+  const [initials, setInitials] = useState('')
   const accountRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const supabase = createClient()
@@ -19,12 +20,22 @@ export default function Nav() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
+      if (session?.user) fetchInitials(session.user.id)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      if (session?.user) fetchInitials(session.user.id)
     })
     return () => subscription.unsubscribe()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function fetchInitials(userId: string) {
+    const { data } = await supabase.from('profiles').select('full_name').eq('id', userId).single()
+    if (data?.full_name) {
+      const parts = data.full_name.trim().split(/\s+/)
+      setInitials(parts.map((p: string) => p[0]).join('').toUpperCase().slice(0, 2))
+    }
+  }
 
   // Close account dropdown on outside click
   useEffect(() => {
@@ -74,7 +85,7 @@ export default function Nav() {
                 className="flex items-center gap-2 rounded-xl border border-[#e0ebe9] bg-white px-4 py-2 text-sm font-medium text-[#1a2e2b] transition-colors hover:bg-[#faf8f5]"
               >
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#2d6a5e]/10 text-xs font-semibold text-[#2d6a5e]">
-                  {(user.email ?? 'U')[0].toUpperCase()}
+                  {initials || (user.email ?? 'U')[0].toUpperCase()}
                 </span>
                 Account
                 <svg className="h-4 w-4 text-[#577572]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
