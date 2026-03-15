@@ -412,10 +412,7 @@ function showMockup(id) {
         <div class="flex items-center gap-2 mt-1">
           <span class="text-2xl font-bold text-[#1a2e2b]">29</span>
           <span class="text-sm text-[#577572]">ng/mL</span>
-          <span class="inline-flex items-center gap-1 text-sm text-[#b85c5c] font-medium bg-[#b85c5c]/10 px-2 py-0.5 rounded-full">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-            ↓ 67 from last
-          </span>
+          <span class="inline-flex items-center gap-1 text-sm text-[#577572] font-medium bg-[#e0ebe9] px-2 py-0.5 rounded-full">↓ Declining</span>
         </div>
       </div>
       <span class="text-sm text-[#b85c5c] font-medium bg-[#b85c5c]/10 px-3 py-1 rounded-full">Suboptimal</span>
@@ -493,7 +490,7 @@ function showMockup(id) {
           <span class="text-2xl font-bold text-[#1a2e2b]">1.8</span>
           <span class="text-sm text-[#577572]">mIU/L</span>
           <span class="inline-flex items-center gap-1 text-sm text-[#577572] font-medium bg-[#e0ebe9] px-2 py-0.5 rounded-full">
-            → same as last
+            → Stable
           </span>
         </div>
       </div>
@@ -607,10 +604,7 @@ function showMockup(id) {
         <div class="flex items-center gap-2 mt-1">
           <span class="text-2xl font-bold text-[#1a2e2b]">3.1</span>
           <span class="text-sm text-[#577572]">pg/mL</span>
-          <span class="inline-flex items-center gap-1 text-sm text-[#2d6a5e] font-medium bg-[#2d6a5e]/10 px-2 py-0.5 rounded-full">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-            ↑ 0.3 from last
-          </span>
+          <span class="inline-flex items-center gap-1 text-sm text-[#577572] font-medium bg-[#e0ebe9] px-2 py-0.5 rounded-full">↑ Rising</span>
         </div>
       </div>
       <span class="text-sm text-[#2d6a5e] font-medium bg-[#2d6a5e]/10 px-3 py-1 rounded-full">Optimal</span>
@@ -674,7 +668,7 @@ function showMockup(id) {
   <h3 class="text-white font-semibold mb-2">What you're looking at</h3>
   <ul class="text-[#c5d8d5] text-sm space-y-2">
     <li><strong class="text-white">Visual bar:</strong> Gray = full lab range. Green band = optimal range. Dot = your value. Ghost dot = previous value.</li>
-    <li><strong class="text-white">Delta badges:</strong> "↓ 67 from last" or "→ same as last" — instant comparison on import.</li>
+    <li><strong class="text-white">Delta badges:</strong> "↓ Declining", "↑ Rising", "→ Stable" — neutral direction, no judgment.</li>
     <li><strong class="text-white">History:</strong> Click to expand. Shows past results + mini trend chart (for 2+ results).</li>
     <li><strong class="text-white">First result:</strong> No delta, no history link — just the bar + context note.</li>
     <li><strong class="text-white">Context notes:</strong> "Your lab says normal but..." — the LabLooker value prop.</li>
