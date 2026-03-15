@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LabLooker Mockups</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f0f7f6; }
+  .mockup-nav { position: sticky; top: 0; z-index: 50; }
+</style>
+<script>
+function copyTests(btn) {
+  const tests = 'Estradiol, Progesterone, Testosterone Total, FSH, LH, DHEA-S, SHBG';
+  navigator.clipboard.writeText(tests).then(() => {
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = 'Copy test names'; }, 2000);
+  });
+}
+function showMockup(id) {
+  document.querySelectorAll('.mockup-section').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.remove('bg-[#2d6a5e]', 'text-white');
+    b.classList.add('bg-white', 'text-[#1a2e2b]');
+  });
+  document.getElementById('btn-' + id).classList.add('bg-[#2d6a5e]', 'text-white');
+  document.getElementById('btn-' + id).classList.remove('bg-white', 'text-[#1a2e2b]');
+}
+</script>
+</head>
+<body>
+
+<!-- Nav -->
+<div class="mockup-nav bg-[#1a2e2b] p-4">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-white text-lg font-bold mb-3">LabLooker Mockups</h1>
+    <div class="flex gap-2 flex-wrap">
+      <button id="btn-bundle" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium bg-[#2d6a5e] text-white transition-colors" onclick="showMockup('bundle')">Bundle Compare</button>
+      <button id="btn-ranges" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-[#1a2e2b] transition-colors" onclick="showMockup('ranges')">Reference Ranges</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MOCKUP 1: BUNDLE COMPARE ==================== -->
+<div id="bundle" class="mockup-section p-4 md:p-8 max-w-3xl mx-auto">
+
+<h1 class="text-2xl font-bold text-[#1a2e2b] mb-2 mt-4">Compare Prices: Women's Hormone Panel</h1>
+<p class="text-[#577572] mb-2">7 tests · Comparing across 4 providers</p>
+<p class="text-sm text-[#577572] mb-8">Prices are for individual tests ordered separately. Click a provider to see per-test pricing and direct links.</p>
+
+<!-- Provider 1 — Best Price -->
+<details class="mb-3 group">
+  <summary class="bg-white rounded-xl border-2 border-[#2d6a5e] p-4 flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="font-semibold text-[#1a2e2b]">Ulta Lab Tests</span>
+        <span class="text-xs bg-[#2d6a5e] text-white px-2 py-0.5 rounded-full">Best Price</span>
+      </div>
+      <p class="text-sm text-[#577572] mt-1">All 7 tests · Total: $189</p>
+    </div>
+    <div class="text-right flex items-center gap-4">
+      <div class="text-2xl font-bold text-[#2d6a5e]">$189</div>
+      <svg class="w-5 h-5 text-[#577572] transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+    </div>
+  </summary>
+  <div class="bg-white border-2 border-t-0 border-[#2d6a5e] rounded-b-xl -mt-3 pt-3 px-4 pb-4">
+    <div class="border-t border-[#e0ebe9] pt-3">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-xs text-[#577572]">Click each test to open it on Ulta Lab Tests</p>
+        <button onclick="copyTests(this)" class="text-xs text-[#2d6a5e] font-medium hover:underline px-2 py-1 rounded border border-[#e0ebe9] hover:border-[#2d6a5e] transition-colors">Copy test names</button>
+      </div>
+      <a href="#" class="flex justify-between py-2.5 text-sm hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">Estradiol</span><span class="font-medium text-[#1a2e2b]">$28</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">Progesterone</span><span class="font-medium text-[#1a2e2b]">$28</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">Testosterone, Total</span><span class="font-medium text-[#1a2e2b]">$29</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">FSH</span><span class="font-medium text-[#1a2e2b]">$24</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">LH</span><span class="font-medium text-[#1a2e2b]">$24</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">DHEA-S</span><span class="font-medium text-[#1a2e2b]">$29</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">SHBG</span><span class="font-medium text-[#1a2e2b]">$27</span></a>
+      <div class="flex items-center justify-between mt-3 pt-3 border-t-2 border-[#2d6a5e]">
+        <span class="font-semibold text-[#1a2e2b]">Total: $189</span>
+        <a href="#" class="inline-flex items-center gap-1.5 bg-[#2d6a5e] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-[#245a4e] transition-colors">Visit Ulta Lab Tests <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- Provider 2 -->
+<details class="mb-3 group">
+  <summary class="bg-white rounded-xl border border-[#e0ebe9] p-4 flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+    <div>
+      <span class="font-semibold text-[#1a2e2b]">Walk-In Lab</span>
+      <p class="text-sm text-[#577572] mt-1">All 7 tests · Total: $214</p>
+    </div>
+    <div class="text-right flex items-center gap-4">
+      <div class="text-2xl font-bold text-[#1a2e2b]">$214</div>
+      <svg class="w-5 h-5 text-[#577572] transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+    </div>
+  </summary>
+  <div class="bg-white border border-t-0 border-[#e0ebe9] rounded-b-xl -mt-3 pt-3 px-4 pb-4">
+    <div class="border-t border-[#e0ebe9] pt-3">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-xs text-[#577572]">Click each test to open it on Walk-In Lab</p>
+        <button onclick="copyTests(this)" class="text-xs text-[#2d6a5e] font-medium hover:underline px-2 py-1 rounded border border-[#e0ebe9] hover:border-[#2d6a5e] transition-colors">Copy test names</button>
+      </div>
+      <a href="#" class="flex justify-between py-2.5 text-sm hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">Estradiol</span><span class="font-medium text-[#1a2e2b]">$33</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">Progesterone</span><span class="font-medium text-[#1a2e2b]">$30</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">Testosterone, Total</span><span class="font-medium text-[#1a2e2b]">$25</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">FSH</span><span class="font-medium text-[#1a2e2b]">$28</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">LH</span><span class="font-medium text-[#1a2e2b]">$28</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">DHEA-S</span><span class="font-medium text-[#1a2e2b]">$32</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">SHBG</span><span class="font-medium text-[#1a2e2b]">$38</span></a>
+      <div class="flex items-center justify-between mt-3 pt-3 border-t-2 border-[#1a2e2b]">
+        <span class="font-semibold text-[#1a2e2b]">Total: $214</span>
+        <a href="#" class="inline-flex items-center gap-1.5 bg-[#1a2e2b] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-[#0f1f1c] transition-colors">Visit Walk-In Lab <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- Provider 3 — Missing test -->
+<details class="mb-3 group">
+  <summary class="bg-white rounded-xl border border-[#e0ebe9] p-4 flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+    <div>
+      <span class="font-semibold text-[#1a2e2b]">PrioritySTD</span>
+      <p class="text-sm text-[#577572] mt-1">6 of 7 tests · Total: $228</p>
+    </div>
+    <div class="text-right flex items-center gap-4">
+      <div class="text-2xl font-bold text-[#1a2e2b]">$228</div>
+      <svg class="w-5 h-5 text-[#577572] transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+    </div>
+  </summary>
+  <div class="bg-white border border-t-0 border-[#e0ebe9] rounded-b-xl -mt-3 pt-3 px-4 pb-4">
+    <div class="border-t border-[#e0ebe9] pt-3">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-xs text-[#577572]">Click each test to open it on PrioritySTD</p>
+        <button onclick="copyTests(this)" class="text-xs text-[#2d6a5e] font-medium hover:underline px-2 py-1 rounded border border-[#e0ebe9] hover:border-[#2d6a5e] transition-colors">Copy test names</button>
+      </div>
+      <a href="#" class="flex justify-between py-2.5 text-sm hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">Estradiol</span><span class="font-medium text-[#1a2e2b]">$35</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">Progesterone</span><span class="font-medium text-[#1a2e2b]">$32</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">Testosterone, Total</span><span class="font-medium text-[#1a2e2b]">$33</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">FSH</span><span class="font-medium text-[#1a2e2b]">$29</span></a>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">LH</span><span class="font-medium text-[#1a2e2b]">$29</span></a>
+      <div class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] px-2 -mx-2"><span class="text-[#577572]">DHEA-S</span><span class="text-xs text-[#577572] italic">Not available</span></div>
+      <a href="#" class="flex justify-between py-2.5 text-sm border-t border-[#e0ebe9] hover:bg-[#f0f7f6] px-2 -mx-2 rounded transition-colors"><span class="text-[#2d6a5e]">SHBG</span><span class="font-medium text-[#1a2e2b]">$40</span></a>
+      <div class="flex items-center justify-between mt-3 pt-3 border-t-2 border-[#1a2e2b]">
+        <div><span class="font-semibold text-[#1a2e2b]">Total: $228</span><span class="text-xs text-[#577572] ml-2">(6 of 7)</span></div>
+        <a href="#" class="inline-flex items-center gap-1.5 bg-[#1a2e2b] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-[#0f1f1c] transition-colors">Visit PrioritySTD <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+      </div>
+    </div>
+  </div>
+</details>
+
+</div>
+
+<!-- ==================== MOCKUP 2: REFERENCE RANGES ==================== -->
+<div id="ranges" class="mockup-section hidden p-4 md:p-8 max-w-3xl mx-auto">
+
+<h1 class="text-2xl font-bold text-[#1a2e2b] mb-2 mt-4">Reference Ranges Toggle</h1>
+<p class="text-[#577572] mb-6">How should we show conventional vs functional/optimal ranges on the tracker?</p>
+
+<!-- Option A: Toggle switch -->
+<div class="mb-10">
+  <h2 class="text-lg font-semibold text-[#1a2e2b] mb-1">Option A — Toggle Switch</h2>
+  <p class="text-sm text-[#577572] mb-4">Simple on/off at the top of the tracker. Switches all results at once.</p>
+  
+  <div class="bg-white rounded-xl border border-[#e0ebe9] p-5">
+    <!-- Toggle -->
+    <div class="flex items-center justify-between mb-5 pb-4 border-b border-[#e0ebe9]">
+      <span class="text-sm font-medium text-[#1a2e2b]">Reference Ranges</span>
+      <div class="flex items-center gap-3">
+        <span class="text-sm text-[#577572]">Conventional</span>
+        <div class="relative w-12 h-6 bg-[#2d6a5e] rounded-full cursor-pointer">
+          <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow"></div>
+        </div>
+        <span class="text-sm font-medium text-[#2d6a5e]">Optimal</span>
+        <span class="text-xs bg-[#2d6a5e]/10 text-[#2d6a5e] px-2 py-0.5 rounded-full">Premium</span>
+      </div>
+    </div>
+    
+    <!-- Example results with optimal ranges -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="font-medium text-[#1a2e2b]">TSH</span>
+          <span class="text-sm text-[#577572] ml-2">1.8 mIU/L</span>
+        </div>
+        <div class="text-right">
+          <span class="text-sm text-[#2d6a5e] font-medium">✓ Optimal</span>
+          <p class="text-xs text-[#577572]">Optimal: 1.0–2.0 · Lab: 0.4–4.5</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="font-medium text-[#1a2e2b]">Ferritin</span>
+          <span class="text-sm text-[#577572] ml-2">29 ng/mL</span>
+        </div>
+        <div class="text-right">
+          <span class="text-sm text-[#b85c5c] font-medium">⚠ Below Optimal</span>
+          <p class="text-xs text-[#577572]">Optimal: 50–150 · Lab: 10–232</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="font-medium text-[#1a2e2b]">Vitamin D</span>
+          <span class="text-sm text-[#577572] ml-2">32 ng/mL</span>
+        </div>
+        <div class="text-right">
+          <span class="text-sm text-[#b85c5c] font-medium">⚠ Below Optimal</span>
+          <p class="text-xs text-[#577572]">Optimal: 50–70 · Lab: 30–100</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="font-medium text-[#1a2e2b]">Free T3</span>
+          <span class="text-sm text-[#577572] ml-2">3.1 pg/mL</span>
+        </div>
+        <div class="text-right">
+          <span class="text-sm text-[#2d6a5e] font-medium">✓ Optimal</span>
+          <p class="text-xs text-[#577572]">Optimal: 3.0–4.0 · Lab: 2.3–4.2</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Option B: Inline both -->
+<div class="mb-10">
+  <h2 class="text-lg font-semibold text-[#1a2e2b] mb-1">Option B — Show Both Inline</h2>
+  <p class="text-sm text-[#577572] mb-4">Always show both ranges. No toggle needed. Color bar shows where you fall.</p>
+  
+  <div class="bg-white rounded-xl border border-[#e0ebe9] p-5 space-y-6">
+    <!-- TSH -->
+    <div>
+      <div class="flex justify-between mb-1">
+        <span class="font-medium text-[#1a2e2b]">TSH <span class="text-sm font-normal text-[#577572]">1.8 mIU/L</span></span>
+        <span class="text-sm text-[#2d6a5e] font-medium">✓ Optimal</span>
+      </div>
+      <div class="relative h-6 bg-[#e0ebe9] rounded-full overflow-hidden">
+        <!-- Lab range (full bar) -->
+        <div class="absolute inset-0 bg-[#e0ebe9] rounded-full"></div>
+        <!-- Optimal zone -->
+        <div class="absolute top-0 bottom-0 bg-[#2d6a5e]/20 rounded" style="left: 15%; width: 35%"></div>
+        <!-- Your value marker -->
+        <div class="absolute top-0 bottom-0 w-1 bg-[#2d6a5e] rounded" style="left: 32%"></div>
+      </div>
+      <div class="flex justify-between text-xs text-[#577572] mt-1">
+        <span>0.4</span>
+        <span class="text-[#2d6a5e]">Optimal: 1.0–2.0</span>
+        <span>4.5</span>
+      </div>
+    </div>
+    
+    <!-- Ferritin -->
+    <div>
+      <div class="flex justify-between mb-1">
+        <span class="font-medium text-[#1a2e2b]">Ferritin <span class="text-sm font-normal text-[#577572]">29 ng/mL</span></span>
+        <span class="text-sm text-[#b85c5c] font-medium">⚠ Below Optimal</span>
+      </div>
+      <div class="relative h-6 bg-[#e0ebe9] rounded-full overflow-hidden">
+        <div class="absolute top-0 bottom-0 bg-[#2d6a5e]/20 rounded" style="left: 18%; width: 43%"></div>
+        <div class="absolute top-0 bottom-0 w-1 bg-[#b85c5c] rounded" style="left: 8%"></div>
+      </div>
+      <div class="flex justify-between text-xs text-[#577572] mt-1">
+        <span>10</span>
+        <span class="text-[#2d6a5e]">Optimal: 50–150</span>
+        <span>232</span>
+      </div>
+    </div>
+    
+    <!-- Vitamin D -->
+    <div>
+      <div class="flex justify-between mb-1">
+        <span class="font-medium text-[#1a2e2b]">Vitamin D <span class="text-sm font-normal text-[#577572]">32 ng/mL</span></span>
+        <span class="text-sm text-[#b85c5c] font-medium">⚠ Below Optimal</span>
+      </div>
+      <div class="relative h-6 bg-[#e0ebe9] rounded-full overflow-hidden">
+        <div class="absolute top-0 bottom-0 bg-[#2d6a5e]/20 rounded" style="left: 29%; width: 29%"></div>
+        <div class="absolute top-0 bottom-0 w-1 bg-[#b85c5c] rounded" style="left: 17%"></div>
+      </div>
+      <div class="flex justify-between text-xs text-[#577572] mt-1">
+        <span>30</span>
+        <span class="text-[#2d6a5e]">Optimal: 50–70</span>
+        <span>100</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Option C: Dual cards -->
+<div class="mb-10">
+  <h2 class="text-lg font-semibold text-[#1a2e2b] mb-1">Option C — Side-by-Side Verdict</h2>
+  <p class="text-sm text-[#577572] mb-4">Each result shows two verdicts: what the lab says vs what functional medicine says. Clear and educational.</p>
+  
+  <div class="bg-white rounded-xl border border-[#e0ebe9] p-5 space-y-4">
+    <!-- Ferritin example -->
+    <div class="border border-[#e0ebe9] rounded-lg p-4">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <h3 class="font-semibold text-[#1a2e2b]">Ferritin</h3>
+          <p class="text-2xl font-bold text-[#1a2e2b]">29 <span class="text-sm font-normal text-[#577572]">ng/mL</span></p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-[#f0f7f6] rounded-lg p-3">
+          <p class="text-xs font-medium text-[#577572] uppercase tracking-wide mb-1">Lab Range</p>
+          <p class="text-sm font-medium text-[#2d6a5e]">✓ Normal</p>
+          <p class="text-xs text-[#577572]">10–232 ng/mL</p>
+        </div>
+        <div class="bg-[#b85c5c]/10 rounded-lg p-3">
+          <p class="text-xs font-medium text-[#577572] uppercase tracking-wide mb-1">Optimal Range</p>
+          <p class="text-sm font-medium text-[#b85c5c]">⚠ Low</p>
+          <p class="text-xs text-[#577572]">50–150 ng/mL</p>
+        </div>
+      </div>
+      <p class="text-xs text-[#577572] mt-2 italic">Your lab says "normal" but functional practitioners target 50–150 for women. You're at 29 — worth discussing with your doctor.</p>
+    </div>
+    
+    <!-- TSH example -->
+    <div class="border border-[#e0ebe9] rounded-lg p-4">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <h3 class="font-semibold text-[#1a2e2b]">TSH</h3>
+          <p class="text-2xl font-bold text-[#1a2e2b]">1.8 <span class="text-sm font-normal text-[#577572]">mIU/L</span></p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-[#f0f7f6] rounded-lg p-3">
+          <p class="text-xs font-medium text-[#577572] uppercase tracking-wide mb-1">Lab Range</p>
+          <p class="text-sm font-medium text-[#2d6a5e]">✓ Normal</p>
+          <p class="text-xs text-[#577572]">0.4–4.5 mIU/L</p>
+        </div>
+        <div class="bg-[#f0f7f6] rounded-lg p-3">
+          <p class="text-xs font-medium text-[#577572] uppercase tracking-wide mb-1">Optimal Range</p>
+          <p class="text-sm font-medium text-[#2d6a5e]">✓ Optimal</p>
+          <p class="text-xs text-[#577572]">1.0–2.0 mIU/L</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Vitamin D example -->
+    <div class="border border-[#e0ebe9] rounded-lg p-4">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <h3 class="font-semibold text-[#1a2e2b]">Vitamin D</h3>
+          <p class="text-2xl font-bold text-[#1a2e2b]">32 <span class="text-sm font-normal text-[#577572]">ng/mL</span></p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-[#f0f7f6] rounded-lg p-3">
+          <p class="text-xs font-medium text-[#577572] uppercase tracking-wide mb-1">Lab Range</p>
+          <p class="text-sm font-medium text-[#2d6a5e]">✓ Normal</p>
+          <p class="text-xs text-[#577572]">30–100 ng/mL</p>
+        </div>
+        <div class="bg-[#b85c5c]/10 rounded-lg p-3">
+          <p class="text-xs font-medium text-[#577572] uppercase tracking-wide mb-1">Optimal Range</p>
+          <p class="text-sm font-medium text-[#b85c5c]">⚠ Low</p>
+          <p class="text-xs text-[#577572]">50–70 ng/mL</p>
+        </div>
+      </div>
+      <p class="text-xs text-[#577572] mt-2 italic">Especially important for hypoparathyroidism — target 50–70 to support calcium metabolism.</p>
+    </div>
+  </div>
+</div>
+
+<div class="bg-[#1a2e2b] rounded-xl p-5 mb-8">
+  <h3 class="text-white font-semibold mb-2">Which do you prefer?</h3>
+  <ul class="text-[#c5d8d5] text-sm space-y-2">
+    <li><strong class="text-white">A (Toggle):</strong> Clean, minimal. User chooses which lens. But might miss the "aha" moment.</li>
+    <li><strong class="text-white">B (Visual bar):</strong> Most data-rich. Shows exactly where you fall. Might be overwhelming.</li>
+    <li><strong class="text-white">C (Side-by-side):</strong> Most educational. "Your lab says normal, but..." is LabLooker's killer value prop. Explanatory text per result.</li>
+  </ul>
+</div>
+
+</div>
+
+</body>
+</html>
