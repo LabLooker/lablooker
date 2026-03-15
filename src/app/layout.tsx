@@ -49,7 +49,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
         <link rel="icon" type="image/png" href="/favicon-48.png" sizes="48x48" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="impact-site-verification" content="e7afc7ad-ba19-4c19-aea0-26396285df37" />
+        <meta name="impact-site-verification" value="e7afc7ad-ba19-4c19-aea0-26396285df37" />
       </head>
       <body>
         {children}
