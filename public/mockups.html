@@ -46,7 +46,8 @@ function showMockup(id) {
     <div class="flex gap-2 flex-wrap">
       <button id="btn-bundle" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium bg-[#2d6a5e] text-white transition-colors" onclick="showMockup('bundle')">Bundle Compare</button>
       <button id="btn-ranges" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-[#1a2e2b] transition-colors" onclick="showMockup('ranges')">Reference Ranges</button>
-      <button id="btn-tracker" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-[#1a2e2b] transition-colors" onclick="showMockup('tracker')">Tracker (Premium)</button>
+      <button id="btn-tracker" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-[#1a2e2b] transition-colors" onclick="showMockup('tracker')">Tracker Cards</button>
+      <button id="btn-dashboard" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-[#1a2e2b] transition-colors" onclick="showMockup('dashboard')">Dashboard Redesign</button>
     </div>
   </div>
 </div>
@@ -672,6 +673,260 @@ function showMockup(id) {
     <li><strong class="text-white">History:</strong> Click to expand. Shows past results + mini trend chart (for 2+ results).</li>
     <li><strong class="text-white">First result:</strong> No delta, no history link — just the bar + context note.</li>
     <li><strong class="text-white">Context notes:</strong> "Your lab says normal but..." — the LabLooker value prop.</li>
+  </ul>
+</div>
+
+</div>
+
+<!-- ==================== MOCKUP 4: DASHBOARD REDESIGN ==================== -->
+<div id="dashboard" class="mockup-section hidden p-4 md:p-8 max-w-3xl mx-auto">
+
+<h1 class="text-2xl font-bold text-[#1a2e2b] mb-2 mt-4">Dashboard Redesign</h1>
+<p class="text-[#577572] mb-6">Current vs proposed. Scroll to compare.</p>
+
+<!-- CURRENT (problems) -->
+<div class="bg-[#b85c5c]/10 rounded-xl p-5 mb-8">
+  <h2 class="text-lg font-semibold text-[#b85c5c] mb-3">❌ Current Dashboard — What's Wrong</h2>
+  <div class="bg-white rounded-lg p-4 mb-4">
+    <div class="flex gap-2 overflow-x-auto pb-2 mb-3 text-xs">
+      <span class="shrink-0 bg-[#f0f7f6] px-2 py-1 rounded">Markers tracked: 8</span>
+      <span class="shrink-0 bg-[#2d6a5e]/10 text-[#2d6a5e] px-2 py-1 rounded">In range: 5</span>
+      <span class="shrink-0 bg-[#b85c5c]/10 text-[#b85c5c] px-2 py-1 rounded">Out of range: 2</span>
+      <span class="shrink-0 bg-[#b85c5c]/10 text-[#b85c5c] px-2 py-1 rounded">Below goal: 1</span>
+      <span class="shrink-0 bg-[#577572]/10 text-[#577572] px-2 py-1 rounded">Needs update: 3</span>
+    </div>
+    <div class="flex gap-2 mb-3">
+      <span class="bg-[#2d6a5e] text-white text-xs px-3 py-1.5 rounded">Markers</span>
+      <span class="text-[#577572] text-xs px-3 py-1.5 rounded border">Reports</span>
+    </div>
+    <div class="flex gap-2 mb-3 flex-wrap">
+      <span class="text-[10px] bg-[#f0f7f6] px-2 py-1 rounded">Out of range</span>
+      <span class="text-[10px] bg-[#f0f7f6] px-2 py-1 rounded">Below goal</span>
+      <span class="text-[10px] bg-[#f0f7f6] px-2 py-1 rounded">Needs update</span>
+    </div>
+    <table class="w-full text-[10px]">
+      <thead><tr class="text-left border-b">
+        <th class="pb-1">Marker</th><th class="pb-1">Value</th><th class="pb-1">Status</th><th class="pb-1">Trend</th><th class="pb-1">Goal</th><th class="pb-1">Date</th><th class="pb-1">Results</th><th class="pb-1">Labs</th>
+      </tr></thead>
+      <tbody class="text-[#577572]">
+        <tr><td>Ferritin</td><td>29</td><td>Low</td><td class="text-[#b85c5c]">↓</td><td class="text-[#b85c5c]">Below</td><td>Mar 10</td><td>2</td><td>Quest</td></tr>
+        <tr><td>TSH</td><td>1.8</td><td>In Range</td><td>→</td><td>✓</td><td>Mar 10</td><td>3</td><td>Quest</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="text-sm text-[#b85c5c] space-y-1">
+    <li>• 5 summary pills before you see any data</li>
+    <li>• "Markers" vs "Reports" tabs — confusing naming, Reports is broken (PDF import doesn't populate it)</li>
+    <li>• Filter buttons duplicate the summary strip</li>
+    <li>• 8-column table — overwhelming, especially on mobile</li>
+    <li>• Trend arrows are colored (assigns good/bad value)</li>
+    <li>• No visual range bars — just text labels</li>
+    <li>• No expandable history — have to click into separate page</li>
+  </ul>
+</div>
+
+<!-- PROPOSED (clean) -->
+<div class="bg-[#2d6a5e]/10 rounded-xl p-5 mb-8">
+  <h2 class="text-lg font-semibold text-[#2d6a5e] mb-3">✅ Proposed Dashboard</h2>
+  <p class="text-sm text-[#577572] mb-4">Card-based, visual, expandable. Same data, designed for humans.</p>
+</div>
+
+<!-- Actual proposed mockup -->
+<div class="bg-white rounded-2xl border border-[#e0ebe9] p-5 md:p-8 mb-6">
+  
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-[#1a2e2b]">Your Results</h1>
+      <p class="text-sm text-[#577572] mt-0.5">8 tests tracked · Last import Mar 10</p>
+    </div>
+    <div class="flex gap-2">
+      <button class="rounded-xl bg-[#2d6a5e] px-4 py-2 text-sm font-semibold text-white">Import</button>
+      <button class="rounded-xl border border-[#e0ebe9] px-4 py-2 text-sm font-medium text-[#577572]">Log</button>
+    </div>
+  </div>
+
+  <!-- Search only (no filter buttons, no tabs) -->
+  <div class="mb-6">
+    <input type="text" placeholder="Search your tests..." class="w-full rounded-xl border border-[#e0ebe9] px-4 py-3 text-sm placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none" />
+  </div>
+
+  <!-- Result cards -->
+  <div class="space-y-3">
+    
+    <!-- Ferritin — suboptimal, declining -->
+    <div class="rounded-xl border border-[#e0ebe9] p-4 hover:border-[#2d6a5e]/30 transition-colors cursor-pointer">
+      <div class="flex items-start justify-between mb-1">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="font-semibold text-[#1a2e2b]">Ferritin</h3>
+            <span class="text-xs text-[#577572] bg-[#e0ebe9] px-2 py-0.5 rounded-full">↓ Declining</span>
+          </div>
+          <div class="flex items-baseline gap-1.5 mt-1">
+            <span class="text-xl font-bold text-[#1a2e2b]">29</span>
+            <span class="text-sm text-[#577572]">ng/mL</span>
+            <span class="text-xs text-[#577572] ml-2">Mar 10</span>
+          </div>
+        </div>
+        <span class="text-xs text-[#b85c5c] font-medium bg-[#b85c5c]/10 px-2.5 py-1 rounded-full">Suboptimal</span>
+      </div>
+      <!-- Range bar -->
+      <div class="mt-3">
+        <div class="relative h-6 bg-[#e0ebe9] rounded-full">
+          <div class="absolute top-0 bottom-0 bg-[#2d6a5e]/15 border border-[#2d6a5e]/30 rounded" style="left: 18%; width: 45%"></div>
+          <div class="absolute top-1/2 -translate-y-1/2" style="left: 8%">
+            <div class="w-3.5 h-3.5 bg-[#b85c5c] rounded-full border-2 border-white shadow"></div>
+          </div>
+        </div>
+        <div class="flex justify-between text-[10px] text-[#577572] mt-1 px-0.5">
+          <span>10</span>
+          <span class="text-[#2d6a5e] font-medium">Optimal: 50–150</span>
+          <span>232</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TSH — optimal, stable -->
+    <div class="rounded-xl border border-[#e0ebe9] p-4 hover:border-[#2d6a5e]/30 transition-colors cursor-pointer">
+      <div class="flex items-start justify-between mb-1">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="font-semibold text-[#1a2e2b]">TSH</h3>
+            <span class="text-xs text-[#577572] bg-[#e0ebe9] px-2 py-0.5 rounded-full">→ Stable</span>
+          </div>
+          <div class="flex items-baseline gap-1.5 mt-1">
+            <span class="text-xl font-bold text-[#1a2e2b]">1.8</span>
+            <span class="text-sm text-[#577572]">mIU/L</span>
+            <span class="text-xs text-[#577572] ml-2">Mar 10</span>
+          </div>
+        </div>
+        <span class="text-xs text-[#2d6a5e] font-medium bg-[#2d6a5e]/10 px-2.5 py-1 rounded-full">Optimal</span>
+      </div>
+      <div class="mt-3">
+        <div class="relative h-6 bg-[#e0ebe9] rounded-full">
+          <div class="absolute top-0 bottom-0 bg-[#2d6a5e]/15 border border-[#2d6a5e]/30 rounded" style="left: 15%; width: 35%"></div>
+          <div class="absolute top-1/2 -translate-y-1/2" style="left: 32%">
+            <div class="w-3.5 h-3.5 bg-[#2d6a5e] rounded-full border-2 border-white shadow"></div>
+          </div>
+        </div>
+        <div class="flex justify-between text-[10px] text-[#577572] mt-1 px-0.5">
+          <span>0.4</span>
+          <span class="text-[#2d6a5e] font-medium">Optimal: 1.0–2.0</span>
+          <span>4.5</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vitamin D — suboptimal, first result -->
+    <div class="rounded-xl border border-[#e0ebe9] p-4 hover:border-[#2d6a5e]/30 transition-colors cursor-pointer">
+      <div class="flex items-start justify-between mb-1">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="font-semibold text-[#1a2e2b]">Vitamin D, 25-Hydroxy</h3>
+            <span class="text-xs text-[#577572] bg-[#e0ebe9] px-2 py-0.5 rounded-full">First result</span>
+          </div>
+          <div class="flex items-baseline gap-1.5 mt-1">
+            <span class="text-xl font-bold text-[#1a2e2b]">32</span>
+            <span class="text-sm text-[#577572]">ng/mL</span>
+            <span class="text-xs text-[#577572] ml-2">Mar 10</span>
+          </div>
+        </div>
+        <span class="text-xs text-[#b85c5c] font-medium bg-[#b85c5c]/10 px-2.5 py-1 rounded-full">Suboptimal</span>
+      </div>
+      <div class="mt-3">
+        <div class="relative h-6 bg-[#e0ebe9] rounded-full">
+          <div class="absolute top-0 bottom-0 bg-[#2d6a5e]/15 border border-[#2d6a5e]/30 rounded" style="left: 29%; width: 29%"></div>
+          <div class="absolute top-1/2 -translate-y-1/2" style="left: 3%">
+            <div class="w-3.5 h-3.5 bg-[#b85c5c] rounded-full border-2 border-white shadow"></div>
+          </div>
+        </div>
+        <div class="flex justify-between text-[10px] text-[#577572] mt-1 px-0.5">
+          <span>30</span>
+          <span class="text-[#2d6a5e] font-medium">Optimal: 50–70</span>
+          <span>100</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Free T3 — optimal, rising -->
+    <div class="rounded-xl border border-[#e0ebe9] p-4 hover:border-[#2d6a5e]/30 transition-colors cursor-pointer">
+      <div class="flex items-start justify-between mb-1">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="font-semibold text-[#1a2e2b]">Free T3</h3>
+            <span class="text-xs text-[#577572] bg-[#e0ebe9] px-2 py-0.5 rounded-full">↑ Rising</span>
+          </div>
+          <div class="flex items-baseline gap-1.5 mt-1">
+            <span class="text-xl font-bold text-[#1a2e2b]">3.1</span>
+            <span class="text-sm text-[#577572]">pg/mL</span>
+            <span class="text-xs text-[#577572] ml-2">Mar 10</span>
+          </div>
+        </div>
+        <span class="text-xs text-[#2d6a5e] font-medium bg-[#2d6a5e]/10 px-2.5 py-1 rounded-full">Optimal</span>
+      </div>
+      <div class="mt-3">
+        <div class="relative h-6 bg-[#e0ebe9] rounded-full">
+          <div class="absolute top-0 bottom-0 bg-[#2d6a5e]/15 border border-[#2d6a5e]/30 rounded" style="left: 37%; width: 42%"></div>
+          <div class="absolute top-1/2 -translate-y-1/2" style="left: 42%">
+            <div class="w-3.5 h-3.5 bg-[#2d6a5e] rounded-full border-2 border-white shadow"></div>
+          </div>
+        </div>
+        <div class="flex justify-between text-[10px] text-[#577572] mt-1 px-0.5">
+          <span>2.3</span>
+          <span class="text-[#2d6a5e] font-medium">Optimal: 3.0–4.0</span>
+          <span>4.2</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CBC — in range, no optimal data -->
+    <div class="rounded-xl border border-[#e0ebe9] p-4 hover:border-[#2d6a5e]/30 transition-colors cursor-pointer">
+      <div class="flex items-start justify-between mb-1">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="font-semibold text-[#1a2e2b]">White Blood Cells</h3>
+            <span class="text-xs text-[#577572] bg-[#e0ebe9] px-2 py-0.5 rounded-full">→ Stable</span>
+          </div>
+          <div class="flex items-baseline gap-1.5 mt-1">
+            <span class="text-xl font-bold text-[#1a2e2b]">6.2</span>
+            <span class="text-sm text-[#577572]">K/uL</span>
+            <span class="text-xs text-[#577572] ml-2">Mar 10</span>
+          </div>
+        </div>
+        <span class="text-xs text-[#2d6a5e] font-medium bg-[#2d6a5e]/10 px-2.5 py-1 rounded-full">In Range</span>
+      </div>
+      <div class="mt-3">
+        <div class="relative h-6 bg-[#e0ebe9] rounded-full">
+          <div class="absolute top-1/2 -translate-y-1/2" style="left: 42%">
+            <div class="w-3.5 h-3.5 bg-[#2d6a5e] rounded-full border-2 border-white shadow"></div>
+          </div>
+        </div>
+        <div class="flex justify-between text-[10px] text-[#577572] mt-1 px-0.5">
+          <span>4.0</span>
+          <span class="text-[#577572]">Lab Range: 4.0–11.0</span>
+          <span>11.0</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Click hint -->
+  <p class="text-xs text-[#577572] text-center mt-6">Tap any result to see history, charts, and details</p>
+
+</div>
+
+<!-- What changed -->
+<div class="bg-[#1a2e2b] rounded-xl p-5 mb-8">
+  <h3 class="text-white font-semibold mb-2">What changed</h3>
+  <ul class="text-[#c5d8d5] text-sm space-y-2">
+    <li><strong class="text-white">Killed:</strong> Summary strip (5 pills), Markers/Reports tabs, filter buttons, 8-column table</li>
+    <li><strong class="text-white">Header:</strong> "Your Results" + test count + last import date. Two buttons: Import + Log.</li>
+    <li><strong class="text-white">Search:</strong> Simple search bar. No filter toggles (add later if needed at scale).</li>
+    <li><strong class="text-white">Cards:</strong> Each result is a card with name, value, date, trend badge, status pill, and visual range bar.</li>
+    <li><strong class="text-white">Range bars:</strong> Lab range (gray) + optimal range (green band) when available. Some tests (like WBC) only show lab range.</li>
+    <li><strong class="text-white">Click → detail:</strong> Tap a card to go to the test detail page with full history, chart, and context notes.</li>
+    <li><strong class="text-white">Reports:</strong> Killed as a tab. Import history can live in Settings if ever needed.</li>
   </ul>
 </div>
 
