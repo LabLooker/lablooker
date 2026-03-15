@@ -21,7 +21,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Price ID is required' }, { status: 400 })
     }
 
-    const stripe = getStripe()
+    let stripe: ReturnType<typeof getStripe>
+    try {
+      stripe = getStripe()
+    } catch {
+      // If env var missing, try creating Stripe directly with the test key
+      const Stripe = (await import('stripe')).default
+      const fallbackKey = process.env.STRIPE_SECRET_KEY
+      if (!fallbackKey) {
+        return NextResponse.json(
+          { error: `STRIPE_SECRET_KEY not found. Env keys with STRIPE: ${Object.keys(process.env).filter(k => k.includes('STRIPE')).join(', ') || 'none'}` },
+          { status: 500 }
+        )
+      }
+      stripe = new Stripe(fallbackKey)
+    }
 
     // Get or create Stripe customer
     const { data: profile } = await supabase
