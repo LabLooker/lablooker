@@ -61,6 +61,9 @@ export async function POST(request: Request) {
 
     const origin = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
+    const monthlyPriceId = process.env.STRIPE_MONTHLY_PRICE_ID || 'price_1TAvGEA5UDbT7PJWkiqgvTMl'
+    const isMonthly = priceId === monthlyPriceId
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -71,6 +74,13 @@ export async function POST(request: Request) {
       subscription_data: {
         metadata: { supabase_uid: user.id },
       },
+      ...(isMonthly && {
+        custom_text: {
+          submit: {
+            message: '💡 Save 39% with annual billing ($59/year) — go back to switch plans before subscribing.',
+          },
+        },
+      }),
     })
 
     return NextResponse.json({ url: session.url })
