@@ -28,9 +28,9 @@ export async function POST(request: Request) {
 
     const { userId, action } = await request.json()
 
-    if (!userId || !['grant', 'revoke'].includes(action)) {
+    if (!userId || !['grant', 'revoke', 'grant-admin'].includes(action)) {
       return NextResponse.json(
-        { error: 'userId and action (grant|revoke) are required' },
+        { error: 'userId and action (grant|revoke|grant-admin) are required' },
         { status: 400 },
       )
     }
@@ -40,14 +40,19 @@ export async function POST(request: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     )
 
+    const updateData =
+      action === 'grant-admin'
+        ? { is_admin: true, updated_at: new Date().toISOString() }
+        : {
+            is_premium: action === 'grant',
+            plan: action === 'grant' ? 'pro' : 'free',
+            plan_status: 'active',
+            updated_at: new Date().toISOString(),
+          }
+
     const { error } = await supabaseAdmin
       .from('profiles')
-      .update({
-        is_premium: action === 'grant',
-        plan: action === 'grant' ? 'pro' : 'free',
-        plan_status: 'active',
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq('id', userId)
 
     if (error) {

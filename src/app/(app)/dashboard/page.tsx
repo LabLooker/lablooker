@@ -143,7 +143,7 @@ export default function DashboardPage() {
     // Load profile
     const { data: profileData } = await supabase
       .from('profiles')
-      .select('full_name, plan, plan_status')
+      .select('full_name, plan, plan_status, is_premium')
       .eq('id', user.id)
       .single()
     if (profileData) setProfile(profileData)
