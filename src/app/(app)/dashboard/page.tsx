@@ -35,31 +35,18 @@ type MarkerGoal = {
   target_high: number | null
 }
 
+type StatusCategory = 'out_of_range' | 'suboptimal' | 'optimal' | 'no_range'
+
 type Marker = {
   testId: string
   testName: string
   latestValue: number
   unit: string | null
-  status: string
-  statusColor: string
+  statusCategory: StatusCategory
+  statusLabel: string
   trend: string
-  trendColor: string
-  goal: string
-  goalMet: boolean
   date: string
   resultCount: number
-  labs: string[]
-  daysSinceUpdate: number
-}
-
-type Report = {
-  id: string
-  date: string
-  sourceLab: string | null
-  panelTitle: string | null
-  markerCount: number
-  importMethod: string
-  unmatchedCount: number
 }
 
 function formatDate(dateStr: string): string {
@@ -67,63 +54,72 @@ function formatDate(dateStr: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-function getStatus(result: MarkerResult): { status: string; color: string } {
+function getStatusCategory(result: MarkerResult, goal: MarkerGoal | null): { category: StatusCategory; label: string } {
   const { value, ref_range_low, ref_range_high } = result
 
-  if (ref_range_low !== null && ref_range_high !== null) {
-    if (value < ref_range_low) return { status: 'Low', color: 'text-[#b85c5c] bg-[#b85c5c]/10' }
-    if (value > ref_range_high) return { status: 'High', color: 'text-[#b85c5c] bg-[#b85c5c]/10' }
-    return { status: 'In Range', color: 'text-[#2d6a5e] bg-[#2d6a5e]/10' }
+  // If no reference range at all
+  if (ref_range_low === null || ref_range_high === null) {
+    return { category: 'no_range', label: 'No Range' }
   }
 
-  return { status: 'No Range', color: 'text-[#577572] bg-[#577572]/10' }
+  // Out of lab range entirely
+  if (value < ref_range_low || value > ref_range_high) {
+    return { category: 'out_of_range', label: value < ref_range_low ? 'Low' : 'High' }
+  }
+
+  // In lab range — check if user has a goal/optimal target
+  if (goal) {
+    if (goal.target_direction === 'range' && goal.target_low !== null && goal.target_high !== null) {
+      if (value < goal.target_low || value > goal.target_high) {
+        return { category: 'suboptimal', label: 'Suboptimal' }
+      }
+      return { category: 'optimal', label: 'Optimal' }
+    }
+    if (goal.target_direction === 'above' && goal.target_value !== null) {
+      if (value < goal.target_value) {
+        return { category: 'suboptimal', label: 'Suboptimal' }
+      }
+      return { category: 'optimal', label: 'Optimal' }
+    }
+    if (goal.target_direction === 'below' && goal.target_value !== null) {
+      if (value > goal.target_value) {
+        return { category: 'suboptimal', label: 'Suboptimal' }
+      }
+      return { category: 'optimal', label: 'Optimal' }
+    }
+  }
+
+  // In range, no goal set
+  return { category: 'optimal', label: 'In Range' }
 }
 
-function getTrend(results: MarkerResult[]): { trend: string; color: string } {
-  if (results.length < 2) return { trend: '→', color: 'text-[#577572]' }
+function getTrend(results: MarkerResult[]): string {
+  if (results.length < 2) return '—'
 
   const sorted = [...results].sort((a, b) => new Date(a.drawn_at).getTime() - new Date(b.drawn_at).getTime())
   const latest = sorted[sorted.length - 1].value
   const prev = sorted[sorted.length - 2].value
   const diff = latest - prev
 
-  if (Math.abs(diff) < 0.001) return { trend: '→', color: 'text-[#577572]' }
-
-  if (diff > 0) return { trend: '↑', color: 'text-[#2d6a5e]' }
-  return { trend: '↓', color: 'text-[#b85c5c]' }
+  if (Math.abs(diff) < 0.001) return '→'
+  return diff > 0 ? '↑' : '↓'
 }
 
-function getGoalStatus(result: MarkerResult, goal: MarkerGoal | null): { goal: string; met: boolean } {
-  if (!goal) return { goal: '—', met: false }
-
-  const { value } = result
-
-  if (goal.target_direction === 'above' && goal.target_value !== null) {
-    const met = value >= goal.target_value
-    return {
-      goal: met ? '✓ At goal' : `Below goal (${goal.target_value}+)`,
-      met
-    }
-  }
-
-  if (goal.target_direction === 'below' && goal.target_value !== null) {
-    const met = value <= goal.target_value
-    return {
-      goal: met ? '✓ At goal' : `Above goal (<${goal.target_value})`,
-      met
-    }
-  }
-
-  if (goal.target_direction === 'range' && goal.target_low !== null && goal.target_high !== null) {
-    const met = value >= goal.target_low && value <= goal.target_high
-    return {
-      goal: met ? '✓ At goal' : `Outside range (${goal.target_low}-${goal.target_high})`,
-      met
-    }
-  }
-
-  return { goal: '—', met: false }
+const STATUS_CONFIG: Record<StatusCategory, { dot: string; pillBg: string; pillText: string }> = {
+  out_of_range: { dot: 'bg-[#b85c5c]', pillBg: 'bg-[#b85c5c]/10', pillText: 'text-[#b85c5c]' },
+  suboptimal: { dot: 'bg-[#c59030]', pillBg: 'bg-[#c59030]/10', pillText: 'text-[#c59030]' },
+  optimal: { dot: 'bg-[#2d6a5e]', pillBg: 'bg-[#2d6a5e]/10', pillText: 'text-[#2d6a5e]' },
+  no_range: { dot: 'bg-[#577572]', pillBg: 'bg-[#e0ebe9]', pillText: 'text-[#577572]' },
 }
+
+const TREND_LABELS: Record<string, string> = {
+  '↑': 'Rising',
+  '↓': 'Declining',
+  '→': 'Stable',
+  '—': 'First result',
+}
+
+type FilterKey = 'all' | 'out_of_range' | 'suboptimal' | 'optimal'
 
 export default function DashboardPage() {
   const supabase = createClient()
@@ -131,15 +127,9 @@ export default function DashboardPage() {
 
   const [profile, setProfile] = useState<Profile | null>(null)
   const [markers, setMarkers] = useState<Marker[]>([])
-  const [reports, setReports] = useState<Report[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'markers' | 'reports'>('markers')
   const [searchQuery, setSearchQuery] = useState('')
-  const [filters, setFilters] = useState({
-    outOfRange: false,
-    belowGoal: false,
-    needsUpdate: false
-  })
+  const [activeFilter, setActiveFilter] = useState<FilterKey>('all')
 
   const [showLogModal, setShowLogModal] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
@@ -171,24 +161,8 @@ export default function DashboardPage() {
       .select('test_id, target_value, target_direction, target_low, target_high')
       .eq('user_id', user.id)
 
-    // Load reports
-    const { data: reportsData } = await supabase
-      .from('lab_reports')
-      .select('id, source_lab, panel_title, import_method, drawn_at, marker_count, unmatched_count, created_at')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-
     if (!resultsData || resultsData.length === 0) {
       setMarkers([])
-      setReports(reportsData?.map(r => ({
-        id: r.id,
-        date: formatDate(r.drawn_at || r.created_at),
-        sourceLab: r.source_lab,
-        panelTitle: r.panel_title,
-        markerCount: r.marker_count || 0,
-        importMethod: r.import_method || 'manual',
-        unmatchedCount: r.unmatched_count || 0
-      })) || [])
       setLoading(false)
       return
     }
@@ -226,32 +200,23 @@ export default function DashboardPage() {
     const markersData: Marker[] = testIds.map((tid) => {
       const results = byTestId[tid]
       const latestResult = results[0]
-      const status = getStatus(latestResult)
+      const { category, label } = getStatusCategory(latestResult, goalsById[tid] || null)
       const trend = getTrend(results)
-      const goalStatus = getGoalStatus(latestResult, goalsById[tid] || null)
-
-      const labs = Array.from(new Set(results.map(r => r.lab_name).filter(Boolean))) as string[]
-      const daysSinceUpdate = Math.floor((Date.now() - new Date(latestResult.drawn_at + 'T12:00:00Z').getTime()) / (1000 * 60 * 60 * 24))
 
       return {
         testId: tid,
         testName: testsById[tid] ?? 'Unknown Test',
         latestValue: latestResult.value,
         unit: latestResult.unit,
-        status: status.status,
-        statusColor: status.color,
-        trend: trend.trend,
-        trendColor: trend.color,
-        goal: goalStatus.goal,
-        goalMet: goalStatus.met,
+        statusCategory: category,
+        statusLabel: label,
+        trend,
         date: formatDate(latestResult.drawn_at),
         resultCount: results.length,
-        labs,
-        daysSinceUpdate
       }
     })
 
-    // Sort markers by most recent result
+    // Sort by most recent result
     markersData.sort((a, b) => {
       const aResult = byTestId[a.testId][0]
       const bResult = byTestId[b.testId][0]
@@ -259,18 +224,6 @@ export default function DashboardPage() {
     })
 
     setMarkers(markersData)
-
-    // Set reports
-    setReports(reportsData?.map(r => ({
-      id: r.id,
-      date: formatDate(r.drawn_at || r.created_at),
-      sourceLab: r.source_lab,
-      panelTitle: r.panel_title,
-      markerCount: r.marker_count || 0,
-      importMethod: r.import_method || 'manual',
-      unmatchedCount: r.unmatched_count || 0
-    })) || [])
-
     setLoading(false)
   }, [supabase])
 
@@ -278,32 +231,24 @@ export default function DashboardPage() {
     loadData()
   }, [loadData])
 
-  const handleDeleteReport = async (reportId: string) => {
-    if (!confirm('Are you sure you want to delete this report and all its results?')) return
-
-    await supabase.from('lab_reports').delete().eq('id', reportId)
-    loadData()
-  }
-
-  // Filter markers
+  // Filter markers by search + status filter
   const filteredMarkers = markers.filter(marker => {
     if (searchQuery && !marker.testName.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false
     }
-
-    if (filters.outOfRange && marker.status === 'In Range') return false
-    if (filters.belowGoal && marker.goalMet) return false
-    if (filters.needsUpdate && marker.daysSinceUpdate < 90) return false
-
+    if (activeFilter === 'out_of_range') return marker.statusCategory === 'out_of_range'
+    if (activeFilter === 'suboptimal') return marker.statusCategory === 'suboptimal'
+    if (activeFilter === 'optimal') return marker.statusCategory === 'optimal'
     return true
   })
 
-  // Summary stats
-  const totalMarkers = markers.length
-  const inRange = markers.filter(m => m.status === 'In Range').length
-  const outOfRange = markers.filter(m => m.status !== 'In Range' && m.status !== 'No Range').length
-  const belowGoal = markers.filter(m => !m.goalMet && m.goal !== '—').length
-  const needsUpdate = markers.filter(m => m.daysSinceUpdate > 90).length
+  // Counts for filter pills
+  const counts = {
+    all: markers.length,
+    out_of_range: markers.filter(m => m.statusCategory === 'out_of_range').length,
+    suboptimal: markers.filter(m => m.statusCategory === 'suboptimal').length,
+    optimal: markers.filter(m => m.statusCategory === 'optimal').length,
+  }
 
   const isPremium = profile?.is_premium === true
 
@@ -317,36 +262,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-[#1a2e2b]">Track your lab results</h1>
-          <p className="text-sm text-[#577572] mt-1">Monitor your biomarkers and lab reports over time</p>
-        </div>
-        {isPremium && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowLogModal(true)}
-              className="rounded-xl bg-[#2d6a5e] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
-            >
-              Log Result
-            </button>
-            <button
-              onClick={() => setShowPdfImportModal(true)}
-              className="rounded-xl border border-[#2d6a5e] bg-white px-4 py-2 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
-            >
-              Import PDF
-            </button>
-            <button
-              onClick={() => setShowImportModal(true)}
-              className="rounded-xl border border-[#2d6a5e] bg-white px-4 py-2 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#2d6a5e]/5"
-            >
-              Import CSV
-            </button>
-          </div>
-        )}
-      </div>
-
       {/* Premium upgrade nudge */}
       {!isPremium && (
         <div className="rounded-xl border border-[#2d6a5e]/20 bg-[#f0f7f6] px-6 py-5 text-center">
@@ -363,225 +278,165 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Summary strip */}
-      {totalMarkers > 0 && (
-        <div className="flex gap-4 overflow-x-auto pb-2">
-          <div className="flex shrink-0 items-center gap-2 rounded-lg bg-[#f0f7f6] px-3 py-2">
-            <span className="text-sm text-[#577572]">Markers tracked</span>
-            <span className="font-semibold text-[#1a2e2b]">{totalMarkers}</span>
-          </div>
-          <div className="flex shrink-0 items-center gap-2 rounded-lg bg-[#2d6a5e]/10 px-3 py-2">
-            <span className="text-sm text-[#2d6a5e]">In range</span>
-            <span className="font-semibold text-[#2d6a5e]">{inRange}</span>
-          </div>
-          <div className="flex shrink-0 items-center gap-2 rounded-lg bg-[#b85c5c]/10 px-3 py-2">
-            <span className="text-sm text-[#b85c5c]">Out of range</span>
-            <span className="font-semibold text-[#b85c5c]">{outOfRange}</span>
-          </div>
-          <div className="flex shrink-0 items-center gap-2 rounded-lg bg-[#b85c5c]/10 px-3 py-2">
-            <span className="text-sm text-[#b85c5c]">Below goal</span>
-            <span className="font-semibold text-[#b85c5c]">{belowGoal}</span>
-          </div>
-          <div className="flex shrink-0 items-center gap-2 rounded-lg bg-[#577572]/10 px-3 py-2">
-            <span className="text-sm text-[#577572]">Needs update (&gt;90 days)</span>
-            <span className="font-semibold text-[#577572]">{needsUpdate}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Tabs */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex rounded-lg border border-[#e0ebe9] bg-white p-1">
-          <button
-            onClick={() => setActiveTab('markers')}
-            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-              activeTab === 'markers'
-                ? 'bg-[#2d6a5e] text-white'
-                : 'text-[#577572] hover:text-[#1a2e2b]'
-            }`}
-          >
-            Markers
-          </button>
-          <button
-            onClick={() => setActiveTab('reports')}
-            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-              activeTab === 'reports'
-                ? 'bg-[#2d6a5e] text-white'
-                : 'text-[#577572] hover:text-[#1a2e2b]'
-            }`}
-          >
-            Reports
-          </button>
-        </div>
-
-        {/* Search and filters for markers tab */}
-        {activeTab === 'markers' && (
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              placeholder="Search markers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="rounded-lg border border-[#e0ebe9] px-3 py-2 text-sm focus:border-[#2d6a5e] focus:outline-none"
-            />
-            <button
-              onClick={() => setFilters(prev => ({ ...prev, outOfRange: !prev.outOfRange }))}
-              className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
-                filters.outOfRange
-                  ? 'bg-[#b85c5c] text-white'
-                  : 'bg-[#f0f7f6] text-[#577572] hover:bg-[#e0ebe9]'
-              }`}
-            >
-              Out of range
-            </button>
-            <button
-              onClick={() => setFilters(prev => ({ ...prev, belowGoal: !prev.belowGoal }))}
-              className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
-                filters.belowGoal
-                  ? 'bg-[#b85c5c] text-white'
-                  : 'bg-[#f0f7f6] text-[#577572] hover:bg-[#e0ebe9]'
-              }`}
-            >
-              Below goal
-            </button>
-            <button
-              onClick={() => setFilters(prev => ({ ...prev, needsUpdate: !prev.needsUpdate }))}
-              className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
-                filters.needsUpdate
-                  ? 'bg-[#577572] text-white'
-                  : 'bg-[#f0f7f6] text-[#577572] hover:bg-[#e0ebe9]'
-              }`}
-            >
-              Needs update
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Content */}
-      {activeTab === 'markers' ? (
-        /* Markers table */
-        totalMarkers === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#e0ebe9] bg-white py-16 px-8 text-center">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2d6a5e]/10">
-              <svg className="h-7 w-7 text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-              </svg>
+      {isPremium && (
+        <div className="rounded-2xl border border-[#e0ebe9] bg-white p-5 md:p-8">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h1 className="text-xl font-bold text-[#1a2e2b]">Your Results</h1>
+              <p className="text-sm text-[#577572] mt-0.5">
+                {markers.length} marker{markers.length !== 1 ? 's' : ''} tracked
+              </p>
             </div>
-            <h2 className="text-lg font-semibold text-[#1a2e2b]">No markers yet</h2>
-            <p className="mt-2 max-w-sm text-sm text-[#577572]">
-              Log your first result to start tracking biomarkers. Import a PDF, CSV, or add results manually.
-            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowPdfImportModal(true)}
+                className="rounded-xl bg-[#2d6a5e] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
+              >
+                Import
+              </button>
+              <button
+                onClick={() => setShowLogModal(true)}
+                className="rounded-xl border border-[#e0ebe9] px-4 py-2 text-sm font-medium text-[#577572] transition-colors hover:border-[#2d6a5e] hover:text-[#2d6a5e]"
+              >
+                Log
+              </button>
+            </div>
           </div>
-        ) : (
-          <div className="rounded-xl border border-[#e0ebe9] bg-white overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="border-b border-[#e0ebe9]">
-                  <tr className="text-left">
-                    <th className="px-6 py-4 text-sm font-semibold text-[#1a2e2b]">Marker</th>
-                    <th className="px-6 py-4 text-sm font-semibold text-[#1a2e2b]">Latest Value</th>
-                    <th className="px-6 py-4 text-sm font-semibold text-[#1a2e2b]">Status</th>
-                    <th className="px-6 py-4 text-sm font-semibold text-[#1a2e2b]">Trend</th>
-                    <th className="px-6 py-4 text-sm font-semibold text-[#1a2e2b]">Goal</th>
-                    <th className="px-6 py-4 text-sm font-semibold text-[#1a2e2b]">Date</th>
-                    <th className="px-6 py-4 text-sm font-semibold text-[#1a2e2b]">Results</th>
-                    <th className="px-6 py-4 text-sm font-semibold text-[#1a2e2b]">Labs</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#e0ebe9]">
-                  {filteredMarkers.map((marker) => (
-                    <tr
+
+          {markers.length === 0 ? (
+            /* Empty state */
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#e0ebe9] py-16 px-8 text-center">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2d6a5e]/10">
+                <svg className="h-7 w-7 text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                </svg>
+              </div>
+              <h2 className="text-lg font-semibold text-[#1a2e2b]">No results yet</h2>
+              <p className="mt-2 max-w-sm text-sm text-[#577572]">
+                Import a lab PDF or log a result to get started.
+              </p>
+              <button
+                onClick={() => setShowPdfImportModal(true)}
+                className="mt-4 rounded-xl bg-[#2d6a5e] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
+              >
+                Import
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Search bar */}
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Search your tests..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-xl border border-[#e0ebe9] px-4 py-2.5 text-sm placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
+                />
+              </div>
+
+              {/* Filter pills */}
+              <div className="flex gap-2 mb-5 text-xs flex-wrap">
+                <button
+                  onClick={() => setActiveFilter('all')}
+                  className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+                    activeFilter === 'all'
+                      ? 'bg-[#2d6a5e] text-white'
+                      : 'bg-[#f0f7f6] text-[#577572] hover:bg-[#e0ebe9]'
+                  }`}
+                >
+                  All ({counts.all})
+                </button>
+                {counts.out_of_range > 0 && (
+                  <button
+                    onClick={() => setActiveFilter('out_of_range')}
+                    className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+                      activeFilter === 'out_of_range'
+                        ? 'bg-[#b85c5c] text-white'
+                        : 'bg-[#b85c5c]/10 text-[#b85c5c] hover:bg-[#b85c5c]/20'
+                    }`}
+                  >
+                    Out of range ({counts.out_of_range})
+                  </button>
+                )}
+                {counts.suboptimal > 0 && (
+                  <button
+                    onClick={() => setActiveFilter('suboptimal')}
+                    className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+                      activeFilter === 'suboptimal'
+                        ? 'bg-[#c59030] text-white'
+                        : 'bg-[#c59030]/10 text-[#c59030] hover:bg-[#c59030]/20'
+                    }`}
+                  >
+                    Suboptimal ({counts.suboptimal})
+                  </button>
+                )}
+                {counts.optimal > 0 && (
+                  <button
+                    onClick={() => setActiveFilter('optimal')}
+                    className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+                      activeFilter === 'optimal'
+                        ? 'bg-[#2d6a5e] text-white'
+                        : 'bg-[#2d6a5e]/10 text-[#2d6a5e] hover:bg-[#2d6a5e]/20'
+                    }`}
+                  >
+                    Optimal ({counts.optimal})
+                  </button>
+                )}
+              </div>
+
+              {/* Marker rows */}
+              <div className="divide-y divide-[#e0ebe9] rounded-xl border border-[#e0ebe9]">
+                {filteredMarkers.map((marker) => {
+                  const config = STATUS_CONFIG[marker.statusCategory]
+                  return (
+                    <div
                       key={marker.testId}
                       onClick={() => router.push(`/dashboard/tracker/${marker.testId}`)}
-                      className="cursor-pointer hover:bg-[#f0f7f6] transition-colors"
+                      className="flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] cursor-pointer transition-colors"
                     >
-                      <td className="px-6 py-4">
-                        <span className="font-medium text-[#1a2e2b]">{marker.testName}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-[#1a2e2b]">
+                      {/* Left: dot + name */}
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className={`w-2 h-2 rounded-full ${config.dot} flex-shrink-0`} />
+                        <span className="font-medium text-[#1a2e2b] truncate">{marker.testName}</span>
+                      </div>
+
+                      {/* Right: value, trend, status pill, date, chevron */}
+                      <div className="flex items-center gap-4 flex-shrink-0">
+                        <span className="hidden sm:inline text-sm font-semibold text-[#1a2e2b] w-24 text-right">
                           {marker.latestValue}{marker.unit ? ` ${marker.unit}` : ''}
                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${marker.statusColor}`}>
-                          {marker.status}
+                        <span
+                          className="hidden md:inline text-xs text-[#577572] w-12 text-center"
+                          title={TREND_LABELS[marker.trend]}
+                        >
+                          {marker.trend}
                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`text-lg font-bold ${marker.trendColor}`}>{marker.trend}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`text-sm ${marker.goalMet ? 'text-[#2d6a5e]' : marker.goal === '—' ? 'text-[#577572]' : 'text-[#b85c5c]'}`}>
-                          {marker.goal}
+                        <span className={`text-xs font-medium ${config.pillText} ${config.pillBg} px-2 py-0.5 rounded-full w-24 text-center hidden sm:inline-block`}>
+                          {marker.statusLabel}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-[#577572]">{marker.date}</td>
-                      <td className="px-6 py-4 text-sm text-[#577572]">{marker.resultCount}</td>
-                      <td className="px-6 py-4 text-sm text-[#577572]">
-                        {marker.labs.length > 0 ? marker.labs.join(', ') : '—'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )
-      ) : (
-        /* Reports table */
-        reports.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#e0ebe9] bg-white py-16 px-8 text-center">
-            <h2 className="text-lg font-semibold text-[#1a2e2b]">No reports yet</h2>
-            <p className="mt-2 max-w-sm text-sm text-[#577572]">
-              Import your first lab report via PDF or CSV to see it listed here.
-            </p>
-          </div>
-        ) : (
-          <div className="rounded-xl border border-[#e0ebe9] bg-white overflow-hidden">
-            <div className="divide-y divide-[#e0ebe9]">
-              {reports.map((report) => (
-                <div key={report.id} className="px-6 py-4 flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                      <span className="font-medium text-[#1a2e2b]">{report.date}</span>
-                      {report.sourceLab && (
-                        <span className="text-sm text-[#577572]">{report.sourceLab}</span>
-                      )}
-                      <span className="text-sm text-[#1a2e2b]">
-                        {report.panelTitle || 'Manual Entry'}
-                      </span>
-                      <span className="text-xs text-[#577572]">
-                        {report.markerCount} marker{report.markerCount !== 1 ? 's' : ''}
-                      </span>
-                      <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
-                        report.importMethod === 'pdf' ? 'bg-red-100 text-red-800' :
-                        report.importMethod === 'csv' ? 'bg-green-100 text-green-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {report.importMethod.toUpperCase()}
-                      </span>
-                      {report.unmatchedCount > 0 && (
-                        <span className="text-xs text-[#b85c5c]">
-                          {report.unmatchedCount} unmatched
-                        </span>
-                      )}
+                        <span className="hidden lg:inline text-xs text-[#577572] w-16 text-right">{marker.date}</span>
+                        <svg className="w-4 h-4 text-[#577572] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
                     </div>
+                  )
+                })}
+                {filteredMarkers.length === 0 && (
+                  <div className="px-4 py-8 text-center text-sm text-[#577572]">
+                    No markers match your search.
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleDeleteReport(report.id)}
-                      className="rounded-lg border border-[#e0ebe9] bg-white px-3 py-1.5 text-xs font-medium text-[#b85c5c] hover:border-[#b85c5c] hover:bg-[#b85c5c]/5 transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )
+                )}
+              </div>
+
+              <p className="text-xs text-[#577572] text-center mt-4">
+                Click any row for trend charts, range details, and full history
+              </p>
+            </>
+          )}
+        </div>
       )}
 
       {/* Modals */}
