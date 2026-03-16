@@ -55,24 +55,31 @@ function CellValue({ value }: { value: boolean | string }) {
 
 function BillingToggle({ isAnnual, onToggle }: { isAnnual: boolean; onToggle: () => void }) {
   return (
-    <div className="mt-4 flex items-center justify-center gap-3">
-      <span className={`text-sm font-medium ${!isAnnual ? 'text-[#1a2e2b]' : 'text-[#577572]'}`}>Monthly</span>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={isAnnual}
-        onClick={onToggle}
-        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ${
-          isAnnual ? 'bg-[#2d6a5e]' : 'bg-[#c5d8d5]'
-        }`}
-      >
-        <span
-          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ${
-            isAnnual ? 'translate-x-5' : 'translate-x-0'
+    <div className="mt-4 flex items-center justify-center">
+      <div className="inline-flex rounded-lg border border-[#e0ebe9] bg-[#f0f7f6] p-1 gap-1">
+        <button
+          type="button"
+          onClick={() => isAnnual && onToggle()}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+            !isAnnual
+              ? 'bg-white text-[#1a2e2b] shadow-sm'
+              : 'text-[#577572] hover:text-[#1a2e2b]'
           }`}
-        />
-      </button>
-      <span className={`text-sm font-medium ${isAnnual ? 'text-[#1a2e2b]' : 'text-[#577572]'}`}>Annual</span>
+        >
+          Monthly
+        </button>
+        <button
+          type="button"
+          onClick={() => !isAnnual && onToggle()}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+            isAnnual
+              ? 'bg-white text-[#1a2e2b] shadow-sm'
+              : 'text-[#577572] hover:text-[#1a2e2b]'
+          }`}
+        >
+          Annual
+        </button>
+      </div>
     </div>
   )
 }
