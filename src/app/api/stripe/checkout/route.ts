@@ -46,6 +46,17 @@ export async function POST(request: Request) {
 
     let customerId = profile?.stripe_customer_id
 
+    // Verify existing customer ID is valid (test-mode IDs are invalid in live mode)
+    if (customerId) {
+      try {
+        await stripe.customers.retrieve(customerId)
+      } catch {
+        // Invalid customer (e.g. test-mode ID in live) — clear it and create fresh
+        customerId = null
+        await supabase.from('profiles').update({ stripe_customer_id: null }).eq('id', user.id)
+      }
+    }
+
     if (!customerId) {
       const customer = await stripe.customers.create({
         email: user.email,
