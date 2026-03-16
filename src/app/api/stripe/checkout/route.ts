@@ -61,7 +61,7 @@ export async function POST(request: Request) {
 
     const origin = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-    const monthlyPriceId = process.env.STRIPE_MONTHLY_PRICE_ID || 'price_1TAvGEA5UDbT7PJWkiqgvTMl'
+    const monthlyPriceId = process.env.STRIPE_MONTHLY_PRICE_ID || 'price_1TBfEbA9M54KyGCT6aq2io6a'
     const isMonthly = priceId === monthlyPriceId
 
     const session = await stripe.checkout.sessions.create({
