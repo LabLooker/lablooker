@@ -8,33 +8,40 @@ import { COMPARE_GROUPS, type CompareGroup, type CompareTestContent } from '@/co
 import { trackAffiliateClick } from '@/lib/track-click'
 
 // ─── Affiliate Config ─────────────────────────────────────────────────────────
+const CJ_PUBLISHER_ID = '101702245'
+const CJ_ADVERTISERS: Record<string, string> = {
+  'empowerDX':     '15299625',  // Peekaboo / empowerDX — 7%, 30-day cookie
+  'PrioritySTD':   '',          // Pending CJ approval
+  'Private MD Labs': '',        // Pending CJ approval
+}
+
 const AWIN_PUBLISHER_ID = '2796790'
 const AWIN_ADVERTISERS: Record<string, string> = {
-  'HealthLabs.com':   '',
-  'Walk-In Lab':      '',
+  'Walk-In Lab':      '',  // Pending Awin approval
   'Request A Test':   '',
   'Any Lab Test Now': '',
-  'Private MD Labs':  '',
   'DirectLabs':       '',
   'Personalabs':      '',
   'Life Extension':   '',
-  'DrSays':           '',
 }
 
 function affiliateUrl(directUrl: string, labName: string): string {
   const nameLower = labName.toLowerCase()
 
   // Ulta Lab Tests — direct affiliate
+  // TODO: confirm exact tracking param format with Ulta affiliate portal
   if (nameLower.includes('ulta')) {
     const separator = directUrl.includes('?') ? '&' : '?'
     return `${directUrl}${separator}ref=lablooker`
   }
 
-  // PrioritySTD — CJ Affiliate
-  // TODO: Replace with proper CJ deep link format once confirmed
-  if (nameLower.includes('priority')) {
-    const separator = directUrl.includes('?') ? '&' : '?'
-    return `${directUrl}${separator}cjevent=lablooker`
+  // CJ Affiliate network (empowerDX, PrioritySTD, Private MD Labs)
+  const cjKey = Object.keys(CJ_ADVERTISERS).find(k => nameLower.includes(k.toLowerCase()))
+  if (cjKey) {
+    const advertiserId = CJ_ADVERTISERS[cjKey]
+    if (advertiserId) {
+      return `https://www.tkqlhce.com/click-${CJ_PUBLISHER_ID}-${advertiserId}?url=${encodeURIComponent(directUrl)}`
+    }
   }
 
   // Awin network affiliates
