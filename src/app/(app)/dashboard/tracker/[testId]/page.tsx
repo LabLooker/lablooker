@@ -74,7 +74,7 @@ function formatDate(dateStr: string): string {
   const mo = String(d.getUTCMonth() + 1).padStart(2, '0')
   const day = String(d.getUTCDate()).padStart(2, '0')
   const yr = String(d.getUTCFullYear()).slice(-2)
-  return `${mo}-${day}-${yr}`
+  return `${mo}/${day}/${yr}`
 }
 
 function formatFullDate(dateStr: string): string {
@@ -82,7 +82,7 @@ function formatFullDate(dateStr: string): string {
   const mo = String(d.getUTCMonth() + 1).padStart(2, '0')
   const day = String(d.getUTCDate()).padStart(2, '0')
   const yr = String(d.getUTCFullYear()).slice(-2)
-  return `${mo}-${day}-${yr}`
+  return `${mo}/${day}/${yr}`
 }
 
 function getStatus(result: LabResult): { status: string; color: string } {
