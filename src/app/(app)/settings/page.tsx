@@ -21,6 +21,17 @@ export default function SettingsPage() {
   const [fullName, setFullName] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+
+  // Email change state
+  const [editingEmail, setEditingEmail] = useState(false)
+  const [newEmail, setNewEmail] = useState('')
+  const [emailSaving, setEmailSaving] = useState(false)
+  const [emailMsg, setEmailMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  // Password reset state
+  const [passwordMsg, setPasswordMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [passwordSending, setPasswordSending] = useState(false)
+
   const router = useRouter()
   const supabase = createClient()
 
@@ -55,6 +66,37 @@ export default function SettingsPage() {
       setTimeout(() => setSaved(false), 2000)
     }
     setSaving(false)
+  }
+
+  async function handleEmailChange(e: React.FormEvent) {
+    e.preventDefault()
+    if (!newEmail || newEmail === profile?.email) return
+    setEmailSaving(true)
+    setEmailMsg(null)
+    const { error } = await supabase.auth.updateUser({ email: newEmail })
+    if (error) {
+      setEmailMsg({ type: 'error', text: error.message })
+    } else {
+      setEmailMsg({ type: 'success', text: 'Confirmation sent to both emails. Check your inbox to verify the change.' })
+      setEditingEmail(false)
+      setNewEmail('')
+    }
+    setEmailSaving(false)
+  }
+
+  async function handlePasswordReset() {
+    if (!profile?.email) return
+    setPasswordSending(true)
+    setPasswordMsg(null)
+    const { error } = await supabase.auth.resetPasswordForEmail(profile.email, {
+      redirectTo: `${window.location.origin}/settings`,
+    })
+    if (error) {
+      setPasswordMsg({ type: 'error', text: error.message })
+    } else {
+      setPasswordMsg({ type: 'success', text: `Password reset email sent to ${profile.email}. Check your inbox.` })
+    }
+    setPasswordSending(false)
   }
 
   async function handleManageBilling() {
@@ -141,15 +183,62 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#4a6b67]">
-              Email
-            </label>
-            <input
-              type="email"
-              value={profile?.email || ''}
-              disabled
-              className="mt-1 block w-full rounded-md border border-[#e0ebe9] bg-[#faf8f5] px-4 py-2.5 text-sm text-[#577572] cursor-not-allowed"
-            />
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium text-[#4a6b67]">Email</label>
+              {!editingEmail && (
+                <button
+                  type="button"
+                  onClick={() => { setEditingEmail(true); setNewEmail(profile?.email || '') }}
+                  className="text-xs text-[#2d6a5e] hover:underline"
+                >
+                  Change email
+                </button>
+              )}
+            </div>
+            {editingEmail ? (
+              <form onSubmit={handleEmailChange} className="space-y-2">
+                <input
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  required
+                  autoFocus
+                  placeholder="Enter new email address"
+                  className="block w-full rounded-md border border-[#2d6a5e] bg-white px-4 py-2.5 text-sm text-[#1a2e2b] placeholder-[#577572] focus:outline-none focus:ring-1 focus:ring-[#2d6a5e]"
+                />
+                <p className="text-xs text-[#577572]">
+                  ⚠️ A confirmation link will be sent to both your current and new email. You must verify the new address before the change takes effect.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    disabled={emailSaving || !newEmail || newEmail === profile?.email}
+                    className="rounded-lg bg-[#2d6a5e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#245549] disabled:opacity-50"
+                  >
+                    {emailSaving ? 'Sending...' : 'Send confirmation'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setEditingEmail(false); setEmailMsg(null) }}
+                    className="rounded-lg border border-[#e0ebe9] px-3 py-1.5 text-xs font-medium text-[#577572] hover:border-[#2d6a5e]/40"
+                  >
+                    Cancel
+                  </button>
+                </div>
+                {emailMsg && (
+                  <p className={`text-xs ${emailMsg.type === 'success' ? 'text-emerald-600' : 'text-[#b85c5c]'}`}>
+                    {emailMsg.text}
+                  </p>
+                )}
+              </form>
+            ) : (
+              <input
+                type="email"
+                value={profile?.email || ''}
+                disabled
+                className="block w-full rounded-md border border-[#e0ebe9] bg-[#faf8f5] px-4 py-2.5 text-sm text-[#577572] cursor-not-allowed"
+              />
+            )}
           </div>
           <div className="flex items-center gap-3">
             <Button type="submit" size="sm" disabled={saving}>
@@ -160,6 +249,28 @@ export default function SettingsPage() {
             )}
           </div>
         </form>
+      </Card>
+
+      {/* Security Section */}
+      <Card className="mb-6">
+        <h2 className="mb-4 text-lg font-semibold text-[#1a2e2b]">Security</h2>
+        <div>
+          <p className="text-sm text-[#4a6b67] mb-3">
+            To change your password, we'll send a reset link to your email.
+          </p>
+          <button
+            onClick={handlePasswordReset}
+            disabled={passwordSending}
+            className="rounded-lg border border-[#e0ebe9] bg-white px-4 py-2 text-sm font-medium text-[#1a2e2b] hover:border-[#2d6a5e]/40 hover:bg-[#2d6a5e]/5 disabled:opacity-50 transition-colors"
+          >
+            {passwordSending ? 'Sending...' : 'Send password reset email'}
+          </button>
+          {passwordMsg && (
+            <p className={`mt-2 text-xs ${passwordMsg.type === 'success' ? 'text-emerald-600' : 'text-[#b85c5c]'}`}>
+              {passwordMsg.text}
+            </p>
+          )}
+        </div>
       </Card>
 
       {/* Saved Providers */}
