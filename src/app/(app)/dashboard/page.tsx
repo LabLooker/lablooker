@@ -475,7 +475,7 @@ function DashboardContent() {
                             e.stopPropagation()
                             setDeleteConfirm({ testId: marker.testId, testName: marker.testName, resultCount: marker.resultCount })
                           }}
-                          className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-[#577572] hover:text-[#b85c5c] hover:bg-[#b85c5c]/10 transition-all flex-shrink-0"
+                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded-lg text-[#577572] hover:text-[#b85c5c] hover:bg-[#b85c5c]/10 transition-all flex-shrink-0"
                           title="Delete test results"
                         >
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
