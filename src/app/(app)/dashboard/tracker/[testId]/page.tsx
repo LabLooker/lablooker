@@ -71,12 +71,18 @@ type ChartPoint = {
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr + 'T12:00:00Z')
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })
+  const mo = String(d.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(d.getUTCDate()).padStart(2, '0')
+  const yr = String(d.getUTCFullYear()).slice(-2)
+  return `${mo}-${day}-${yr}`
 }
 
 function formatFullDate(dateStr: string): string {
   const d = new Date(dateStr + 'T12:00:00Z')
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const mo = String(d.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(d.getUTCDate()).padStart(2, '0')
+  const yr = String(d.getUTCFullYear()).slice(-2)
+  return `${mo}-${day}-${yr}`
 }
 
 function getStatus(result: LabResult): { status: string; color: string } {
