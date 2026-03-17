@@ -103,6 +103,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
     }
 
     const selectedRows = results.filter(r => r.selected && r.matchedTest)
+    const importSessionId = crypto.randomUUID()
     const inserts = selectedRows.map(r => ({
       user_id: user.id,
       test_id: r.matchedTest!.id,
@@ -113,9 +114,16 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
       notes: r.referenceRange ? `Ref: ${r.referenceRange} | PDF: ${r.rawTestName}` : `PDF: ${r.rawTestName}`,
       ref_range_low: r.referenceRange ? parseRefLow(r.referenceRange) : null,
       ref_range_high: r.referenceRange ? parseRefHigh(r.referenceRange) : null,
+      import_session_id: importSessionId,
     }))
 
-    const { error: insertError } = await supabase.from('lab_results').insert(inserts)
+    // Try with import_session_id first; fall back without it if column doesn't exist yet
+    let insertResult = await supabase.from('lab_results').insert(inserts)
+    if (insertResult.error && insertResult.error.message.includes('import_session_id')) {
+      const fallbackInserts = inserts.map(({ import_session_id, ...rest }) => rest)
+      insertResult = await supabase.from('lab_results').insert(fallbackInserts)
+    }
+    const insertError = insertResult.error
     setImporting(false)
 
     if (insertError) {

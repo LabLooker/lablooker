@@ -137,6 +137,8 @@ function DashboardContent() {
   const [showLogModal, setShowLogModal] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
   const [showPdfImportModal, setShowPdfImportModal] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState<{ testId: string; testName: string; resultCount: number } | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   // Handle ?upgraded=true — fallback premium activation if webhook didn't fire
   useEffect(() => {
@@ -257,6 +259,23 @@ function DashboardContent() {
     loadData()
   }, [loadData])
 
+  async function handleDeleteMarker() {
+    if (!deleteConfirm) return
+    setDeleting(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setDeleting(false); return }
+
+    await supabase
+      .from('lab_results')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('test_id', deleteConfirm.testId)
+
+    setMarkers(prev => prev.filter(m => m.testId !== deleteConfirm.testId))
+    setDeleteConfirm(null)
+    setDeleting(false)
+  }
+
   // Filter markers by search + status filter
   const filteredMarkers = markers.filter(marker => {
     if (searchQuery && !marker.testName.toLowerCase().includes(searchQuery.toLowerCase())) {
@@ -327,13 +346,13 @@ function DashboardContent() {
                 onClick={() => setShowPdfImportModal(true)}
                 className="rounded-xl bg-[#2d6a5e] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
               >
-                Import
+                Upload Lab Report
               </button>
               <button
                 onClick={() => setShowLogModal(true)}
                 className="rounded-xl border border-[#e0ebe9] px-4 py-2 text-sm font-medium text-[#577572] transition-colors hover:border-[#2d6a5e] hover:text-[#2d6a5e]"
               >
-                Log
+                Log Result
               </button>
             </div>
           </div>
@@ -348,13 +367,13 @@ function DashboardContent() {
               </div>
               <h2 className="text-lg font-semibold text-[#1a2e2b]">No results yet</h2>
               <p className="mt-2 max-w-sm text-sm text-[#577572]">
-                Import a lab PDF or log a result to get started.
+                Upload a lab report or log a result to get started.
               </p>
               <button
                 onClick={() => setShowPdfImportModal(true)}
                 className="mt-4 rounded-xl bg-[#2d6a5e] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
               >
-                Import
+                Upload Lab Report
               </button>
             </div>
           ) : (
@@ -428,7 +447,7 @@ function DashboardContent() {
                     <div
                       key={marker.testId}
                       onClick={() => router.push(`/dashboard/tracker/${marker.testId}`)}
-                      className="flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] cursor-pointer transition-colors"
+                      className="group flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] cursor-pointer transition-colors"
                     >
                       {/* Left: dot + name */}
                       <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -436,7 +455,7 @@ function DashboardContent() {
                         <span className="font-medium text-[#1a2e2b] truncate">{marker.testName}</span>
                       </div>
 
-                      {/* Right: value, trend, status pill, date, chevron */}
+                      {/* Right: value, trend, status pill, date, delete, chevron */}
                       <div className="flex items-center gap-4 flex-shrink-0">
                         <span className="hidden sm:inline text-sm font-semibold text-[#1a2e2b] w-24 text-left">
                           {marker.latestValue}{marker.unit ? ` ${marker.unit}` : ''}
@@ -451,6 +470,18 @@ function DashboardContent() {
                           {marker.statusLabel}
                         </span>
                         <span className="hidden lg:inline text-xs text-[#577572] w-16 text-right">{marker.date}</span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setDeleteConfirm({ testId: marker.testId, testName: marker.testName, resultCount: marker.resultCount })
+                          }}
+                          className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-[#577572] hover:text-[#b85c5c] hover:bg-[#b85c5c]/10 transition-all flex-shrink-0"
+                          title="Delete test results"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                          </svg>
+                        </button>
                         <svg className="w-4 h-4 text-[#577572] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
@@ -491,6 +522,34 @@ function DashboardContent() {
         onClose={() => setShowPdfImportModal(false)}
         onSuccess={loadData}
       />
+
+      {/* Delete confirmation modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-sm rounded-2xl border border-[#e0ebe9] bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-[#1a2e2b]">Delete {deleteConfirm.testName}?</h3>
+            <p className="mt-2 text-sm text-[#577572]">
+              This will remove all {deleteConfirm.resultCount} saved result{deleteConfirm.resultCount !== 1 ? 's' : ''} for this test. This cannot be undone.
+            </p>
+            <div className="mt-5 flex gap-3 justify-end">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                disabled={deleting}
+                className="rounded-xl border border-[#e0ebe9] px-4 py-2 text-sm font-medium text-[#577572] transition-colors hover:bg-[#faf8f5]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteMarker}
+                disabled={deleting}
+                className="rounded-xl bg-[#b85c5c] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#a04e4e] disabled:opacity-60"
+              >
+                {deleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

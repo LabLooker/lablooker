@@ -1,77 +1,88 @@
-# TASK: Wire Stripe Subscriptions
+# Build Task — Dashboard UX Mar 17
 
 ## Context
-LabLooker is a Next.js 15 (App Router) + Supabase + Tailwind app. We need to add Stripe subscription billing for Premium tier.
+LabLooker (lablooker.com) — Next.js 15 + Supabase + Tailwind v4.
+Design system: sage (#2d6a5e), brick rose (#b85c5c), dark (#1a2e2b), light bg (#f0f7f6), border (#e0ebe9), placeholder (#577572).
 
-**Pricing:** $8/month or $59/year
-**Stripe keys are in `.env.local`** — read them from there. Do NOT hardcode keys.
+## Items to Build
 
-## Environment Variables (already in .env.local)
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` — publishable key
-- `STRIPE_SECRET_KEY` — secret key  
-- `STRIPE_MONTHLY_PRICE_ID` / `NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID`
-- `STRIPE_ANNUAL_PRICE_ID` / `NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID`
+---
 
-## What to Build
+### 1. Favicon — Dark Mode Fix
 
-### 1. Checkout API Route (`src/app/api/stripe/checkout/route.ts`)
-- POST endpoint that creates a Stripe Checkout Session
-- Accepts `{ priceId: string }` in body
-- Requires authenticated Supabase user (check auth, return 401 if not logged in)
-- Pass `customer_email` from Supabase user
-- `success_url`: `/dashboard?upgraded=true`
-- `cancel_url`: `/pricing`
-- `mode: 'subscription'`
-- Store Stripe `customer_id` on the Supabase `profiles` table (add column if needed via migration SQL comment)
+**Problem:** The favicon disappears on dark browser tabs/chrome because it's light-colored with a transparent background.
 
-### 2. Webhook Handler (`src/app/api/stripe/webhook/route.ts`)
-- Handle these events:
-  - `checkout.session.completed` → set `profiles.is_premium = true` and `profiles.stripe_customer_id`
-  - `customer.subscription.deleted` → set `profiles.is_premium = false`
-  - `customer.subscription.updated` → update status if cancelled
-- Use `STRIPE_WEBHOOK_SECRET` env var (we'll set this up later, just read from env)
-- Verify webhook signature
+**Fix:** Edit `src/app/layout.tsx` to serve a dark-mode variant.
+- In the `<head>`, add a dark-mode favicon link alongside the existing one using `media="(prefers-color-scheme: dark)"`
+- The dark variant should use `/favicon-dark.png` or similar
+- Also create a simple SVG favicon with a solid sage (#2d6a5e) background as a fallback that works on both
 
-### 3. Billing Portal API Route (`src/app/api/stripe/portal/route.ts`)
-- POST endpoint that creates a Stripe Billing Portal session
-- Returns portal URL for managing subscription
-- Requires authenticated user with `stripe_customer_id`
+Check what favicon files exist in `/public/` first, then implement the most practical solution. If there's a single .ico or .png, the best fix is to add an SVG favicon with a solid sage background baked in — add it to `/public/favicon.svg` and reference it in layout.tsx. SVG favicons are supported by all modern browsers.
 
-### 4. Update Pricing Component (`src/components/marketing/Pricing.tsx`)
-- The Premium card's "Start Premium" button should:
-  - If not logged in → redirect to `/signup?redirect=/pricing`
-  - If logged in → show monthly/annual toggle, then call checkout API
-- Add a monthly/annual toggle switch on the Premium card
-- Show "$8/month" or "$59/year (save 39%)" based on toggle
+SVG favicon template (solid sage background, white "L" mark):
+```svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#2d6a5e"/>
+  <text x="16" y="23" font-family="Georgia,serif" font-size="20" font-weight="bold" text-anchor="middle" fill="white">L</text>
+</svg>
+```
+Adjust the letter/mark to match the actual logo if needed — look at the existing favicon files to understand the logo shape, then replicate it in SVG with the solid background.
 
-### 5. Premium Gate Hook (`src/lib/use-premium.ts`)
-- Simple hook: `usePremium()` → returns `{ isPremium: boolean, loading: boolean }`
-- Reads from `profiles.is_premium` via Supabase
-- Used by tracker/dashboard pages to gate features
+---
 
-### 6. Database Migration (just output as SQL comment)
-Add to profiles table:
+### 2. Delete Imported Tests
+
+**Problem:** Users can import a PDF (via PdfImportModal) or CSV (via ImportModal) but have no way to delete those results if they made an error. There's no `import_session_id` being tracked, so we can't do batch deletes by import session.
+
+**Solution:** 
+
+#### 2a. Add import_session_id to lab_results inserts
+
+In `src/components/dashboard/PdfImportModal.tsx`:
+- Generate a UUID at the start of import: `const importSessionId = crypto.randomUUID()`
+- Add `import_session_id: importSessionId` to each row in the `inserts` array
+
+In `src/components/tracker/ImportModal.tsx` (CSV import):
+- Same — generate a UUID and add to inserts
+
+NOTE: The `import_session_id` column may not exist yet in Supabase. We need to handle this gracefully. Add the field to inserts but wrap in a try-catch — if it fails due to missing column, fall back to insert without it. Also create a SQL migration file at `supabase/add-import-session.sql`:
 ```sql
--- Run in Supabase SQL editor:
--- ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_premium BOOLEAN DEFAULT false;
--- ALTER TABLE profiles ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT;
+ALTER TABLE lab_results ADD COLUMN IF NOT EXISTS import_session_id uuid;
+CREATE INDEX IF NOT EXISTS lab_results_import_session_idx ON lab_results(import_session_id);
 ```
 
-## Design System
-- Primary: #2d6a5e (sage)
-- Accent: #b85c5c (brick rose)  
-- Use existing Button component from `src/components/ui/Button.tsx`
-- Toggle switch should use sage/white colors
+#### 2b. Delete UI on Dashboard
 
-## Rules
-- Keep it simple. Minimal files.
-- Use `stripe` package (already installed)
-- Import Stripe server-side only (never in client components)
-- Don't break existing functionality
-- Build must pass: `npm run build`
-- Commit and push when done
+In `src/app/(app)/dashboard/page.tsx`, add a way to delete individual results or by import session.
 
-## DO NOT
-- Don't hardcode any keys or price IDs
-- Don't modify unrelated files
-- Don't add unnecessary dependencies
+**Approach — individual result delete:**
+- On each marker row in the dashboard list, add a small delete (trash) icon that appears on hover
+- Clicking it shows a confirmation modal: "Delete [Test Name]? This will remove all [N] saved results for this test. This cannot be undone." with Cancel / Delete buttons
+- On confirm: `DELETE FROM lab_results WHERE user_id = $userId AND test_id = $testId`
+- After delete, remove the marker from the list (optimistic update)
+- Style: trash icon in `text-[#577572]`, hover `text-[#b85c5c]`. Confirmation modal uses brick rose for the Delete button.
+
+The confirmation modal can be a simple inline component (not a separate file needed — just a small modal overlay with the standard border/bg styling).
+
+---
+
+### 3. Button Renaming on Dashboard
+
+In `src/app/(app)/dashboard/page.tsx`, update the action button labels:
+- "Import" (triggers PdfImportModal) → **"Upload Lab Report"**
+- "Log" (triggers ResultLogModal for single result) → **"Log Result"**
+
+Also update the empty state text (currently "Import a lab PDF or log a result to get started") to match the new labels:
+→ "Upload a lab report or log a result to get started."
+
+---
+
+## Constraints
+- Keep changes minimal and focused — don't refactor unrelated code
+- Always confirm before destructive DB operations (show modal)
+- No new dependencies
+- All new UI must use the existing design system colors listed above
+- Test that dashboard still loads correctly after changes
+
+## When Done
+Run: openclaw system event --text "Done: Dashboard UX build complete — favicon fix, delete results UI, button renames" --mode now

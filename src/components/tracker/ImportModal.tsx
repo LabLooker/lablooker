@@ -166,6 +166,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
     }
 
     const readyRows = rows.filter((r) => r.status === 'ready' && r.matchedTest)
+    const importSessionId = crypto.randomUUID()
     const inserts = readyRows.map((r) => ({
       user_id: user.id,
       test_id: r.matchedTest!.id,
@@ -174,9 +175,16 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
       drawn_at: r.date || new Date().toISOString().split('T')[0],
       lab_name: r.labName || null,
       notes: r.notes || null,
+      import_session_id: importSessionId,
     }))
 
-    const { error: insertError } = await supabase.from('lab_results').insert(inserts)
+    // Try with import_session_id first; fall back without it if column doesn't exist yet
+    let insertResult = await supabase.from('lab_results').insert(inserts)
+    if (insertResult.error && insertResult.error.message.includes('import_session_id')) {
+      const fallbackInserts = inserts.map(({ import_session_id, ...rest }) => rest)
+      insertResult = await supabase.from('lab_results').insert(fallbackInserts)
+    }
+    const insertError = insertResult.error
     setImporting(false)
 
     if (insertError) {
