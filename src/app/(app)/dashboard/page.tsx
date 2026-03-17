@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { Suspense, useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import ResultLogModal from '@/components/tracker/ResultLogModal'
 import ImportModal from '@/components/tracker/ImportModal'
 import PdfImportModal from '@/components/dashboard/PdfImportModal'
@@ -122,19 +122,44 @@ const TREND_LABELS: Record<string, string> = {
 
 type FilterKey = 'all' | 'out_of_range' | 'suboptimal' | 'optimal'
 
-export default function DashboardPage() {
+function DashboardContent() {
   const supabase = createClient()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const [profile, setProfile] = useState<Profile | null>(null)
   const [markers, setMarkers] = useState<Marker[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [activeFilter, setActiveFilter] = useState<FilterKey>('all')
+  const [upgradeBanner, setUpgradeBanner] = useState(false)
 
   const [showLogModal, setShowLogModal] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
   const [showPdfImportModal, setShowPdfImportModal] = useState(false)
+
+  // Handle ?upgraded=true — fallback premium activation if webhook didn't fire
+  useEffect(() => {
+    if (searchParams.get('upgraded') !== 'true') return
+    if (profile === null || profile.is_premium) return
+
+    let cancelled = false
+    async function activatePremium() {
+      try {
+        const res = await fetch('/api/stripe/activate-premium', { method: 'POST' })
+        const data = await res.json()
+        if (!cancelled && data.activated) {
+          setUpgradeBanner(true)
+          loadData()
+          setTimeout(() => setUpgradeBanner(false), 6000)
+        }
+      } catch (err) {
+        console.error('Failed to activate premium:', err)
+      }
+    }
+    activatePremium()
+    return () => { cancelled = true }
+  }, [searchParams, profile])
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -263,6 +288,14 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* Premium activated banner */}
+      {upgradeBanner && (
+        <div className="rounded-xl border border-[#2d6a5e]/30 bg-[#2d6a5e]/10 px-6 py-4 text-center">
+          <p className="text-base font-semibold text-[#2d6a5e]">Welcome to Premium! 🎉</p>
+          <p className="mt-1 text-sm text-[#4a6b67]">Your account has been upgraded. Enjoy unlimited tracking.</p>
+        </div>
+      )}
+
       {/* Premium upgrade nudge */}
       {!isPremium && (
         <div className="rounded-xl border border-[#2d6a5e]/20 bg-[#f0f7f6] px-6 py-5 text-center">
@@ -459,5 +492,17 @@ export default function DashboardPage() {
         onSuccess={loadData}
       />
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center py-20">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e0ebe9] border-t-[#2d6a5e]" />
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   )
 }

@@ -7,11 +7,10 @@ import { useStateRestriction } from '@/components/StateRestrictionProvider'
 import { COMPARE_GROUPS, type CompareGroup, type CompareTestContent } from '@/config/compare-content'
 import { trackAffiliateClick } from '@/lib/track-click'
 
-// ─── Awin Affiliate Config ────────────────────────────────────────────────────
+// ─── Affiliate Config ─────────────────────────────────────────────────────────
 const AWIN_PUBLISHER_ID = '2796790'
 const AWIN_ADVERTISERS: Record<string, string> = {
   'HealthLabs.com':   '',
-  'Ulta Lab Tests':   '',
   'Walk-In Lab':      '',
   'Request A Test':   '',
   'Any Lab Test Now': '',
@@ -23,6 +22,22 @@ const AWIN_ADVERTISERS: Record<string, string> = {
 }
 
 function affiliateUrl(directUrl: string, labName: string): string {
+  const nameLower = labName.toLowerCase()
+
+  // Ulta Lab Tests — direct affiliate
+  if (nameLower.includes('ulta')) {
+    const separator = directUrl.includes('?') ? '&' : '?'
+    return `${directUrl}${separator}ref=lablooker`
+  }
+
+  // PrioritySTD — CJ Affiliate
+  // TODO: Replace with proper CJ deep link format once confirmed
+  if (nameLower.includes('priority')) {
+    const separator = directUrl.includes('?') ? '&' : '?'
+    return `${directUrl}${separator}cjevent=lablooker`
+  }
+
+  // Awin network affiliates
   const mid = AWIN_ADVERTISERS[labName]
   if (!mid) return directUrl
   return `https://www.awin1.com/cread.php?awinmid=${mid}&awinaffid=${AWIN_PUBLISHER_ID}&ued=${encodeURIComponent(directUrl)}`

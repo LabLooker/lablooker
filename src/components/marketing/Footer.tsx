@@ -12,6 +12,7 @@ export default function Footer() {
         { label: 'Compare Prices', href: '/compare' },
         { label: 'Test Panels', href: '/bundles' },
         { label: 'Generate Request', href: '/advocate' },
+        { label: 'Calculators', href: '/calculators' },
         { label: 'Plans', href: '/pricing' },
       ],
     },

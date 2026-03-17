@@ -31,12 +31,19 @@ export async function POST(request: Request) {
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!,
     )
-  } catch (err) {
-    console.error('Webhook signature verification failed:', err)
+    console.log(`[stripe-webhook] Received event: ${event.type} (id: ${event.id})`)
+  } catch (err: any) {
+    console.error('[stripe-webhook] Signature verification failed:', {
+      error: err?.message,
+      sigPresent: !!sig,
+      bodyLength: body.length,
+      secretPresent: !!process.env.STRIPE_WEBHOOK_SECRET,
+    })
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
   if (!relevantEvents.has(event.type)) {
+    console.log(`[stripe-webhook] Skipping irrelevant event: ${event.type}`)
     return NextResponse.json({ received: true })
   }
 
@@ -47,11 +54,14 @@ export async function POST(request: Request) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         const subscriptionId = session.subscription as string
+        console.log(`[stripe-webhook] checkout.session.completed — session: ${session.id}, subscription: ${subscriptionId}, customer: ${session.customer}`)
+
         const subscription = await stripe.subscriptions.retrieve(subscriptionId)
         const supabaseUid = subscription.metadata.supabase_uid
+        console.log(`[stripe-webhook] supabase_uid from metadata: ${supabaseUid || 'MISSING'}`)
 
         if (supabaseUid) {
-          await supabaseAdmin
+          const { error } = await supabaseAdmin
             .from('profiles')
             .update({
               stripe_customer_id: session.customer as string,
@@ -61,6 +71,14 @@ export async function POST(request: Request) {
               updated_at: new Date().toISOString(),
             })
             .eq('id', supabaseUid)
+
+          if (error) {
+            console.error(`[stripe-webhook] Failed to update profile for ${supabaseUid}:`, error)
+          } else {
+            console.log(`[stripe-webhook] Activated premium for user ${supabaseUid}`)
+          }
+        } else {
+          console.warn(`[stripe-webhook] No supabase_uid in subscription metadata for subscription ${subscriptionId}`)
         }
         break
       }
@@ -68,10 +86,11 @@ export async function POST(request: Request) {
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription
         const supabaseUid = subscription.metadata.supabase_uid
+        const isCanceled = subscription.cancel_at_period_end
+        console.log(`[stripe-webhook] subscription.updated — sub: ${subscription.id}, uid: ${supabaseUid || 'MISSING'}, cancel_at_period_end: ${isCanceled}`)
 
         if (supabaseUid) {
-          const isCanceled = subscription.cancel_at_period_end
-          await supabaseAdmin
+          const { error } = await supabaseAdmin
             .from('profiles')
             .update({
               is_premium: !isCanceled,
@@ -79,6 +98,10 @@ export async function POST(request: Request) {
               updated_at: new Date().toISOString(),
             })
             .eq('id', supabaseUid)
+
+          if (error) {
+            console.error(`[stripe-webhook] Failed to update subscription status for ${supabaseUid}:`, error)
+          }
         }
         break
       }
@@ -86,9 +109,10 @@ export async function POST(request: Request) {
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription
         const supabaseUid = subscription.metadata.supabase_uid
+        console.log(`[stripe-webhook] subscription.deleted — sub: ${subscription.id}, uid: ${supabaseUid || 'MISSING'}`)
 
         if (supabaseUid) {
-          await supabaseAdmin
+          const { error } = await supabaseAdmin
             .from('profiles')
             .update({
               is_premium: false,
@@ -97,14 +121,21 @@ export async function POST(request: Request) {
               updated_at: new Date().toISOString(),
             })
             .eq('id', supabaseUid)
+
+          if (error) {
+            console.error(`[stripe-webhook] Failed to deactivate premium for ${supabaseUid}:`, error)
+          }
         }
         break
       }
     }
 
     return NextResponse.json({ received: true })
-  } catch (error) {
-    console.error('Webhook handler error:', error)
+  } catch (error: any) {
+    console.error(`[stripe-webhook] Handler error for event ${event.type}:`, {
+      message: error?.message,
+      stack: error?.stack,
+    })
     return NextResponse.json(
       { error: 'Webhook handler failed' },
       { status: 500 },

@@ -10,6 +10,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
   ReferenceLine,
   ReferenceArea,
   ResponsiveContainer,
@@ -67,6 +68,7 @@ type ChartPoint = {
   notes: string | null
   ref_low: number | null
   ref_high: number | null
+  correctedCa?: number | null
 }
 
 function formatDate(dateStr: string): string {
@@ -155,6 +157,9 @@ export default function TrackerDetailPage() {
   const [goalHigh, setGoalHigh] = useState('')
   const [goalNote, setGoalNote] = useState('')
 
+  // Corrected calcium state
+  const [correctedCalciumData, setCorrectedCalciumData] = useState<{ date: string; correctedCa: number }[]>([])
+
   const loadData = useCallback(async () => {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
@@ -166,7 +171,8 @@ export default function TrackerDetailPage() {
       .select('test_name')
       .eq('id', testId)
       .single()
-    setTestName(testData?.test_name ?? 'Unknown Test')
+    const loadedTestName = testData?.test_name ?? 'Unknown Test'
+    setTestName(loadedTestName)
 
     // Load all results (no more free tier limit per task requirements)
     let query = supabase
@@ -210,6 +216,49 @@ export default function TrackerDetailPage() {
       setGoalLow(goalResult.target_low?.toString() ?? '')
       setGoalHigh(goalResult.target_high?.toString() ?? '')
       setGoalNote(goalResult.notes ?? '')
+    }
+
+    // Corrected Calcium: if this is a calcium test, look for matching albumin results
+    if (loadedTestName.toLowerCase().includes('calcium') && resultsData && resultsData.length > 0) {
+      // Find the albumin test ID
+      const { data: albuminTests } = await supabase
+        .from('tests')
+        .select('id')
+        .ilike('test_name', '%albumin%')
+        .limit(5)
+
+      if (albuminTests && albuminTests.length > 0) {
+        const albuminTestIds = albuminTests.map(t => t.id)
+        const { data: albuminResults } = await supabase
+          .from('lab_results')
+          .select('value, drawn_at')
+          .eq('user_id', user.id)
+          .in('test_id', albuminTestIds)
+          .order('drawn_at', { ascending: true })
+
+        if (albuminResults && albuminResults.length > 0) {
+          // Match calcium results to albumin results by drawn_at within +/-1 day
+          const corrected: { date: string; correctedCa: number }[] = []
+          for (const caResult of resultsData) {
+            const caDate = new Date(caResult.drawn_at + 'T12:00:00Z').getTime()
+            const matchingAlbumin = albuminResults.find(alb => {
+              const albDate = new Date(alb.drawn_at + 'T12:00:00Z').getTime()
+              return Math.abs(caDate - albDate) <= 86400000 // 1 day in ms
+            })
+            if (matchingAlbumin) {
+              const correctedCa = caResult.value + 0.8 * (4.0 - matchingAlbumin.value)
+              corrected.push({ date: caResult.drawn_at, correctedCa })
+            }
+          }
+          setCorrectedCalciumData(corrected)
+        } else {
+          setCorrectedCalciumData([])
+        }
+      } else {
+        setCorrectedCalciumData([])
+      }
+    } else {
+      setCorrectedCalciumData([])
     }
 
     setLoading(false)
@@ -262,6 +311,11 @@ export default function TrackerDetailPage() {
   }
 
   // Build chart data
+  const correctedCaByDate: Record<string, number> = {}
+  for (const cc of correctedCalciumData) {
+    correctedCaByDate[cc.date] = cc.correctedCa
+  }
+
   const chartData: ChartPoint[] = results.map((r) => ({
     date: r.drawn_at,
     value: r.value,
@@ -270,6 +324,7 @@ export default function TrackerDetailPage() {
     notes: r.notes,
     ref_low: r.ref_range_low,
     ref_high: r.ref_range_high,
+    correctedCa: correctedCaByDate[r.drawn_at] ?? null,
   }))
 
   // Most recent ref range
@@ -286,6 +341,7 @@ export default function TrackerDetailPage() {
 
   // Y-axis domain
   const vals = chartData.map((d) => d.value)
+  const correctedVals = chartData.filter(d => d.correctedCa != null).map(d => d.correctedCa!)
   const allRefs: number[] = []
   if (showLabRange && labRefLow !== null) allRefs.push(labRefLow)
   if (showLabRange && labRefHigh !== null) allRefs.push(labRefHigh)
@@ -294,7 +350,7 @@ export default function TrackerDetailPage() {
   if (showGoal && goal && goal.target_low !== null && goal.target_high !== null) {
     allRefs.push(goal.target_low, goal.target_high)
   }
-  const allY = [...vals, ...allRefs]
+  const allY = [...vals, ...correctedVals, ...allRefs]
   const yMin = allY.length ? Math.floor(Math.min(...allY) * 0.9) : 0
   const yMax = allY.length ? Math.ceil(Math.max(...allY) * 1.1) : 100
 
@@ -490,13 +546,61 @@ export default function TrackerDetailPage() {
                 <Line
                   type="monotone"
                   dataKey="value"
+                  name={testName}
                   stroke="#2d6a5e"
                   strokeWidth={2}
                   dot={<CustomDot />}
                   activeDot={{ r: 7, fill: '#2d6a5e', stroke: 'white', strokeWidth: 2 }}
                 />
+
+                {correctedCalciumData.length > 0 && (
+                  <Line
+                    type="monotone"
+                    dataKey="correctedCa"
+                    name="Corrected Ca"
+                    stroke="#c59030"
+                    strokeWidth={2}
+                    strokeDasharray="4 4"
+                    dot={false}
+                    connectNulls
+                  />
+                )}
+
+                {correctedCalciumData.length > 0 && (
+                  <Legend
+                    verticalAlign="top"
+                    height={28}
+                    wrapperStyle={{ fontSize: 11, color: '#577572' }}
+                  />
+                )}
               </LineChart>
             </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* Corrected Calcium card */}
+      {correctedCalciumData.length > 0 && (
+        <div className="rounded-xl border border-[#e0ebe9] bg-white p-6 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-0.5 bg-[#c59030]" style={{ borderTop: '2px dashed #c59030' }} />
+            <h2 className="text-lg font-semibold text-[#1a2e2b]">Corrected Calcium</h2>
+          </div>
+          <p className="text-sm text-[#577572]">
+            Albumin-adjusted calcium values for dates with matching albumin results ({'\u00B1'}1 day).
+          </p>
+          <div className="divide-y divide-[#e0ebe9]">
+            {correctedCalciumData.map((cc) => (
+              <div key={cc.date} className="flex items-center justify-between py-2">
+                <span className="text-sm text-[#577572]">{formatDate(cc.date)}</span>
+                <span className="text-sm font-semibold text-[#1a2e2b]">
+                  {cc.correctedCa.toFixed(1)} mg/dL
+                  {cc.correctedCa > 10.2 && (
+                    <span className="ml-2 text-xs text-[#b85c5c]">High</span>
+                  )}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       )}
