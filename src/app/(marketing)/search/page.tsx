@@ -88,7 +88,7 @@ function sortByFmPriority(testList: Test[]): Test[] {
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-  thyroid: 'Thyroid', hormones: 'Hormones', iron_blood: 'Iron & Blood',
+  thyroid: 'Thyroid', parathyroid: 'Parathyroid', hormones: 'Hormones', iron_blood: 'Iron & Blood',
   hematology: 'Hematology', iron: 'Iron', coagulation: 'Coagulation',
   metabolic: 'Metabolic', lipids: 'Lipids', cardiovascular: 'Cardiovascular',
   vitamins: 'Vitamins', vitamins_minerals: 'Vitamins & Minerals',
@@ -792,10 +792,15 @@ function TestListItem({ test }: { test: Test }) {
       className="group flex items-center gap-4 rounded-lg border border-[#e0ebe9] bg-white px-5 py-4 transition-all duration-200 hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5"
     >
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
           <h3 className="text-sm font-semibold text-[#1a2e2b] group-hover:text-[#2d6a5e] truncate">
             {test.test_name}
           </h3>
+          {test.cpt_codes.length > 0 && (
+            <span className="shrink-0 text-xs font-mono text-[#577572]">
+              CPT {test.cpt_codes[0]}
+            </span>
+          )}
           {test.fasting_required && (
             <span className="shrink-0 rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-[10px] font-medium text-amber-700">
               Fasting
@@ -809,11 +814,6 @@ function TestListItem({ test }: { test: Test }) {
         )}
       </div>
       <div className="flex items-center gap-3 shrink-0">
-        {test.cpt_codes.length > 0 && (
-          <span className="text-xs font-mono text-[#2d6a5e]/70">
-            {test.cpt_codes[0]}
-          </span>
-        )}
         {test.category && (
           <span className="hidden sm:inline-block rounded-full bg-[#f0f7f6] border border-[#e0ebe9] px-2.5 py-0.5 text-[10px] font-medium text-[#2d6a5e]">
             {CATEGORY_LABELS[test.category] || test.category}

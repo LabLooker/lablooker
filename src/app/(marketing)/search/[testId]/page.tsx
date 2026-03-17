@@ -9,7 +9,7 @@ import { useStateRestriction, StateRestrictionBanner } from '@/components/StateR
 import ResultLogModal from '@/components/tracker/ResultLogModal'
 
 const CATEGORY_LABELS: Record<string, string> = {
-  thyroid: 'Thyroid', hormones: 'Hormones', iron_blood: 'Iron & Blood',
+  thyroid: 'Thyroid', parathyroid: 'Parathyroid', hormones: 'Hormones', iron_blood: 'Iron & Blood',
   hematology: 'Hematology', iron: 'Iron', coagulation: 'Coagulation',
   metabolic: 'Metabolic', lipids: 'Lipids', cardiovascular: 'Cardiovascular',
   vitamins: 'Vitamins', vitamins_minerals: 'Vitamins & Minerals',
