@@ -459,7 +459,7 @@ export default function TrackerDetailPage() {
                 )}
 
                 {/* Goal line/range */}
-                {showGoal && goal?.target_direction !== 'range' && goal?.target_value !== null && (
+                {showGoal && goal !== null && goal.target_direction !== 'range' && goal.target_value !== null && (
                   <ReferenceLine
                     y={goal!.target_value!}
                     stroke="#2d6a5e"
@@ -468,7 +468,7 @@ export default function TrackerDetailPage() {
                     label={{ value: 'My goal', position: 'insideTopRight', fontSize: 10, fill: '#2d6a5e' }}
                   />
                 )}
-                {showGoal && goal?.target_direction === 'range' && goal.target_low !== null && goal.target_high !== null && (
+                {showGoal && goal !== null && goal.target_direction === 'range' && goal.target_low !== null && goal.target_high !== null && (
                   <ReferenceArea
                     y1={goal.target_low}
                     y2={goal.target_high}
