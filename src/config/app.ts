@@ -63,6 +63,7 @@ export const APP_CONFIG = {
     { label: 'Compare Prices', href: '/compare' },
     { label: 'Translate Codes', href: '/translate' },
     { label: 'Generate Request', href: '/advocate' },
+    { label: 'Calculators', href: '/calculators' },
     { label: 'Track Results', href: '/dashboard' },
     { label: 'Plans', href: '/pricing' },
   ],

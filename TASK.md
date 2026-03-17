@@ -1,88 +1,110 @@
-# Build Task — Dashboard UX Mar 17
+# Build Task — Medical Calculators
 
 ## Context
 LabLooker (lablooker.com) — Next.js 15 + Supabase + Tailwind v4.
 Design system: sage (#2d6a5e), brick rose (#b85c5c), dark (#1a2e2b), light bg (#f0f7f6), border (#e0ebe9), placeholder (#577572).
+All calculators live at /calculators/[slug].
 
-## Items to Build
+## What to Build
 
----
+Build a medical calculators suite. Each calculator is:
+- A free standalone page (no login required)
+- Clean, simple UI: input fields → result displayed inline
+- Auto-populate note for premium users (see below)
+- SEO-friendly with a brief clinical description
+- Disclaimer: "For informational purposes only. Not medical advice."
 
-### 1. Favicon — Dark Mode Fix
-
-**Problem:** The favicon disappears on dark browser tabs/chrome because it's light-colored with a transparent background.
-
-**Fix:** Edit `src/app/layout.tsx` to serve a dark-mode variant.
-- In the `<head>`, add a dark-mode favicon link alongside the existing one using `media="(prefers-color-scheme: dark)"`
-- The dark variant should use `/favicon-dark.png` or similar
-- Also create a simple SVG favicon with a solid sage (#2d6a5e) background as a fallback that works on both
-
-Check what favicon files exist in `/public/` first, then implement the most practical solution. If there's a single .ico or .png, the best fix is to add an SVG favicon with a solid sage background baked in — add it to `/public/favicon.svg` and reference it in layout.tsx. SVG favicons are supported by all modern browsers.
-
-SVG favicon template (solid sage background, white "L" mark):
-```svg
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#2d6a5e"/>
-  <text x="16" y="23" font-family="Georgia,serif" font-size="20" font-weight="bold" text-anchor="middle" fill="white">L</text>
-</svg>
-```
-Adjust the letter/mark to match the actual logo if needed — look at the existing favicon files to understand the logo shape, then replicate it in SVG with the solid background.
+There is already a /calculators page and possibly some calculators. Read the existing code first at src/app/(marketing)/calculators/ before building to avoid duplication.
 
 ---
 
-### 2. Delete Imported Tests
+### Calculator 1: Corrected Calcium
+**URL:** /calculators/corrected-calcium
+**Formula:** Corrected Ca = Measured Ca + 0.8 × (4.0 − Albumin)
+**Inputs:**
+- Measured Calcium (mg/dL)
+- Albumin (g/dL)
+**Output:** Corrected Calcium in mg/dL
+**Clinical context:** Used for patients with low albumin (hypoalbuminemia). Standard calcium test can underestimate true calcium when albumin is low. Important for hypoparathyroidism patients on Yorvipath/PTH therapy, kidney disease, cancer patients.
+**Normal range:** 8.5–10.5 mg/dL
 
-**Problem:** Users can import a PDF (via PdfImportModal) or CSV (via ImportModal) but have no way to delete those results if they made an error. There's no `import_session_id` being tracked, so we can't do batch deletes by import session.
+### Calculator 2: HOMA-IR (Insulin Resistance)
+**URL:** /calculators/homa-ir
+**Formula:** HOMA-IR = (Fasting Glucose mg/dL × Fasting Insulin µIU/mL) ÷ 405
+**Inputs:**
+- Fasting Glucose (mg/dL)
+- Fasting Insulin (µIU/mL)
+**Output:** HOMA-IR score
+**Interpretation:**
+- < 1.0 = Optimal insulin sensitivity
+- 1.0–1.9 = Early insulin resistance
+- 2.0–2.9 = Significant insulin resistance
+- ≥ 3.0 = Severe insulin resistance
+**Note:** High SEO value — very searched by keto/carnivore/diabetes communities
 
-**Solution:** 
+### Calculator 3: Free Testosterone (Vermeulen Method)
+**URL:** /calculators/free-testosterone
+**Formula:** Uses the Vermeulen equation (standard clinical method)
+Simplified approach: Free T (pg/mL) ≈ (Total T × 0.0311) when SHBG is not available
+Full Vermeulen if all three inputs available.
+**Inputs:**
+- Total Testosterone (ng/dL)
+- SHBG (nmol/L) — optional
+- Albumin (g/dL) — optional, default 4.3
+**Output:** Estimated Free Testosterone (pg/mL or nmol/L)
+**Clinical context:** Important for BHRT/TRT patients — Quest total T is known to inflate results for women on BHRT. Free T gives a more accurate picture.
 
-#### 2a. Add import_session_id to lab_results inserts
+### Calculator 4: Iron Saturation %
+**URL:** /calculators/iron-saturation
+**Formula:** Iron Saturation % = (Serum Iron ÷ TIBC) × 100
+**Inputs:**
+- Serum Iron (µg/dL)
+- TIBC (µg/dL)
+**Output:** Transferrin Saturation percentage
+**Interpretation:**
+- < 16% = Iron deficiency (low saturation)
+- 16–45% = Normal
+- > 45% = Iron overload risk (hemochromatosis concern)
+**Clinical context:** Standard iron panel interpretation. HFE/hemochromatosis screening uses this alongside ferritin.
 
-In `src/components/dashboard/PdfImportModal.tsx`:
-- Generate a UUID at the start of import: `const importSessionId = crypto.randomUUID()`
-- Add `import_session_id: importSessionId` to each row in the `inserts` array
-
-In `src/components/tracker/ImportModal.tsx` (CSV import):
-- Same — generate a UUID and add to inserts
-
-NOTE: The `import_session_id` column may not exist yet in Supabase. We need to handle this gracefully. Add the field to inserts but wrap in a try-catch — if it fails due to missing column, fall back to insert without it. Also create a SQL migration file at `supabase/add-import-session.sql`:
-```sql
-ALTER TABLE lab_results ADD COLUMN IF NOT EXISTS import_session_id uuid;
-CREATE INDEX IF NOT EXISTS lab_results_import_session_idx ON lab_results(import_session_id);
-```
-
-#### 2b. Delete UI on Dashboard
-
-In `src/app/(app)/dashboard/page.tsx`, add a way to delete individual results or by import session.
-
-**Approach — individual result delete:**
-- On each marker row in the dashboard list, add a small delete (trash) icon that appears on hover
-- Clicking it shows a confirmation modal: "Delete [Test Name]? This will remove all [N] saved results for this test. This cannot be undone." with Cancel / Delete buttons
-- On confirm: `DELETE FROM lab_results WHERE user_id = $userId AND test_id = $testId`
-- After delete, remove the marker from the list (optimistic update)
-- Style: trash icon in `text-[#577572]`, hover `text-[#b85c5c]`. Confirmation modal uses brick rose for the Delete button.
-
-The confirmation modal can be a simple inline component (not a separate file needed — just a small modal overlay with the standard border/bg styling).
+### Calculator 5: Non-HDL Cholesterol
+**URL:** /calculators/non-hdl-cholesterol
+**Formula:** Non-HDL = Total Cholesterol − HDL
+**Inputs:**
+- Total Cholesterol (mg/dL)
+- HDL Cholesterol (mg/dL)
+**Output:** Non-HDL Cholesterol (mg/dL)
+**Interpretation:**
+- < 130 mg/dL = Optimal
+- 130–159 = Near optimal
+- 160–189 = Borderline high
+- ≥ 190 = High
+**Clinical context:** Better cardiovascular risk predictor than LDL alone. Includes VLDL and other atherogenic particles. Especially useful when triglycerides are elevated.
 
 ---
 
-### 3. Button Renaming on Dashboard
+## Premium Auto-Populate Feature
+Each calculator page should check if the user is logged in AND is_premium. If so, show a subtle message below the result:
 
-In `src/app/(app)/dashboard/page.tsx`, update the action button labels:
-- "Import" (triggers PdfImportModal) → **"Upload Lab Report"**
-- "Log" (triggers ResultLogModal for single result) → **"Log Result"**
+"💡 These values match your recent results. [View in tracker →]"
 
-Also update the empty state text (currently "Import a lab PDF or log a result to get started") to match the new labels:
-→ "Upload a lab report or log a result to get started."
+Link to /dashboard/tracker/[testId] for the relevant test if a match is found. This is a nice-to-have — if complex, skip it and just add the note text as a placeholder.
+
+---
+
+## Navigation
+Add all 5 calculators to the existing /calculators index page. If there's already a calculators index, add them to it. If not, create a simple grid page listing all calculators with a brief description each.
+
+Also check if calculators appear in the Nav or Footer — add a "Calculators" link if not already there.
 
 ---
 
 ## Constraints
-- Keep changes minimal and focused — don't refactor unrelated code
-- Always confirm before destructive DB operations (show modal)
 - No new dependencies
-- All new UI must use the existing design system colors listed above
-- Test that dashboard still loads correctly after changes
+- Keep each calculator as a simple client component
+- Mobile-friendly inputs (large touch targets)
+- All design system colors
+- Brief, patient-friendly language
 
 ## When Done
-Run: openclaw system event --text "Done: Dashboard UX build complete — favicon fix, delete results UI, button renames" --mode now
+Run: openclaw system event --text "Done: Medical calculators built — Corrected Calcium, HOMA-IR, Free Testosterone, Iron Saturation, Non-HDL" --mode now
