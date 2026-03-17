@@ -32,6 +32,9 @@ const ALIASES: Record<string, string> = {
   'triiodothyronine, free': 'free t3',
   't3 free': 'free t3',
   'free triiodothyronine': 'free t3',
+  'reverse t3': 'reverse t3 (rt3)',
+  'reverse triiodothyronine': 'reverse t3 (rt3)',
+  'rt3': 'reverse t3 (rt3)',
   'thyroid stimulating hormone': 'tsh',
   'hemoglobin a1c': 'hba1c',
   'hgb a1c': 'hba1c',
@@ -102,11 +105,15 @@ const ALIASES: Record<string, string> = {
   'free testosterone': 'testosterone, free (calculated)',
   'dhea-s': 'dhea-sulfate (dhea-s)',
   'dhea sulfate': 'dhea-sulfate (dhea-s)',
+  'dhea-sulfate': 'dhea-sulfate (dhea-s)',
+  'dehydroepiandrosterone sulfate': 'dhea-sulfate (dhea-s)',
   'estradiol': 'estradiol (e2)',
+  'estradiol e2': 'estradiol (e2)',
   'progesterone': 'progesterone',
+  'progesterone serum': 'progesterone',
   'prolactin': 'prolactin',
-  'fsh': 'fsh',
-  'lh': 'lh',
+  'fsh': 'fsh (follicle-stimulating hormone)',
+  'lh': 'lh (luteinizing hormone)',
   'insulin': 'insulin, fasting',
   'insulin fasting': 'insulin, fasting',
   'vitamin a': 'vitamin a (retinol)',
@@ -202,6 +209,14 @@ function parseDate(s: string): string | null {
   return null
 }
 
+function cleanTestName(raw: string): string {
+  return raw
+    .replace(/\s+[LH]\s*[\d\.]+\s*[-–]\s*[\d\.]+\.?\s*$/, '') // " L9.0-27." suffix
+    .replace(/\s*[\d]+\.[\d]+\s*[-–]\s*[\d\.]+\.?\s*$/, '')   // "2.42.2-4." suffix
+    .replace(/\s*\d{4,}-\d+\.?\s*$/, '')                       // "3935-25" CPT suffix
+    .trim()
+}
+
 function matchTest(rawName: string, tests: TestRecord[]): TestRecord | null {
   const normalized = rawName.toLowerCase().replace(/[,\(\)\.]/g, ' ').replace(/\s+/g, ' ').trim()
 
@@ -282,6 +297,12 @@ function parseLabResults(text: string): ParsedResult[] {
       if (/^\w+\s+(TX|CA|NY|FL|OH|PA)$/i.test(name)) continue
       // Skip Z SCORE with negative sign attached to name
       if (/Z SCORE.*-$/i.test(name)) continue
+      // Skip phase-specific reference range sub-rows (hormone panels)
+      if (/^(follicular|ovulation|luteal|mid-cycle|postmenopausal|premenopausal|prepubertal|male|female\s+\d|adult\s+male|adult\s+female)/i.test(name)) continue
+      // Skip lab metadata rows (CLIA numbers, accreditation info)
+      if (/clia|accreditation|cap\s+number|cap\s+accreditation/i.test(name)) continue
+      // Skip accession/order number rows (1-3 uppercase letters + large number)
+      if (/^[A-Z]{1,3}$/.test(name) && val > 99999) continue
 
       // Look ahead up to 3 lines for reference range and unit
       let unit = ''
@@ -493,9 +514,10 @@ export async function POST(req: NextRequest) {
       .limit(5000)
     const tests: TestRecord[] = allTests ?? []
 
-    // Match tests
+    // Match tests (clean name before matching to strip embedded ref ranges)
     for (const r of results) {
-      r.matchedTest = matchTest(r.rawTestName, tests)
+      const cleaned = cleanTestName(r.rawTestName)
+      r.matchedTest = matchTest(cleaned, tests)
     }
 
     return NextResponse.json({
