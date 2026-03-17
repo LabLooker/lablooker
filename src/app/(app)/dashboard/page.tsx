@@ -402,7 +402,7 @@ export default function DashboardPage() {
 
                       {/* Right: value, trend, status pill, date, chevron */}
                       <div className="flex items-center gap-4 flex-shrink-0">
-                        <span className="hidden sm:inline text-sm font-semibold text-[#1a2e2b] w-24 text-right">
+                        <span className="hidden sm:inline text-sm font-semibold text-[#1a2e2b] w-24 text-left">
                           {marker.latestValue}{marker.unit ? ` ${marker.unit}` : ''}
                         </span>
                         <span
