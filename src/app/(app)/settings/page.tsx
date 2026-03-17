@@ -183,20 +183,24 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-[#4a6b67]">Email</label>
-              {!editingEmail && (
-                <button
-                  type="button"
-                  onClick={() => { setEditingEmail(true); setNewEmail(profile?.email || '') }}
-                  className="text-xs text-[#2d6a5e] hover:underline"
-                >
-                  Change email
-                </button>
-              )}
-            </div>
-            {editingEmail ? (
-              <form onSubmit={handleEmailChange} className="space-y-2">
+            <label className="block text-sm font-medium text-[#4a6b67] mb-1">Email</label>
+            <input
+              type="email"
+              value={profile?.email || ''}
+              disabled
+              className="block w-full rounded-md border border-[#e0ebe9] bg-[#faf8f5] px-4 py-2.5 text-sm text-[#577572] cursor-not-allowed"
+            />
+            {!editingEmail && (
+              <button
+                type="button"
+                onClick={() => { setEditingEmail(true); setNewEmail(profile?.email || '') }}
+                className="mt-1.5 text-xs text-[#2d6a5e] hover:underline"
+              >
+                Change email address →
+              </button>
+            )}
+            {editingEmail && (
+              <form onSubmit={handleEmailChange} className="mt-3 space-y-2">
                 <input
                   type="email"
                   value={newEmail}
@@ -231,13 +235,6 @@ export default function SettingsPage() {
                   </p>
                 )}
               </form>
-            ) : (
-              <input
-                type="email"
-                value={profile?.email || ''}
-                disabled
-                className="block w-full rounded-md border border-[#e0ebe9] bg-[#faf8f5] px-4 py-2.5 text-sm text-[#577572] cursor-not-allowed"
-              />
             )}
           </div>
           <div className="flex items-center gap-3">
