@@ -282,6 +282,15 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                 </table>
               </div>
 
+              {/* Verification reminder */}
+              <div className="rounded-lg bg-[#f0f7f6] border border-[#e0ebe9] px-3 py-2.5 flex gap-2">
+                <span className="text-sm shrink-0">💡</span>
+                <p className="text-xs text-[#4a6b67] leading-relaxed">
+                  <span className="font-semibold text-[#1a2e2b]">Always verify against your original lab report.</span>{' '}
+                  PDF parsing isn't perfect — confirm test names and values match before saving.
+                </p>
+              </div>
+
               {error && (
                 <p className="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">{error}</p>
               )}
