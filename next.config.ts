@@ -1,3 +1,4 @@
+// cache-bust: force fresh build after stale chunk corruption
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
