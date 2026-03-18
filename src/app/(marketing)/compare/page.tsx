@@ -28,11 +28,10 @@ const AWIN_ADVERTISERS: Record<string, string> = {
 function affiliateUrl(directUrl: string, labName: string): string {
   const nameLower = labName.toLowerCase()
 
-  // Ulta Lab Tests — direct affiliate
-  // TODO: confirm exact tracking param format with Ulta affiliate portal
+  // Ulta Lab Tests — partner path affiliate
+  // Format: https://www.ultalabtests.com/partners/lablooker/[any-path]
   if (nameLower.includes('ulta')) {
-    const separator = directUrl.includes('?') ? '&' : '?'
-    return `${directUrl}${separator}ref=lablooker`
+    return directUrl.replace('https://www.ultalabtests.com', 'https://www.ultalabtests.com/partners/lablooker')
   }
 
   // CJ Affiliate network (empowerDX, PrioritySTD, Private MD Labs)
