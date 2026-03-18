@@ -59,13 +59,18 @@ export const APP_CONFIG = {
   },
 
   nav: [
-    { label: 'Search Tests', href: '/search' },
     { label: 'Compare Prices', href: '/compare' },
+    { label: 'Search Tests', href: '/search' },
     { label: 'Translate Codes', href: '/translate' },
+    // 'More' dropdown is handled in Nav.tsx directly
+    { label: 'Track Results', href: '/dashboard' },
+  ],
+
+  moreNav: [
     { label: 'Generate Request', href: '/advocate' },
     { label: 'Calculators', href: '/calculators' },
-    { label: 'Track Results', href: '/dashboard' },
-    { label: 'Plans', href: '/pricing' },
+    { label: 'Panels', href: '/bundles' },
+    { label: 'Topics', href: '/topics' },
   ],
 
   faqs: [

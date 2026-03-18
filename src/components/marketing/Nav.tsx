@@ -65,7 +65,7 @@ export default function Nav() {
 
         {/* Desktop nav */}
         <div className="hidden items-center gap-8 md:flex">
-          {APP_CONFIG.nav.map((link) => (
+          {APP_CONFIG.nav.filter(l => l.label !== 'Track Results').map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -74,6 +74,31 @@ export default function Nav() {
               {link.label}
             </Link>
           ))}
+
+          {/* More dropdown */}
+          <div className="group relative">
+            <button className="text-sm text-[#577572] transition-colors hover:text-[#1a2e2b] flex items-center gap-1">
+              More <span className="text-xs">▾</span>
+            </button>
+            <div className="invisible absolute left-1/2 top-full z-50 mt-2 w-48 -translate-x-1/2 rounded-xl border border-[#2d6a5e]/20 bg-white py-1 shadow-lg group-hover:visible">
+              {APP_CONFIG.moreNav.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="block px-4 py-2.5 text-sm text-[#577572] transition-colors hover:bg-[#f0f7f6] hover:text-[#1a2e2b]"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <Link
+            href="/dashboard"
+            className="text-sm text-[#2d6a5e] font-semibold transition-colors hover:text-[#1a2e2b] flex items-center gap-1.5"
+          >
+            Track Results
+          </Link>
         </div>
 
         {/* Desktop CTA */}
@@ -173,7 +198,7 @@ export default function Nav() {
       {mobileOpen && (
         <div className="border-t border-[#e0ebe9] bg-[#faf8f5] px-6 py-4 md:hidden">
           <div className="flex flex-col gap-4">
-            {APP_CONFIG.nav.map((link) => (
+            {[...APP_CONFIG.nav.filter(l => l.label !== 'Track Results'), ...APP_CONFIG.moreNav].map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -183,6 +208,13 @@ export default function Nav() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/dashboard"
+              className="text-sm text-[#2d6a5e] font-semibold transition-colors hover:text-[#1a2e2b]"
+              onClick={() => setMobileOpen(false)}
+            >
+              Track Results
+            </Link>
             <div className="flex flex-col gap-2 pt-4 border-t border-[#e0ebe9]">
               {user ? (
                 <>
