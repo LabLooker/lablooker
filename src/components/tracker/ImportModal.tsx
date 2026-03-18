@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { createClient } from '@/lib/supabase'
+import { checkPlausibility, type PlausibilityFlag } from '@/lib/plausibility'
 
 type Props = {
   isOpen: boolean
@@ -198,6 +199,17 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
 
   if (!isOpen) return null
 
+  const plausibilityFlags = useMemo(() => {
+    if (rows.length === 0) return []
+    return checkPlausibility(
+      rows.filter(r => r.matchedTest && r.status === 'ready').map(r => ({
+        testName: r.matchedTest!.test_name,
+        value: Number(r.value),
+        unit: r.unit,
+      }))
+    )
+  }, [rows])
+
   const readyCount = rows.filter((r) => r.status === 'ready').length
   const noMatchCount = rows.filter((r) => r.status === 'no_match').length
   const errorCount = rows.filter((r) => r.status === 'error').length
@@ -322,6 +334,20 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
                   </tbody>
                 </table>
               </div>
+
+              {/* Plausibility warning */}
+              {plausibilityFlags.length > 0 && (
+                <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2.5 space-y-1.5">
+                  <p className="text-xs font-semibold text-amber-800 flex items-center gap-1.5">
+                    <span className="text-sm">&#9888;&#65039;</span> Some values look unusual — please verify before saving
+                  </p>
+                  <ul className="text-xs text-amber-700 space-y-0.5 pl-5 list-disc">
+                    {plausibilityFlags.map((f, i) => (
+                      <li key={i}>{f.message}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Verification reminder */}
               <div className="rounded-lg bg-[#f0f7f6] border border-[#e0ebe9] px-3 py-2.5 flex gap-2">

@@ -48,6 +48,31 @@ export default function CorrectedCalciumPage() {
         <p>About 40% of calcium in your blood is bound to albumin. When albumin is low (hypoalbuminemia), standard calcium tests can appear falsely low. This correction estimates what your calcium would be at a normal albumin level of 4.0 g/dL.</p>
         <p>Commonly used for patients on Yorvipath/PTH therapy for hypoparathyroidism, those with kidney disease, liver disease, or malnutrition.</p>
       </div>
+
+      {/* Yorvipath / Hypoparathyroidism callout */}
+      <div className="rounded-xl border border-[#2d6a5e]/30 bg-[#f0f7f6] px-5 py-4">
+        <p className="text-sm font-semibold text-[#1a2e2b] mb-2">
+          💊 Note for Hypoparathyroidism Patients (Yorvipath / PTH Therapy)
+        </p>
+        <div className="text-sm text-[#577572] leading-relaxed space-y-2">
+          <p>
+            Albumin-adjusted calcium is especially important when you have hypoparathyroidism
+            and are managing your calcium levels with PTH replacement therapy (such as Yorvipath).
+          </p>
+          <p>
+            Even when your albumin is normal (4.0 g/dL), using the corrected formula helps
+            standardize how your calcium is tracked over time — because small shifts in albumin
+            (common with dietary changes, illness, or hydration) can make your measured calcium
+            appear falsely high or low.
+          </p>
+          <p className="font-medium text-[#4a6b67]">
+            Target range for most Yorvipath patients: 8.0–9.5 mg/dL (corrected).
+          </p>
+          <p className="text-xs text-[#577572]">
+            Always follow your endocrinologist&apos;s specific targets, which may differ.
+          </p>
+        </div>
+      </div>
     </CalculatorShell>
   )
 }

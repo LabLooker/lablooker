@@ -1,110 +1,153 @@
-# Build Task — Medical Calculators
+# LabLooker — Overnight Build Tasks
+_Last updated: March 18, 2026_
 
-## Context
-LabLooker (lablooker.com) — Next.js 15 + Supabase + Tailwind v4.
-Design system: sage (#2d6a5e), brick rose (#b85c5c), dark (#1a2e2b), light bg (#f0f7f6), border (#e0ebe9), placeholder (#577572).
-All calculators live at /calculators/[slug].
-
-## What to Build
-
-Build a medical calculators suite. Each calculator is:
-- A free standalone page (no login required)
-- Clean, simple UI: input fields → result displayed inline
-- Auto-populate note for premium users (see below)
-- SEO-friendly with a brief clinical description
-- Disclaimer: "For informational purposes only. Not medical advice."
-
-There is already a /calculators page and possibly some calculators. Read the existing code first at src/app/(marketing)/calculators/ before building to avoid duplication.
+## Overview
+Three features to build tonight. Work through them in order. Each is independent.
 
 ---
 
-### Calculator 1: Corrected Calcium
-**URL:** /calculators/corrected-calcium
-**Formula:** Corrected Ca = Measured Ca + 0.8 × (4.0 − Albumin)
-**Inputs:**
-- Measured Calcium (mg/dL)
-- Albumin (g/dL)
-**Output:** Corrected Calcium in mg/dL
-**Clinical context:** Used for patients with low albumin (hypoalbuminemia). Standard calcium test can underestimate true calcium when albumin is low. Important for hypoparathyroidism patients on Yorvipath/PTH therapy, kidney disease, cancer patients.
-**Normal range:** 8.5–10.5 mg/dL
+## Task 1: Import Plausibility Check (Flag Impossible Values)
 
-### Calculator 2: HOMA-IR (Insulin Resistance)
-**URL:** /calculators/homa-ir
-**Formula:** HOMA-IR = (Fasting Glucose mg/dL × Fasting Insulin µIU/mL) ÷ 405
-**Inputs:**
-- Fasting Glucose (mg/dL)
-- Fasting Insulin (µIU/mL)
-**Output:** HOMA-IR score
-**Interpretation:**
-- < 1.0 = Optimal insulin sensitivity
-- 1.0–1.9 = Early insulin resistance
-- 2.0–2.9 = Significant insulin resistance
-- ≥ 3.0 = Severe insulin resistance
-**Note:** High SEO value — very searched by keto/carnivore/diabetes communities
+**Goal:** Before saving imported lab results, flag values that are physiologically impossible. Show a warning but still allow the user to save if they want.
 
-### Calculator 3: Free Testosterone (Vermeulen Method)
-**URL:** /calculators/free-testosterone
-**Formula:** Uses the Vermeulen equation (standard clinical method)
-Simplified approach: Free T (pg/mL) ≈ (Total T × 0.0311) when SHBG is not available
-Full Vermeulen if all three inputs available.
-**Inputs:**
-- Total Testosterone (ng/dL)
-- SHBG (nmol/L) — optional
-- Albumin (g/dL) — optional, default 4.3
-**Output:** Estimated Free Testosterone (pg/mL or nmol/L)
-**Clinical context:** Important for BHRT/TRT patients — Quest total T is known to inflate results for women on BHRT. Free T gives a more accurate picture.
+**Where:** `src/components/tracker/PdfImportModal.tsx` and `src/components/tracker/ImportModal.tsx`
 
-### Calculator 4: Iron Saturation %
-**URL:** /calculators/iron-saturation
-**Formula:** Iron Saturation % = (Serum Iron ÷ TIBC) × 100
-**Inputs:**
-- Serum Iron (µg/dL)
-- TIBC (µg/dL)
-**Output:** Transferrin Saturation percentage
-**Interpretation:**
-- < 16% = Iron deficiency (low saturation)
-- 16–45% = Normal
-- > 45% = Iron overload risk (hemochromatosis concern)
-**Clinical context:** Standard iron panel interpretation. HFE/hemochromatosis screening uses this alongside ferritin.
+**How it should work:**
+- After parsing but BEFORE the user clicks "Save", check each result value against a range table
+- If any value is outside the plausible range, show a yellow warning banner: "⚠️ Some values look unusual — please verify before saving"
+- List the flagged markers with their values (e.g. "Calcium: 4.5 mg/dL — unusually low, expected 7.5–11.0")
+- Still allow the user to save — this is a warning, not a blocker
 
-### Calculator 5: Non-HDL Cholesterol
-**URL:** /calculators/non-hdl-cholesterol
-**Formula:** Non-HDL = Total Cholesterol − HDL
-**Inputs:**
-- Total Cholesterol (mg/dL)
-- HDL Cholesterol (mg/dL)
-**Output:** Non-HDL Cholesterol (mg/dL)
-**Interpretation:**
-- < 130 mg/dL = Optimal
-- 130–159 = Near optimal
-- 160–189 = Borderline high
-- ≥ 190 = High
-**Clinical context:** Better cardiovascular risk predictor than LDL alone. Includes VLDL and other atherogenic particles. Especially useful when triglycerides are elevated.
+**Plausibility ranges to check** (physiologically impossible if outside these):
+```
+Calcium (Total): 4.0–14.0 mg/dL
+Sodium: 110–170 mEq/L
+Potassium: 1.5–7.5 mEq/L
+Glucose: 20–700 mg/dL
+Creatinine: 0.2–20.0 mg/dL
+Hemoglobin: 4.0–20.0 g/dL
+TSH: 0.001–100 mIU/L
+Ferritin: 1.0–3000 ng/mL
+Vitamin D (25-OH): 4.0–200 ng/mL
+Albumin: 1.0–6.0 g/dL
+ALT: 1–1000 U/L
+AST: 1–1000 U/L
+WBC: 0.5–50.0 K/uL
+Platelets: 10–1000 K/uL
+```
+
+**Matching:** Match by test name (case-insensitive, partial match OK). If a test doesn't appear in the table, skip it — no warning.
+
+**Implementation notes:**
+- Create a `src/lib/plausibility.ts` file with the range table and a `checkPlausibility(results)` function
+- Returns an array of `{testName, value, unit, message}` for any flagged results
+- Call it in both PdfImportModal and ImportModal after parsing, before the save button
 
 ---
 
-## Premium Auto-Populate Feature
-Each calculator page should check if the user is logged in AND is_premium. If so, show a subtle message below the result:
+## Task 2: Lab Visit View (Grouped by Draw Date)
 
-"💡 These values match your recent results. [View in tracker →]"
+**Goal:** A new "Lab Visits" tab on the dashboard that shows all results grouped by draw date — so users can see their complete lab report from a single visit.
 
-Link to /dashboard/tracker/[testId] for the relevant test if a match is found. This is a nice-to-have — if complex, skip it and just add the note text as a placeholder.
+**Where:** Dashboard at `src/app/(app)/dashboard/page.tsx`
+
+**Current state:** The dashboard has tabs (or filter pills) for different views. Currently shows individual marker trends. We want to add a "Lab Visits" tab.
+
+**What the Lab Visits tab should show:**
+- List of distinct draw dates (from `lab_results.drawn_at`), sorted newest first
+- Each visit card shows:
+  - Draw date (formatted nicely, e.g. "March 15, 2026")
+  - Lab name (from `lab_results.lab_name`) if available
+  - Count of markers ("14 markers")
+  - Expandable/collapsible: click to expand and see all markers from that draw
+  - When expanded: table of Marker Name | Value | Unit | Status (in-range / out-of-range based on reference ranges if available)
+- Group by `drawn_at` date (use date portion only — ignore time)
+- If multiple imports on the same date exist (same drawn_at), merge them into one visit card
+
+**Status color for each marker row:**
+- Use the same logic as the dashboard tracker: compare value against `normal_range` from the `tests` table
+- If no reference range available, show value without status color
+
+**Data query:**
+- `lab_results` joined with `tests` (for test name + normal_range)
+- Filter by `user_id = current user`
+- Order by `drawn_at DESC`, then by `tests.name ASC` within each visit
+
+**UI style:**
+- Match existing dashboard card style (sage/brick rose design system)
+- Visit cards: white card with sage border, date bold, lab name in muted text below
+- Expand/collapse with a chevron icon
+- Marker rows: compact, alternating subtle background
+
+**Premium gate:** Lab Visits tab should be premium-only (same as the tracker). Show the existing premium upgrade nudge for free users.
 
 ---
 
-## Navigation
-Add all 5 calculators to the existing /calculators index page. If there's already a calculators index, add them to it. If not, create a simple grid page listing all calculators with a brief description each.
+## Task 3: Corrected Calcium Calculator — Yorvipath Clinical Callout
 
-Also check if calculators appear in the Nav or Footer — add a "Calculators" link if not already there.
+**Goal:** Add a clinical note to the Corrected Calcium calculator page that's relevant for hypoparathyroidism patients on Yorvipath/PTH therapy.
+
+**Where:** Find the corrected calcium calculator page — likely at `src/app/(marketing)/calculators/corrected-calcium/page.tsx` or similar path. Search for it.
+
+**What to add:** After the calculator results section (or below the main explanation), add a styled callout box:
+
+```
+💊 Note for Hypoparathyroidism Patients (Yorvipath / PTH Therapy)
+
+Albumin-adjusted calcium is especially important when you have hypoparathyroidism 
+and are managing your calcium levels with PTH replacement therapy (such as Yorvipath).
+
+Even when your albumin is normal (4.0 g/dL), using the corrected formula helps 
+standardize how your calcium is tracked over time — because small shifts in albumin 
+(common with dietary changes, illness, or hydration) can make your measured calcium 
+appear falsely high or low.
+
+Target range for most Yorvipath patients: 8.0–9.5 mg/dL (corrected).
+Always follow your endocrinologist's specific targets, which may differ.
+```
+
+**Style:** Use a light sage background callout box (matching the site's design system — sage #2d6a5e border, light sage bg). Keep it visually distinct from the calculator itself.
 
 ---
 
-## Constraints
-- No new dependencies
-- Keep each calculator as a simple client component
-- Mobile-friendly inputs (large touch targets)
-- All design system colors
-- Brief, patient-friendly language
+## Task 4: Add MTHFR Gene Test to Database
 
-## When Done
-Run: openclaw system event --text "Done: Medical calculators built — Corrected Calcium, HOMA-IR, Free Testosterone, Iron Saturation, Non-HDL" --mode now
+**Goal:** Add MTHFR gene test to the `tests` table so we can add empowerDX pricing for it.
+
+**How:** Run a Supabase REST API insert. The Supabase project URL is `https://cbeazeiehgiwhklxtdir.supabase.co` and the service role key is in `.env.local` as `SUPABASE_SERVICE_ROLE_KEY`.
+
+Insert this test:
+```json
+{
+  "name": "MTHFR Gene Mutation",
+  "category": "genetics",
+  "description": "Detects mutations in the MTHFR gene (C677T and A1298C variants) that affect folate metabolism, homocysteine processing, and methylation. Elevated homocysteine from MTHFR variants is linked to cardiovascular risk, clotting disorders, and neural tube defects.",
+  "why_it_matters": "MTHFR variants affect how your body processes folate and B vitamins. Knowing your status can guide supplementation (methylfolate vs folic acid) and help explain elevated homocysteine, recurrent pregnancy loss, or cardiovascular risk.",
+  "normal_range": "No mutation detected (wild type)",
+  "unit": "",
+  "cpt_code": "81291",
+  "aliases": ["MTHFR", "MTHFR Mutation", "Methylenetetrahydrofolate Reductase", "MTHFR C677T", "MTHFR A1298C"]
+}
+```
+
+After inserting, print the new test's UUID so we can use it for empowerDX pricing.
+
+Then insert empowerDX pricing:
+- empowerDX lab_id is: `5b498b82-5aea-440c-b5a5-d59960c164a7`
+- Price: $89.00
+- Use the new test's UUID as test_id
+
+Check the `.env.local` file for the service role key.
+
+---
+
+## Commit Instructions
+
+After completing all tasks:
+1. `git config user.email "scotty@houserussell.com" && git config user.name "Scotty Russell"`
+2. `git add -A && git commit -m "feat: import plausibility check, lab visits view, calcium callout, MTHFR test"`
+3. `git push`
+4. `git config user.email "spock@the-forge" && git config user.name "Spock"`
+
+Then notify:
+`openclaw system event --text "Overnight build done: plausibility check, lab visits tab, calcium callout, MTHFR gene test added" --mode now`

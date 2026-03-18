@@ -47,12 +47,34 @@ type Marker = {
   resultCount: number
 }
 
+type VisitMarker = {
+  testName: string
+  value: number
+  unit: string | null
+  ref_range_low: number | null
+  ref_range_high: number | null
+  status: 'in_range' | 'out_of_range' | 'no_range'
+}
+
+type VisitCard = {
+  date: string
+  dateFormatted: string
+  labName: string | null
+  markerCount: number
+  markers: VisitMarker[]
+}
+
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr + 'T12:00:00Z')
   const mo = String(d.getUTCMonth() + 1).padStart(2, '0')
   const day = String(d.getUTCDate()).padStart(2, '0')
   const yr = String(d.getUTCFullYear()).slice(-2)
   return `${mo}/${day}/${yr}`
+}
+
+function formatDateLong(dateStr: string): string {
+  const d = new Date(dateStr + 'T12:00:00Z')
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
 }
 
 function getStatusCategory(result: MarkerResult, goal: MarkerGoal | null): { category: StatusCategory; label: string } {
@@ -121,6 +143,7 @@ const TREND_LABELS: Record<string, string> = {
 }
 
 type FilterKey = 'all' | 'out_of_range' | 'suboptimal' | 'optimal'
+type TabKey = 'results' | 'visits'
 
 function DashboardContent() {
   const supabase = createClient()
@@ -129,9 +152,12 @@ function DashboardContent() {
 
   const [profile, setProfile] = useState<Profile | null>(null)
   const [markers, setMarkers] = useState<Marker[]>([])
+  const [visits, setVisits] = useState<VisitCard[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [activeFilter, setActiveFilter] = useState<FilterKey>('all')
+  const [activeTab, setActiveTab] = useState<TabKey>('results')
+  const [expandedVisits, setExpandedVisits] = useState<Set<string>>(new Set())
   const [upgradeBanner, setUpgradeBanner] = useState(false)
 
   const [showLogModal, setShowLogModal] = useState(false)
@@ -191,6 +217,7 @@ function DashboardContent() {
 
     if (!resultsData || resultsData.length === 0) {
       setMarkers([])
+      setVisits([])
       setLoading(false)
       return
     }
@@ -252,6 +279,46 @@ function DashboardContent() {
     })
 
     setMarkers(markersData)
+
+    // Build visit cards grouped by drawn_at date
+    const byDate: Record<string, { results: MarkerResult[]; labNames: Set<string> }> = {}
+    for (const r of resultsData) {
+      const dateKey = r.drawn_at
+      if (!byDate[dateKey]) byDate[dateKey] = { results: [], labNames: new Set() }
+      byDate[dateKey].results.push(r)
+      if (r.lab_name) byDate[dateKey].labNames.add(r.lab_name)
+    }
+
+    const visitsData: VisitCard[] = Object.entries(byDate)
+      .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
+      .map(([date, { results: dateResults, labNames }]) => {
+        const visitMarkers: VisitMarker[] = dateResults
+          .map(r => {
+            let status: 'in_range' | 'out_of_range' | 'no_range' = 'no_range'
+            if (r.ref_range_low !== null && r.ref_range_high !== null) {
+              status = (r.value < r.ref_range_low || r.value > r.ref_range_high) ? 'out_of_range' : 'in_range'
+            }
+            return {
+              testName: testsById[r.test_id] ?? 'Unknown Test',
+              value: r.value,
+              unit: r.unit,
+              ref_range_low: r.ref_range_low,
+              ref_range_high: r.ref_range_high,
+              status,
+            }
+          })
+          .sort((a, b) => a.testName.localeCompare(b.testName))
+
+        return {
+          date,
+          dateFormatted: formatDateLong(date),
+          labName: labNames.size > 0 ? [...labNames].join(', ') : null,
+          markerCount: dateResults.length,
+          markers: visitMarkers,
+        }
+      })
+
+    setVisits(visitsData)
     setLoading(false)
   }, [supabase])
 
@@ -274,6 +341,15 @@ function DashboardContent() {
     setMarkers(prev => prev.filter(m => m.testId !== deleteConfirm.testId))
     setDeleteConfirm(null)
     setDeleting(false)
+  }
+
+  function toggleVisit(date: string) {
+    setExpandedVisits(prev => {
+      const next = new Set(prev)
+      if (next.has(date)) next.delete(date)
+      else next.add(date)
+      return next
+    })
   }
 
   // Filter markers by search + status filter
@@ -357,148 +433,279 @@ function DashboardContent() {
             </div>
           </div>
 
-          {markers.length === 0 ? (
-            /* Empty state */
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#e0ebe9] py-16 px-8 text-center">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2d6a5e]/10">
-                <svg className="h-7 w-7 text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                </svg>
-              </div>
-              <h2 className="text-lg font-semibold text-[#1a2e2b]">No results yet</h2>
-              <p className="mt-2 max-w-sm text-sm text-[#577572]">
-                Upload a lab report or log a result to get started.
-              </p>
-              <button
-                onClick={() => setShowPdfImportModal(true)}
-                className="mt-4 rounded-xl bg-[#2d6a5e] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
-              >
-                Upload Lab Report
-              </button>
-            </div>
-          ) : (
+          {/* Tab bar */}
+          <div className="flex gap-1 mb-5 border-b border-[#e0ebe9]">
+            <button
+              onClick={() => setActiveTab('results')}
+              className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                activeTab === 'results'
+                  ? 'border-[#2d6a5e] text-[#2d6a5e]'
+                  : 'border-transparent text-[#577572] hover:text-[#1a2e2b]'
+              }`}
+            >
+              My Results
+            </button>
+            <button
+              onClick={() => setActiveTab('visits')}
+              className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                activeTab === 'visits'
+                  ? 'border-[#2d6a5e] text-[#2d6a5e]'
+                  : 'border-transparent text-[#577572] hover:text-[#1a2e2b]'
+              }`}
+            >
+              Lab Visits
+            </button>
+          </div>
+
+          {/* My Results tab */}
+          {activeTab === 'results' && (
             <>
-              {/* Search bar */}
-              <div className="mb-4">
-                <input
-                  type="text"
-                  placeholder="Search your tests..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-[#e0ebe9] px-4 py-2.5 text-sm placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
-                />
-              </div>
-
-              {/* Filter pills */}
-              <div className="flex gap-2 mb-5 text-xs flex-wrap">
-                <button
-                  onClick={() => setActiveFilter('all')}
-                  className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
-                    activeFilter === 'all'
-                      ? 'bg-[#2d6a5e] text-white'
-                      : 'bg-[#f0f7f6] text-[#577572] hover:bg-[#e0ebe9]'
-                  }`}
-                >
-                  All ({counts.all})
-                </button>
-                {counts.out_of_range > 0 && (
-                  <button
-                    onClick={() => setActiveFilter('out_of_range')}
-                    className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
-                      activeFilter === 'out_of_range'
-                        ? 'bg-[#b85c5c] text-white'
-                        : 'bg-[#b85c5c]/10 text-[#b85c5c] hover:bg-[#b85c5c]/20'
-                    }`}
-                  >
-                    Out of range ({counts.out_of_range})
-                  </button>
-                )}
-                {counts.suboptimal > 0 && (
-                  <button
-                    onClick={() => setActiveFilter('suboptimal')}
-                    className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
-                      activeFilter === 'suboptimal'
-                        ? 'bg-[#c59030] text-white'
-                        : 'bg-[#c59030]/10 text-[#c59030] hover:bg-[#c59030]/20'
-                    }`}
-                  >
-                    Suboptimal ({counts.suboptimal})
-                  </button>
-                )}
-                {counts.optimal > 0 && (
-                  <button
-                    onClick={() => setActiveFilter('optimal')}
-                    className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
-                      activeFilter === 'optimal'
-                        ? 'bg-[#2d6a5e] text-white'
-                        : 'bg-[#2d6a5e]/10 text-[#2d6a5e] hover:bg-[#2d6a5e]/20'
-                    }`}
-                  >
-                    Optimal ({counts.optimal})
-                  </button>
-                )}
-              </div>
-
-              {/* Marker rows */}
-              <div className="divide-y divide-[#e0ebe9] rounded-xl border border-[#e0ebe9]">
-                {filteredMarkers.map((marker) => {
-                  const config = STATUS_CONFIG[marker.statusCategory]
-                  return (
-                    <div
-                      key={marker.testId}
-                      onClick={() => router.push(`/dashboard/tracker/${marker.testId}`)}
-                      className="group flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] cursor-pointer transition-colors"
-                    >
-                      {/* Left: dot + name */}
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className={`w-2 h-2 rounded-full ${config.dot} flex-shrink-0`} />
-                        <span className="font-medium text-[#1a2e2b] truncate">{marker.testName}</span>
-                      </div>
-
-                      {/* Right: value, trend, status pill, date, delete, chevron */}
-                      <div className="flex items-center gap-4 flex-shrink-0">
-                        <span className="hidden sm:inline text-sm font-semibold text-[#1a2e2b] w-24 text-left">
-                          {marker.latestValue}{marker.unit ? ` ${marker.unit}` : ''}
-                        </span>
-                        <span
-                          className="hidden md:inline text-xs text-[#577572] w-12 text-center"
-                          title={TREND_LABELS[marker.trend]}
-                        >
-                          {marker.trend}
-                        </span>
-                        <span className={`text-xs font-medium ${config.pillText} ${config.pillBg} px-2 py-0.5 rounded-full w-24 text-center hidden sm:inline-block`}>
-                          {marker.statusLabel}
-                        </span>
-                        <span className="hidden lg:inline text-xs text-[#577572] w-16 text-right">{marker.date}</span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setDeleteConfirm({ testId: marker.testId, testName: marker.testName, resultCount: marker.resultCount })
-                          }}
-                          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded-lg text-[#577572] hover:text-[#b85c5c] hover:bg-[#b85c5c]/10 transition-all flex-shrink-0"
-                          title="Delete test results"
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                          </svg>
-                        </button>
-                        <svg className="w-4 h-4 text-[#577572] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </div>
-                  )
-                })}
-                {filteredMarkers.length === 0 && (
-                  <div className="px-4 py-8 text-center text-sm text-[#577572]">
-                    No markers match your search.
+              {markers.length === 0 ? (
+                /* Empty state */
+                <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#e0ebe9] py-16 px-8 text-center">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2d6a5e]/10">
+                    <svg className="h-7 w-7 text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                    </svg>
                   </div>
-                )}
-              </div>
+                  <h2 className="text-lg font-semibold text-[#1a2e2b]">No results yet</h2>
+                  <p className="mt-2 max-w-sm text-sm text-[#577572]">
+                    Upload a lab report or log a result to get started.
+                  </p>
+                  <button
+                    onClick={() => setShowPdfImportModal(true)}
+                    className="mt-4 rounded-xl bg-[#2d6a5e] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
+                  >
+                    Upload Lab Report
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {/* Search bar */}
+                  <div className="mb-4">
+                    <input
+                      type="text"
+                      placeholder="Search your tests..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full rounded-xl border border-[#e0ebe9] px-4 py-2.5 text-sm placeholder-[#577572] focus:border-[#2d6a5e] focus:outline-none"
+                    />
+                  </div>
 
-              <p className="text-xs text-[#577572] text-center mt-4">
-                Click any row for trend charts, range details, and full history
-              </p>
+                  {/* Filter pills */}
+                  <div className="flex gap-2 mb-5 text-xs flex-wrap">
+                    <button
+                      onClick={() => setActiveFilter('all')}
+                      className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+                        activeFilter === 'all'
+                          ? 'bg-[#2d6a5e] text-white'
+                          : 'bg-[#f0f7f6] text-[#577572] hover:bg-[#e0ebe9]'
+                      }`}
+                    >
+                      All ({counts.all})
+                    </button>
+                    {counts.out_of_range > 0 && (
+                      <button
+                        onClick={() => setActiveFilter('out_of_range')}
+                        className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+                          activeFilter === 'out_of_range'
+                            ? 'bg-[#b85c5c] text-white'
+                            : 'bg-[#b85c5c]/10 text-[#b85c5c] hover:bg-[#b85c5c]/20'
+                        }`}
+                      >
+                        Out of range ({counts.out_of_range})
+                      </button>
+                    )}
+                    {counts.suboptimal > 0 && (
+                      <button
+                        onClick={() => setActiveFilter('suboptimal')}
+                        className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+                          activeFilter === 'suboptimal'
+                            ? 'bg-[#c59030] text-white'
+                            : 'bg-[#c59030]/10 text-[#c59030] hover:bg-[#c59030]/20'
+                        }`}
+                      >
+                        Suboptimal ({counts.suboptimal})
+                      </button>
+                    )}
+                    {counts.optimal > 0 && (
+                      <button
+                        onClick={() => setActiveFilter('optimal')}
+                        className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+                          activeFilter === 'optimal'
+                            ? 'bg-[#2d6a5e] text-white'
+                            : 'bg-[#2d6a5e]/10 text-[#2d6a5e] hover:bg-[#2d6a5e]/20'
+                        }`}
+                      >
+                        Optimal ({counts.optimal})
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Marker rows */}
+                  <div className="divide-y divide-[#e0ebe9] rounded-xl border border-[#e0ebe9]">
+                    {filteredMarkers.map((marker) => {
+                      const config = STATUS_CONFIG[marker.statusCategory]
+                      return (
+                        <div
+                          key={marker.testId}
+                          onClick={() => router.push(`/dashboard/tracker/${marker.testId}`)}
+                          className="group flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] cursor-pointer transition-colors"
+                        >
+                          {/* Left: dot + name */}
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <div className={`w-2 h-2 rounded-full ${config.dot} flex-shrink-0`} />
+                            <span className="font-medium text-[#1a2e2b] truncate">{marker.testName}</span>
+                          </div>
+
+                          {/* Right: value, trend, status pill, date, delete, chevron */}
+                          <div className="flex items-center gap-4 flex-shrink-0">
+                            <span className="hidden sm:inline text-sm font-semibold text-[#1a2e2b] w-24 text-left">
+                              {marker.latestValue}{marker.unit ? ` ${marker.unit}` : ''}
+                            </span>
+                            <span
+                              className="hidden md:inline text-xs text-[#577572] w-12 text-center"
+                              title={TREND_LABELS[marker.trend]}
+                            >
+                              {marker.trend}
+                            </span>
+                            <span className={`text-xs font-medium ${config.pillText} ${config.pillBg} px-2 py-0.5 rounded-full w-24 text-center hidden sm:inline-block`}>
+                              {marker.statusLabel}
+                            </span>
+                            <span className="hidden lg:inline text-xs text-[#577572] w-16 text-right">{marker.date}</span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setDeleteConfirm({ testId: marker.testId, testName: marker.testName, resultCount: marker.resultCount })
+                              }}
+                              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded-lg text-[#577572] hover:text-[#b85c5c] hover:bg-[#b85c5c]/10 transition-all flex-shrink-0"
+                              title="Delete test results"
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                              </svg>
+                            </button>
+                            <svg className="w-4 h-4 text-[#577572] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                        </div>
+                      )
+                    })}
+                    {filteredMarkers.length === 0 && (
+                      <div className="px-4 py-8 text-center text-sm text-[#577572]">
+                        No markers match your search.
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-[#577572] text-center mt-4">
+                    Click any row for trend charts, range details, and full history
+                  </p>
+                </>
+              )}
+            </>
+          )}
+
+          {/* Lab Visits tab */}
+          {activeTab === 'visits' && (
+            <>
+              {visits.length === 0 ? (
+                <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#e0ebe9] py-16 px-8 text-center">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2d6a5e]/10">
+                    <svg className="h-7 w-7 text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                    </svg>
+                  </div>
+                  <h2 className="text-lg font-semibold text-[#1a2e2b]">No lab visits yet</h2>
+                  <p className="mt-2 max-w-sm text-sm text-[#577572]">
+                    Upload a lab report to see your results grouped by visit date.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {visits.map((visit) => {
+                    const isExpanded = expandedVisits.has(visit.date)
+                    return (
+                      <div
+                        key={visit.date}
+                        className="rounded-xl border border-[#e0ebe9] overflow-hidden"
+                      >
+                        {/* Visit header */}
+                        <button
+                          onClick={() => toggleVisit(visit.date)}
+                          className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-[#f0f7f6] transition-colors text-left"
+                        >
+                          <div className="min-w-0">
+                            <p className="font-semibold text-[#1a2e2b]">{visit.dateFormatted}</p>
+                            {visit.labName && (
+                              <p className="text-xs text-[#577572] mt-0.5">{visit.labName}</p>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3 flex-shrink-0">
+                            <span className="text-xs text-[#577572]">
+                              {visit.markerCount} marker{visit.markerCount !== 1 ? 's' : ''}
+                            </span>
+                            <svg
+                              className={`w-4 h-4 text-[#577572] transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                        </button>
+
+                        {/* Expanded marker table */}
+                        {isExpanded && (
+                          <div className="border-t border-[#e0ebe9]">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="bg-[#faf8f5] text-[#4a6b67] text-xs">
+                                  <th className="px-4 py-2 text-left font-medium">Marker</th>
+                                  <th className="px-4 py-2 text-left font-medium">Value</th>
+                                  <th className="px-4 py-2 text-left font-medium">Unit</th>
+                                  <th className="px-4 py-2 text-left font-medium">Status</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {visit.markers.map((m, i) => (
+                                  <tr
+                                    key={i}
+                                    className={`border-t border-[#e0ebe9] ${i % 2 === 1 ? 'bg-[#faf8f5]/50' : ''}`}
+                                  >
+                                    <td className="px-4 py-2 text-[#1a2e2b] font-medium">{m.testName}</td>
+                                    <td className="px-4 py-2 text-[#1a2e2b]">{m.value}</td>
+                                    <td className="px-4 py-2 text-[#577572]">{m.unit || '—'}</td>
+                                    <td className="px-4 py-2">
+                                      {m.status === 'in_range' && (
+                                        <span className="inline-flex items-center gap-1 text-xs font-medium text-[#2d6a5e]">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-[#2d6a5e]" />
+                                          In Range
+                                        </span>
+                                      )}
+                                      {m.status === 'out_of_range' && (
+                                        <span className="inline-flex items-center gap-1 text-xs font-medium text-[#b85c5c]">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-[#b85c5c]" />
+                                          Out of Range
+                                        </span>
+                                      )}
+                                      {m.status === 'no_range' && (
+                                        <span className="text-xs text-[#577572]">—</span>
+                                      )}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </>
           )}
         </div>
