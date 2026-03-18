@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { execSync } from 'child_process'
-import { writeFileSync, unlinkSync } from 'fs'
-import { tmpdir } from 'os'
-import { join } from 'path'
 
 // Use internal path to avoid pdf-parse test file lookup (fails in serverless/Vercel)
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -260,6 +256,14 @@ function matchTest(rawName: string, tests: TestRecord[]): TestRecord | null {
 
 function getPdftotextLayout(pdfBuffer: Buffer): string | null {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { execSync } = require('child_process')
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { writeFileSync, unlinkSync } = require('fs')
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { tmpdir } = require('os')
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { join } = require('path')
     const tmpFile = join(tmpdir(), `cpl-${Date.now()}.pdf`)
     writeFileSync(tmpFile, pdfBuffer)
     const result = execSync(`pdftotext -layout "${tmpFile}" -`, {
