@@ -148,8 +148,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
     else setError('Please drop a PDF file.')
   }
 
-  if (!isOpen) return null
-
+  // useMemo must be called unconditionally — before any early returns
   const plausibilityFlags = useMemo(() => {
     if (results.length === 0) return []
     return checkPlausibility(
@@ -160,6 +159,8 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
       }))
     )
   }, [results])
+
+  if (!isOpen) return null
 
   const selectedCount = results.filter(r => r.selected && r.matchedTest).length
 

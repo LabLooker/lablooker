@@ -197,8 +197,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
     }
   }
 
-  if (!isOpen) return null
-
+  // useMemo must be called unconditionally — before any early returns
   const plausibilityFlags = useMemo(() => {
     if (rows.length === 0) return []
     return checkPlausibility(
@@ -209,6 +208,8 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
       }))
     )
   }, [rows])
+
+  if (!isOpen) return null
 
   const readyCount = rows.filter((r) => r.status === 'ready').length
   const noMatchCount = rows.filter((r) => r.status === 'no_match').length
