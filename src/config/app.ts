@@ -88,7 +88,7 @@ export const APP_CONFIG = {
     },
     {
       q: 'Is my data private?',
-      a: "We don't store your search history or health data. No account is required to search.",
+      a: "No account is needed to search, compare, or translate — and we never store anonymous search history. Premium members who use Track Results voluntarily save their own lab results to their private account. That data is yours alone, never sold or shared, and can be deleted at any time from your settings.",
     },
     {
       q: 'What states is LabLooker available in?',
