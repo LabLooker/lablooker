@@ -540,8 +540,13 @@ export default function ComparePage() {
                             <p className="mt-0.5 text-[11px] text-[#577572]">{p.notes}</p>
                           )}
                         </div>
-                        <div className="ml-4 flex shrink-0 items-center gap-3">
-                          <span className="text-sm font-bold text-[#1a2e2b]">${p.price.toFixed(2)}</span>
+                        <div className="ml-4 flex shrink-0 flex-col items-end gap-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-[#1a2e2b]">${p.price.toFixed(2)}</span>
+                          </div>
+                          {p.lab_name === 'DrSays' && (
+                            <span className="text-[10px] font-medium text-amber-600">+ $9.99 draw fee</span>
+                          )}
                           {orderUrl && !isRestricted && (
                             <a
                               href={orderUrl}
