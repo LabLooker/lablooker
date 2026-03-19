@@ -47,6 +47,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
   const [importedCount, setImportedCount] = useState(0)
   const [error, setError] = useState('')
   const [dragOver, setDragOver] = useState(false)
+  const [physicianName, setPhysicianName] = useState('')
 
   function handleClose() {
     setStep('upload')
@@ -55,6 +56,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
     setCollectedDate(null)
     setError('')
     setImportedCount(0)
+    setPhysicianName('')
     onClose()
   }
 
@@ -105,6 +107,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
 
     const selectedRows = results.filter(r => r.selected && r.matchedTest)
     const importSessionId = crypto.randomUUID()
+    const trimmedPhysician = physicianName.trim() || null
     const inserts = selectedRows.map(r => ({
       user_id: user.id,
       test_id: r.matchedTest!.id,
@@ -116,12 +119,13 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
       ref_range_low: r.referenceRange ? parseRefLow(r.referenceRange) : null,
       ref_range_high: r.referenceRange ? parseRefHigh(r.referenceRange) : null,
       import_session_id: importSessionId,
+      physician_name: trimmedPhysician,
     }))
 
-    // Try with import_session_id first; fall back without it if column doesn't exist yet
+    // Try with all columns first; fall back without newer columns if they don't exist yet
     let insertResult = await supabase.from('lab_results').insert(inserts)
-    if (insertResult.error && insertResult.error.message.includes('import_session_id')) {
-      const fallbackInserts = inserts.map(({ import_session_id, ...rest }) => rest)
+    if (insertResult.error && (insertResult.error.message.includes('import_session_id') || insertResult.error.message.includes('physician_name'))) {
+      const fallbackInserts = inserts.map(({ import_session_id, physician_name, ...rest }) => rest)
       insertResult = await supabase.from('lab_results').insert(fallbackInserts)
     }
     const insertError = insertResult.error
@@ -243,6 +247,20 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                 Found <span className="font-semibold text-[#1a2e2b]">{results.length} results</span>
                 {collectedDate && <> from <span className="font-semibold text-[#1a2e2b]">{collectedDate}</span></>}
               </p>
+
+              <div>
+                <label htmlFor="physician-name" className="block text-xs font-medium text-[#4a6b67] mb-1">
+                  Prescribing physician (optional)
+                </label>
+                <input
+                  id="physician-name"
+                  type="text"
+                  value={physicianName}
+                  onChange={(e) => setPhysicianName(e.target.value)}
+                  placeholder="e.g. Dr. Smith"
+                  className="w-full rounded-lg border border-[#e0ebe9] px-3 py-2 text-sm placeholder-[#577572]/50 focus:border-[#2d6a5e] focus:outline-none"
+                />
+              </div>
 
               <div className="overflow-x-auto rounded-lg border border-[#e0ebe9]">
                 <table className="w-full text-xs">
