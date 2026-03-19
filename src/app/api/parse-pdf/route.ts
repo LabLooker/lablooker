@@ -156,6 +156,13 @@ const ALIASES: Record<string, string> = {
   'lipoprotein a': 'lipoprotein(a) [lp(a)]',
   'apolipoprotein b': 'apolipoprotein b (apob)',
   'apob': 'apolipoprotein b (apob)',
+  // CPL / Sonic Healthcare aliases
+  'follicle stim hormone': 'fsh (follicle-stimulating hormone)',
+  'sex horm bind globulin': 'shbg',
+  'calc free testosterone': 'testosterone, free (calculated)',
+  'dihydrotestosterone': 'dihydrotestosterone (dht)',
+  'anti-mullerian hormone': 'amh (anti-mullerian hormone)',
+  'anti mullerian hormone': 'amh (anti-mullerian hormone)',
 }
 
 const UNITS_PATTERN = '(?:ng\\/mL|mIU\\/L|pg\\/mL|mg\\/dL|g\\/dL|IU\\/L|U\\/L|mmol\\/L|umol\\/L|mcg\\/dL|nmol\\/L|mEq\\/L|%|mIU\\/mL|IU\\/mL|ng\\/dL|mcg\\/L|nmol\\/mL|cells\\/uL|cells\\/mcL|10\\^3\\/uL|10\\^6\\/uL|K\\/uL|M\\/uL|fL|pg|g\\/L|mg\\/L|ug\\/dL|pmol\\/L|mL\\/min\\/1\\.73m2|mL\\/min|mm\\/hr|mg\\/24hr|mU\\/L|uIU\\/mL|x10E3\\/uL|x10E6\\/uL|thou\\/uL|mill\\/uL|Thousand\\/uL|Million\\/uL|10\\*3\\/uL|10\\*6\\/uL)'
@@ -247,6 +254,164 @@ function matchTest(rawName: string, tests: TestRecord[]): TestRecord | null {
   if (fuzzy) return fuzzy
 
   return null
+}
+
+// ─── CPL / Sonic Healthcare format detection & parser ───
+
+function isCPLFormat(text: string): boolean {
+  const topText = text.split('\n').slice(0, 50).join('\n').toLowerCase()
+  return (
+    topText.includes('clinical pathology lab') ||
+    topText.includes('sonic healthcare') ||
+    topText.includes('testing performed at')
+  )
+}
+
+function shouldSkipCPLRow(text: string): boolean {
+  const t = text.trim()
+  if (!t) return true
+
+  // Header/footer lines
+  if (/clinical pathology lab/i.test(t)) return true
+  if (/9200 wall/i.test(t)) return true
+  if (/512-339/i.test(t)) return true
+  if (/report status/i.test(t)) return true
+  if (/sonic healthcare/i.test(t)) return true
+
+  // Page metadata
+  if (/page\s+\d+\s+of\s+\d+/i.test(t)) return true
+  if (/clia\s*no/i.test(t)) return true
+  if (/cap\s*accreditation/i.test(t)) return true
+
+  // Interpretive text blocks
+  if (/this test was/i.test(t)) return true
+  if (/determined by sonic/i.test(t)) return true
+  if (/interpretive/i.test(t)) return true
+
+  // Reference range phase/gender labels
+  if (/^(follicular|ovulation|luteal|postmenopausal|premenopausal|prepubertal|mid-cycle|male\s|female\s|adult\s)/i.test(t)) return true
+
+  // Age/gender range rows: "18-29  10.0-38.0"
+  if (/^\d{1,2}\s*[-–]\s*\d{1,2}\s+/.test(t)) return true
+
+  // Dot leaders
+  if (/\.\s+\./.test(t)) return true
+
+  // Patient info (generic patterns)
+  if (/^dob:/i.test(t)) return true
+  if (/^fasting:/i.test(t)) return true
+
+  // Column headers
+  if (/^(in\s*range|out\s*(of\s*)?range|reference\s*range|analyte)/i.test(t)) return true
+
+  // Panel headers: lines ending in PROFILE or containing FREE/TOTAL WITH SHBG
+  if (/profile$/i.test(t)) return true
+  if (/free\/total with shbg/i.test(t)) return true
+
+  // Testing location label
+  if (/testing performed at/i.test(t)) return true
+
+  return false
+}
+
+async function parseCPLPdf(buffer: ArrayBuffer): Promise<ParsedResult[]> {
+  // Dynamic import — pdfjs-dist is pure JS, Vercel-safe
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pdfjsLib: any = await import('pdfjs-dist/legacy/build/pdf.mjs')
+
+  const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise
+  const results: ParsedResult[] = []
+  const seen = new Set<string>()
+
+  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+    const page = await pdf.getPage(pageNum)
+    const textContent = await page.getTextContent()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const allItems: any[] = textContent.items.filter((i: any) => i.str && i.str.trim())
+
+    // Detect column boundaries from header row on this page
+    let nameMaxX = 200
+    let valueMaxX = 350
+
+    for (const item of allItems) {
+      const str = item.str.trim()
+      const x = item.transform[4]
+      if (/^In\s*Range$/i.test(str)) nameMaxX = x - 15
+      if (/^Reference\s*Range$/i.test(str) || /^Ref\.?\s*Range$/i.test(str)) valueMaxX = x - 15
+    }
+
+    // Group items by y-coordinate (within 3px tolerance = same row)
+    const rowMap = new Map<number, typeof allItems>()
+    for (const item of allItems) {
+      const y: number = item.transform[5]
+      let matchedY = y
+      for (const existingY of rowMap.keys()) {
+        if (Math.abs(existingY - y) <= 3) {
+          matchedY = existingY
+          break
+        }
+      }
+      if (!rowMap.has(matchedY)) rowMap.set(matchedY, [])
+      rowMap.get(matchedY)!.push(item)
+    }
+
+    // Process rows top-to-bottom (descending y in PDF coordinates)
+    const sortedRows = [...rowMap.entries()].sort(([a], [b]) => b - a)
+
+    for (const [, rowItems] of sortedRows) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const sorted = rowItems.sort((a: any, b: any) => a.transform[4] - b.transform[4])
+      const rowText = sorted.map((i: { str: string }) => i.str.trim()).join(' ')
+
+      if (shouldSkipCPLRow(rowText)) continue
+
+      // Separate into columns by x position
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const nameItems = sorted.filter((i: any) => i.transform[4] < nameMaxX)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const valueItems = sorted.filter((i: any) => i.transform[4] >= nameMaxX && i.transform[4] < valueMaxX)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const refItems = sorted.filter((i: any) => i.transform[4] >= valueMaxX)
+
+      const testName = nameItems.map((i: { str: string }) => i.str.trim()).join(' ').trim()
+      if (!testName || testName.length < 2) continue
+      if (/^\d/.test(testName)) continue // Skip age/gender range rows
+
+      // Extract numeric value from middle column
+      const valueStr = valueItems.map((i: { str: string }) => i.str.trim()).join(' ').trim()
+      const numMatch = valueStr.match(/^[<>]?\s*(\d+\.?\d*)$/)
+      if (!numMatch) continue
+      const value = parseFloat(numMatch[1])
+      if (isNaN(value)) continue
+
+      // Extract reference range and unit from right column
+      const refStr = refItems.map((i: { str: string }) => i.str.trim()).join(' ').trim()
+      let unit = ''
+      let referenceRange: string | null = null
+
+      // "low - high unit" pattern
+      const rangeUnitMatch = refStr.match(/([\d.]+)\s*[-–]\s*([\d.]+)\s*(.*)/)
+      if (rangeUnitMatch) {
+        referenceRange = `${rangeUnitMatch[1]}-${rangeUnitMatch[2]}`
+        unit = rangeUnitMatch[3]?.trim() || ''
+      } else {
+        // "< value unit" or "> value unit"
+        const ineqMatch = refStr.match(/([<>]=?\s*[\d.]+)\s*(.*)/)
+        if (ineqMatch) {
+          referenceRange = ineqMatch[1].replace(/\s/g, '')
+          unit = ineqMatch[2]?.trim() || ''
+        }
+      }
+
+      const key = `${testName.toLowerCase()}|${value}`
+      if (!seen.has(key)) {
+        seen.add(key)
+        results.push({ rawTestName: testName, value, unit, referenceRange, matchedTest: null })
+      }
+    }
+  }
+
+  return results
 }
 
 function parseLabResults(text: string): ParsedResult[] {
@@ -493,7 +658,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'File too large (max 10MB)' }, { status: 400 })
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer())
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
     const pdf = await pdfParse(buffer)
     const text = pdf.text
 
@@ -504,8 +670,13 @@ export async function POST(req: NextRequest) {
     // Extract date
     const collectedDate = extractDate(text)
 
-    // Parse results
-    const results = parseLabResults(text)
+    // Parse results — auto-detect format
+    let results: ParsedResult[]
+    if (isCPLFormat(text)) {
+      results = await parseCPLPdf(arrayBuffer)
+    } else {
+      results = parseLabResults(text)
+    }
 
     // Fetch all tests for matching
     const { data: allTests } = await getSupabase()
