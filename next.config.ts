@@ -1,8 +1,18 @@
-// cache-bust: force fresh build after stale chunk corruption
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ['pdf-parse'],
+  async headers() {
+    return [
+      {
+        // Prevent edge caching of HTML pages — static assets are still cached via _next/static
+        source: '/((?!_next/static|_next/image|favicon|.*\\..*).*)',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store' },
+        ],
+      },
+    ]
+  },
   async redirects() {
     return [
       {
