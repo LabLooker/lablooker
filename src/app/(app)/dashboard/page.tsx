@@ -25,6 +25,8 @@ type MarkerResult = {
   ref_range_low: number | null
   ref_range_high: number | null
   notes: string | null
+  import_session_id: string | null
+  physician_name: string | null
 }
 
 type MarkerGoal = {
@@ -61,8 +63,10 @@ type VisitCard = {
   date: string
   dateFormatted: string
   labName: string | null
+  physicianName: string | null
   markerCount: number
   markers: VisitMarker[]
+  importSessionIds: string[]
 }
 
 function formatDate(dateStr: string): string {
@@ -180,6 +184,8 @@ function DashboardContent() {
   const [deactivatingShare, setDeactivatingShare] = useState<string | null>(null)
   const [deactivateConfirm, setDeactivateConfirm] = useState<string | null>(null)
   const [shareCopied, setShareCopied] = useState<string | null>(null)
+  const [visitDeleteConfirm, setVisitDeleteConfirm] = useState<{ date: string; importSessionIds: string[]; markerCount: number } | null>(null)
+  const [visitDeleting, setVisitDeleting] = useState(false)
 
   // Handle ?upgraded=true — fallback premium activation if webhook didn't fire
   useEffect(() => {
@@ -220,7 +226,7 @@ function DashboardContent() {
     // Load all lab results
     const { data: resultsData } = await supabase
       .from('lab_results')
-      .select('id, test_id, value, unit, drawn_at, lab_name, ref_range_low, ref_range_high, notes')
+      .select('id, test_id, value, unit, drawn_at, lab_name, ref_range_low, ref_range_high, notes, import_session_id, physician_name')
       .eq('user_id', user.id)
       .order('drawn_at', { ascending: false })
 
@@ -296,17 +302,19 @@ function DashboardContent() {
     setMarkers(markersData)
 
     // Build visit cards grouped by drawn_at date
-    const byDate: Record<string, { results: MarkerResult[]; labNames: Set<string> }> = {}
+    const byDate: Record<string, { results: MarkerResult[]; labNames: Set<string>; sessionIds: Set<string>; physicianNames: Set<string> }> = {}
     for (const r of resultsData) {
       const dateKey = r.drawn_at
-      if (!byDate[dateKey]) byDate[dateKey] = { results: [], labNames: new Set() }
+      if (!byDate[dateKey]) byDate[dateKey] = { results: [], labNames: new Set(), sessionIds: new Set(), physicianNames: new Set() }
       byDate[dateKey].results.push(r)
       if (r.lab_name) byDate[dateKey].labNames.add(r.lab_name)
+      if (r.import_session_id) byDate[dateKey].sessionIds.add(r.import_session_id)
+      if (r.physician_name) byDate[dateKey].physicianNames.add(r.physician_name)
     }
 
     const visitsData: VisitCard[] = Object.entries(byDate)
       .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
-      .map(([date, { results: dateResults, labNames }]) => {
+      .map(([date, { results: dateResults, labNames, sessionIds, physicianNames }]) => {
         const visitMarkers: VisitMarker[] = dateResults
           .map(r => {
             let status: 'in_range' | 'out_of_range' | 'no_range' = 'no_range'
@@ -328,8 +336,10 @@ function DashboardContent() {
           date,
           dateFormatted: formatDateLong(date),
           labName: labNames.size > 0 ? [...labNames].join(', ') : null,
+          physicianName: physicianNames.size > 0 ? [...physicianNames].join(', ') : null,
           markerCount: dateResults.length,
           markers: visitMarkers,
+          importSessionIds: [...sessionIds],
         }
       })
 
@@ -367,6 +377,26 @@ function DashboardContent() {
     setMarkers(prev => prev.filter(m => m.testId !== deleteConfirm.testId))
     setDeleteConfirm(null)
     setDeleting(false)
+  }
+
+  async function handleDeleteVisit() {
+    if (!visitDeleteConfirm) return
+    setVisitDeleting(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setVisitDeleting(false); return }
+
+    const { importSessionIds } = visitDeleteConfirm
+    if (importSessionIds.length > 0) {
+      await supabase
+        .from('lab_results')
+        .delete()
+        .eq('user_id', user.id)
+        .in('import_session_id', importSessionIds)
+    }
+
+    setVisitDeleteConfirm(null)
+    setVisitDeleting(false)
+    loadData()
   }
 
   function toggleVisit(date: string) {
@@ -715,30 +745,45 @@ function DashboardContent() {
                         className="rounded-xl border border-[#e0ebe9] overflow-hidden"
                       >
                         {/* Visit header */}
-                        <button
-                          onClick={() => toggleVisit(visit.date)}
-                          className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-[#f0f7f6] transition-colors text-left"
-                        >
-                          <div className="min-w-0">
-                            <p className="font-semibold text-[#1a2e2b]">{visit.dateFormatted}</p>
-                            {visit.labName && (
-                              <p className="text-xs text-[#577572] mt-0.5">{visit.labName}</p>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-3 flex-shrink-0">
-                            <span className="text-xs text-[#577572]">
-                              {visit.markerCount} marker{visit.markerCount !== 1 ? 's' : ''}
-                            </span>
-                            <svg
-                              className={`w-4 h-4 text-[#577572] transition-transform ${isExpanded ? 'rotate-90' : ''}`}
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
+                        <div className="group/visit flex items-center">
+                          <button
+                            onClick={() => toggleVisit(visit.date)}
+                            className="flex-1 flex items-center justify-between px-4 py-3.5 hover:bg-[#f0f7f6] transition-colors text-left"
+                          >
+                            <div className="min-w-0">
+                              <p className="font-semibold text-[#1a2e2b]">{visit.dateFormatted}</p>
+                              {(visit.labName || visit.physicianName) && (
+                                <p className="text-xs text-[#577572] mt-0.5">
+                                  {[visit.labName, visit.physicianName].filter(Boolean).join(' · ')}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3 flex-shrink-0">
+                              <span className="text-xs text-[#577572]">
+                                {visit.markerCount} marker{visit.markerCount !== 1 ? 's' : ''}
+                              </span>
+                              <svg
+                                className={`w-4 h-4 text-[#577572] transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </div>
+                          </button>
+                          {visit.importSessionIds.length > 0 && (
+                            <button
+                              onClick={() => setVisitDeleteConfirm({ date: visit.date, importSessionIds: visit.importSessionIds, markerCount: visit.markerCount })}
+                              className="opacity-100 sm:opacity-0 sm:group-hover/visit:opacity-100 p-2 mr-2 rounded-lg text-[#577572] hover:text-[#b85c5c] hover:bg-[#b85c5c]/10 transition-all flex-shrink-0"
+                              title="Delete this import"
                             >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </div>
-                        </button>
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
 
                         {/* Expanded marker table */}
                         {isExpanded && (
@@ -895,7 +940,7 @@ function DashboardContent() {
         tests={markers.map(m => ({ testId: m.testId, testName: m.testName }))}
       />
 
-      {/* Delete confirmation modal */}
+      {/* Delete confirmation modal (single test) */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-sm rounded-2xl border border-[#e0ebe9] bg-white p-6 shadow-xl">
@@ -917,6 +962,38 @@ function DashboardContent() {
                 className="rounded-xl bg-[#b85c5c] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#a04e4e] disabled:opacity-60"
               >
                 {deleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete import session confirmation modal */}
+      {visitDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div
+            className="w-full max-w-sm rounded-2xl border border-[#e0ebe9] bg-white p-6 shadow-xl"
+            onKeyDown={(e) => { if (e.key === 'Enter' && !visitDeleting) handleDeleteVisit() }}
+          >
+            <h3 className="text-lg font-semibold text-[#1a2e2b]">Delete this import?</h3>
+            <p className="mt-2 text-sm text-[#577572]">
+              This will remove all {visitDeleteConfirm.markerCount} result{visitDeleteConfirm.markerCount !== 1 ? 's' : ''} from this lab visit. This cannot be undone.
+            </p>
+            <div className="mt-5 flex gap-3 justify-end">
+              <button
+                onClick={() => setVisitDeleteConfirm(null)}
+                disabled={visitDeleting}
+                autoFocus
+                className="rounded-xl border border-[#e0ebe9] px-4 py-2 text-sm font-medium text-[#577572] transition-colors hover:bg-[#faf8f5]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteVisit}
+                disabled={visitDeleting}
+                className="rounded-xl bg-[#b85c5c] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#a04e4e] disabled:opacity-60"
+              >
+                {visitDeleting ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>
