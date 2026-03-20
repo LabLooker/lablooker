@@ -315,6 +315,19 @@ function shouldSkipCPLRow(text: string): boolean {
 }
 
 async function parseCPLPdf(buffer: ArrayBuffer): Promise<ParsedResult[]> {
+  // Polyfill DOMMatrix — not available in Node.js / Vercel serverless, but required by pdfjs-dist
+  if (typeof globalThis.DOMMatrix === 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(globalThis as any).DOMMatrix = class {
+      a = 1; b = 0; c = 0; d = 1; e = 0; f = 0
+      constructor(init?: number[]) {
+        if (Array.isArray(init) && init.length >= 6) {
+          [this.a, this.b, this.c, this.d, this.e, this.f] = init
+        }
+      }
+    }
+  }
+
   // Dynamic import — pdfjs-dist is pure JS, Vercel-safe
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pdfjsLib: any = await import('pdfjs-dist/legacy/build/pdf.mjs')
