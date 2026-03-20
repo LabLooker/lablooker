@@ -314,58 +314,50 @@ function shouldSkipCPLRow(text: string): boolean {
   return false
 }
 
-async function parseCPLPdf(buffer: ArrayBuffer): Promise<ParsedResult[]> {
-  // Polyfill DOMMatrix — not available in Node.js / Vercel serverless, but required by pdfjs-dist
-  if (typeof globalThis.DOMMatrix === 'undefined') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(globalThis as any).DOMMatrix = class {
-      a = 1; b = 0; c = 0; d = 1; e = 0; f = 0
-      constructor(init?: number[]) {
-        if (Array.isArray(init) && init.length >= 6) {
-          [this.a, this.b, this.c, this.d, this.e, this.f] = init
-        }
-      }
-    }
-  }
-
-  // Dynamic import — pdfjs-dist is pure JS, Vercel-safe
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pdfjsLib: any = await import('pdfjs-dist/legacy/build/pdf.mjs')
-
-  // Required for server-side/serverless use — disable worker thread
-  pdfjsLib.GlobalWorkerOptions.workerSrc = ''
-
-  const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buffer), useWorkerFetch: false, isEvalSupported: false, useSystemFonts: true }).promise
+async function parseCPLPdf(buffer: Buffer): Promise<ParsedResult[]> {
   const results: ParsedResult[] = []
   const seen = new Set<string>()
 
-  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-    const page = await pdf.getPage(pageNum)
-    const textContent = await page.getTextContent()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const allItems: any[] = textContent.items.filter((i: any) => i.str && i.str.trim())
+  // Use pdf-parse's pagerender hook to capture raw text items WITH x/y coordinates.
+  // pdf-parse wraps the same pdfjs-dist that already works on Vercel — no separate
+  // pdfjs-dist import needed, so no DOMMatrix / worker / serverless issues.
+  const pageItemsList: Array<Array<{ str: string; x: number; y: number }>> = []
 
-    // Detect column boundaries from header row on this page
+  await pdfParse(buffer, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pagerender: async (pageData: any) => {
+      const textContent = await pageData.getTextContent()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const items = textContent.items
+        .filter((i: any) => i.str && i.str.trim())
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .map((i: any) => ({
+          str: i.str as string,
+          x: (i.transform as number[])[4],
+          y: (i.transform as number[])[5],
+        }))
+      pageItemsList.push(items)
+      return '' // We build results ourselves; discard pdf-parse's text output
+    },
+  })
+
+  for (const pageItems of pageItemsList) {
+    // Detect column boundaries from header row ("In Range", "Reference Range")
     let nameMaxX = 200
     let valueMaxX = 350
 
-    for (const item of allItems) {
-      const str = item.str.trim()
-      const x = item.transform[4]
-      if (/^In\s*Range$/i.test(str)) nameMaxX = x - 15
-      if (/^Reference\s*Range$/i.test(str) || /^Ref\.?\s*Range$/i.test(str)) valueMaxX = x - 15
+    for (const item of pageItems) {
+      const s = item.str.trim()
+      if (/^In\s*Range$/i.test(s)) nameMaxX = item.x - 15
+      if (/^Reference\s*Range$/i.test(s) || /^Ref\.?\s*Range$/i.test(s)) valueMaxX = item.x - 15
     }
 
-    // Group items by y-coordinate (within 3px tolerance = same row)
-    const rowMap = new Map<number, typeof allItems>()
-    for (const item of allItems) {
-      const y: number = item.transform[5]
-      let matchedY = y
+    // Group items by y-coordinate (±3px tolerance = same row)
+    const rowMap = new Map<number, typeof pageItems>()
+    for (const item of pageItems) {
+      let matchedY = item.y
       for (const existingY of rowMap.keys()) {
-        if (Math.abs(existingY - y) <= 3) {
-          matchedY = existingY
-          break
-        }
+        if (Math.abs(existingY - item.y) <= 3) { matchedY = existingY; break }
       }
       if (!rowMap.has(matchedY)) rowMap.set(matchedY, [])
       rowMap.get(matchedY)!.push(item)
@@ -375,43 +367,34 @@ async function parseCPLPdf(buffer: ArrayBuffer): Promise<ParsedResult[]> {
     const sortedRows = [...rowMap.entries()].sort(([a], [b]) => b - a)
 
     for (const [, rowItems] of sortedRows) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sorted = rowItems.sort((a: any, b: any) => a.transform[4] - b.transform[4])
-      const rowText = sorted.map((i: { str: string }) => i.str.trim()).join(' ')
+      const sorted = rowItems.sort((a, b) => a.x - b.x)
+      const rowText = sorted.map(i => i.str.trim()).join(' ')
 
       if (shouldSkipCPLRow(rowText)) continue
 
-      // Separate into columns by x position
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const nameItems = sorted.filter((i: any) => i.transform[4] < nameMaxX)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const valueItems = sorted.filter((i: any) => i.transform[4] >= nameMaxX && i.transform[4] < valueMaxX)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const refItems = sorted.filter((i: any) => i.transform[4] >= valueMaxX)
+      const nameItems = sorted.filter(i => i.x < nameMaxX)
+      const valueItems = sorted.filter(i => i.x >= nameMaxX && i.x < valueMaxX)
+      const refItems  = sorted.filter(i => i.x >= valueMaxX)
 
-      const testName = nameItems.map((i: { str: string }) => i.str.trim()).join(' ').trim()
+      const testName = nameItems.map(i => i.str.trim()).join(' ').trim()
       if (!testName || testName.length < 2) continue
-      if (/^\d/.test(testName)) continue // Skip age/gender range rows
+      if (/^\d/.test(testName)) continue
 
-      // Extract numeric value from middle column
-      const valueStr = valueItems.map((i: { str: string }) => i.str.trim()).join(' ').trim()
+      const valueStr = valueItems.map(i => i.str.trim()).join(' ').trim()
       const numMatch = valueStr.match(/^[<>]?\s*(\d+\.?\d*)$/)
       if (!numMatch) continue
       const value = parseFloat(numMatch[1])
       if (isNaN(value)) continue
 
-      // Extract reference range and unit from right column
-      const refStr = refItems.map((i: { str: string }) => i.str.trim()).join(' ').trim()
+      const refStr = refItems.map(i => i.str.trim()).join(' ').trim()
       let unit = ''
       let referenceRange: string | null = null
 
-      // "low - high unit" pattern
       const rangeUnitMatch = refStr.match(/([\d.]+)\s*[-–]\s*([\d.]+)\s*(.*)/)
       if (rangeUnitMatch) {
         referenceRange = `${rangeUnitMatch[1]}-${rangeUnitMatch[2]}`
         unit = rangeUnitMatch[3]?.trim() || ''
       } else {
-        // "< value unit" or "> value unit"
         const ineqMatch = refStr.match(/([<>]=?\s*[\d.]+)\s*(.*)/)
         if (ineqMatch) {
           referenceRange = ineqMatch[1].replace(/\s/g, '')
@@ -674,8 +657,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'File too large (max 10MB)' }, { status: 400 })
     }
 
-    const arrayBuffer = await file.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer)
+    const buffer = Buffer.from(await file.arrayBuffer())
     const pdf = await pdfParse(buffer)
     const text = pdf.text
 
@@ -689,7 +671,7 @@ export async function POST(req: NextRequest) {
     // Parse results — auto-detect format
     let results: ParsedResult[]
     if (isCPLFormat(text)) {
-      results = await parseCPLPdf(arrayBuffer)
+      results = await parseCPLPdf(buffer)
     } else {
       results = parseLabResults(text)
     }
