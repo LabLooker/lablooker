@@ -319,7 +319,10 @@ async function parseCPLPdf(buffer: ArrayBuffer): Promise<ParsedResult[]> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pdfjsLib: any = await import('pdfjs-dist/legacy/build/pdf.mjs')
 
-  const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise
+  // Required for server-side/serverless use — disable worker thread
+  pdfjsLib.GlobalWorkerOptions.workerSrc = ''
+
+  const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buffer), useWorkerFetch: false, isEvalSupported: false, useSystemFonts: true }).promise
   const results: ParsedResult[] = []
   const seen = new Set<string>()
 
@@ -699,7 +702,8 @@ export async function POST(req: NextRequest) {
       rawTextPreview: text.slice(0, 500),
     })
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
     console.error('PDF parse error:', err)
-    return NextResponse.json({ error: 'Failed to parse PDF' }, { status: 500 })
+    return NextResponse.json({ error: `Failed to parse PDF: ${msg}` }, { status: 500 })
   }
 }
