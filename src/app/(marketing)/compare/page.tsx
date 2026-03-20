@@ -64,6 +64,7 @@ type PriceRow = {
   lab_name: string
   website: string | null
   notes: string | null
+  affiliate_link: string | null
 }
 
 type PriceMap = Record<string, number | null>
@@ -243,7 +244,7 @@ export default function ComparePage() {
     setLoadingPricing(true)
     const { data } = await supabase
       .from('pricing')
-      .select('price, requires_rx, labs(lab_name, website, notes)')
+      .select('price, requires_rx, labs(lab_name, website, notes, affiliate_link)')
       .eq('test_id', test.id)
       .order('price', { ascending: true })
     setPricing(
@@ -253,6 +254,7 @@ export default function ComparePage() {
         lab_name: row.labs?.lab_name ?? '',
         website: row.labs?.website ?? null,
         notes: row.labs?.notes ?? null,
+        affiliate_link: row.labs?.affiliate_link ?? null,
       }))
     )
     setLoadingPricing(false)
@@ -517,7 +519,11 @@ export default function ComparePage() {
                 <div className="space-y-2">
                   {pricing.map((p, i) => {
                     const isCheapest = p.price === cheapestPrice
-                    const orderUrl = p.website ? affiliateUrl(p.website, p.lab_name) : null
+                    // Use stored affiliate_link directly for Impact/direct partners; fall back to affiliateUrl builder
+                    const isAtHome = p.lab_name === 'Everlywell' || p.lab_name === 'empowerDX'
+                    const orderUrl = p.affiliate_link && p.lab_name === 'Everlywell'
+                      ? p.affiliate_link
+                      : (p.website ? affiliateUrl(p.website, p.lab_name) : null)
                     return (
                       <div
                         key={i}
@@ -528,11 +534,16 @@ export default function ComparePage() {
                         }`}
                       >
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-sm font-medium text-[#1a2e2b]">{p.lab_name}</span>
                             {isCheapest && (
                               <span className="rounded-full bg-[#2d6a5e] px-2 py-0.5 text-[10px] font-semibold text-white">
                                 Best price
+                              </span>
+                            )}
+                            {isAtHome && (
+                              <span className="rounded-full bg-[#f0f7f6] border border-[#e0ebe9] px-2 py-0.5 text-[10px] font-medium text-[#4a6b67]">
+                                at-home kit
                               </span>
                             )}
                           </div>
