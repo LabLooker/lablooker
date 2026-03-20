@@ -98,6 +98,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
     setImporting(true)
     setError('')
 
+    try {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       setError('Not signed in.')
@@ -137,6 +138,10 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
       setImportedCount(inserts.length)
       setStep('done')
       onSuccess()
+    }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unexpected error during import. Please try again.')
+      setImporting(false)
     }
   }
 
