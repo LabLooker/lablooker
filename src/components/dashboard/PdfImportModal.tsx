@@ -137,7 +137,8 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
     } else {
       setImportedCount(inserts.length)
       setStep('done')
-      onSuccess()
+      // onSuccess (loadData) called when user clicks "View Dashboard" — not here,
+      // to avoid a re-render that resets the modal before the done screen is seen
     }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unexpected error during import. Please try again.')
@@ -377,7 +378,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                 Successfully imported {importedCount} result{importedCount === 1 ? '' : 's'}
               </p>
               <button
-                onClick={handleClose}
+                onClick={() => { onSuccess(); handleClose() }}
                 className="rounded-xl bg-[#2d6a5e] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
               >
                 View Dashboard
