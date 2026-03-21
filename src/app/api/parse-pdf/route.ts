@@ -177,6 +177,9 @@ const ALIASES: Record<string, string> = {
   // CBC red cell indices
   'mchc': 'mchc (mean corpuscular hemoglobin concentration)',
   'mch': 'mch (mean corpuscular hemoglobin)',
+  // Metabolic panel CPL abbreviations
+  'calc a/g ratio': 'albumin/globulin ratio (a/g)',
+  'a/g ratio': 'albumin/globulin ratio (a/g)',
   // Iron panel CPL abbreviations
   'unsaturated ibc': 'uibc (unsaturated iron binding capacity)',
   'calc total ibc': 'tibc (total iron binding capacity)',
