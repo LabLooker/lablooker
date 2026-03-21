@@ -72,6 +72,7 @@ const ALIASES: Record<string, string> = {
   'chloride': 'chloride',
   'co2': 'co2',
   'bicarbonate': 'co2',
+  'carbon dioxide': 'co2',
   'ast': 'ast',
   'sgot': 'ast',
   'alt': 'alt',
