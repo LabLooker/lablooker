@@ -171,6 +171,7 @@ function DashboardContent() {
   const [activeFilter, setActiveFilter] = useState<FilterKey>('all')
   const [activeTab, setActiveTab] = useState<TabKey>('results')
   const [expandedVisits, setExpandedVisits] = useState<Set<string>>(new Set())
+  const [visitSort, setVisitSort] = useState<'newest' | 'oldest' | 'az'>('newest')
   const [upgradeBanner, setUpgradeBanner] = useState(false)
 
   const [showLogModal, setShowLogModal] = useState(false)
@@ -292,12 +293,8 @@ function DashboardContent() {
       }
     })
 
-    // Sort by most recent result
-    markersData.sort((a, b) => {
-      const aResult = byTestId[a.testId][0]
-      const bResult = byTestId[b.testId][0]
-      return new Date(bResult.drawn_at).getTime() - new Date(aResult.drawn_at).getTime()
-    })
+    // Sort alphabetically by test name
+    markersData.sort((a, b) => a.testName.localeCompare(b.testName))
 
     setMarkers(markersData)
 
@@ -555,7 +552,7 @@ function DashboardContent() {
                   : 'border-transparent text-[#577572] hover:text-[#1a2e2b]'
               }`}
             >
-              My Results
+              Latest Results
             </button>
             <button
               onClick={() => setActiveTab('visits')}
@@ -565,7 +562,7 @@ function DashboardContent() {
                   : 'border-transparent text-[#577572] hover:text-[#1a2e2b]'
               }`}
             >
-              Lab Visits
+              All Reports
             </button>
           </div>
 
@@ -697,6 +694,9 @@ function DashboardContent() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                               </svg>
                             </button>
+                            <svg className="h-4 w-4 text-[#2d6a5e] shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4v16" />
+                            </svg>
                             <svg className="w-4 h-4 text-[#577572] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
@@ -711,9 +711,6 @@ function DashboardContent() {
                     )}
                   </div>
 
-                  <p className="text-xs text-[#577572] text-center mt-4">
-                    Click any row for trend charts, range details, and full history
-                  </p>
                 </>
               )}
             </>
@@ -736,7 +733,31 @@ function DashboardContent() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {visits.map((visit) => {
+                  {/* Sort control */}
+                  <div className="flex items-center justify-end gap-1.5 text-xs">
+                    <span className="text-[#577572]">Sort:</span>
+                    {(['newest', 'oldest', 'az'] as const).map((opt) => {
+                      const labels = { newest: 'Newest first', oldest: 'Oldest first', az: 'A\u2013Z' }
+                      return (
+                        <button
+                          key={opt}
+                          onClick={() => setVisitSort(opt)}
+                          className={`px-2 py-1 rounded-full font-medium transition-colors ${
+                            visitSort === opt
+                              ? 'bg-[#2d6a5e] text-white'
+                              : 'bg-[#f0f7f6] text-[#577572] hover:bg-[#e0ebe9]'
+                          }`}
+                        >
+                          {labels[opt]}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  {[...visits].sort((a, b) => {
+                    if (visitSort === 'oldest') return new Date(a.date).getTime() - new Date(b.date).getTime()
+                    if (visitSort === 'az') return (a.labName ?? '').localeCompare(b.labName ?? '')
+                    return new Date(b.date).getTime() - new Date(a.date).getTime()
+                  }).map((visit) => {
                     const isExpanded = expandedVisits.has(visit.date)
                     return (
                       <div
