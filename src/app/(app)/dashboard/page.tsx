@@ -385,14 +385,13 @@ function DashboardContent() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { setVisitDeleting(false); return }
 
-    const { importSessionIds } = visitDeleteConfirm
-    if (importSessionIds.length > 0) {
-      await supabase
-        .from('lab_results')
-        .delete()
-        .eq('user_id', user.id)
-        .in('import_session_id', importSessionIds)
-    }
+    const { date } = visitDeleteConfirm
+    // Delete all results for this user on this draw date (covers both session-tracked and legacy imports)
+    await supabase
+      .from('lab_results')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('drawn_at', date)
 
     setVisitDeleteConfirm(null)
     setVisitDeleting(false)
