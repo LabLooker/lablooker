@@ -98,6 +98,7 @@ const ALIASES: Record<string, string> = {
   'high sensitivity crp': 'hs-crp (high sensitivity crp)',
   'homocysteine': 'homocysteine',
   'vitamin b12': 'vitamin b12 (cobalamin)',
+  'vitamin b-12': 'vitamin b12 (cobalamin)',
   'b12': 'vitamin b12 (cobalamin)',
   'folate': 'folate, serum',
   'folic acid': 'folate, serum',
