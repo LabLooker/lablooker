@@ -80,6 +80,8 @@ const ALIASES: Record<string, string> = {
   'total bilirubin': 'total bilirubin',
   'bilirubin total': 'total bilirubin',
   'total protein': 'total protein',
+  'protein total': 'total protein',
+  'protein, total': 'total protein',
   'albumin': 'albumin, serum',
   'albumin serum': 'albumin, serum',
   'globulin': 'globulins',
