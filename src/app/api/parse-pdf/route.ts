@@ -242,8 +242,12 @@ function matchTest(rawName: string, tests: TestRecord[]): TestRecord | null {
   if (exact) return exact
 
   // DB name contains our target or vice versa
+  // For short names (≤5 chars), use word-boundary matching to prevent "ast" matching "fasting"
   const contains = tests.find(t => {
     const dbLower = t.test_name.toLowerCase()
+    if (targetName.length <= 5) {
+      return new RegExp(`\\b${targetName}\\b`).test(dbLower)
+    }
     return dbLower.includes(targetName) || targetName.includes(dbLower)
   })
   if (contains) return contains
@@ -251,6 +255,9 @@ function matchTest(rawName: string, tests: TestRecord[]): TestRecord | null {
   // Try matching against normalized DB names (strip parenthetical)
   const fuzzy = tests.find(t => {
     const dbNorm = t.test_name.toLowerCase().replace(/[,\(\)\.]/g, ' ').replace(/\s+/g, ' ').trim()
+    if (normalized.length <= 5) {
+      return new RegExp(`\\b${normalized}\\b`).test(dbNorm)
+    }
     return dbNorm.includes(normalized) || normalized.includes(dbNorm)
   })
   if (fuzzy) return fuzzy
