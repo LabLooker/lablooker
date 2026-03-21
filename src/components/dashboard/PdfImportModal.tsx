@@ -326,7 +326,8 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                     {results.map((r, i) => (
                       <tr
                         key={i}
-                        className={`border-t border-[#e0ebe9] ${!r.matchedTest ? 'bg-amber-50/50' : r.selected ? '' : 'opacity-50'}`}
+                        onClick={() => r.matchedTest && toggleRow(i)}
+                        className={`border-t border-[#e0ebe9] ${!r.matchedTest ? 'bg-amber-50/50' : r.selected ? '' : 'opacity-50'} ${r.matchedTest ? 'cursor-pointer hover:bg-[#f0f7f6]' : ''}`}
                       >
                         <td className="px-2 py-2">
                           {r.matchedTest && (
@@ -334,6 +335,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                               type="checkbox"
                               checked={r.selected}
                               onChange={() => toggleRow(i)}
+                              onClick={(e) => e.stopPropagation()}
                               className="h-3.5 w-3.5 rounded border-[#e0ebe9] text-[#2d6a5e] focus:ring-[#2d6a5e]"
                             />
                           )}
@@ -354,7 +356,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                                 <span className="text-amber-600 text-[10px]">No match</span>
                                 <button
                                   type="button"
-                                  onClick={() => setAssignOpen(assignOpen === i ? null : i)}
+                                  onClick={(e) => { e.stopPropagation(); setAssignOpen(assignOpen === i ? null : i) }}
                                   className="text-[#2d6a5e] text-[10px] underline hover:text-[#245549]"
                                 >
                                   Assign

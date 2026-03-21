@@ -697,7 +697,7 @@ function DashboardContent() {
                         <div
                           key={marker.testId}
                           onClick={() => router.push(`/dashboard/tracker/${marker.testId}`)}
-                          className="group flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] cursor-pointer transition-colors"
+                          className={`group flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] cursor-pointer transition-colors ${marker.statusCategory === 'out_of_range' ? 'border-l-2 border-[#b85c5c]' : ''}`}
                         >
                           {/* Left: dot + name */}
                           <div className="flex items-center gap-3 min-w-0 flex-1">
