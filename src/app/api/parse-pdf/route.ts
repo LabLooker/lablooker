@@ -157,6 +157,8 @@ const ALIASES: Record<string, string> = {
   'apolipoprotein b': 'apolipoprotein b (apob)',
   'apob': 'apolipoprotein b (apob)',
   // CPL / Sonic Healthcare aliases
+  'tsh, third generation': 'tsh (thyroid stimulating hormone)',
+  'tsh third generation': 'tsh (thyroid stimulating hormone)',
   'follicle stim hormone': 'fsh (follicle stimulating hormone)',
   'sex horm bind globulin': 'shbg',
   'calc free testosterone': 'testosterone, free (calculated)',
@@ -382,7 +384,8 @@ async function parseCPLPdf(buffer: Buffer): Promise<ParsedResult[]> {
 
       const valueStr = valueItems.map(i => i.str.trim()).join(' ').trim()
       // Allow optional H/L flag after value (CPL marks out-of-range values e.g. "78 H", "7.3 L")
-      const numMatch = valueStr.match(/^[<>]?\s*(\d+\.?\d*)\s*[HL]?\s*$/)
+      // No $ anchor — handles merged rows where a second value appears after the H/L flag (e.g. "0.148 L 49")
+      const numMatch = valueStr.match(/^[<>]?\s*(\d+\.?\d*)\s*[HL]?/)
       if (!numMatch) continue
       const value = parseFloat(numMatch[1])
       if (isNaN(value)) continue
