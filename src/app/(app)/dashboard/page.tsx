@@ -29,6 +29,11 @@ type MarkerResult = {
   physician_name: string | null
 }
 
+type FunctionalRange = {
+  functional_low: number | null
+  functional_high: number | null
+}
+
 type MarkerGoal = {
   target_value: number | null
   target_direction: string
@@ -45,6 +50,7 @@ type Marker = {
   unit: string | null
   statusCategory: StatusCategory
   statusLabel: string
+  functionalLabel: boolean
   trend: string
   date: string
   resultCount: number
@@ -82,43 +88,53 @@ function formatDateLong(dateStr: string): string {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
 }
 
-function getStatusCategory(result: MarkerResult, goal: MarkerGoal | null): { category: StatusCategory; label: string } {
+function getStatusCategory(result: MarkerResult, goal: MarkerGoal | null, isPremium: boolean = false, funcRange: FunctionalRange | null = null): { category: StatusCategory; label: string; functional: boolean } {
   const { value, ref_range_low, ref_range_high } = result
+  const functional_low = funcRange?.functional_low ?? null
+  const functional_high = funcRange?.functional_high ?? null
 
   // If no reference range at all
   if (ref_range_low === null || ref_range_high === null) {
-    return { category: 'no_range', label: 'No Range' }
+    return { category: 'no_range', label: 'No Range', functional: false }
   }
 
   // Out of lab range entirely
   if (value < ref_range_low || value > ref_range_high) {
-    return { category: 'out_of_range', label: value < ref_range_low ? 'Low' : 'High' }
+    return { category: 'out_of_range', label: value < ref_range_low ? 'Low' : 'High', functional: false }
   }
 
-  // In lab range — check if user has a goal/optimal target
+  // Premium: check functional range (if within lab range but outside functional range)
+  if (isPremium && functional_low !== null && functional_high !== null) {
+    if (value < functional_low || value > functional_high) {
+      return { category: 'suboptimal', label: 'Suboptimal', functional: true }
+    }
+    return { category: 'optimal', label: 'Optimal', functional: true }
+  }
+
+  // User goal (overrides for personalization)
   if (goal) {
     if (goal.target_direction === 'range' && goal.target_low !== null && goal.target_high !== null) {
       if (value < goal.target_low || value > goal.target_high) {
-        return { category: 'suboptimal', label: 'Suboptimal' }
+        return { category: 'suboptimal', label: 'Suboptimal', functional: false }
       }
-      return { category: 'optimal', label: 'Optimal' }
+      return { category: 'optimal', label: 'Optimal', functional: false }
     }
     if (goal.target_direction === 'above' && goal.target_value !== null) {
       if (value < goal.target_value) {
-        return { category: 'suboptimal', label: 'Suboptimal' }
+        return { category: 'suboptimal', label: 'Suboptimal', functional: false }
       }
-      return { category: 'optimal', label: 'Optimal' }
+      return { category: 'optimal', label: 'Optimal', functional: false }
     }
     if (goal.target_direction === 'below' && goal.target_value !== null) {
       if (value > goal.target_value) {
-        return { category: 'suboptimal', label: 'Suboptimal' }
+        return { category: 'suboptimal', label: 'Suboptimal', functional: false }
       }
-      return { category: 'optimal', label: 'Optimal' }
+      return { category: 'optimal', label: 'Optimal', functional: false }
     }
   }
 
   // In range, no goal set
-  return { category: 'optimal', label: 'In Range' }
+  return { category: 'optimal', label: 'In Range', functional: false }
 }
 
 function getTrend(results: MarkerResult[]): string {
@@ -251,16 +267,22 @@ function DashboardContent() {
       byTestId[r.test_id].push(r)
     }
 
-    // Fetch test names
+    // Fetch test names + functional ranges (graceful fallback if columns don't exist yet)
     const testIds = Object.keys(byTestId)
-    const { data: testsData } = await supabase
+    const testsResult = await supabase
       .from('tests')
-      .select('id, test_name')
+      .select('id, test_name, functional_low, functional_high')
       .in('id', testIds)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let testsData: any[] | null = testsResult.data
+    if (testsResult.error) {
+      const fallback = await supabase.from('tests').select('id, test_name').in('id', testIds)
+      testsData = fallback.data
+    }
 
-    const testsById: Record<string, string> = {}
+    const testsById: Record<string, { test_name: string; functional_low: number | null; functional_high: number | null }> = {}
     for (const t of testsData ?? []) {
-      testsById[t.id] = t.test_name
+      testsById[t.id] = { test_name: t.test_name, functional_low: t.functional_low ?? null, functional_high: t.functional_high ?? null }
     }
 
     const goalsById: Record<string, MarkerGoal> = {}
@@ -274,19 +296,22 @@ function DashboardContent() {
     }
 
     // Build marker data
+    const userIsPremium = profileData?.is_premium === true
     const markersData: Marker[] = testIds.map((tid) => {
       const results = byTestId[tid]
       const latestResult = results[0]
-      const { category, label } = getStatusCategory(latestResult, goalsById[tid] || null)
+      const funcRange = testsById[tid] ? { functional_low: testsById[tid].functional_low, functional_high: testsById[tid].functional_high } : null
+      const { category, label, functional } = getStatusCategory(latestResult, goalsById[tid] || null, userIsPremium, funcRange)
       const trend = getTrend(results)
 
       return {
         testId: tid,
-        testName: testsById[tid] ?? 'Unknown Test',
+        testName: testsById[tid]?.test_name ?? 'Unknown Test',
         latestValue: latestResult.value,
         unit: latestResult.unit,
         statusCategory: category,
         statusLabel: label,
+        functionalLabel: functional,
         trend,
         date: formatDate(latestResult.drawn_at),
         resultCount: results.length,
@@ -319,7 +344,7 @@ function DashboardContent() {
               status = (r.value < r.ref_range_low || r.value > r.ref_range_high) ? 'out_of_range' : 'in_range'
             }
             return {
-              testName: testsById[r.test_id] ?? 'Unknown Test',
+              testName: testsById[r.test_id]?.test_name ?? 'Unknown Test',
               value: r.value,
               unit: r.unit,
               ref_range_low: r.ref_range_low,
@@ -678,8 +703,11 @@ function DashboardContent() {
                             >
                               {marker.trend}
                             </span>
-                            <span className={`text-xs font-medium ${config.pillText} ${config.pillBg} px-2 py-0.5 rounded-full w-24 text-center hidden sm:inline-block`}>
-                              {marker.statusLabel}
+                            <span
+                              className={`text-xs font-medium ${config.pillText} ${config.pillBg} px-2 py-0.5 rounded-full w-24 text-center hidden sm:inline-block`}
+                              title={marker.functionalLabel ? 'Based on functional/optimal range' : undefined}
+                            >
+                              {marker.statusLabel}{marker.functionalLabel ? ' *' : ''}
                             </span>
                             <span className="hidden lg:inline text-xs text-[#577572] w-16 text-right">{marker.date}</span>
                             <button
