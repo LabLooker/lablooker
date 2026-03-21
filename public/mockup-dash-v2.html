@@ -250,6 +250,86 @@
 </div>
 </div>
 
+<!-- ════════════ OPTION D: Tinted row + plain text status ════════════ -->
+<div class="section">
+<h2>Option D — Tinted row background + plain text status (no pill shape)</h2>
+<p style="font-size:12px;color:#577572;margin-bottom:10px;">Row tint signals status at a glance. Status label is plain text, right-aligned. No pill shape. Bullet stays.</p>
+
+<div style="margin-bottom:20px;">
+  <div style="font-size:11px;color:#888;margin-bottom:6px;">Amber text at current brand color <strong>#c59030</strong> — a bit light:</div>
+  <div class="card">
+    <div class="row-current" style="background:#fffdf5;">
+      <div class="dot amber"></div>
+      <div class="name-current">BUN (Blood Urea Nitrogen)</div>
+      <div class="value">14 MG/DL</div>
+      <div style="flex:1"></div>
+      <div style="font-size:12px;font-weight:500;color:#c59030;width:90px;text-align:right;">Suboptimal</div>
+      <div class="date" style="margin-left:16px;">06/23/25</div>
+      <div class="chevron">›</div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-bottom:20px;">
+  <div style="font-size:11px;color:#888;margin-bottom:6px;">Amber text darkened to <strong>#8a6500</strong> — more readable, same warmth:</div>
+  <div class="card">
+    <div class="row-current" style="background:#fffdf5;">
+      <div class="dot amber"></div>
+      <div class="name-current">BUN (Blood Urea Nitrogen)</div>
+      <div class="value">14 MG/DL</div>
+      <div style="flex:1"></div>
+      <div style="font-size:12px;font-weight:500;color:#8a6500;width:90px;text-align:right;">Suboptimal</div>
+      <div class="date" style="margin-left:16px;">06/23/25</div>
+      <div class="chevron">›</div>
+    </div>
+  </div>
+</div>
+
+<div style="font-size:11px;color:#888;margin-bottom:6px;">Full set — all four status types:</div>
+<div class="card">
+  <!-- In Range: no tint, muted text -->
+  <div class="row-current">
+    <div class="dot"></div>
+    <div class="name-current">Albumin, Serum</div>
+    <div class="value">4.5 G/DL</div>
+    <div style="flex:1"></div>
+    <div style="font-size:12px;font-weight:400;color:#888;width:90px;text-align:right;">In Range</div>
+    <div class="date" style="margin-left:16px;">06/23/25</div>
+    <div class="chevron">›</div>
+  </div>
+  <!-- Suboptimal: faint amber tint -->
+  <div class="row-current" style="background:#fffcf0;">
+    <div class="dot amber"></div>
+    <div class="name-current">BUN (Blood Urea Nitrogen)</div>
+    <div class="value">14 MG/DL</div>
+    <div style="flex:1"></div>
+    <div style="font-size:12px;font-weight:500;color:#8a6500;width:90px;text-align:right;">Suboptimal</div>
+    <div class="date" style="margin-left:16px;">06/23/25</div>
+    <div class="chevron">›</div>
+  </div>
+  <!-- Out of Range: faint rose tint -->
+  <div class="row-current" style="background:#fff7f7;">
+    <div class="dot red"></div>
+    <div class="name-current">Vitamin B12 (Cobalamin)</div>
+    <div class="value">1912 PG/ML</div>
+    <div style="flex:1"></div>
+    <div style="font-size:12px;font-weight:500;color:#b85c5c;width:90px;text-align:right;">Out of Range</div>
+    <div class="date" style="margin-left:16px;">06/23/25</div>
+    <div class="chevron">›</div>
+  </div>
+  <!-- No Range: no tint, lighter text -->
+  <div class="row-current">
+    <div class="dot gray"></div>
+    <div class="name-current">TSH (Thyroid Stimulating Hormone)</div>
+    <div class="value">0.148</div>
+    <div style="flex:1"></div>
+    <div style="font-size:12px;font-weight:400;color:#bbb;width:90px;text-align:right;">No Range</div>
+    <div class="date" style="margin-left:16px;">06/23/25</div>
+    <div class="chevron">›</div>
+  </div>
+</div>
+</div>
+
 <p style="font-size:11px;color:#aaa;text-align:center;margin-top:16px;">lablooker.com/mockup-dash-v2.html — remove before launch</p>
 </body>
 </html>
