@@ -342,9 +342,10 @@ function shouldSkipCPLRow(text: string): boolean {
   // Dot leaders
   if (/\.\s+\./.test(t)) return true
 
-  // Patient info (generic patterns)
-  if (/^dob:/i.test(t)) return true
-  if (/^fasting:/i.test(t)) return true
+  // Patient / report metadata fields (CPL repeats labels twice, e.g. "DOB: DOB: 12")
+  if (/^(dob|date of birth|collected|collection date|age|printed|id|patient id|patient name|e order|order|accession|requisition|physician|provider|ordering|fasting|gender|sex|race)[\s:]/i.test(t)) return true
+  // Repeated label pattern: "LABEL: LABEL: value" (CPL artifact)
+  if (/^(\w[\w\s]+):\s+\1:/i.test(t)) return true
 
   // Column headers
   if (/^(in\s*range|out\s*(of\s*)?range|reference\s*range|analyte)/i.test(t)) return true
