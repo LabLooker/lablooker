@@ -166,14 +166,20 @@ const ALIASES: Record<string, string> = {
   'dihydrotestosterone': 'dihydrotestosterone (dht)',
   'anti-mullerian hormone': 'amh (anti-mullerian hormone)',
   'anti mullerian hormone': 'amh (anti-mullerian hormone)',
-  // CBC absolute differential counts (CPL format)
+  // CBC absolute differential counts (CPL format) — longer/more-specific keys first
   'absolute neutrophils': 'neutrophils, absolute',
   'absolute lymphocytes': 'lymphocytes, absolute',
   'absolute monocytes': 'monocytes, absolute',
   'absolute eosinophils': 'eosinophils, absolute',
   'absolute basophils': 'basophils, absolute',
   'abs immature granulocytes': 'immature granulocytes, absolute',
-  'immature granulocytes': 'immature granulocytes, absolute',
+  // CBC percentage differential counts — plain name = percentage
+  'neutrophils': 'neutrophils (%)',
+  'lymphocytes': 'lymphocytes (%)',
+  'monocytes': 'monocytes (%)',
+  'eosinophils': 'eosinophils (%)',
+  'basophils': 'basophils (%)',
+  'immature granulocytes': 'immature granulocytes (%)',
 }
 
 const UNITS_PATTERN = '(?:ng\\/mL|mIU\\/L|pg\\/mL|mg\\/dL|g\\/dL|IU\\/L|U\\/L|mmol\\/L|umol\\/L|mcg\\/dL|nmol\\/L|mEq\\/L|%|mIU\\/mL|IU\\/mL|ng\\/dL|mcg\\/L|nmol\\/mL|cells\\/uL|cells\\/mcL|10\\^3\\/uL|10\\^6\\/uL|K\\/uL|M\\/uL|fL|pg|g\\/L|mg\\/L|ug\\/dL|pmol\\/L|mL\\/min\\/1\\.73m2|mL\\/min|mm\\/hr|mg\\/24hr|mU\\/L|uIU\\/mL|x10E3\\/uL|x10E6\\/uL|thou\\/uL|mill\\/uL|Thousand\\/uL|Million\\/uL|10\\*3\\/uL|10\\*6\\/uL)'
@@ -238,11 +244,15 @@ function cleanTestName(raw: string): string {
 function matchTest(rawName: string, tests: TestRecord[]): TestRecord | null {
   const normalized = rawName.toLowerCase().replace(/[,\(\)\.]/g, ' ').replace(/\s+/g, ' ').trim()
 
-  // Check aliases first
-  const aliasKey = Object.keys(ALIASES).find(k => {
-    const kNorm = k.toLowerCase()
-    return normalized === kNorm || normalized.includes(kNorm) || kNorm.includes(normalized)
-  })
+  // Check aliases — sort longest key first so specific aliases (e.g. "absolute neutrophils")
+  // take precedence over shorter ones (e.g. "neutrophils"). Use startsWith to handle
+  // CPL merged rows like "TSH, THIRD GENERATION TESTOSTERONE" matching "tsh, third generation".
+  const aliasKey = Object.keys(ALIASES)
+    .sort((a, b) => b.length - a.length)
+    .find(k => {
+      const kNorm = k.toLowerCase()
+      return normalized === kNorm || normalized.startsWith(kNorm)
+    })
 
   const targetName = aliasKey ? ALIASES[aliasKey] : normalized
 
@@ -426,7 +436,7 @@ async function parseCPLPdf(buffer: Buffer): Promise<ParsedResult[]> {
       const key = `${testName.toLowerCase()}|${value}`
       if (!seen.has(key)) {
         seen.add(key)
-        results.push({ rawTestName: testName, value, unit, referenceRange, matchedTest: null })
+        results.push({ rawTestName: testName, value, unit, referenceRange, matchedTest: null, qualifier })
       }
     }
   }
@@ -549,7 +559,7 @@ function parseLabResults(text: string): ParsedResult[] {
       const key = `${name.toLowerCase()}|${val}`
       if (!seen.has(key)) {
         seen.add(key)
-        results.push({ rawTestName: name, value: val, unit, referenceRange: ref, matchedTest: null })
+        results.push({ rawTestName: name, value: val, unit, referenceRange: ref, matchedTest: null, qualifier: undefined })
       }
       continue
     }
@@ -576,7 +586,7 @@ function parseLabResults(text: string): ParsedResult[] {
         const key = `${name.toLowerCase()}|${value}`
         if (!seen.has(key)) {
           seen.add(key)
-          results.push({ rawTestName: name, value, unit, referenceRange: ref, matchedTest: null })
+          results.push({ rawTestName: name, value, unit, referenceRange: ref, matchedTest: null, qualifier: undefined })
         }
       }
     }
@@ -600,7 +610,7 @@ function parseLabResults(text: string): ParsedResult[] {
       const key = `${name.toLowerCase()}|${val}`
       if (!seen.has(key) && !isNaN(val)) {
         seen.add(key)
-        results.push({ rawTestName: name, value: val, unit: u, referenceRange: ref, matchedTest: null })
+        results.push({ rawTestName: name, value: val, unit: u, referenceRange: ref, matchedTest: null, qualifier: undefined })
         matched = true
       }
     }
@@ -615,7 +625,7 @@ function parseLabResults(text: string): ParsedResult[] {
         const key = `${name.toLowerCase()}|${val}`
         if (!seen.has(key) && !isNaN(val)) {
           seen.add(key)
-          results.push({ rawTestName: name, value: val, unit: u, referenceRange: ref, matchedTest: null })
+          results.push({ rawTestName: name, value: val, unit: u, referenceRange: ref, matchedTest: null, qualifier: undefined })
           matched = true
         }
       }
@@ -631,7 +641,7 @@ function parseLabResults(text: string): ParsedResult[] {
         const key = `${name.toLowerCase()}|${val}`
         if (!seen.has(key) && !isNaN(val)) {
           seen.add(key)
-          results.push({ rawTestName: name, value: val, unit: u, referenceRange: ref, matchedTest: null })
+          results.push({ rawTestName: name, value: val, unit: u, referenceRange: ref, matchedTest: null, qualifier: undefined })
           matched = true
         }
       }
@@ -651,7 +661,7 @@ function parseLabResults(text: string): ParsedResult[] {
           const key = `${name.toLowerCase()}|${val}`
           if (!seen.has(key)) {
             seen.add(key)
-            results.push({ rawTestName: name, value: val, unit: u, referenceRange: ref, matchedTest: null })
+            results.push({ rawTestName: name, value: val, unit: u, referenceRange: ref, matchedTest: null, qualifier: undefined })
           }
         }
       }
