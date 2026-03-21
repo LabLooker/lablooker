@@ -177,6 +177,13 @@ const ALIASES: Record<string, string> = {
   // CBC red cell indices
   'mchc': 'mchc (mean corpuscular hemoglobin concentration)',
   'mch': 'mch (mean corpuscular hemoglobin)',
+  // Iron panel CPL abbreviations
+  'unsaturated ibc': 'uibc (unsaturated iron binding capacity)',
+  'calc total ibc': 'tibc (total iron binding capacity)',
+  'calc % iron sat': 'transferrin saturation',
+  'calc iron sat': 'transferrin saturation',
+  '% iron saturation': 'transferrin saturation',
+  'iron saturation': 'transferrin saturation',
   // CBC percentage differential counts — plain name = percentage
   'neutrophils': 'neutrophils (%)',
   'lymphocytes': 'lymphocytes (%)',
