@@ -22,6 +22,7 @@ type ParsedRow = {
   matchedTest: TestRecord | null
   status: 'ready' | 'no_match' | 'error'
   errorMsg?: string
+  manuallyAssigned?: boolean
 }
 
 function parseCSV(text: string): string[][] {
@@ -93,12 +94,36 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
   const [importing, setImporting] = useState(false)
   const [importedCount, setImportedCount] = useState(0)
   const [error, setError] = useState('')
+  const [assignSearch, setAssignSearch] = useState<Record<number, string>>({})
+  const [assignResults, setAssignResults] = useState<Record<number, TestRecord[]>>({})
+  const [assignOpen, setAssignOpen] = useState<number | null>(null)
 
   function handleClose() {
     setStep('instructions')
     setRows([])
     setError('')
+    setAssignSearch({})
+    setAssignResults({})
+    setAssignOpen(null)
     onClose()
+  }
+
+  async function searchTestsForAssign(query: string, rowIdx: number) {
+    setAssignSearch(prev => ({ ...prev, [rowIdx]: query }))
+    if (query.length < 2) { setAssignResults(prev => ({ ...prev, [rowIdx]: [] })); return }
+    const { data } = await supabase
+      .from('tests')
+      .select('id, test_name')
+      .ilike('test_name', `%${query}%`)
+      .limit(10)
+    setAssignResults(prev => ({ ...prev, [rowIdx]: data ?? [] }))
+  }
+
+  function assignTestToRow(rowIdx: number, test: TestRecord) {
+    setRows(prev => prev.map((r, i) => i === rowIdx ? { ...r, matchedTest: test, status: 'ready' as const, manuallyAssigned: true } : r))
+    setAssignOpen(null)
+    setAssignSearch(prev => ({ ...prev, [rowIdx]: '' }))
+    setAssignResults(prev => ({ ...prev, [rowIdx]: [] }))
   }
 
   async function handleFile(file: File) {
@@ -319,7 +344,54 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
                         }
                       >
                         <td className="px-3 py-2 text-[#1a2e2b]">{r.testName}</td>
-                        <td className="px-3 py-2 text-[#4a6b67]">{r.matchedTest?.test_name ?? '—'}</td>
+                        <td className="px-3 py-2 text-[#4a6b67]">
+                          {r.matchedTest ? (
+                            <span>
+                              {r.matchedTest.test_name}
+                              {r.manuallyAssigned && <span className="ml-1 text-[10px] text-[#577572] italic">manually assigned</span>}
+                            </span>
+                          ) : r.status === 'no_match' ? (
+                            <div className="relative">
+                              <div className="flex items-center gap-1">
+                                <span className="text-[10px] text-[#577572]">—</span>
+                                <button
+                                  type="button"
+                                  onClick={() => setAssignOpen(assignOpen === i ? null : i)}
+                                  className="text-[#2d6a5e] text-[10px] underline hover:text-[#245549]"
+                                >
+                                  Assign
+                                </button>
+                              </div>
+                              {assignOpen === i && (
+                                <div className="absolute left-0 top-full z-10 mt-1 w-56 rounded-lg border border-[#e0ebe9] bg-white shadow-lg p-1.5">
+                                  <input
+                                    type="text"
+                                    value={assignSearch[i] ?? ''}
+                                    onChange={(e) => searchTestsForAssign(e.target.value, i)}
+                                    placeholder="Search tests..."
+                                    autoFocus
+                                    className="w-full rounded border border-[#e0ebe9] px-2 py-1 text-xs placeholder-[#577572]/50 focus:border-[#2d6a5e] focus:outline-none"
+                                  />
+                                  {(assignResults[i] ?? []).length > 0 && (
+                                    <ul className="mt-1 max-h-32 overflow-y-auto">
+                                      {(assignResults[i] ?? []).map(t => (
+                                        <li key={t.id}>
+                                          <button
+                                            type="button"
+                                            onClick={() => assignTestToRow(i, t)}
+                                            className="w-full text-left px-2 py-1 text-xs text-[#1a2e2b] hover:bg-[#f0f7f6] rounded transition-colors"
+                                          >
+                                            {t.test_name}
+                                          </button>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          ) : '—'}
+                        </td>
                         <td className="px-3 py-2 text-[#1a2e2b]">{r.value}</td>
                         <td className="px-3 py-2 text-[#577572]">{r.unit || '—'}</td>
                         <td className="px-3 py-2 text-[#577572]">{r.date || 'today'}</td>

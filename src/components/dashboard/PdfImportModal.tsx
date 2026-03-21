@@ -17,6 +17,8 @@ type ParsedResult = {
   referenceRange: string | null
   matchedTest: { id: string; test_name: string } | null
   selected: boolean
+  manuallyAssigned?: boolean
+  qualifier?: string
 }
 
 type ApiResponse = {
@@ -26,6 +28,7 @@ type ApiResponse = {
     unit: string
     referenceRange: string | null
     matchedTest: { id: string; test_name: string } | null
+    qualifier?: string
   }[]
   collectedDate: string | null
   totalExtracted: number
@@ -48,6 +51,9 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
   const [error, setError] = useState('')
   const [dragOver, setDragOver] = useState(false)
   const [physicianName, setPhysicianName] = useState('')
+  const [assignSearch, setAssignSearch] = useState<Record<number, string>>({})
+  const [assignResults, setAssignResults] = useState<Record<number, { id: string; test_name: string }[]>>({})
+  const [assignOpen, setAssignOpen] = useState<number | null>(null)
 
   function handleClose() {
     setStep('upload')
@@ -57,7 +63,28 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
     setError('')
     setImportedCount(0)
     setPhysicianName('')
+    setAssignSearch({})
+    setAssignResults({})
+    setAssignOpen(null)
     onClose()
+  }
+
+  async function searchTests(query: string, rowIdx: number) {
+    setAssignSearch(prev => ({ ...prev, [rowIdx]: query }))
+    if (query.length < 2) { setAssignResults(prev => ({ ...prev, [rowIdx]: [] })); return }
+    const { data } = await supabase
+      .from('tests')
+      .select('id, test_name')
+      .ilike('test_name', `%${query}%`)
+      .limit(10)
+    setAssignResults(prev => ({ ...prev, [rowIdx]: data ?? [] }))
+  }
+
+  function assignTest(rowIdx: number, test: { id: string; test_name: string }) {
+    setResults(prev => prev.map((r, i) => i === rowIdx ? { ...r, matchedTest: test, selected: true, manuallyAssigned: true } : r))
+    setAssignOpen(null)
+    setAssignSearch(prev => ({ ...prev, [rowIdx]: '' }))
+    setAssignResults(prev => ({ ...prev, [rowIdx]: [] }))
   }
 
   const parseFile = useCallback(async (file: File) => {
@@ -121,12 +148,13 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
       ref_range_high: r.referenceRange ? parseRefHigh(r.referenceRange) : null,
       import_session_id: importSessionId,
       physician_name: trimmedPhysician,
+      value_qualifier: r.qualifier || null,
     }))
 
     // Try with all columns first; fall back without newer columns if they don't exist yet
     let insertResult = await supabase.from('lab_results').insert(inserts)
-    if (insertResult.error && (insertResult.error.message.includes('import_session_id') || insertResult.error.message.includes('physician_name'))) {
-      const fallbackInserts = inserts.map(({ import_session_id, physician_name, ...rest }) => rest)
+    if (insertResult.error && (insertResult.error.message.includes('import_session_id') || insertResult.error.message.includes('physician_name') || insertResult.error.message.includes('value_qualifier'))) {
+      const fallbackInserts = inserts.map(({ import_session_id, physician_name, value_qualifier, ...rest }) => rest)
       insertResult = await supabase.from('lab_results').insert(fallbackInserts)
     }
     const insertError = insertResult.error
@@ -268,6 +296,19 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                 />
               </div>
 
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const allSelected = results.filter(r => r.matchedTest).every(r => r.selected)
+                    setResults(prev => prev.map(r => r.matchedTest ? { ...r, selected: !allSelected } : r))
+                  }}
+                  className="text-[#2d6a5e] text-sm underline hover:text-[#245549] transition-colors"
+                >
+                  {results.filter(r => r.matchedTest).every(r => r.selected) ? 'Deselect all' : 'Select all'}
+                </button>
+              </div>
+
               <div className="overflow-x-auto rounded-lg border border-[#e0ebe9]">
                 <table className="w-full text-xs">
                   <thead>
@@ -298,12 +339,55 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                           )}
                         </td>
                         <td className="px-2 py-2 text-[#1a2e2b]">{r.rawTestName}</td>
-                        <td className="px-2 py-2 text-[#1a2e2b] font-medium">{r.value}</td>
+                        <td className="px-2 py-2 text-[#1a2e2b] font-medium">{r.qualifier ? `${r.qualifier}${r.value}` : r.value}</td>
                         <td className="px-2 py-2 text-[#577572]">{r.unit || '—'}</td>
                         <td className="px-2 py-2 text-[#577572]">{r.referenceRange || '—'}</td>
                         <td className="px-2 py-2 text-[#4a6b67]">
-                          {r.matchedTest ? r.matchedTest.test_name : (
-                            <span className="text-amber-600">No match — will skip</span>
+                          {r.matchedTest ? (
+                            <span>
+                              {r.matchedTest.test_name}
+                              {r.manuallyAssigned && <span className="ml-1 text-[10px] text-[#577572] italic">manually assigned</span>}
+                            </span>
+                          ) : (
+                            <div className="relative">
+                              <div className="flex items-center gap-1">
+                                <span className="text-amber-600 text-[10px]">No match</span>
+                                <button
+                                  type="button"
+                                  onClick={() => setAssignOpen(assignOpen === i ? null : i)}
+                                  className="text-[#2d6a5e] text-[10px] underline hover:text-[#245549]"
+                                >
+                                  Assign
+                                </button>
+                              </div>
+                              {assignOpen === i && (
+                                <div className="absolute left-0 top-full z-10 mt-1 w-56 rounded-lg border border-[#e0ebe9] bg-white shadow-lg p-1.5">
+                                  <input
+                                    type="text"
+                                    value={assignSearch[i] ?? ''}
+                                    onChange={(e) => searchTests(e.target.value, i)}
+                                    placeholder="Search tests..."
+                                    autoFocus
+                                    className="w-full rounded border border-[#e0ebe9] px-2 py-1 text-xs placeholder-[#577572]/50 focus:border-[#2d6a5e] focus:outline-none"
+                                  />
+                                  {(assignResults[i] ?? []).length > 0 && (
+                                    <ul className="mt-1 max-h-32 overflow-y-auto">
+                                      {(assignResults[i] ?? []).map(t => (
+                                        <li key={t.id}>
+                                          <button
+                                            type="button"
+                                            onClick={() => assignTest(i, t)}
+                                            className="w-full text-left px-2 py-1 text-xs text-[#1a2e2b] hover:bg-[#f0f7f6] rounded transition-colors"
+                                          >
+                                            {t.test_name}
+                                          </button>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           )}
                         </td>
                         <td className="px-2 py-2 text-center">

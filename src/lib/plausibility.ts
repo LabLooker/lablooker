@@ -40,9 +40,12 @@ export type PlausibilityFlag = {
 /**
  * Check an array of parsed results for physiologically implausible values.
  * Each item needs at minimum { testName: string, value: number, unit?: string }.
+ * Optional qualifier ('>' or '<') adjusts flagging:
+ *   - '>' and value equals upper bound → don't flag as unusual
+ *   - '<' and value equals lower bound → note as below detection limit
  */
 export function checkPlausibility(
-  results: { testName: string; value: number; unit?: string }[]
+  results: { testName: string; value: number; unit?: string; qualifier?: string }[]
 ): PlausibilityFlag[] {
   const flags: PlausibilityFlag[] = []
 
@@ -52,13 +55,26 @@ export function checkPlausibility(
     for (const range of PLAUSIBILITY_RANGES) {
       if (!nameLower.includes(range.pattern)) continue
 
+      // '>' qualifier at upper bound — value exceeds detection limit, don't flag
+      if (r.qualifier === '>' && r.value === range.high) break
+      // '<' qualifier at lower bound — below detection limit, note but don't flag as unusual
+      if (r.qualifier === '<' && r.value === range.low) {
+        flags.push({
+          testName: r.testName,
+          value: r.value,
+          unit: r.unit || range.unit,
+          message: `${r.testName}: <${r.value} ${r.unit || range.unit} — below detection limit`,
+        })
+        break
+      }
+
       if (r.value < range.low || r.value > range.high) {
         const direction = r.value < range.low ? 'unusually low' : 'unusually high'
         flags.push({
           testName: r.testName,
           value: r.value,
           unit: r.unit || range.unit,
-          message: `${r.testName}: ${r.value} ${r.unit || range.unit} — ${direction}, expected ${range.low}–${range.high}`,
+          message: `${r.testName}: ${r.qualifier || ''}${r.value} ${r.unit || range.unit} — ${direction}, expected ${range.low}–${range.high}`,
         })
       }
       break // only match first matching range per result

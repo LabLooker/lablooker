@@ -27,6 +27,7 @@ type MarkerResult = {
   notes: string | null
   import_session_id: string | null
   physician_name: string | null
+  value_qualifier: string | null
 }
 
 type FunctionalRange = {
@@ -48,6 +49,7 @@ type Marker = {
   testName: string
   latestValue: number
   unit: string | null
+  qualifier: string | null
   statusCategory: StatusCategory
   statusLabel: string
   functionalLabel: boolean
@@ -240,12 +242,22 @@ function DashboardContent() {
       .single()
     if (profileData) setProfile(profileData)
 
-    // Load all lab results
-    const { data: resultsData } = await supabase
+    // Load all lab results (graceful fallback if value_qualifier column doesn't exist yet)
+    const labQuery = await supabase
       .from('lab_results')
-      .select('id, test_id, value, unit, drawn_at, lab_name, ref_range_low, ref_range_high, notes, import_session_id, physician_name')
+      .select('id, test_id, value, unit, drawn_at, lab_name, ref_range_low, ref_range_high, notes, import_session_id, physician_name, value_qualifier')
       .eq('user_id', user.id)
       .order('drawn_at', { ascending: false })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let resultsData: any[] | null = labQuery.data
+    if (labQuery.error) {
+      const fallbackQuery = await supabase
+        .from('lab_results')
+        .select('id, test_id, value, unit, drawn_at, lab_name, ref_range_low, ref_range_high, notes, import_session_id, physician_name')
+        .eq('user_id', user.id)
+        .order('drawn_at', { ascending: false })
+      resultsData = fallbackQuery.data
+    }
 
     // Load goals
     const { data: goalsData } = await supabase
@@ -309,6 +321,7 @@ function DashboardContent() {
         testName: testsById[tid]?.test_name ?? 'Unknown Test',
         latestValue: latestResult.value,
         unit: latestResult.unit,
+        qualifier: latestResult.value_qualifier ?? null,
         statusCategory: category,
         statusLabel: label,
         functionalLabel: functional,
@@ -695,7 +708,7 @@ function DashboardContent() {
                           {/* Right: value, trend, status pill, date, delete, chevron */}
                           <div className="flex items-center gap-4 flex-shrink-0">
                             <span className="hidden sm:inline text-sm font-semibold text-[#1a2e2b] w-24 text-left">
-                              {marker.latestValue}{marker.unit ? ` ${marker.unit}` : ''}
+                              {marker.qualifier || ''}{marker.latestValue}{marker.unit ? ` ${marker.unit}` : ''}
                             </span>
                             <span
                               className="hidden md:inline text-xs text-[#577572] w-12 text-center"

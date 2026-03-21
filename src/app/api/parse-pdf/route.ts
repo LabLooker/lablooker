@@ -173,6 +173,9 @@ const ALIASES: Record<string, string> = {
   'absolute eosinophils': 'eosinophils, absolute',
   'absolute basophils': 'basophils, absolute',
   'abs immature granulocytes': 'immature granulocytes, absolute',
+  // CBC red cell indices
+  'mchc': 'mchc (mean corpuscular hemoglobin concentration)',
+  'mch': 'mch (mean corpuscular hemoglobin)',
   // CBC percentage differential counts — plain name = percentage
   'neutrophils': 'neutrophils (%)',
   'lymphocytes': 'lymphocytes (%)',
