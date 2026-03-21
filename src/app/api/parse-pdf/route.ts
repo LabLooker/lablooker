@@ -183,6 +183,14 @@ const ALIASES: Record<string, string> = {
   // Metabolic panel CPL abbreviations
   'calc a/g ratio': 'albumin/globulin ratio (a/g)',
   'a/g ratio': 'albumin/globulin ratio (a/g)',
+  'calc bun/creat': 'bun/creatinine ratio',
+  'bun/creat ratio': 'bun/creatinine ratio',
+  'bun/creatinine': 'bun/creatinine ratio',
+  'calc globulin': 'globulins',
+  // NRBC
+  'abs nucleated rbcs': 'nucleated rbcs, absolute',
+  'absolute nucleated rbcs': 'nucleated rbcs, absolute',
+  'nucleated rbcs': 'nucleated rbcs (%)',
   // Iron panel CPL abbreviations
   'unsaturated ibc': 'uibc (unsaturated iron binding capacity)',
   'calc total ibc': 'tibc (total iron binding capacity)',

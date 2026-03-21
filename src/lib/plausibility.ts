@@ -16,6 +16,8 @@ const PLAUSIBILITY_RANGES: PlausibilityRange[] = [
   { pattern: 'potassium',      low: 1.5,   high: 7.5,    unit: 'mEq/L' },
   { pattern: 'glucose',        low: 20,    high: 700,    unit: 'mg/dL' },
   { pattern: 'creatinine',     low: 0.2,   high: 20.0,   unit: 'mg/dL' },
+  { pattern: 'mchc',           low: 28.0,  high: 38.0,   unit: 'g/dL' },
+  { pattern: 'mch',            low: 22.0,  high: 38.0,   unit: 'pg' },
   { pattern: 'hemoglobin',     low: 4.0,   high: 20.0,   unit: 'g/dL' },
   { pattern: 'tsh',            low: 0.001, high: 100,    unit: 'mIU/L' },
   { pattern: 'ferritin',       low: 1.0,   high: 3000,   unit: 'ng/mL' },
