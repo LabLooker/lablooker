@@ -20,6 +20,7 @@ type ParsedResult = {
   unit: string
   referenceRange: string | null
   matchedTest: TestRecord | null
+  qualifier?: string
 }
 
 // Common aliases: PDF name → DB test name
@@ -165,6 +166,14 @@ const ALIASES: Record<string, string> = {
   'dihydrotestosterone': 'dihydrotestosterone (dht)',
   'anti-mullerian hormone': 'amh (anti-mullerian hormone)',
   'anti mullerian hormone': 'amh (anti-mullerian hormone)',
+  // CBC absolute differential counts (CPL format)
+  'absolute neutrophils': 'neutrophils, absolute',
+  'absolute lymphocytes': 'lymphocytes, absolute',
+  'absolute monocytes': 'monocytes, absolute',
+  'absolute eosinophils': 'eosinophils, absolute',
+  'absolute basophils': 'basophils, absolute',
+  'abs immature granulocytes': 'immature granulocytes, absolute',
+  'immature granulocytes': 'immature granulocytes, absolute',
 }
 
 const UNITS_PATTERN = '(?:ng\\/mL|mIU\\/L|pg\\/mL|mg\\/dL|g\\/dL|IU\\/L|U\\/L|mmol\\/L|umol\\/L|mcg\\/dL|nmol\\/L|mEq\\/L|%|mIU\\/mL|IU\\/mL|ng\\/dL|mcg\\/L|nmol\\/mL|cells\\/uL|cells\\/mcL|10\\^3\\/uL|10\\^6\\/uL|K\\/uL|M\\/uL|fL|pg|g\\/L|mg\\/L|ug\\/dL|pmol\\/L|mL\\/min\\/1\\.73m2|mL\\/min|mm\\/hr|mg\\/24hr|mU\\/L|uIU\\/mL|x10E3\\/uL|x10E6\\/uL|thou\\/uL|mill\\/uL|Thousand\\/uL|Million\\/uL|10\\*3\\/uL|10\\*6\\/uL)'
@@ -392,9 +401,10 @@ async function parseCPLPdf(buffer: Buffer): Promise<ParsedResult[]> {
       const valueStr = valueItems.map(i => i.str.trim()).join(' ').trim()
       // Allow optional H/L flag after value (CPL marks out-of-range values e.g. "78 H", "7.3 L")
       // No $ anchor — handles merged rows where a second value appears after the H/L flag (e.g. "0.148 L 49")
-      const numMatch = valueStr.match(/^[<>]?\s*(\d+\.?\d*)\s*[HL]?/)
+      const numMatch = valueStr.match(/^([<>])?\s*(\d+\.?\d*)\s*[HL]?/)
       if (!numMatch) continue
-      const value = parseFloat(numMatch[1])
+      const qualifier = numMatch[1] || undefined
+      const value = parseFloat(numMatch[2])
       if (isNaN(value)) continue
 
       const refStr = refItems.map(i => i.str.trim()).join(' ').trim()
