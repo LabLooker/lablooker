@@ -196,13 +196,13 @@ export default function Nav() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="border-t border-[#e0ebe9] bg-[#faf8f5] px-6 py-4 md:hidden">
-          <div className="flex flex-col gap-4">
+        <div className="border-t border-[#e0ebe9] bg-[#faf8f5] md:hidden">
+          <nav className="flex flex-col px-6">
             {[...APP_CONFIG.nav.filter(l => l.label !== 'Track Results'), ...APP_CONFIG.moreNav].map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-[#577572] transition-colors hover:text-[#1a2e2b]"
+                className="py-3 text-sm text-[#577572] border-b border-[#e0ebe9] transition-colors hover:text-[#1a2e2b]"
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
@@ -210,24 +210,24 @@ export default function Nav() {
             ))}
             <Link
               href="/dashboard"
-              className="text-sm text-[#2d6a5e] font-semibold transition-colors hover:text-[#1a2e2b]"
+              className="py-3 text-sm font-semibold text-[#2d6a5e] border-b border-[#e0ebe9] transition-colors hover:text-[#1a2e2b]"
               onClick={() => setMobileOpen(false)}
             >
               Track Results
             </Link>
-            <div className="flex flex-col gap-2 pt-4 border-t border-[#e0ebe9]">
-              {user ? (
-                <>
-                  <Button variant="secondary" href="/settings" onClick={() => setMobileOpen(false)}>Settings</Button>
-                  <Button variant="secondary" onClick={handleSignOut}>Sign out</Button>
-                </>
-              ) : (
-                <>
-                  <Button variant="secondary" href="/login">Log in</Button>
-                  <Button href="/signup">Sign Up Free</Button>
-                </>
-              )}
-            </div>
+          </nav>
+          <div className="flex items-center gap-6 px-6 py-4">
+            {user ? (
+              <>
+                <Link href="/settings" className="text-sm text-[#577572] hover:text-[#1a2e2b] transition-colors" onClick={() => setMobileOpen(false)}>Settings</Link>
+                <button onClick={handleSignOut} className="text-sm text-[#577572] hover:text-[#1a2e2b] transition-colors">Sign out</button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="text-sm text-[#577572] hover:text-[#1a2e2b] transition-colors" onClick={() => setMobileOpen(false)}>Log in</Link>
+                <Link href="/signup" className="text-sm font-semibold text-[#2d6a5e] hover:text-[#1a2e2b] transition-colors" onClick={() => setMobileOpen(false)}>Sign Up Free</Link>
+              </>
+            )}
           </div>
         </div>
       )}
