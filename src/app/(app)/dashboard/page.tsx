@@ -102,7 +102,7 @@ function getStatusCategory(result: MarkerResult, goal: MarkerGoal | null, isPrem
 
   // Out of lab range entirely
   if (value < ref_range_low || value > ref_range_high) {
-    return { category: 'out_of_range', label: value < ref_range_low ? 'Low' : 'High', functional: false }
+    return { category: 'out_of_range', label: 'Out of Range', functional: false }
   }
 
   // Premium: check functional range (if within lab range but outside functional range)
@@ -152,10 +152,10 @@ function getTrend(results: MarkerResult[]): string {
 }
 
 const STATUS_CONFIG: Record<StatusCategory, { dot: string; pillBg: string; pillText: string }> = {
-  out_of_range: { dot: 'bg-[#b85c5c]', pillBg: 'bg-[#b85c5c]/10', pillText: 'text-[#b85c5c]' },
+  out_of_range: { dot: 'bg-[#b85c5c]', pillBg: 'bg-[#b85c5c]', pillText: 'text-white' },
   suboptimal: { dot: 'bg-[#c59030]', pillBg: 'bg-[#c59030]/10', pillText: 'text-[#c59030]' },
-  optimal: { dot: 'bg-[#2d6a5e]', pillBg: 'bg-[#2d6a5e]/10', pillText: 'text-[#2d6a5e]' },
-  no_range: { dot: 'bg-[#577572]', pillBg: 'bg-[#e0ebe9]', pillText: 'text-[#577572]' },
+  optimal: { dot: '', pillBg: 'bg-[#2d6a5e]/10', pillText: 'text-[#2d6a5e]' },
+  no_range: { dot: '', pillBg: 'bg-[#e0ebe9]', pillText: 'text-[#577572]' },
 }
 
 const TREND_LABELS: Record<string, string> = {
@@ -186,7 +186,7 @@ function DashboardContent() {
   const [visits, setVisits] = useState<VisitCard[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [activeFilter, setActiveFilter] = useState<FilterKey>('all')
+  const [activeFilter, setActiveFilter] = useState<FilterKey | null>(null)
   const [activeTab, setActiveTab] = useState<TabKey>('results')
   const [expandedVisits, setExpandedVisits] = useState<Set<string>>(new Set())
   const [visitSort, setVisitSort] = useState<'newest' | 'oldest' | 'az'>('newest')
@@ -449,7 +449,6 @@ function DashboardContent() {
     }
     if (activeFilter === 'out_of_range') return marker.statusCategory === 'out_of_range'
     if (activeFilter === 'suboptimal') return marker.statusCategory === 'suboptimal'
-    if (activeFilter === 'optimal') return marker.statusCategory === 'optimal'
     return true
   })
 
@@ -644,52 +643,41 @@ function DashboardContent() {
                   </div>
 
                   {/* Filter pills */}
-                  <div className="flex gap-2 mb-5 text-xs flex-wrap">
-                    <button
-                      onClick={() => setActiveFilter('all')}
-                      className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
-                        activeFilter === 'all'
-                          ? 'bg-[#2d6a5e] text-white'
-                          : 'bg-[#f0f7f6] text-[#577572] hover:bg-[#e0ebe9]'
-                      }`}
-                    >
-                      All ({counts.all})
-                    </button>
+                  <div className="flex gap-2 mb-5 text-xs flex-wrap items-center">
                     {counts.out_of_range > 0 && (
                       <button
-                        onClick={() => setActiveFilter('out_of_range')}
+                        onClick={() => setActiveFilter(activeFilter === 'out_of_range' ? null : 'out_of_range')}
                         className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
                           activeFilter === 'out_of_range'
                             ? 'bg-[#b85c5c] text-white'
                             : 'bg-[#b85c5c]/10 text-[#b85c5c] hover:bg-[#b85c5c]/20'
                         }`}
                       >
-                        Out of range ({counts.out_of_range})
+                        Out of Range ({counts.out_of_range})
                       </button>
                     )}
                     {counts.suboptimal > 0 && (
-                      <button
-                        onClick={() => setActiveFilter('suboptimal')}
-                        className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
-                          activeFilter === 'suboptimal'
-                            ? 'bg-[#c59030] text-white'
-                            : 'bg-[#c59030]/10 text-[#c59030] hover:bg-[#c59030]/20'
-                        }`}
-                      >
-                        Suboptimal ({counts.suboptimal})
-                      </button>
-                    )}
-                    {counts.optimal > 0 && (
-                      <button
-                        onClick={() => setActiveFilter('optimal')}
-                        className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
-                          activeFilter === 'optimal'
-                            ? 'bg-[#2d6a5e] text-white'
-                            : 'bg-[#2d6a5e]/10 text-[#2d6a5e] hover:bg-[#2d6a5e]/20'
-                        }`}
-                      >
-                        Optimal ({counts.optimal})
-                      </button>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => setActiveFilter(activeFilter === 'suboptimal' ? null : 'suboptimal')}
+                          className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+                            activeFilter === 'suboptimal'
+                              ? 'bg-[#c59030] text-white'
+                              : 'bg-[#c59030]/10 text-[#c59030] hover:bg-[#c59030]/20'
+                          }`}
+                        >
+                          Suboptimal ({counts.suboptimal})
+                        </button>
+                        <div className="relative group/tooltip inline-flex items-center">
+                          <svg className="w-3.5 h-3.5 text-[#577572] cursor-help ml-1" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                          </svg>
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 hidden group-hover/tooltip:block w-64 rounded-lg bg-[#1a2e2b] px-3 py-2 text-xs text-white shadow-lg">
+                            Suboptimal ranges are based on functional medicine research and may differ from your lab&apos;s standard reference ranges.
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#1a2e2b]" />
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
 
@@ -701,11 +689,13 @@ function DashboardContent() {
                         <div
                           key={marker.testId}
                           onClick={() => router.push(`/dashboard/tracker/${marker.testId}`)}
-                          className={`group flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] cursor-pointer transition-colors ${marker.statusCategory === 'out_of_range' ? 'border-l-2 border-[#b85c5c]' : ''}`}
+                          className={`group flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] cursor-pointer transition-colors`}
                         >
                           {/* Left: dot + name */}
                           <div className="flex items-center gap-3 min-w-0 flex-1">
-                            <div className={`w-2 h-2 rounded-full ${config.dot} flex-shrink-0`} />
+                            {config.dot && (
+                              <div className={`w-2 h-2 rounded-full ${config.dot} flex-shrink-0`} />
+                            )}
                             <span className="font-medium text-[#1a2e2b] truncate">{marker.testName}</span>
                           </div>
 
