@@ -196,6 +196,7 @@ function DashboardContent() {
   const [showImportModal, setShowImportModal] = useState(false)
   const [showPdfImportModal, setShowPdfImportModal] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState<{ testId: string; testName: string; resultCount: number } | null>(null)
+  const [showSuboptimalTip, setShowSuboptimalTip] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
@@ -668,14 +669,25 @@ function DashboardContent() {
                         >
                           Suboptimal ({counts.suboptimal})
                         </button>
-                        <div className="relative group/tooltip inline-flex items-center">
-                          <svg className="w-3.5 h-3.5 text-[#577572] cursor-help ml-1" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-                          </svg>
-                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 hidden group-hover/tooltip:block w-64 rounded-lg bg-[#1a2e2b] px-3 py-2 text-xs text-white shadow-lg">
-                            Suboptimal ranges are based on functional medicine research and may differ from your lab&apos;s standard reference ranges.
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#1a2e2b]" />
-                          </div>
+                        <div className="relative inline-flex items-center">
+                          {showSuboptimalTip && (
+                            <div className="fixed inset-0 z-40" onClick={() => setShowSuboptimalTip(false)} />
+                          )}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setShowSuboptimalTip(v => !v) }}
+                            className="p-2 -m-1 rounded-full text-[#577572] hover:text-[#1a2e2b] transition-colors"
+                            aria-label="About Suboptimal ranges"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                            </svg>
+                          </button>
+                          {showSuboptimalTip && (
+                            <div className="absolute bottom-full left-0 mb-2 z-50 w-64 rounded-lg bg-[#1a2e2b] px-3 py-2.5 text-xs text-white shadow-lg">
+                              Suboptimal ranges are based on functional medicine research and may differ from your lab&apos;s standard reference ranges.
+                              <div className="absolute top-full left-4 border-4 border-transparent border-t-[#1a2e2b]" />
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
