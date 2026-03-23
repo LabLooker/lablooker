@@ -210,29 +210,28 @@ export default function Nav() {
                 {link.label}
               </Link>
             ))}
-            {/* More section — collapsible */}
-            <MobileMoreSection onClose={() => setMobileOpen(false)} moreNav={APP_CONFIG.moreNav} />
-            {/* Divider + Premium destination */}
-            <div className="mt-2 border-t border-[#e0ebe9]" />
+            {/* Track Results — premium CTA, above More */}
             <Link
               href="/dashboard"
-              className="flex items-center justify-between py-3 text-sm text-[#2d6a5e] transition-colors hover:text-[#1a2e2b]"
+              className="flex items-center justify-between py-3 text-sm text-[#2d6a5e] border-b border-[#e0ebe9] transition-colors hover:text-[#1a2e2b]"
               onClick={() => setMobileOpen(false)}
             >
               Track Results
               <span className="text-xs font-medium text-[#2d6a5e] bg-[#2d6a5e]/10 px-2 py-0.5 rounded-full">Premium</span>
             </Link>
+            {/* More section — collapsible */}
+            <MobileMoreSection onClose={() => setMobileOpen(false)} moreNav={APP_CONFIG.moreNav} />
           </nav>
-          <div className="flex items-center gap-6 px-6 py-4">
+          <div className="flex flex-col px-6 py-2 border-t border-[#e0ebe9]">
             {user ? (
               <>
-                <Link href="/settings" className="text-sm text-[#577572] hover:text-[#1a2e2b] transition-colors" onClick={() => setMobileOpen(false)}>Settings</Link>
-                <button onClick={handleSignOut} className="text-sm text-[#577572] hover:text-[#1a2e2b] transition-colors">Sign out</button>
+                <Link href="/settings" className="py-3 text-sm text-[#577572] border-b border-[#e0ebe9] hover:text-[#1a2e2b] transition-colors" onClick={() => setMobileOpen(false)}>Settings</Link>
+                <button onClick={handleSignOut} className="py-3 text-sm text-left text-[#577572] hover:text-[#1a2e2b] transition-colors">Sign out</button>
               </>
             ) : (
               <>
-                <Link href="/login" className="text-sm text-[#577572] hover:text-[#1a2e2b] transition-colors" onClick={() => setMobileOpen(false)}>Log in</Link>
-                <Link href="/signup" className="text-sm font-semibold text-[#2d6a5e] hover:text-[#1a2e2b] transition-colors" onClick={() => setMobileOpen(false)}>Sign Up Free</Link>
+                <Link href="/login" className="py-3 text-sm text-[#577572] border-b border-[#e0ebe9] hover:text-[#1a2e2b] transition-colors" onClick={() => setMobileOpen(false)}>Log in</Link>
+                <Link href="/signup" className="py-3 text-sm font-semibold text-[#2d6a5e] hover:text-[#1a2e2b] transition-colors" onClick={() => setMobileOpen(false)}>Sign Up Free</Link>
               </>
             )}
           </div>
