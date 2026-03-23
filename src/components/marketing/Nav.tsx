@@ -56,6 +56,7 @@ export default function Nav() {
   }
 
   return (
+    <>
     <header className="fixed top-0 z-50 w-full border-b border-[#e0ebe9] bg-[#faf8f5]/80 backdrop-blur-xl">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
@@ -198,7 +199,8 @@ export default function Nav() {
       {mobileOpen && (
         <div className="border-t border-[#e0ebe9] bg-[#faf8f5] md:hidden">
           <nav className="flex flex-col px-6">
-            {[...APP_CONFIG.nav.filter(l => l.label !== 'Track Results'), ...APP_CONFIG.moreNav].map((link) => (
+            {/* Primary links */}
+            {APP_CONFIG.nav.filter(l => l.label !== 'Track Results').slice(0, 3).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -215,6 +217,8 @@ export default function Nav() {
             >
               Track Results
             </Link>
+            {/* More section — collapsible */}
+            <MobileMoreSection onClose={() => setMobileOpen(false)} moreNav={APP_CONFIG.moreNav} />
           </nav>
           <div className="flex items-center gap-6 px-6 py-4">
             {user ? (
@@ -232,5 +236,44 @@ export default function Nav() {
         </div>
       )}
     </header>
+
+      {/* Backdrop overlay — darkens page when mobile menu is open */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+    </>
+  )
+}
+
+function MobileMoreSection({ onClose, moreNav }: { onClose: () => void, moreNav: { label: string, href: string }[] }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button
+        className="flex w-full items-center justify-between py-3 text-sm text-[#577572] border-b border-[#e0ebe9] transition-colors hover:text-[#1a2e2b]"
+        onClick={() => setOpen(!open)}
+      >
+        More
+        <svg
+          className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`}
+          fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+      {open && moreNav.map((link) => (
+        <Link
+          key={link.href}
+          href={link.href}
+          className="py-3 pl-4 text-sm text-[#577572] border-b border-[#e0ebe9] transition-colors hover:text-[#1a2e2b]"
+          onClick={onClose}
+        >
+          {link.label}
+        </Link>
+      ))}
+    </>
   )
 }
