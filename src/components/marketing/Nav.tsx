@@ -210,15 +210,18 @@ export default function Nav() {
                 {link.label}
               </Link>
             ))}
+            {/* More section — collapsible */}
+            <MobileMoreSection onClose={() => setMobileOpen(false)} moreNav={APP_CONFIG.moreNav} />
+            {/* Divider + Premium destination */}
+            <div className="mt-2 border-t border-[#e0ebe9]" />
             <Link
               href="/dashboard"
-              className="py-3 text-sm font-semibold text-[#2d6a5e] border-b border-[#e0ebe9] transition-colors hover:text-[#1a2e2b]"
+              className="flex items-center justify-between py-3 text-sm text-[#2d6a5e] transition-colors hover:text-[#1a2e2b]"
               onClick={() => setMobileOpen(false)}
             >
               Track Results
+              <span className="text-xs font-medium text-[#2d6a5e] bg-[#2d6a5e]/10 px-2 py-0.5 rounded-full">Premium</span>
             </Link>
-            {/* More section — collapsible */}
-            <MobileMoreSection onClose={() => setMobileOpen(false)} moreNav={APP_CONFIG.moreNav} />
           </nav>
           <div className="flex items-center gap-6 px-6 py-4">
             {user ? (
