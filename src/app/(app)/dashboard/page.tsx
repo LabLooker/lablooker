@@ -693,9 +693,7 @@ function DashboardContent() {
                         >
                           {/* Left: dot + name */}
                           <div className="flex items-center gap-3 min-w-0 flex-1">
-                            {config.dot && (
-                              <div className={`w-2 h-2 rounded-full ${config.dot} flex-shrink-0`} />
-                            )}
+                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${config.dot || 'invisible'}`} />
                             <span className="font-medium text-[#1a2e2b] truncate">{marker.testName}</span>
                           </div>
 
