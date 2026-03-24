@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'HOMA-IR Calculator — Insulin Resistance Score',
-  description: 'Calculate your HOMA-IR score from fasting glucose and insulin. Estimate insulin resistance for metabolic health, diabetes prevention, and weight management.',
+  title: 'HOMA-IR Calculator — Estimate Insulin Resistance',
+  description: 'HOMA-IR Calculator — Estimate insulin resistance from fasting glucose and insulin. Free tool for metabolic health assessment.',
   openGraph: {
     title: 'HOMA-IR Calculator | LabLooker',
-    description: 'Free HOMA-IR calculator. Estimate insulin resistance from fasting glucose and fasting insulin levels.',
+    description: 'Free HOMA-IR calculator. Estimate insulin resistance from fasting glucose and insulin for metabolic health assessment.',
   },
 }
 

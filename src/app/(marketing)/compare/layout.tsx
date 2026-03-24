@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Compare Lab Test Prices',
-  description: 'Compare self-pay lab test prices across Ulta Lab Tests, Walk-In Lab, HealthLabs, Request A Test, and more. Find the cheapest price for any blood test.',
+  title: 'Compare Lab Test Prices — Find the Cheapest Blood Test',
+  description: 'Compare self-pay lab test prices across Ulta Lab Tests, Walk-In Lab, HealthLabs, Request A Test, and more. Find the cheapest blood test without insurance.',
   openGraph: {
     title: 'Compare Lab Test Prices | LabLooker',
-    description: 'Compare self-pay lab test prices across major DTC lab providers. Find the cheapest blood test near you.',
+    description: 'Compare self-pay lab test prices across Ulta Lab Tests, Walk-In Lab, HealthLabs, and more. Find the cheapest blood test without insurance.',
   },
 }
 

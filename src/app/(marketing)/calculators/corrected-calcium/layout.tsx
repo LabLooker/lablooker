@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Corrected Calcium Calculator — Albumin-Adjusted',
-  description: 'Calculate albumin-adjusted corrected calcium. Adjusts serum calcium for low albumin levels — important for hypoparathyroid patients, kidney disease, and calcium monitoring.',
+  title: 'Corrected Calcium Calculator — Adjust Calcium for Albumin Levels',
+  description: 'Corrected Calcium Calculator — Adjust calcium for albumin levels. Free online calculator for hypoparathyroidism, hypoalbuminemia, and CKD patients.',
   openGraph: {
     title: 'Corrected Calcium Calculator | LabLooker',
-    description: 'Free corrected calcium calculator. Adjusts serum calcium for low albumin levels using the standard clinical formula.',
+    description: 'Free corrected calcium calculator. Adjust calcium for albumin levels — for hypoparathyroidism, hypoalbuminemia, and CKD patients.',
   },
 }
 

@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Translate Lab Codes',
-  description: 'Translate lab test codes between Quest, LabCorp, ARUP, and 11 other reference labs. Paste your test names or codes and get instant translations with CPT codes.',
+  title: 'Translate Lab Codes — Quest, LabCorp, ARUP & More',
+  description: 'Translate lab test codes between Quest Diagnostics, LabCorp, ARUP, and 11 other reference labs. Paste test names or proprietary codes and get instant translations with CPT codes.',
   openGraph: {
     title: 'Translate Lab Codes | LabLooker',
-    description: 'Translate lab test codes between Quest, LabCorp, ARUP, and 11 other reference labs.',
+    description: 'Translate lab test codes between Quest Diagnostics, LabCorp, ARUP, and 11 other reference labs. Free instant translations with CPT codes.',
   },
 }
 

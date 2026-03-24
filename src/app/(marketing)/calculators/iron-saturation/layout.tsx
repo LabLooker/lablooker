@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Iron Saturation Calculator — Transferrin Saturation %',
-  description: 'Calculate transferrin saturation percentage from serum iron and TIBC. Screen for iron deficiency anemia and hemochromatosis iron overload.',
+  title: 'Iron Saturation % Calculator — Transferrin Saturation',
+  description: 'Iron Saturation % Calculator — Calculate transferrin saturation from serum iron and TIBC. Free tool for iron deficiency and overload assessment.',
   openGraph: {
-    title: 'Iron Saturation Calculator | LabLooker',
-    description: 'Free iron saturation calculator. Calculate transferrin saturation percentage from serum iron and TIBC levels.',
+    title: 'Iron Saturation % Calculator | LabLooker',
+    description: 'Free iron saturation calculator. Calculate transferrin saturation from serum iron and TIBC for iron deficiency and overload assessment.',
   },
 }
 
