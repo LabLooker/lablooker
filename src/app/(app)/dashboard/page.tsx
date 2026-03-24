@@ -693,32 +693,49 @@ function DashboardContent() {
                     )}
                   </div>
 
-                  {/* Marker rows */}
-                  <div className="divide-y divide-[#e0ebe9] rounded-xl border border-[#e0ebe9]">
-                    {filteredMarkers.map((marker) => {
-                      return (
-                        <div
-                          key={marker.testId}
-                          onClick={() => router.push(`/dashboard/tracker/${marker.testId}`)}
-                          className="group flex items-stretch hover:bg-[#f0f7f6] cursor-pointer transition-colors"
-                        >
-                          {/* Left color chip — only on flagged rows */}
-                          {(marker.statusCategory === 'out_of_range' || marker.statusCategory === 'suboptimal') && (
-                            <div className={`w-1 rounded-sm self-stretch shrink-0 ${marker.statusCategory === 'out_of_range' ? 'bg-[#b85c5c]' : 'bg-[#c59030]'}`} />
-                          )}
+                  {/* Marker table */}
+                  <div className="rounded-xl border border-[#e0ebe9] overflow-hidden">
+                    <table className="w-full border-separate border-spacing-0">
+                      <thead>
+                        <tr className="bg-[#f0f7f6] border-b border-[#e0ebe9]">
+                          <th className="w-1 p-0" />
+                          <th className="px-4 py-2.5 text-left text-xs font-medium text-[#577572]">Marker</th>
+                          <th className="px-4 py-2.5 text-left text-xs font-medium text-[#577572]">Value</th>
+                          <th className="px-4 py-2.5 text-left text-xs font-medium text-[#577572] hidden sm:table-cell">Unit</th>
+                          <th className="px-4 py-2.5 text-left text-xs font-medium text-[#577572]">Status</th>
+                          <th className="px-4 py-2.5" />
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredMarkers.map((marker) => (
+                          <tr
+                            key={marker.testId}
+                            onClick={() => router.push(`/dashboard/tracker/${marker.testId}`)}
+                            className="group border-t border-[#e0ebe9] hover:bg-[#f0f7f6] cursor-pointer transition-colors"
+                          >
+                            {/* Left color chip */}
+                            <td className={`w-1 p-0 ${
+                              marker.statusCategory === 'out_of_range' ? 'bg-[#b85c5c]' :
+                              marker.statusCategory === 'suboptimal' ? 'bg-[#c59030]' : ''
+                            }`} />
 
-                          {/* Row content */}
-                          <div className="flex-1 flex items-center justify-between px-4 py-3 gap-3 min-w-0">
-                            {/* Test name */}
-                            <span className="font-medium text-[#1a2e2b] truncate min-w-0 flex-1">{marker.testName}</span>
+                            {/* Marker name */}
+                            <td className="px-4 py-3 text-sm font-medium text-[#1a2e2b] max-w-[220px]">
+                              <span className="truncate block">{marker.testName}</span>
+                            </td>
 
-                            {/* Value + unit */}
-                            <span className="hidden sm:inline text-sm font-semibold text-[#1a2e2b] shrink-0 w-28 text-left">
-                              {marker.qualifier || ''}{marker.latestValue}{marker.unit ? ` ${marker.unit}` : ''}
-                            </span>
+                            {/* Value */}
+                            <td className="px-4 py-3 text-sm font-semibold text-[#1a2e2b] whitespace-nowrap">
+                              {marker.qualifier || ''}{marker.latestValue}
+                            </td>
 
-                            {/* Status label */}
-                            <div className="flex items-center gap-1.5 shrink-0">
+                            {/* Unit */}
+                            <td className="px-4 py-3 text-sm text-[#577572] hidden sm:table-cell whitespace-nowrap">
+                              {marker.unit || '—'}
+                            </td>
+
+                            {/* Status */}
+                            <td className="px-4 py-3 whitespace-nowrap">
                               {marker.statusCategory === 'out_of_range' && (
                                 <span className="bg-[#b85c5c] text-white text-xs font-medium px-2.5 py-0.5 rounded-full">
                                   Out of Range
@@ -732,40 +749,39 @@ function DashboardContent() {
                               {marker.statusCategory === 'optimal' && (
                                 <span className="text-xs text-[#577572]">In Range</span>
                               )}
-                            </div>
+                            </td>
 
-                            {/* Delete */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setDeleteConfirm({ testId: marker.testId, testName: marker.testName, resultCount: marker.resultCount })
-                              }}
-                              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded-lg text-[#577572] hover:text-[#b85c5c] hover:bg-[#b85c5c]/10 transition-all flex-shrink-0"
-                              title="Delete test results"
-                            >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                              </svg>
-                            </button>
-
-                            {/* Chart icon */}
-                            <svg className="hidden sm:block h-4 w-4 text-[#2d6a5e] shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4v16" />
-                            </svg>
-
-                            {/* Chevron */}
-                            <svg className="w-4 h-4 text-[#577572] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </div>
-                        </div>
-                      )
-                    })}
-                    {filteredMarkers.length === 0 && (
-                      <div className="px-4 py-8 text-center text-sm text-[#577572]">
-                        No markers match your search.
-                      </div>
-                    )}
+                            {/* Actions */}
+                            <td className="px-4 py-3">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setDeleteConfirm({ testId: marker.testId, testName: marker.testName, resultCount: marker.resultCount })
+                                  }}
+                                  className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded-lg text-[#577572] hover:text-[#b85c5c] hover:bg-[#b85c5c]/10 transition-all"
+                                  title="Delete test results"
+                                >
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                  </svg>
+                                </button>
+                                <svg className="w-4 h-4 text-[#577572] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                        {filteredMarkers.length === 0 && (
+                          <tr>
+                            <td colSpan={6} className="px-4 py-8 text-center text-sm text-[#577572]">
+                              No markers match your search.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
                   </div>
 
                 </>
