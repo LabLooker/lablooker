@@ -695,15 +695,15 @@ function DashboardContent() {
 
                   {/* Marker table */}
                   <div className="rounded-xl border border-[#e0ebe9] overflow-hidden">
-                    <table className="w-full border-separate border-spacing-0">
+                    <table className="w-full table-fixed border-separate border-spacing-0">
                       <thead>
                         <tr className="bg-[#f0f7f6] border-b border-[#e0ebe9]">
                           <th className="w-1 p-0" />
-                          <th className="px-4 py-2.5 text-left text-xs font-medium text-[#577572]">Marker</th>
-                          <th className="w-16 px-4 py-2.5 text-left text-xs font-medium text-[#577572]">Value</th>
-                          <th className="w-20 px-4 py-2.5 text-left text-xs font-medium text-[#577572] hidden sm:table-cell">Unit</th>
-                          <th className="w-28 px-4 py-2.5 text-left text-xs font-medium text-[#577572]">Status</th>
-                          <th className="w-12 px-4 py-2.5" />
+                          <th className="px-3 py-2.5 text-left text-xs font-medium text-[#577572]">Marker</th>
+                          <th className="w-14 px-3 py-2.5 text-left text-xs font-medium text-[#577572]">Value</th>
+                          <th className="w-16 px-3 py-2.5 text-left text-xs font-medium text-[#577572] hidden sm:table-cell">Unit</th>
+                          <th className="w-24 px-3 py-2.5 text-left text-xs font-medium text-[#577572]">Status</th>
+                          <th className="w-10 p-0 hidden sm:table-cell" />
                         </tr>
                       </thead>
                       <tbody>
@@ -720,22 +720,22 @@ function DashboardContent() {
                             }`} />
 
                             {/* Marker name */}
-                            <td className="px-4 py-3 text-sm font-medium text-[#1a2e2b] max-w-[220px]">
+                            <td className="px-3 py-3 text-sm font-medium text-[#1a2e2b]">
                               <span className="truncate block">{marker.testName}</span>
                             </td>
 
                             {/* Value */}
-                            <td className="px-4 py-3 text-sm font-semibold text-[#1a2e2b] whitespace-nowrap">
+                            <td className="px-3 py-3 text-sm font-semibold text-[#1a2e2b]">
                               {marker.qualifier || ''}{marker.latestValue}
                             </td>
 
                             {/* Unit */}
-                            <td className="px-4 py-3 text-sm text-[#577572] hidden sm:table-cell whitespace-nowrap">
+                            <td className="px-3 py-3 text-sm text-[#577572] hidden sm:table-cell">
                               {marker.unit || '—'}
                             </td>
 
                             {/* Status */}
-                            <td className="px-4 py-3 whitespace-nowrap">
+                            <td className="px-3 py-3">
                               {marker.statusCategory === 'out_of_range' && (
                                 <>
                                   <span className="sm:hidden text-xs font-medium text-[#b85c5c]">Out of Range</span>
@@ -754,8 +754,8 @@ function DashboardContent() {
                             </td>
 
                             {/* Actions */}
-                            <td className="px-4 py-3">
-                              <div className="flex items-center justify-end gap-2">
+                            <td className="p-0 hidden sm:table-cell">
+                              <div className="flex items-center justify-end gap-2 px-3 py-3">
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation()
