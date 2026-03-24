@@ -702,7 +702,7 @@ function DashboardContent() {
                           <th className="px-3 py-2.5 text-left text-xs font-medium text-[#577572]">Marker</th>
                           <th className="w-14 px-3 py-2.5 text-left text-xs font-medium text-[#577572]">Value</th>
                           <th className="w-16 px-3 py-2.5 text-left text-xs font-medium text-[#577572] hidden sm:table-cell">Unit</th>
-                          <th className="w-24 px-3 py-2.5 text-left text-xs font-medium text-[#577572]">Status</th>
+                          <th className="w-28 px-3 py-2.5 text-left text-xs font-medium text-[#577572]">Status</th>
                           <th className="w-10 p-0 hidden sm:table-cell" />
                         </tr>
                       </thead>
@@ -738,18 +738,18 @@ function DashboardContent() {
                             <td className="px-3 py-3">
                               {marker.statusCategory === 'out_of_range' && (
                                 <>
-                                  <span className="sm:hidden text-xs font-medium text-[#b85c5c]">Out of Range</span>
-                                  <span className="hidden sm:inline bg-[#b85c5c] text-white text-xs font-medium px-2.5 py-0.5 rounded-full">Out of Range</span>
+                                  <span className="sm:hidden text-xs font-medium text-[#b85c5c] whitespace-nowrap">Out of Range</span>
+                                  <span className="hidden sm:inline bg-[#b85c5c] text-white text-xs font-medium px-2.5 py-0.5 rounded-full whitespace-nowrap">Out of Range</span>
                                 </>
                               )}
                               {marker.statusCategory === 'suboptimal' && (
                                 <>
-                                  <span className="sm:hidden text-xs font-medium text-[#c59030]">Suboptimal</span>
-                                  <span className="hidden sm:inline border border-[#c59030] text-[#c59030] text-xs font-medium px-2.5 py-0.5 rounded-full">Suboptimal{marker.functionalLabel ? ' *' : ''}</span>
+                                  <span className="sm:hidden text-xs font-medium text-[#c59030] whitespace-nowrap">Suboptimal</span>
+                                  <span className="hidden sm:inline border border-[#c59030] text-[#c59030] text-xs font-medium px-2.5 py-0.5 rounded-full whitespace-nowrap">Suboptimal{marker.functionalLabel ? ' *' : ''}</span>
                                 </>
                               )}
                               {marker.statusCategory === 'optimal' && (
-                                <span className="text-xs text-[#577572]">In Range</span>
+                                <span className="text-xs text-[#577572] whitespace-nowrap">In Range</span>
                               )}
                             </td>
 
