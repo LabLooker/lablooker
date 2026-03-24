@@ -884,10 +884,10 @@ function DashboardContent() {
                             <table className="w-full text-sm">
                               <thead>
                                 <tr className="bg-[#faf8f5] text-[#4a6b67] text-xs">
-                                  <th className="px-4 py-2 text-left font-medium">Marker</th>
-                                  <th className="px-4 py-2 text-left font-medium">Value</th>
-                                  <th className="px-4 py-2 text-left font-medium">Unit</th>
-                                  <th className="px-4 py-2 text-left font-medium">Status</th>
+                                  <th className="px-3 py-2 text-left font-medium">Marker</th>
+                                  <th className="px-3 py-2 text-left font-medium">Value</th>
+                                  <th className="px-3 py-2 text-left font-medium hidden sm:table-cell">Unit</th>
+                                  <th className="px-3 py-2 text-left font-medium">Status</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -896,10 +896,10 @@ function DashboardContent() {
                                     key={i}
                                     className={`border-t border-[#e0ebe9] ${i % 2 === 1 ? 'bg-[#faf8f5]/50' : ''}`}
                                   >
-                                    <td className="px-4 py-2 text-[#1a2e2b] font-medium">{m.testName}</td>
-                                    <td className="px-4 py-2 text-[#1a2e2b]">{m.value}</td>
-                                    <td className="px-4 py-2 text-[#577572]">{m.unit || '—'}</td>
-                                    <td className="px-4 py-2">
+                                    <td className="px-3 py-2 text-[#1a2e2b] font-medium">{m.testName}</td>
+                                    <td className="px-3 py-2 text-[#1a2e2b] whitespace-nowrap">{m.value}</td>
+                                    <td className="px-3 py-2 text-[#577572] hidden sm:table-cell whitespace-nowrap">{m.unit || '—'}</td>
+                                    <td className="px-3 py-2">
                                       {m.status === 'in_range' && (
                                         <span className="inline-flex items-center gap-1 text-xs font-medium text-[#2d6a5e]">
                                           <span className="w-1.5 h-1.5 rounded-full bg-[#2d6a5e]" />
