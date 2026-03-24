@@ -151,11 +151,11 @@ function getTrend(results: MarkerResult[]): string {
   return diff > 0 ? '↑' : '↓'
 }
 
-const STATUS_CONFIG: Record<StatusCategory, { dot: string; pillBg: string; pillText: string }> = {
-  out_of_range: { dot: 'bg-[#b85c5c]', pillBg: 'bg-[#b85c5c]', pillText: 'text-white' },
-  suboptimal: { dot: 'bg-[#c59030]', pillBg: 'bg-[#c59030]/10', pillText: 'text-[#c59030]' },
-  optimal: { dot: '', pillBg: 'bg-[#2d6a5e]/10', pillText: 'text-[#2d6a5e]' },
-  no_range: { dot: '', pillBg: 'bg-[#e0ebe9]', pillText: 'text-[#577572]' },
+const STATUS_CONFIG: Record<StatusCategory, { pillBg: string; pillText: string }> = {
+  out_of_range: { pillBg: 'bg-[#b85c5c]', pillText: 'text-white' },
+  suboptimal: { pillBg: '', pillText: 'text-[#c59030]' },
+  optimal: { pillBg: '', pillText: 'text-[#577572]' },
+  no_range: { pillBg: '', pillText: '' },
 }
 
 const TREND_LABELS: Record<string, string> = {
@@ -696,37 +696,45 @@ function DashboardContent() {
                   {/* Marker rows */}
                   <div className="divide-y divide-[#e0ebe9] rounded-xl border border-[#e0ebe9]">
                     {filteredMarkers.map((marker) => {
-                      const config = STATUS_CONFIG[marker.statusCategory]
                       return (
                         <div
                           key={marker.testId}
                           onClick={() => router.push(`/dashboard/tracker/${marker.testId}`)}
-                          className={`group flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] cursor-pointer transition-colors`}
+                          className="group flex items-stretch hover:bg-[#f0f7f6] cursor-pointer transition-colors"
                         >
-                          {/* Left: dot + name */}
-                          <div className="flex items-center gap-3 min-w-0 flex-1">
-                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${config.dot || 'invisible'}`} />
-                            <span className="font-medium text-[#1a2e2b] truncate">{marker.testName}</span>
-                          </div>
+                          {/* Left color chip — only on flagged rows */}
+                          {(marker.statusCategory === 'out_of_range' || marker.statusCategory === 'suboptimal') && (
+                            <div className={`w-1 rounded-sm self-stretch shrink-0 ${marker.statusCategory === 'out_of_range' ? 'bg-[#b85c5c]' : 'bg-[#c59030]'}`} />
+                          )}
 
-                          {/* Right: value, trend, status pill, date, delete, chevron */}
-                          <div className="flex items-center gap-4 flex-shrink-0">
-                            <span className="hidden sm:inline text-sm font-semibold text-[#1a2e2b] w-24 text-left">
+                          {/* Row content */}
+                          <div className="flex-1 flex items-center justify-between px-4 py-3 gap-3 min-w-0">
+                            {/* Test name */}
+                            <span className="font-medium text-[#1a2e2b] truncate min-w-0 flex-1">{marker.testName}</span>
+
+                            {/* Value + unit */}
+                            <span className="hidden sm:inline text-sm font-semibold text-[#1a2e2b] shrink-0">
                               {marker.qualifier || ''}{marker.latestValue}{marker.unit ? ` ${marker.unit}` : ''}
                             </span>
-                            <span
-                              className="hidden md:inline text-xs text-[#577572] w-12 text-center"
-                              title={TREND_LABELS[marker.trend]}
-                            >
-                              {marker.trend}
-                            </span>
-                            <span
-                              className={`text-xs font-medium ${config.pillText} ${config.pillBg} px-2 py-0.5 rounded-full w-24 text-center hidden sm:inline-block`}
-                              title={marker.functionalLabel ? 'Based on functional/optimal range' : undefined}
-                            >
-                              {marker.statusLabel}{marker.functionalLabel ? ' *' : ''}
-                            </span>
-                            <span className="hidden lg:inline text-xs text-[#577572] w-16 text-right">{marker.date}</span>
+
+                            {/* Status label */}
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              {marker.statusCategory === 'out_of_range' && (
+                                <span className="bg-[#b85c5c] text-white text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                  Out of Range
+                                </span>
+                              )}
+                              {marker.statusCategory === 'suboptimal' && (
+                                <span className="border border-[#c59030] text-[#c59030] text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                  Suboptimal{marker.functionalLabel ? ' *' : ''}
+                                </span>
+                              )}
+                              {marker.statusCategory === 'optimal' && (
+                                <span className="text-xs text-[#577572]">In Range</span>
+                              )}
+                            </div>
+
+                            {/* Delete */}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -739,9 +747,13 @@ function DashboardContent() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                               </svg>
                             </button>
+
+                            {/* Chart icon */}
                             <svg className="hidden sm:block h-4 w-4 text-[#2d6a5e] shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4v16" />
                             </svg>
+
+                            {/* Chevron */}
                             <svg className="w-4 h-4 text-[#577572] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
