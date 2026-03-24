@@ -737,14 +737,16 @@ function DashboardContent() {
                             {/* Status */}
                             <td className="px-4 py-3 whitespace-nowrap">
                               {marker.statusCategory === 'out_of_range' && (
-                                <span className="bg-[#b85c5c] text-white text-xs font-medium px-2.5 py-0.5 rounded-full">
-                                  Out of Range
-                                </span>
+                                <>
+                                  <span className="sm:hidden text-xs font-medium text-[#b85c5c]">Out of Range</span>
+                                  <span className="hidden sm:inline bg-[#b85c5c] text-white text-xs font-medium px-2.5 py-0.5 rounded-full">Out of Range</span>
+                                </>
                               )}
                               {marker.statusCategory === 'suboptimal' && (
-                                <span className="border border-[#c59030] text-[#c59030] text-xs font-medium px-2.5 py-0.5 rounded-full">
-                                  Suboptimal{marker.functionalLabel ? ' *' : ''}
-                                </span>
+                                <>
+                                  <span className="sm:hidden text-xs font-medium text-[#c59030]">Suboptimal</span>
+                                  <span className="hidden sm:inline border border-[#c59030] text-[#c59030] text-xs font-medium px-2.5 py-0.5 rounded-full">Suboptimal{marker.functionalLabel ? ' *' : ''}</span>
+                                </>
                               )}
                               {marker.statusCategory === 'optimal' && (
                                 <span className="text-xs text-[#577572]">In Range</span>
