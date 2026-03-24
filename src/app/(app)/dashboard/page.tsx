@@ -700,10 +700,10 @@ function DashboardContent() {
                         <tr className="bg-[#f0f7f6] border-b border-[#e0ebe9]">
                           <th className="w-1 p-0" />
                           <th className="px-4 py-2.5 text-left text-xs font-medium text-[#577572]">Marker</th>
-                          <th className="px-4 py-2.5 text-left text-xs font-medium text-[#577572]">Value</th>
-                          <th className="px-4 py-2.5 text-left text-xs font-medium text-[#577572] hidden sm:table-cell">Unit</th>
-                          <th className="px-4 py-2.5 text-left text-xs font-medium text-[#577572]">Status</th>
-                          <th className="px-4 py-2.5" />
+                          <th className="w-16 px-4 py-2.5 text-left text-xs font-medium text-[#577572]">Value</th>
+                          <th className="w-20 px-4 py-2.5 text-left text-xs font-medium text-[#577572] hidden sm:table-cell">Unit</th>
+                          <th className="w-28 px-4 py-2.5 text-left text-xs font-medium text-[#577572]">Status</th>
+                          <th className="w-12 px-4 py-2.5" />
                         </tr>
                       </thead>
                       <tbody>
@@ -899,7 +899,7 @@ function DashboardContent() {
                                     className={`border-t border-[#e0ebe9] ${i % 2 === 1 ? 'bg-[#faf8f5]/50' : ''}`}
                                   >
                                     <td className="px-3 py-2 text-[#1a2e2b] font-medium">{m.testName}</td>
-                                    <td className="px-3 py-2 text-[#1a2e2b] whitespace-nowrap">{m.value}</td>
+                                    <td className="px-3 py-2 text-[#1a2e2b] font-semibold whitespace-nowrap">{m.value}</td>
                                     <td className="px-3 py-2 text-[#577572] hidden sm:table-cell whitespace-nowrap">{m.unit || '—'}</td>
                                     <td className="px-3 py-2">
                                       {m.status === 'in_range' && (
