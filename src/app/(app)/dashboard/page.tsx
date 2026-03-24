@@ -713,7 +713,7 @@ function DashboardContent() {
                             <span className="font-medium text-[#1a2e2b] truncate min-w-0 flex-1">{marker.testName}</span>
 
                             {/* Value + unit */}
-                            <span className="hidden sm:inline text-sm font-semibold text-[#1a2e2b] shrink-0">
+                            <span className="hidden sm:inline text-sm font-semibold text-[#1a2e2b] shrink-0 w-28 text-left">
                               {marker.qualifier || ''}{marker.latestValue}{marker.unit ? ` ${marker.unit}` : ''}
                             </span>
 
