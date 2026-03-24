@@ -186,13 +186,13 @@ export default function Pricing() {
               key={tier.key}
               className={`relative rounded-2xl border p-8 ${
                 tier.featured
-                  ? 'border-[#2d6a5e]/50 bg-[#2d6a5e]/5 shadow-lg shadow-[#2d6a5e]/10'
-                  : 'border-[#e0ebe9] bg-white'
+                  ? 'order-1 lg:order-2 border-[#2d6a5e]/50 bg-[#2d6a5e]/5 shadow-lg shadow-[#2d6a5e]/10'
+                  : 'order-2 lg:order-1 border-[#e0ebe9] bg-white'
               }`}
             >
               {tier.featured && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#2d6a5e] px-4 py-1 text-xs font-semibold text-white">
-                  Most Popular
+                  Recommended
                 </div>
               )}
               <h3 className="text-lg font-semibold text-[#1a2e2b]">{tier.plan.name}</h3>
@@ -253,6 +253,20 @@ export default function Pricing() {
           ))}
         </div>
 
+        {/* Provider interest CTA */}
+        <div className="mx-auto mt-6 max-w-4xl rounded-xl border border-[#e0ebe9] bg-white px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-[#1a2e2b]">Healthcare provider or clinic?</p>
+            <p className="text-sm text-[#577572]">We&apos;re building tools for you.</p>
+          </div>
+          <a
+            href="mailto:hello@lablooker.com"
+            className="shrink-0 text-sm font-medium text-[#2d6a5e] underline underline-offset-2 hover:text-[#1a2e2b]"
+          >
+            Get in touch →
+          </a>
+        </div>
+
         {/* Why upgrade */}
         <div className="mx-auto mt-20 max-w-2xl">
           <div className="rounded-2xl border border-[#e0ebe9] bg-[#f0f7f6] p-8 sm:p-10">
@@ -307,13 +321,6 @@ export default function Pricing() {
           </div>
         </div>
 
-        {/* Provider interest CTA */}
-        <p className="mt-16 text-center text-sm text-[#577572]">
-          Healthcare provider or clinic? We&apos;re building tools for you.{' '}
-          <a href="mailto:hello@lablooker.com" className="text-[#2d6a5e] underline underline-offset-2 hover:text-[#1a2e2b]">
-            Get in touch →
-          </a>
-        </p>
       </div>
     </section>
   )
