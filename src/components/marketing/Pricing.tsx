@@ -144,7 +144,6 @@ export default function Pricing() {
       cta: 'Start Free — No Credit Card',
       href: '/search',
       featured: false,
-      comingSoon: false,
     },
     {
       key: 'pro' as const,
@@ -154,17 +153,6 @@ export default function Pricing() {
       annualNote: isAnnual ? 'Save 39% vs monthly' : '$59/year (save 39%)',
       cta: checkoutLoading ? 'Loading...' : 'Start Premium',
       featured: true,
-      comingSoon: false,
-    },
-    {
-      key: 'business' as const,
-      plan: plans.business,
-      price: `$${plans.business.monthlyPrice}`,
-      period: '/month',
-      cta: 'Join Waitlist',
-      href: 'mailto:hello@lablooker.com?subject=Practice%20Tier%20Waitlist',
-      featured: false,
-      comingSoon: true,
     },
   ]
 
@@ -192,7 +180,7 @@ export default function Pricing() {
         </div>
 
         {/* Plan cards */}
-        <div className="mt-16 grid gap-8 lg:grid-cols-3">
+        <div className="mx-auto mt-16 grid max-w-4xl gap-8 lg:grid-cols-2">
           {tiers.map((tier) => (
             <div
               key={tier.key}
@@ -207,12 +195,6 @@ export default function Pricing() {
                   Most Popular
                 </div>
               )}
-              {tier.comingSoon && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#c5d8d5] px-4 py-1 text-xs font-semibold text-[#1a2e2b]">
-                  Coming Soon
-                </div>
-              )}
-
               <h3 className="text-lg font-semibold text-[#1a2e2b]">{tier.plan.name}</h3>
 
               {/* Best for */}
@@ -324,6 +306,14 @@ export default function Pricing() {
             </table>
           </div>
         </div>
+
+        {/* Provider interest CTA */}
+        <p className="mt-16 text-center text-sm text-[#577572]">
+          Healthcare provider or clinic? We&apos;re building tools for you.{' '}
+          <a href="mailto:hello@lablooker.com" className="text-[#2d6a5e] underline underline-offset-2 hover:text-[#1a2e2b]">
+            Get in touch →
+          </a>
+        </p>
       </div>
     </section>
   )
