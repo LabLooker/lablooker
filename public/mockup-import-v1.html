@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LabLooker — PDF Import Redesign Mockup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f7f6; color: #1a2e2b; }
+
+  /* ─── HEADER ─── */
+  .header { background: white; border-bottom: 1px solid #e0ebe9; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-size: 18px; font-weight: 700; color: #1a2e2b; }
+  .logo span { color: #2d6a5e; }
+  .step-label { font-size: 13px; color: #577572; }
+
+  /* ─── MODAL SHELL ─── */
+  .modal { max-width: 1100px; margin: 24px auto; background: white; border-radius: 16px; border: 1px solid #e0ebe9; overflow: hidden; box-shadow: 0 4px 24px rgba(26,46,43,0.08); }
+  .modal-header { padding: 18px 24px; border-bottom: 1px solid #e0ebe9; display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 17px; font-weight: 600; color: #1a2e2b; }
+  .modal-meta { font-size: 12px; color: #577572; margin-top: 2px; }
+  .btn-close { background: none; border: none; font-size: 20px; color: #577572; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+  .btn-close:hover { background: #f0f7f6; }
+
+  /* ─── DISCLAIMER BANNER ─── */
+  .disclaimer { background: #fffbeb; border-bottom: 1px solid #fde68a; padding: 10px 24px; font-size: 12px; color: #92400e; display: flex; align-items: center; gap-8px; }
+  .disclaimer strong { font-weight: 600; }
+
+  /* ─── SPLIT PANE (desktop) ─── */
+  .split-pane { display: flex; height: 560px; }
+  .pane-pdf { width: 42%; border-right: 1px solid #e0ebe9; background: #fafafa; display: flex; flex-direction: column; }
+  .pane-results { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  .pane-label { padding: 10px 16px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #577572; background: #f0f7f6; border-bottom: 1px solid #e0ebe9; display: flex; align-items: center; justify-content: space-between; }
+
+  /* PDF preview */
+  .pdf-preview { flex: 1; overflow-y: auto; padding: 16px; }
+  .pdf-page { background: white; border: 1px solid #e0ebe9; border-radius: 6px; padding: 16px; font-size: 11px; color: #333; line-height: 1.7; font-family: 'Courier New', monospace; }
+  .pdf-page .lab-header { text-align: center; font-weight: bold; margin-bottom: 12px; font-size: 12px; }
+  .pdf-page .pdf-row { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px dotted #eee; }
+  .pdf-page .pdf-row:last-child { border-bottom: none; }
+  .pdf-flag { color: #b85c5c; font-weight: bold; }
+  .pdf-page .section-title { font-weight: bold; margin: 8px 0 4px; color: #1a2e2b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Results table */
+  .results-toolbar { padding: 8px 14px; border-bottom: 1px solid #e0ebe9; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .btn-sm { font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #e0ebe9; background: white; color: #577572; cursor: pointer; white-space: nowrap; }
+  .btn-sm:hover { background: #f0f7f6; color: #1a2e2b; }
+  .btn-add { border-color: #2d6a5e; color: #2d6a5e; }
+  .btn-add:hover { background: #f0f7f6; }
+  .select-all { font-size: 12px; color: #577572; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+
+  .results-scroll { flex: 1; overflow-y: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead tr { background: #f0f7f6; position: sticky; top: 0; z-index: 2; }
+  thead th { padding: 8px 10px; text-align: left; font-size: 11px; font-weight: 600; color: #577572; border-bottom: 1px solid #e0ebe9; white-space: nowrap; }
+  thead th:first-child { width: 28px; }
+  tbody tr { border-bottom: 1px solid #f0f7f6; }
+  tbody tr:hover { background: #fafffe; }
+  tbody tr.warn-row { background: #fffbeb; }
+  tbody tr.warn-row:hover { background: #fef9e0; }
+  tbody td { padding: 6px 10px; vertical-align: middle; }
+
+  /* Editable inputs */
+  .cell-input { width: 100%; border: 1px solid transparent; border-radius: 4px; padding: 3px 6px; font-size: 12px; background: transparent; color: #1a2e2b; }
+  .cell-input:hover { border-color: #e0ebe9; background: white; }
+  .cell-input:focus { border-color: #2d6a5e; background: white; outline: none; box-shadow: 0 0 0 2px rgba(45,106,94,0.1); }
+  .cell-name { font-weight: 500; color: #1a2e2b; min-width: 130px; }
+  .cell-value { width: 70px; }
+  .cell-unit { width: 60px; color: #577572; }
+  .cell-range { width: 90px; color: #577572; font-size: 11px; }
+
+  /* Warning badge */
+  .warn-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; color: #92400e; background: #fde68a; border-radius: 4px; padding: 1px 5px; white-space: nowrap; }
+
+  /* No-match badge */
+  .nomatch-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; color: #577572; background: #f0f7f6; border: 1px dashed #c5d8d5; border-radius: 4px; padding: 1px 5px; cursor: pointer; white-space: nowrap; }
+  .nomatch-badge:hover { border-color: #2d6a5e; color: #2d6a5e; }
+
+  /* Delete row button */
+  .btn-del-row { background: none; border: none; cursor: pointer; color: #c5d8d5; padding: 2px 4px; border-radius: 4px; font-size: 14px; line-height: 1; }
+  .btn-del-row:hover { color: #b85c5c; background: #b85c5c10; }
+
+  /* Checkbox col */
+  .cb { width: 14px; height: 14px; accent-color: #2d6a5e; cursor: pointer; }
+
+  /* ─── FOOTER ─── */
+  .modal-footer { padding: 14px 24px; border-top: 1px solid #e0ebe9; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .review-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #577572; cursor: pointer; }
+  .review-check input { width: 16px; height: 16px; accent-color: #2d6a5e; }
+  .review-check.checked { color: #2d6a5e; font-weight: 500; }
+  .footer-actions { display: flex; gap: 8px; }
+  .btn-cancel { padding: 9px 18px; border-radius: 8px; border: 1px solid #e0ebe9; background: white; color: #577572; font-size: 13px; cursor: pointer; }
+  .btn-save { padding: 9px 20px; border-radius: 8px; background: #c5d8d5; color: #577572; border: none; font-size: 13px; font-weight: 600; cursor: not-allowed; }
+  .btn-save.active { background: #2d6a5e; color: white; cursor: pointer; }
+  .btn-save.active:hover { background: #1a2e2b; }
+
+  .parser-note { font-size: 11px; color: #577572; }
+  .parser-note strong { color: #1a2e2b; }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 700px) {
+    .modal { margin: 0; border-radius: 0; min-height: 100vh; }
+    .split-pane { flex-direction: column; height: auto; }
+    .pane-pdf { display: none; }
+    .pane-results { min-height: 70vh; }
+    .mobile-pdf-btn { display: flex !important; }
+    .modal-footer { flex-direction: column; align-items: stretch; }
+    .footer-actions { flex-direction: column; }
+    .btn-save, .btn-cancel { width: 100%; text-align: center; }
+  }
+
+  /* Mobile "View PDF" button (hidden on desktop) */
+  .mobile-pdf-btn { display: none; align-items: center; gap: 6px; font-size: 12px; color: #2d6a5e; background: none; border: 1px solid #2d6a5e; border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+
+  /* Warning summary bar */
+  .warn-bar { background: #fffbeb; border-bottom: 1px solid #fde68a; padding: 8px 14px; font-size: 12px; color: #92400e; display: flex; align-items: center; gap: 6px; }
+  .warn-bar svg { flex-shrink: 0; }
+
+  /* Chip tag */
+  .chip { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 99px; font-weight: 500; }
+  .chip-parsed { background: #f0f7f6; color: #2d6a5e; border: 1px solid #c5d8d5; }
+  .chip-added { background: #e8f5e9; color: #388e3c; border: 1px solid #a5d6a7; }
+
+  /* Physician field */
+  .physician-row { padding: 8px 14px; border-bottom: 1px solid #e0ebe9; display: flex; align-items: center; gap: 8px; font-size: 12px; color: #577572; }
+  .physician-input { border: 1px solid #e0ebe9; border-radius: 6px; padding: 5px 10px; font-size: 12px; color: #1a2e2b; flex: 1; max-width: 220px; }
+  .physician-input:focus { border-color: #2d6a5e; outline: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Lab<span>L</span>ooker</div>
+  <div class="step-label">Review imported results before saving</div>
+</div>
+
+<div class="modal">
+
+  <!-- Modal header -->
+  <div class="modal-header">
+    <div>
+      <div class="modal-title">Import Lab Results</div>
+      <div class="modal-meta">Quest Diagnostics · June 23, 2025 · 56 results parsed</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button class="mobile-pdf-btn" onclick="alert('PDF viewer would open here')">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        View PDF
+      </button>
+      <button class="btn-close">×</button>
+    </div>
+  </div>
+
+  <!-- Non-dismissible disclaimer -->
+  <div class="disclaimer">
+    ⚠️ <span><strong>Always verify before saving.</strong> Parsers can misread PDFs. Check each value matches your actual report — especially reference ranges and units.</span>
+  </div>
+
+  <!-- Split pane -->
+  <div class="split-pane">
+
+    <!-- LEFT: PDF preview -->
+    <div class="pane-pdf">
+      <div class="pane-label">Your PDF</div>
+      <div class="pdf-preview">
+        <div class="pdf-page">
+          <div class="lab-header">QUEST DIAGNOSTICS<br>Patient: Rosa Russell<br>DOB: 12/12/1972 · NPI: 1234567890<br>Collected: 06/23/2025 · Reported: 06/24/2025</div>
+
+          <div class="section-title">THYROID</div>
+          <div class="pdf-row"><span>TSH, Third Generation</span><span>0.148 mIU/L</span></div>
+          <div class="pdf-row"><span>Free T3</span><span>2.9 pg/mL</span></div>
+          <div class="pdf-row"><span>Free T4</span><span>1.1 ng/dL</span></div>
+
+          <div class="section-title">METABOLIC PANEL</div>
+          <div class="pdf-row"><span>Glucose</span><span>88 mg/dL</span></div>
+          <div class="pdf-row"><span>BUN</span><span>19 mg/dL</span></div>
+          <div class="pdf-row"><span>Creatinine</span><span>0.69 mg/dL</span></div>
+          <div class="pdf-row"><span>Calcium, Serum</span><span>9.2 mg/dL</span></div>
+          <div class="pdf-row"><span>Sodium</span><span>139 mEq/L</span></div>
+          <div class="pdf-row"><span>Potassium</span><span>4.1 mEq/L</span></div>
+          <div class="pdf-row"><span>ALT</span><span>8 U/L</span></div>
+          <div class="pdf-row"><span>AST</span><span>13 U/L</span></div>
+
+          <div class="section-title">IRON / HEMATOLOGY</div>
+          <div class="pdf-row"><span>Ferritin</span><span class="pdf-flag">29 L ng/mL</span></div>
+          <div class="pdf-row"><span>Iron, Serum</span><span>72 mcg/dL</span></div>
+          <div class="pdf-row"><span>TIBC</span><span>355 mcg/dL</span></div>
+
+          <div class="section-title">HORMONES</div>
+          <div class="pdf-row"><span>DHEA Sulfate</span><span>64 ug/dL</span></div>
+          <div class="pdf-row"><span>Estradiol</span><span>117 pg/mL</span></div>
+          <div class="pdf-row"><span>Testosterone, Total</span><span>49 ng/dL</span></div>
+          <div class="pdf-row"><span>Testosterone, Free (calc)</span><span class="pdf-flag">4.4 H pg/mL</span></div>
+
+          <div class="section-title">VITAMINS / INFLAMMATION</div>
+          <div class="pdf-row"><span>Vitamin D, 25-OH</span><span>58 ng/mL</span></div>
+          <div class="pdf-row"><span>Vitamin B12</span><span class="pdf-flag">1912 H pg/mL</span></div>
+          <div class="pdf-row"><span>hs-CRP</span><span>1.8 mg/L</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Editable results -->
+    <div class="pane-results">
+      <div class="pane-label">
+        <span>Parsed Results <span style="font-weight:400;color:#577572">(click any field to edit)</span></span>
+        <span style="color:#577572;font-size:11px;">23 of 56 shown</span>
+      </div>
+
+      <!-- Physician field -->
+      <div class="physician-row">
+        <span>Ordering physician:</span>
+        <input class="physician-input" type="text" placeholder="Dr. Smith (optional)">
+      </div>
+
+      <!-- Warning bar -->
+      <div class="warn-bar">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+        <strong>2 values flagged</strong> — may be parser errors. Please verify against your PDF before saving.
+      </div>
+
+      <!-- Toolbar -->
+      <div class="results-toolbar">
+        <label class="select-all"><input type="checkbox" class="cb" checked> Select all</label>
+        <button class="btn-sm btn-add" onclick="alert('Would add a blank row to fill in manually')">+ Add missed marker</button>
+        <button class="btn-sm" onclick="alert('Would deselect all rows')">Deselect all</button>
+      </div>
+
+      <!-- Results table -->
+      <div class="results-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th><input type="checkbox" class="cb" checked></th>
+              <th>Test Name</th>
+              <th>Value</th>
+              <th>Unit</th>
+              <th>Ref Range</th>
+              <th>Note</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Thyroid -->
+            <tr>
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="TSH, Third Generation"></td>
+              <td><input class="cell-input cell-value" value="0.148"></td>
+              <td><input class="cell-input cell-unit" value="mIU/L"></td>
+              <td><input class="cell-input cell-range" value="0.45–4.5"></td>
+              <td><span class="chip chip-parsed">matched</span></td>
+              <td><button class="btn-del-row" title="Remove row">×</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="Free T3"></td>
+              <td><input class="cell-input cell-value" value="2.9"></td>
+              <td><input class="cell-input cell-unit" value="pg/mL"></td>
+              <td><input class="cell-input cell-range" value="2.0–4.4"></td>
+              <td><span class="chip chip-parsed">matched</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="Free T4"></td>
+              <td><input class="cell-input cell-value" value="1.1"></td>
+              <td><input class="cell-input cell-unit" value="ng/dL"></td>
+              <td><input class="cell-input cell-range" value="0.82–1.77"></td>
+              <td><span class="chip chip-parsed">matched</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+            <!-- Metabolic -->
+            <tr>
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="Glucose"></td>
+              <td><input class="cell-input cell-value" value="88"></td>
+              <td><input class="cell-input cell-unit" value="mg/dL"></td>
+              <td><input class="cell-input cell-range" value="70–99"></td>
+              <td><span class="chip chip-parsed">matched</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="Calcium, Serum"></td>
+              <td><input class="cell-input cell-value" value="9.2"></td>
+              <td><input class="cell-input cell-unit" value="mg/dL"></td>
+              <td><input class="cell-input cell-range" value="8.6–10.2"></td>
+              <td><span class="chip chip-parsed">matched</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+            <!-- Plausibility warning row -->
+            <tr class="warn-row">
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="Calcium, Serum" style="border-color:#fbbf24;background:#fffef0"></td>
+              <td><input class="cell-input cell-value" value="4.5" style="border-color:#f59e0b;background:#fffef0;color:#92400e;font-weight:600"></td>
+              <td><input class="cell-input cell-unit" value="mg/dL"></td>
+              <td><input class="cell-input cell-range" value="8.6–10.2"></td>
+              <td><span class="warn-badge">⚠ verify value</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+            <!-- Iron -->
+            <tr>
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="Ferritin"></td>
+              <td><input class="cell-input cell-value" value="29"></td>
+              <td><input class="cell-input cell-unit" value="ng/mL"></td>
+              <td><input class="cell-input cell-range" value="13–150"></td>
+              <td><span class="chip chip-parsed">matched</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="Iron, Serum"></td>
+              <td><input class="cell-input cell-value" value="72"></td>
+              <td><input class="cell-input cell-unit" value="mcg/dL"></td>
+              <td><input class="cell-input cell-range" value="40–155"></td>
+              <td><span class="chip chip-parsed">matched</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+            <!-- Hormones -->
+            <tr>
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="Estradiol"></td>
+              <td><input class="cell-input cell-value" value="117"></td>
+              <td><input class="cell-input cell-unit" value="pg/mL"></td>
+              <td><input class="cell-input cell-range" value=""></td>
+              <td><span class="chip chip-parsed">matched</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+            <!-- Warning row 2 -->
+            <tr class="warn-row">
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="Vitamin B12 (Cobalamin)" style="border-color:#fbbf24;background:#fffef0"></td>
+              <td><input class="cell-input cell-value" value="1912" style="border-color:#f59e0b;background:#fffef0;color:#92400e;font-weight:600"></td>
+              <td><input class="cell-input cell-unit" value="pg/mL"></td>
+              <td><input class="cell-input cell-range" value="200–914"></td>
+              <td><span class="warn-badge">⚠ verify value</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+            <!-- No match example -->
+            <tr>
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="Insulin, Fasting" style="border-color:#e0ebe9"></td>
+              <td><input class="cell-input cell-value" value="5.4"></td>
+              <td><input class="cell-input cell-unit" value="uIU/mL"></td>
+              <td><input class="cell-input cell-range" value="2.6–24.9"></td>
+              <td><span class="nomatch-badge" onclick="alert('Dropdown to assign to a test in our DB')">⚙ assign test</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+            <!-- Vitamins -->
+            <tr>
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="Vitamin D, 25-OH Total"></td>
+              <td><input class="cell-input cell-value" value="58"></td>
+              <td><input class="cell-input cell-unit" value="ng/mL"></td>
+              <td><input class="cell-input cell-range" value="30–100"></td>
+              <td><span class="chip chip-parsed">matched</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="hs-CRP"></td>
+              <td><input class="cell-input cell-value" value="1.8"></td>
+              <td><input class="cell-input cell-unit" value="mg/L"></td>
+              <td><input class="cell-input cell-range" value="0.0–3.0"></td>
+              <td><span class="chip chip-parsed">matched</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+            <!-- Manually added example -->
+            <tr style="background:#f0fff4">
+              <td><input type="checkbox" class="cb" checked></td>
+              <td><input class="cell-input cell-name" value="DHEA-Sulfate" style="background:#f0fff4"></td>
+              <td><input class="cell-input cell-value" value="64" style="background:#f0fff4"></td>
+              <td><input class="cell-input cell-unit" value="ug/dL" style="background:#f0fff4"></td>
+              <td><input class="cell-input cell-range" value="" style="background:#f0fff4"></td>
+              <td><span class="chip chip-added">+ added</span></td>
+              <td><button class="btn-del-row">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div><!-- /split-pane -->
+
+  <!-- Footer -->
+  <div class="modal-footer">
+    <div>
+      <label class="review-check" id="reviewLabel">
+        <input type="checkbox" id="reviewCheck" onchange="toggleSave(this)">
+        I've reviewed these results and confirmed they match my lab report
+      </label>
+      <div class="parser-note" style="margin-top:6px;">Best supported formats: <strong>Quest</strong>, <strong>LabCorp</strong>, <strong>CPL</strong></div>
+    </div>
+    <div class="footer-actions">
+      <button class="btn-cancel">Cancel</button>
+      <button class="btn-save" id="saveBtn" disabled>Save to Tracker</button>
+    </div>
+  </div>
+
+</div><!-- /modal -->
+
+<script>
+function toggleSave(cb) {
+  const btn = document.getElementById('saveBtn');
+  const label = document.getElementById('reviewLabel');
+  if (cb.checked) {
+    btn.classList.add('active');
+    btn.disabled = false;
+    label.classList.add('checked');
+    btn.onclick = () => alert('Would save results to your tracker dashboard!');
+  } else {
+    btn.classList.remove('active');
+    btn.disabled = true;
+    label.classList.remove('checked');
+  }
+}
+</script>
+</body>
+</html>
