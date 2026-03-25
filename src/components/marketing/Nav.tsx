@@ -81,7 +81,8 @@ export default function Nav() {
             <button className="text-sm text-[#577572] transition-colors hover:text-[#1a2e2b] flex items-center gap-1">
               More <span className="text-xs">▾</span>
             </button>
-            <div className="invisible absolute left-1/2 top-full z-50 mt-2 w-48 -translate-x-1/2 rounded-xl border border-[#2d6a5e]/20 bg-white py-1 shadow-lg group-hover:visible">
+            <div className="invisible absolute left-1/2 top-full z-50 w-48 -translate-x-1/2 pt-2 group-hover:visible">
+              <div className="rounded-xl border border-[#2d6a5e]/20 bg-white py-1 shadow-lg">
               {APP_CONFIG.moreNav.map((item) => (
                 <Link
                   key={item.href}
@@ -91,6 +92,7 @@ export default function Nav() {
                   {item.label}
                 </Link>
               ))}
+              </div>
             </div>
           </div>
 
