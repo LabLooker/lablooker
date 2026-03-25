@@ -597,6 +597,31 @@ export default function ComparePage() {
               )}
             </div>
 
+            {/* Draw location finder */}
+            {pricing.length > 0 && (
+              <div className="mt-4 text-xs text-[#577572]">
+                <p>📍 Blood draws are typically performed at Quest or LabCorp patient service centers.</p>
+                <p className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                  <a
+                    href="https://www.questdiagnostics.com/patients/find-a-location"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#2d6a5e] underline underline-offset-2 hover:text-[#1a2e2b]"
+                  >
+                    Find a Quest location →
+                  </a>
+                  <a
+                    href="https://www.labcorp.com/labs-and-appointments"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#2d6a5e] underline underline-offset-2 hover:text-[#1a2e2b]"
+                  >
+                    Find a LabCorp location →
+                  </a>
+                </p>
+              </div>
+            )}
+
             {/* Disclaimer */}
             <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
               Prices are verified periodically but may change. Always confirm price at checkout. LabLooker is a research tool — we do not collect or store personal health information.
