@@ -44,6 +44,7 @@ type TestResult = {
   test_name: string
   cpt_codes: string[]
   category: string | null
+  description: string | null
 }
 
 type ICD10Code = {
@@ -75,6 +76,7 @@ export default function AdvocatePage() {
   const [selectedLab, setSelectedLab] = useState('')
   const [availableLabs, setAvailableLabs] = useState<string[]>([])
   const templateRef = useRef<HTMLDivElement>(null)
+  const [tooltipTestId, setTooltipTestId] = useState<string | null>(null)
 
   // Patient info fields
   const [patientName, setPatientName] = useState('')
@@ -155,7 +157,7 @@ export default function AdvocatePage() {
       const firstWord = words[0]
       const { data, error } = await supabase
         .from('tests')
-        .select('id, test_name, cpt_codes, category')
+        .select('id, test_name, cpt_codes, category, description')
         .ilike('test_name', `%${firstWord}%`)
         .order('test_name')
         .limit(50)
@@ -512,7 +514,7 @@ export default function AdvocatePage() {
                           for (const testName of bundle.tests) {
                             const { data } = await supabase
                               .from('tests')
-                              .select('id, test_name, cpt_codes, category')
+                              .select('id, test_name, cpt_codes, category, description')
                               .eq('test_name', testName)
                               .limit(1)
                             if (data && data.length > 0 && !existingIds.has(data[0].id)) {
@@ -545,11 +547,38 @@ export default function AdvocatePage() {
                         <span className="text-xs ml-2" style={{ color: '#577572' }}>CPT: {test.cpt_codes.join(', ')}</span>
                       )}
                     </div>
-                    <button
-                      onClick={() => removeTest(test.id)}
-                      className="text-red-400 hover:text-red-600 text-lg font-bold px-2"
-                      aria-label={`Remove ${test.test_name}`}
-                    >×</button>
+                    <div className="flex items-center gap-1">
+                      {/* Info tooltip */}
+                      <div className="relative">
+                        {tooltipTestId === test.id && (
+                          <div className="fixed inset-0 z-40" onClick={() => setTooltipTestId(null)} />
+                        )}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setTooltipTestId(v => v === test.id ? null : test.id) }}
+                          className="p-1.5 rounded-full text-[#577572] hover:text-[#1a2e2b] transition-colors"
+                          aria-label={`Info about ${test.test_name}`}
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                          </svg>
+                        </button>
+                        {tooltipTestId === test.id && (
+                          <div className="absolute bottom-full right-0 mb-2 z-50 w-64 rounded-lg bg-[#1a2e2b] px-3 py-2.5 text-xs text-white shadow-lg">
+                            {test.description && <p>{test.description}</p>}
+                            {!test.description && <p className="italic">No description available.</p>}
+                            {test.cpt_codes?.length > 0 && (
+                              <p className="mt-1.5 text-white/70">CPT: {test.cpt_codes.join(', ')}</p>
+                            )}
+                            <div className="absolute top-full right-4 border-4 border-transparent border-t-[#1a2e2b]" />
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => removeTest(test.id)}
+                        className="text-red-400 hover:text-red-600 text-lg font-bold px-2"
+                        aria-label={`Remove ${test.test_name}`}
+                      >×</button>
+                    </div>
                   </div>
                 ))}
               </div>
