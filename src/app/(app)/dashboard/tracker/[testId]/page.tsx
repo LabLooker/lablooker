@@ -91,12 +91,12 @@ function getStatus(result: LabResult): { status: string; color: string } {
   const { value, ref_range_low, ref_range_high } = result
 
   if (ref_range_low !== null && ref_range_high !== null) {
-    if (value < ref_range_low) return { status: 'Low', color: 'text-[#b85c5c] bg-[#b85c5c]/10' }
-    if (value > ref_range_high) return { status: 'High', color: 'text-[#b85c5c] bg-[#b85c5c]/10' }
+    if (value < ref_range_low) return { status: 'Out of Range', color: 'text-[#b85c5c] bg-[#b85c5c]/10' }
+    if (value > ref_range_high) return { status: 'Out of Range', color: 'text-[#b85c5c] bg-[#b85c5c]/10' }
     return { status: 'In Range', color: 'text-[#2d6a5e] bg-[#2d6a5e]/10' }
   }
 
-  return { status: 'No Range', color: 'text-[#577572] bg-[#577572]/10' }
+  return { status: '—', color: 'text-[#577572] bg-[#577572]/10' }
 }
 
 function CustomTooltip({ active, payload }: any) {
