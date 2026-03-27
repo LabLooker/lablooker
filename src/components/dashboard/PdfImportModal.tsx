@@ -424,8 +424,74 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                   </div>
                 )}
 
-                {/* Results table */}
-                <div className="overflow-x-auto rounded-lg border border-[#e0ebe9]">
+                {/* Results — mobile card list */}
+                <div className="sm:hidden rounded-lg border border-[#e0ebe9] divide-y divide-[#e0ebe9]">
+                  {/* Mobile select-all header */}
+                  <div className="flex items-center gap-2 px-3 py-2 bg-[#faf8f5]">
+                    <input
+                      ref={headerCheckboxRef}
+                      type="checkbox"
+                      checked={allSelected}
+                      onChange={toggleAll}
+                      className="h-3.5 w-3.5 rounded border-[#e0ebe9] text-[#2d6a5e] focus:ring-[#2d6a5e] cursor-pointer"
+                    />
+                    <span className="text-[10px] font-medium text-[#4a6b67] uppercase tracking-wide">Test Name</span>
+                  </div>
+                  {results.map((r, i) => {
+                    const isFlagged = plausibilityFlags.some(f => f.testName === r.matchedTest?.test_name)
+                    const isVerified = verifiedRows.has(i)
+                    const statusEl = !r.matchedTest ? (
+                      <div className="flex items-center gap-1">
+                        <span className="text-amber-600 text-[10px]">No match</span>
+                        <button type="button" onClick={e => { e.stopPropagation(); setAssignOpen(assignOpen === i ? null : i) }} className="text-[#2d6a5e] text-[10px] underline">Assign</button>
+                      </div>
+                    ) : isFlagged && !isVerified ? (
+                      <button type="button" onClick={e => { e.stopPropagation(); setVerifiedRows(prev => new Set([...prev, i])) }} className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 whitespace-nowrap">⚠ verify</button>
+                    ) : isFlagged && isVerified ? (
+                      <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 border border-emerald-200 whitespace-nowrap">Verified ✓</span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 border border-emerald-200">matched</span>
+                    )
+                    return (
+                      <div key={i} onClick={() => r.matchedTest && toggleRow(i)} className={`px-3 py-2.5 ${!r.matchedTest ? 'bg-amber-50/40' : r.selected ? '' : 'opacity-50'} ${r.matchedTest ? 'cursor-pointer active:bg-[#f0f7f6]' : ''}`}>
+                        <div className="flex items-start gap-2">
+                          <div className="pt-0.5 shrink-0">
+                            {r.matchedTest ? (
+                              <input type="checkbox" checked={r.selected} onChange={() => toggleRow(i)} onClick={e => e.stopPropagation()} className="h-3.5 w-3.5 rounded border-[#e0ebe9] text-[#2d6a5e]" />
+                            ) : <div className="h-3.5 w-3.5" />}
+                          </div>
+                          <div className="flex-1 min-w-0" onClick={e => e.stopPropagation()}>
+                            <input type="text" value={r.rawTestName} onChange={e => updateRow(i, { rawTestName: e.target.value })} className="w-full bg-transparent text-xs font-medium text-[#1a2e2b] focus:bg-white focus:border focus:border-[#2d6a5e] focus:rounded focus:px-1 focus:outline-none" />
+                            {r.manuallyAssigned && <span className="text-[10px] text-[#577572] italic">manually assigned</span>}
+                            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                              <span className="text-xs font-semibold text-[#1a2e2b]" onClick={e => e.stopPropagation()}>
+                                <input type="number" value={r.value} onChange={e => updateRow(i, { value: parseFloat(e.target.value) || 0 })} className="w-16 bg-transparent text-xs font-semibold text-[#1a2e2b] focus:bg-white focus:border focus:border-[#2d6a5e] focus:rounded focus:px-1 focus:outline-none" />
+                              </span>
+                              {r.unit && <input type="text" value={r.unit} onChange={e => updateRow(i, { unit: e.target.value })} className="w-14 bg-transparent text-[11px] text-[#577572] focus:bg-white focus:border focus:border-[#2d6a5e] focus:rounded focus:outline-none" />}
+                              {r.referenceRange && <span className="text-[10px] text-[#577572]">{r.referenceRange}</span>}
+                            </div>
+                            {assignOpen === i && (
+                              <div className="mt-1 w-full rounded-lg border border-[#e0ebe9] bg-white shadow-lg p-1.5">
+                                <input type="text" value={assignSearch[i] ?? ''} onChange={e => searchTests(e.target.value, i)} placeholder="Search tests..." autoFocus className="w-full rounded border border-[#e0ebe9] px-2 py-1 text-xs placeholder-[#577572]/50 focus:border-[#2d6a5e] focus:outline-none" />
+                                {(assignResults[i] ?? []).length > 0 && (
+                                  <ul className="mt-1 max-h-32 overflow-y-auto">
+                                    {(assignResults[i] ?? []).map(t => (
+                                      <li key={t.id}><button type="button" onClick={() => assignTest(i, t)} className="w-full text-left px-2 py-1 text-xs text-[#1a2e2b] hover:bg-[#f0f7f6] rounded">{t.test_name}</button></li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="shrink-0 pt-0.5">{statusEl}</div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Results — desktop table */}
+                <div className="hidden sm:block overflow-x-auto rounded-lg border border-[#e0ebe9]">
                   <table className="w-full text-xs">
                     <thead>
                       <tr className="bg-[#faf8f5] text-[#4a6b67]">
@@ -440,8 +506,8 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                         </th>
                         <th className="px-2 py-2 text-left font-medium">Test Name</th>
                         <th className="px-2 py-2 text-left font-medium">Value</th>
-                        <th className="px-2 py-2 text-left font-medium hidden sm:table-cell">Unit</th>
-                        <th className="px-2 py-2 text-left font-medium hidden sm:table-cell">Ref Range</th>
+                        <th className="px-2 py-2 text-left font-medium">Unit</th>
+                        <th className="px-2 py-2 text-left font-medium">Ref Range</th>
                         <th className="px-2 py-2 text-left font-medium">Status</th>
                       </tr>
                     </thead>
