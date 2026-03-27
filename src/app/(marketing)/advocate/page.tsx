@@ -374,14 +374,14 @@ export default function AdvocatePage() {
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>1</span>
               Your information
             </h2>
-            <p className="text-sm mb-1 ml-9" style={{ color: '#577572' }}>
+            <p className="text-sm mb-1 sm:ml-9" style={{ color: '#577572' }}>
               Optional — pre-fill the template so you don&apos;t have to hand-write it later.
             </p>
-            <p className="text-xs mb-4 ml-9 italic" style={{ color: '#a3bfbb' }}>
+            <p className="text-xs mb-4 sm:ml-9 italic" style={{ color: '#a3bfbb' }}>
               🔒 This information is used only to fill in your printable letter. It is never stored, sent to LabLooker, or shared with anyone.
             </p>
 
-            <div className="ml-9 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:ml-9 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1" style={{ color: '#4a6b67' }}>Patient name</label>
                 <input
@@ -451,11 +451,11 @@ export default function AdvocatePage() {
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>2</span>
               What tests do you want to request?
             </h2>
-            <p className="text-sm mb-4 ml-9" style={{ color: '#577572' }}>
+            <p className="text-sm mb-4 sm:ml-9" style={{ color: '#577572' }}>
               Search and add the lab tests you&apos;d like your doctor to consider.
             </p>
 
-            <div className="relative ml-9">
+            <div className="relative sm:ml-9">
               <input
                 type="text"
                 value={searchQuery}
@@ -494,7 +494,7 @@ export default function AdvocatePage() {
               )
               if (alreadyAdded) return null
               return (
-                <div className="mt-3 ml-9 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4">
+                <div className="mt-3 sm:ml-9 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4">
                   <div className="flex items-start gap-3">
                     <span className="text-xl">{bundle.icon}</span>
                     <div className="flex-1 min-w-0">
@@ -534,7 +534,7 @@ export default function AdvocatePage() {
             })()}
 
             {selectedTests.length > 0 && (
-              <div className="mt-4 ml-9 space-y-2">
+              <div className="mt-4 sm:ml-9 space-y-2">
                 {selectedTests.map(test => (
                   <div
                     key={test.id}
@@ -586,7 +586,7 @@ export default function AdvocatePage() {
 
             {/* Code toggles — inline with test selection */}
             {selectedTests.length > 0 && (
-              <div className="mt-5 ml-9 pt-5 border-t border-[#e0ebe9]">
+              <div className="mt-5 sm:ml-9 pt-5 border-t border-[#e0ebe9]">
                 <p className="text-xs font-semibold uppercase tracking-wider text-[#577572] mb-3">Include in your request</p>
                 <div className="space-y-3">
                   {/* ICD-10 toggle */}
@@ -650,10 +650,10 @@ export default function AdvocatePage() {
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>3</span>
               Why are you requesting these tests?
             </h2>
-            <p className="text-sm mb-4 ml-9" style={{ color: '#577572' }}>
+            <p className="text-sm mb-4 sm:ml-9" style={{ color: '#577572' }}>
               Optional — describe your symptoms or reasons. This helps your doctor understand your concerns.
             </p>
-            <div className="ml-9">
+            <div className="sm:ml-9">
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
@@ -670,10 +670,10 @@ export default function AdvocatePage() {
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>4</span>
               Generate your request
             </h2>
-            <p className="text-sm mb-4 ml-9" style={{ color: '#577572' }}>
+            <p className="text-sm mb-4 sm:ml-9" style={{ color: '#577572' }}>
               Create a formatted document to print or copy.
             </p>
-            <div className="ml-9">
+            <div className="sm:ml-9">
               <button
                 onClick={generateTemplate}
                 disabled={selectedTests.length === 0}
