@@ -36,6 +36,47 @@ type ApiResponse = {
   error?: string
 }
 
+// Normalize lab units to standard clinical format
+function normalizeUnit(raw: string | null | undefined): string {
+  if (!raw) return ''
+  const u = raw.trim()
+  const map: Record<string, string> = {
+    // Volume ratios
+    'mg/dl': 'mg/dL', 'MG/DL': 'mg/dL', 'mg/dL': 'mg/dL',
+    'ng/ml': 'ng/mL', 'NG/ML': 'ng/mL', 'ng/mL': 'ng/mL',
+    'pg/ml': 'pg/mL', 'PG/ML': 'pg/mL', 'pg/mL': 'pg/mL',
+    'ug/dl': 'ug/dL', 'UG/DL': 'ug/dL', 'ug/dL': 'ug/dL',
+    'mcg/dl': 'ug/dL', 'MCG/DL': 'ug/dL',
+    'g/dl': 'g/dL', 'G/DL': 'g/dL', 'g/dL': 'g/dL',
+    'g/l': 'g/L', 'G/L': 'g/L',
+    'mg/l': 'mg/L', 'MG/L': 'mg/L',
+    'ug/ml': 'ug/mL', 'UG/ML': 'ug/mL',
+    'ng/dl': 'ng/dL', 'NG/DL': 'ng/dL',
+    'pmol/l': 'pmol/L', 'PMOL/L': 'pmol/L',
+    'nmol/l': 'nmol/L', 'NMOL/L': 'nmol/L',
+    'umol/l': 'umol/L', 'UMOL/L': 'umol/L',
+    'mmol/l': 'mmol/L', 'MMOL/L': 'mmol/L',
+    'meq/l': 'mEq/L', 'MEQ/L': 'mEq/L',
+    // Counts
+    'k/ul': 'K/uL', 'K/UL': 'K/uL', 'k/µl': 'K/uL', 'K/µL': 'K/uL', 'thou/ul': 'K/uL',
+    'm/ul': 'M/uL', 'M/UL': 'M/uL', 'm/µl': 'M/uL', 'M/µL': 'M/uL', 'mill/ul': 'M/uL',
+    // Units per volume
+    'u/l': 'U/L', 'U/L': 'U/L', 'units/l': 'U/L',
+    'iu/l': 'IU/L', 'IU/L': 'IU/L',
+    'miu/l': 'mIU/L', 'MIU/L': 'mIU/L', 'miu/ml': 'mIU/mL', 'MIU/ML': 'mIU/mL',
+    'uiu/ml': 'uIU/mL', 'UIU/ML': 'uIU/mL',
+    // Cell volumes
+    'fl': 'fL', 'FL': 'fL',
+    'pg': 'pg',
+    // Ratios
+    '%': '%',
+    // Misc
+    'ratio': 'ratio', 'RATIO': 'ratio',
+    'index': 'index', 'INDEX': 'index',
+  }
+  return map[u] ?? map[u.toLowerCase()] ?? u
+}
+
 export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
   const supabase = createClient()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -58,6 +99,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
   const [verifiedRows, setVerifiedRows] = useState<Set<number>>(new Set())
   const [reviewed, setReviewed] = useState(false)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
+  const [pdfExpanded, setPdfExpanded] = useState(false)
 
   function handleClose() {
     setStep('upload')
@@ -148,7 +190,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
         return
       }
 
-      setResults(data.results.map(r => ({ ...r, selected: r.matchedTest !== null })))
+      setResults(data.results.map(r => ({ ...r, unit: normalizeUnit(r.unit), selected: r.matchedTest !== null })))
       setCollectedDate(data.collectedDate)
       setStep('preview')
     } catch {
@@ -227,6 +269,7 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
   if (!isOpen) return null
 
   return (
+    <>
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-2 py-4">
       <div className="relative w-full max-w-5xl rounded-2xl border border-[#e0ebe9] bg-white shadow-xl max-h-[92vh] flex flex-col">
 
@@ -309,8 +352,19 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
 
             {/* Left pane — PDF reference (desktop only) */}
             <div className="hidden md:flex md:w-[38%] flex-col border-r border-[#e0ebe9] shrink-0">
-              <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-[#577572] bg-[#f0f7f6] border-b border-[#e0ebe9]">
-                Your PDF
+              <div className="px-4 py-2.5 bg-[#f0f7f6] border-b border-[#e0ebe9] flex items-center justify-between">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-[#577572]">Your PDF</span>
+                {pdfUrl && (
+                  <button
+                    onClick={() => setPdfExpanded(true)}
+                    title="Expand PDF"
+                    className="text-[#577572] hover:text-[#2d6a5e] transition-colors"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                    </svg>
+                  </button>
+                )}
               </div>
               {pdfUrl ? (
                 <iframe
@@ -591,6 +645,25 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
 
       </div>
     </div>
+
+    {/* PDF expanded overlay */}
+    {pdfExpanded && pdfUrl && (
+      <div className="fixed inset-0 z-[60] bg-black/80 flex flex-col">
+        <div className="flex items-center justify-between px-4 py-3 bg-[#1a2e2b] shrink-0">
+          <span className="text-sm font-medium text-white truncate max-w-sm">{fileName}</span>
+          <button
+            onClick={() => setPdfExpanded(false)}
+            className="rounded-lg p-1.5 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <iframe src={pdfUrl} className="flex-1 w-full border-0" title="PDF expanded view" />
+      </div>
+    )}
+    </>
   )
 }
 
