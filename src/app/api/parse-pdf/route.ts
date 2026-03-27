@@ -513,6 +513,9 @@ function parseLabResults(text: string): ParsedResult[] {
       if (!name || name.length < 2 || isNaN(val)) continue
       if (/^(page|patient|name|dob|date|address|physician|doctor|provider|accession|specimen|lab\s*#|requisition|fax|phone|npi|russell|wempe|trinity|georgetown|client|report|fasting|sex|age|in|non-pregnant|pregnant|postmenopausal|lewisville|irving|san juan|suite)/i.test(name)) continue
       if (/^\d/.test(name)) continue
+      // Skip patient demographics lines (phone numbers, DOB, sex)
+      if (/\(?\d{3}\)?[\s.\-]\d{3}[\s.\-]\d{4}/.test(name)) continue
+      if (/\b(female|male)\b/i.test(name) && /\d{1,2}\/\d{1,2}\/\d{4}/.test(name)) continue
       if (/AnalyteValue/i.test(trimmed)) continue
       // Skip lines that look like address fragments or reference range descriptions
       if (/\b(TX|CA|NY|FL)\s*$/i.test(name)) continue
