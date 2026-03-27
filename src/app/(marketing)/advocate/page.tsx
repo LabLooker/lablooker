@@ -460,7 +460,7 @@ export default function AdvocatePage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for a test (e.g., TSH, CBC, Vitamin D)..."
+                placeholder="Search for a test (e.g., TSH, Ferritin)..."
                 className="w-full px-4 py-3 rounded-lg border-2 border-[#2d6a5e] text-base text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30"
               />
               {isSearching && (
