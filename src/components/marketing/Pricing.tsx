@@ -12,16 +12,16 @@ const FEATURE_MATRIX = [
   { feature: 'Translate codes', free: true, premium: true },
   { feature: 'Compare prices', free: true, premium: true },
   { feature: 'Panels and topics', free: true, premium: true },
-  { feature: 'PDF import parsing', free: 'Preview only', premium: 'Save to tracker' },
+  { feature: 'PDF import', free: 'Preview only', premium: 'Save to tracker' },
   { feature: 'Share results', free: 'One-time links', premium: 'Ongoing data + exports' },
-  { feature: 'Lab test request letters', free: 'Names + CPT codes', premium: 'Full coded (ICD-10 + lab codes)' },
+  { feature: 'Request letters', free: 'Names + CPT codes', premium: 'Full coded (ICD-10 + lab codes)' },
   { feature: 'Save results', free: false, premium: true },
   { feature: 'Track over time', free: false, premium: true },
   { feature: 'Trend charts', free: false, premium: true },
-  { feature: 'Custom goals and ranges', free: false, premium: true },
-  { feature: 'Functional/optimal ranges', free: false, premium: true },
+  { feature: 'Goals & ranges', free: false, premium: true },
+  { feature: 'Functional ranges', free: false, premium: true },
   { feature: 'Retest reminders', free: false, premium: true },
-  { feature: 'Export/download data', free: false, premium: true },
+  { feature: 'Export data', free: false, premium: true },
 ]
 
 const WHY_UPGRADE = [
@@ -167,7 +167,8 @@ export default function Pricing() {
             Pricing
           </p>
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#1a2e2b] sm:text-4xl">
-            Research your labs for free.<br className="hidden sm:block" />
+            Research your labs for free.{' '}
+            <br className="hidden sm:block" />
             Track your labs over time with Premium.
           </h2>
           <p className="mt-4 text-lg text-[#577572]">

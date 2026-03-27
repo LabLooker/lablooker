@@ -12,7 +12,7 @@ export const APP_CONFIG = {
       bestFor: 'People comparing options, learning what tests mean, and previewing results before deciding what to save.',
       features: [
         'Search the full lab database',
-        'Translate test names and lab-specific codes',
+        'Translate test names and lab codes',
         'Compare self-pay prices across labs',
         'Explore panels and topics',
         'Import lab PDFs for parsed preview',

@@ -10,11 +10,11 @@ export default function FounderStory() {
               </svg>
             </div>
             <span className="text-xs font-semibold uppercase tracking-[1.5px] text-[#2d6a5e]">
-              Why I Built This
+              Why I Built LabLooker
             </span>
           </div>
           <p className="text-base leading-[1.75] text-[#4a6b67]">
-            LabLooker grew out of my personal experience with how unnecessarily complicated lab testing can be. Between provider-lab mismatches, awkward requisition workarounds, and doctors who fail to submit all requested tests, patients are often left navigating a process that is far more fragmented than it should be. When that happens, they end up fasting again, getting stuck again, waiting again, and paying again.
+            LabLooker grew out of my personal experience with how unnecessarily complicated lab testing can be. Between tests getting lost in the system, orders that never made it to the lab, and results that don&apos;t match what you actually asked for — patients are often left navigating a process that is far more fragmented than it should be. When that happens, they end up fasting again, getting stuck again, waiting again, and paying again.
           </p>
           <p className="mt-4 text-base leading-[1.75] text-[#4a6b67]">
             Those frustrations are what led me to build LabLooker — a tool to help patients catch avoidable issues earlier, understand what has actually been ordered, and navigate lab testing with more confidence.

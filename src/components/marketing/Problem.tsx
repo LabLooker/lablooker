@@ -10,7 +10,7 @@ export default function Problem() {
       ),
       title: "You don't know what to order",
       description: "Doctors use codes you've never heard of. Insurance denies tests without explanation. You're left Googling at midnight.",
-      solution: "LabLooker lets you search by symptom — fatigue, hair loss, brain fog — and shows exactly which tests are commonly ordered and why.",
+      solution: "LabLooker lets you search by symptom — fatigue, hair loss, brain fog — and see which tests to ask for.",
       href: '/bundles',
       cta: 'Browse test panels →',
     },
@@ -52,7 +52,7 @@ export default function Problem() {
             The system isn&apos;t built for patients. LabLooker is.
           </h2>
           <p className="mt-4 text-lg text-[#577572]">
-            Here&apos;s what patients face every day — and exactly how LabLooker fixes it.
+            Here&apos;s what patients face every day — and what LabLooker does about it.
           </p>
         </div>
 

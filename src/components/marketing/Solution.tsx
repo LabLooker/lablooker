@@ -10,7 +10,7 @@ export default function Solution() {
       ),
       title: 'Search by symptom or test name',
       description:
-        "Find what you need whether you know the test name or just your symptoms. LabLooker maps both to the right lab tests.",
+        "Find what you need whether you know the test name or just your symptoms. LabLooker connects either one to the right tests.",
       href: '/search',
       cta: 'Search tests →',
     },
@@ -55,7 +55,7 @@ export default function Solution() {
             Finally, a tool built for patients
           </h2>
           <p className="mt-4 text-lg text-[#577572]">
-            One place to research your labs for free — and track your own results over time when you're ready.
+            One place to research your labs for free — and track your own results when you&apos;re ready to go deeper.
           </p>
         </div>
 

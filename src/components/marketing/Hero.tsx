@@ -43,7 +43,7 @@ export default function Hero() {
         </div>
 
         {/* Headline */}
-        <h1 className="mx-auto max-w-4xl text-5xl font-extrabold tracking-tight text-[#1a2e2b] sm:text-6xl lg:text-7xl">
+        <h1 className="mx-auto max-w-4xl text-4xl font-extrabold tracking-tight text-[#1a2e2b] sm:text-6xl lg:text-7xl">
           Know your labs.
           <br />
           <span className="bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
@@ -57,7 +57,7 @@ export default function Hero() {
         </p>
 
         {/* Four action cards */}
-        <div className="mx-auto mt-10 grid max-w-4xl gap-4 grid-cols-2 sm:grid-cols-4">
+        <div className="mx-auto mt-10 grid max-w-4xl gap-4 grid-cols-2 sm:grid-cols-4 items-stretch">
           {/* Translate */}
           <Link
             href="/translate"
