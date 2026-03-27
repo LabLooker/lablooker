@@ -69,6 +69,8 @@ export default function AdvocatePage() {
   const [reason, setReason] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [suggestedBundle, setSuggestedBundle] = useState<TestBundle | null>(null)
+  const [showAllTests, setShowAllTests] = useState(false)
+  const TESTS_PREVIEW = 3
   const [showTemplate, setShowTemplate] = useState(false)
   const [copied, setCopied] = useState(false)
   const [outputMode, setOutputMode] = useState<'form' | 'portal'>('form')
@@ -545,7 +547,7 @@ export default function AdvocatePage() {
 
             {selectedTests.length > 0 && (
               <div className="mt-4 sm:ml-9 space-y-2">
-                {selectedTests.map(test => (
+                {(showAllTests ? selectedTests : selectedTests.slice(0, TESTS_PREVIEW)).map(test => (
                   <div
                     key={test.id}
                     className="flex items-center justify-between px-4 py-2.5 rounded-lg"
@@ -591,6 +593,16 @@ export default function AdvocatePage() {
                     </div>
                   </div>
                 ))}
+                {selectedTests.length > TESTS_PREVIEW && (
+                  <button
+                    onClick={() => setShowAllTests(v => !v)}
+                    className="w-full text-center text-sm py-2 rounded-lg border border-dashed border-[#e0ebe9] text-[#577572] hover:text-[#2d6a5e] hover:border-[#2d6a5e] transition-colors"
+                  >
+                    {showAllTests
+                      ? '▲ Show fewer'
+                      : `▼ Show ${selectedTests.length - TESTS_PREVIEW} more added test${selectedTests.length - TESTS_PREVIEW !== 1 ? 's' : ''}`}
+                  </button>
+                )}
               </div>
             )}
 
