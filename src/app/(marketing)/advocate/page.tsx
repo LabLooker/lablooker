@@ -375,7 +375,7 @@ export default function AdvocatePage() {
               Your information
             </h2>
             <p className="text-sm mb-1 sm:ml-9" style={{ color: '#577572' }}>
-              Optional — pre-fill the template so you don&apos;t have to hand-write it later.
+              Optional — personalize your printed letter.
             </p>
             <p className="text-xs mb-4 sm:ml-9 italic" style={{ color: '#a3bfbb' }}>
               🔒 This information is used only to fill in your printable letter. It is never stored, sent to LabLooker, or shared with anyone.
