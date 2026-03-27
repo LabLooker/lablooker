@@ -68,6 +68,7 @@ export default function AdvocatePage() {
   const [selectedTests, setSelectedTests] = useState<SelectedTest[]>([])
   const [reason, setReason] = useState('')
   const [isSearching, setIsSearching] = useState(false)
+  const [suggestedBundle, setSuggestedBundle] = useState<TestBundle | null>(null)
   const [showTemplate, setShowTemplate] = useState(false)
   const [copied, setCopied] = useState(false)
   const [outputMode, setOutputMode] = useState<'form' | 'portal'>('form')
@@ -185,6 +186,11 @@ export default function AdvocatePage() {
 
   useEffect(() => {
     const timer = setTimeout(() => searchTests(searchQuery), 300)
+    // Update bundle suggestion when query matches — but don't clear it when query is empty
+    if (searchQuery.trim().length >= 3) {
+      const matched = findMatchingBundle(searchQuery)
+      if (matched) setSuggestedBundle(matched)
+    }
     return () => clearTimeout(timer)
   }, [searchQuery, searchTests])
 
@@ -493,33 +499,24 @@ export default function AdvocatePage() {
               )}
             </div>
 
-            {/* Bundle suggestion card */}
-            {searchQuery.trim().length >= 3 && (() => {
-              const bundle = findMatchingBundle(searchQuery)
-              if (!bundle) return null
-              const alreadyAdded = bundle.tests.every(name =>
-                selectedTests.some(st => st.test_name === name)
-              )
-              if (alreadyAdded) return null
-              return (
-                <div className="mt-3 sm:ml-9 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4">
-                  <div className="flex items-start gap-3">
-                    <span className="text-xl">{bundle.icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-[#1a2e2b]">
-                        Looking for a full panel? Try the {bundle.name}
-                      </div>
-                      <p className="text-xs text-[#4a6b67] mt-0.5 leading-relaxed">
-                        {bundle.tests.length} tests — {bundle.description.split('.')[0]}.
-                      </p>
+            {/* Bundle suggestion card — persists after test is added */}
+            {suggestedBundle && !suggestedBundle.tests.every(name => selectedTests.some(st => st.test_name === name)) && (
+              <div className="mt-3 sm:ml-9 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4">
+                <div className="flex items-start gap-3">
+                  <span className="text-xl">{suggestedBundle.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-[#1a2e2b]">
+                      Looking for a full panel? Try the {suggestedBundle.name}
+                    </div>
+                    <p className="text-xs text-[#4a6b67] mt-0.5 leading-relaxed">
+                      {suggestedBundle.tests.length} tests — {suggestedBundle.description.split('.')[0]}.
+                    </p>
+                    <div className="flex items-center gap-3 mt-2">
                       <button
                         onClick={async () => {
-                          setSearchQuery('')
-                          setSearchResults([])
-                          // Add all bundle tests that aren't already selected
                           const existingIds = new Set(selectedTests.map(t => t.id))
                           const supabase = createClient()
-                          for (const testName of bundle.tests) {
+                          for (const testName of suggestedBundle.tests) {
                             const { data } = await supabase
                               .from('tests')
                               .select('id, test_name, cpt_codes, category, description')
@@ -530,16 +527,18 @@ export default function AdvocatePage() {
                               existingIds.add(data[0].id)
                             }
                           }
+                          setSuggestedBundle(null)
                         }}
-                        className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-[#2d6a5e] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#245a50] transition-colors"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-[#2d6a5e] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#245a50] transition-colors"
                       >
-                        + Add all {bundle.tests.length} tests
+                        + Add all {suggestedBundle.tests.length} tests
                       </button>
+                      <button onClick={() => setSuggestedBundle(null)} className="text-xs text-[#577572] hover:text-[#1a2e2b]">Dismiss</button>
                     </div>
                   </div>
                 </div>
-              )
-            })()}
+              </div>
+            )}
 
             {selectedTests.length > 0 && (
               <div className="mt-4 sm:ml-9 space-y-2">
