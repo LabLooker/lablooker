@@ -37,9 +37,13 @@ type ApiResponse = {
 }
 
 // Normalize lab units to standard clinical format
+// Lab method/routing labels that appear in Quest/ARUP PDFs — not actual units
+const NON_UNIT_LABELS = new Set(['MAIN', 'ARUP', 'LABCORP', 'QUEST', 'SENDOUT', 'SEND OUT', 'REFERENCE', 'EXTERNAL'])
+
 function normalizeUnit(raw: string | null | undefined): string {
   if (!raw) return ''
   const u = raw.trim()
+  if (NON_UNIT_LABELS.has(u.toUpperCase())) return ''
   const map: Record<string, string> = {
     // Volume ratios
     'mg/dl': 'mg/dL', 'MG/DL': 'mg/dL', 'mg/dL': 'mg/dL',
@@ -441,8 +445,8 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                     const isFlagged = plausibilityFlags.some(f => f.testName === r.matchedTest?.test_name)
                     const isVerified = verifiedRows.has(i)
                     const statusEl = !r.matchedTest ? (
-                      <div className="flex items-center gap-1">
-                        <span className="text-amber-600 text-[10px]">No match</span>
+                      <div className="flex flex-col items-end gap-0.5">
+                        <span className="text-amber-600 text-[10px] font-medium">No match</span>
                         <button type="button" onClick={e => { e.stopPropagation(); setAssignOpen(assignOpen === i ? null : i) }} className="text-[#2d6a5e] text-[10px] underline">Assign</button>
                       </div>
                     ) : isFlagged && !isVerified ? (
