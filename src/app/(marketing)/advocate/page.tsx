@@ -101,11 +101,14 @@ export default function AdvocatePage() {
       // Load profile for name pre-fill
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name')
+        .select('full_name, date_of_birth')
         .eq('id', user.id)
         .single()
       if (profile?.full_name && !patientName) {
         setPatientName(profile.full_name)
+      }
+      if (profile?.date_of_birth && !dateOfBirth) {
+        setDateOfBirth(profile.date_of_birth)
       }
 
       // Load saved providers

@@ -23,6 +23,7 @@ function EyeIcon({ open }: { open: boolean }) {
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState('')
+  const [dateOfBirth, setDateOfBirth] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -52,7 +53,7 @@ export default function SignupPage() {
       email,
       password,
       options: {
-        data: { full_name: fullName },
+        data: { full_name: fullName, ...(dateOfBirth ? { date_of_birth: dateOfBirth } : {}) },
         emailRedirectTo: `${APP_CONFIG.url}/auth/callback`,
       },
     })
@@ -119,6 +120,19 @@ export default function SignupPage() {
             required
             className="mt-1 block w-full rounded-md border border-[#e0ebe9] bg-white px-4 py-2.5 text-[#1a2e2b] placeholder-[#a3bfbb] focus:border-[#2d6a5e] focus:outline-none focus:ring-1 focus:ring-[#2d6a5e]"
             placeholder="Jane Doe"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="dob" className="block text-sm font-medium text-[#4a6b67]">
+            Date of birth <span className="text-xs font-normal text-[#577572]">(optional — used to pre-fill lab request letters)</span>
+          </label>
+          <input
+            id="dob"
+            type="date"
+            value={dateOfBirth}
+            onChange={(e) => setDateOfBirth(e.target.value)}
+            className="mt-1 block w-full rounded-md border border-[#e0ebe9] bg-white px-4 py-2.5 text-[#1a2e2b] placeholder-[#a3bfbb] focus:border-[#2d6a5e] focus:outline-none focus:ring-1 focus:ring-[#2d6a5e]"
           />
         </div>
 
