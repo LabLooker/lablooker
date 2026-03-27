@@ -374,9 +374,17 @@ export default function AdvocatePage() {
               <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: '#2d6a5e' }}>1</span>
               Your information
             </h2>
-            <p className="text-sm mb-1 sm:ml-9" style={{ color: '#577572' }}>
-              Optional — personalize your printed letter.
-            </p>
+            {isSignedIn ? (
+              <p className="text-sm mb-4 sm:ml-9" style={{ color: '#577572' }}>
+                Your details are pre-filled from your account.
+              </p>
+            ) : (
+              <p className="text-sm mb-4 sm:ml-9" style={{ color: '#577572' }}>
+                Optional — personalize your printed letter.{' '}
+                <a href="/signup" className="underline font-medium" style={{ color: '#2d6a5e' }}>Create a free account</a>
+                {' '}to have your details filled in automatically.
+              </p>
+            )}
             <p className="text-xs mb-4 sm:ml-9 italic" style={{ color: '#a3bfbb' }}>
               🔒 This information is used only to fill in your printable letter. It is never stored, sent to LabLooker, or shared with anyone.
             </p>
