@@ -55,9 +55,9 @@ function SearchShell() {
               <Link
                 key={topic.slug}
                 href={`/search?topic=${topic.slug}`}
-                className="group flex flex-col items-center gap-2 rounded-xl border border-[#e0ebe9] bg-white p-4 transition-all hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5"
+                className="group flex flex-col items-start gap-2 rounded-xl border border-[#e0ebe9] bg-white p-4 transition-all hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5"
               >
-                <span className="text-sm font-medium text-[#1a2e2b] group-hover:text-[#2d6a5e] text-center leading-tight">{topic.label}</span>
+                <span className="text-sm font-medium text-[#1a2e2b] group-hover:text-[#2d6a5e] text-left leading-tight">{topic.label}</span>
               </Link>
             ))}
           </div>
