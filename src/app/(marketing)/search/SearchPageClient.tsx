@@ -664,18 +664,18 @@ export default function SearchPageClient() {
                             onClick={() => toggleCategory(category)}
                             className="w-full flex items-center justify-between rounded-lg border border-[#e0ebe9] bg-white px-5 py-3.5 transition-all hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5 cursor-pointer"
                           >
-                            <div className="flex items-center gap-3">
-                              <span className="text-sm font-semibold text-[#1a2e2b]">{label}</span>
+                            <span className="text-sm font-semibold text-[#1a2e2b]">{label}</span>
+                            <div className="flex items-center gap-2">
                               <span className="rounded-full bg-[#f0f7f6] px-2.5 py-0.5 text-xs font-medium text-[#2d6a5e]">
                                 {catTests.length} test{catTests.length !== 1 ? 's' : ''}
                               </span>
+                              <svg
+                                className={`h-4 w-4 text-[#577572] transition-transform ${isOpen ? 'rotate-90' : ''}`}
+                                fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                              </svg>
                             </div>
-                            <svg
-                              className={`h-4 w-4 text-[#577572] transition-transform ${isOpen ? 'rotate-90' : ''}`}
-                              fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
                           </button>
                           {isOpen && (
                             <div className="ml-2 mt-1 mb-2 flex flex-col gap-1.5 border-l-2 border-[#e0ebe9] pl-4">

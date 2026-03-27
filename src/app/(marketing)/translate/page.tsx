@@ -789,7 +789,7 @@ export default function TranslatePage() {
             className="w-full px-4 py-3 rounded-lg border-2 border-[#2d6a5e] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white resize-none focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 transition-colors"
           />
           <div className="flex items-center justify-between mt-3">
-            <p className="text-xs" style={{ color: '#9ca3af' }}>⌘+Enter to search</p>
+            <p className="hidden sm:block text-xs" style={{ color: '#9ca3af' }}>⌘+Enter to search</p>
             <button
               onClick={parseAndMatch}
               disabled={!bulkInput.trim() || isParsing}
@@ -971,7 +971,7 @@ export default function TranslatePage() {
               </div>
             </div>
 
-            <p className="text-center mt-4 text-sm text-[#577572]">
+            <p className="text-center mt-8 mb-6 text-sm text-[#577572]">
               Free research tool. No account required.{' '}
               <Link href="/search" className="underline text-[#2d6a5e]">
                 Browse all tests →
