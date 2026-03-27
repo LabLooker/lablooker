@@ -212,6 +212,10 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
     setResults(prev => prev.map((r, i) => i === idx ? { ...r, selected: !r.selected } : r))
   }
 
+  function updateRow(idx: number, patch: Partial<ParsedResult>) {
+    setResults(prev => prev.map((r, i) => i === idx ? { ...r, ...patch } : r))
+  }
+
   function handleDrop(e: React.DragEvent) {
     e.preventDefault()
     setDragOver(false)
@@ -410,20 +414,44 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                               )}
                             </td>
                             {/* Test name */}
-                            <td className="px-2 py-2 text-[#1a2e2b]">
-                              {r.rawTestName}
+                            <td className="px-2 py-1 text-[#1a2e2b]" onClick={e => e.stopPropagation()}>
+                              <input
+                                type="text"
+                                value={r.rawTestName}
+                                onChange={e => updateRow(i, { rawTestName: e.target.value })}
+                                className="w-full bg-transparent text-xs text-[#1a2e2b] focus:bg-white focus:border focus:border-[#2d6a5e] focus:rounded focus:px-1 focus:outline-none min-w-0"
+                              />
                               {r.manuallyAssigned && (
-                                <span className="ml-1 text-[10px] text-[#577572] italic">manually assigned</span>
+                                <span className="text-[10px] text-[#577572] italic">manually assigned</span>
                               )}
                             </td>
                             {/* Value */}
-                            <td className="px-2 py-2 text-[#1a2e2b] font-medium">
-                              {r.qualifier ? `${r.qualifier}${r.value}` : r.value}
+                            <td className="px-2 py-1 text-[#1a2e2b] font-medium" onClick={e => e.stopPropagation()}>
+                              <input
+                                type="number"
+                                value={r.value}
+                                onChange={e => updateRow(i, { value: parseFloat(e.target.value) || 0 })}
+                                className="w-16 bg-transparent text-xs font-medium text-[#1a2e2b] focus:bg-white focus:border focus:border-[#2d6a5e] focus:rounded focus:px-1 focus:outline-none"
+                              />
                             </td>
                             {/* Unit */}
-                            <td className="px-2 py-2 text-[#577572] hidden sm:table-cell">{r.unit || '—'}</td>
+                            <td className="px-2 py-1 text-[#577572] hidden sm:table-cell" onClick={e => e.stopPropagation()}>
+                              <input
+                                type="text"
+                                value={r.unit || ''}
+                                onChange={e => updateRow(i, { unit: e.target.value })}
+                                className="w-16 bg-transparent text-xs text-[#577572] focus:bg-white focus:border focus:border-[#2d6a5e] focus:rounded focus:px-1 focus:outline-none"
+                              />
+                            </td>
                             {/* Ref range */}
-                            <td className="px-2 py-2 text-[#577572] hidden sm:table-cell">{r.referenceRange || '—'}</td>
+                            <td className="px-2 py-1 text-[#577572] hidden sm:table-cell" onClick={e => e.stopPropagation()}>
+                              <input
+                                type="text"
+                                value={r.referenceRange || ''}
+                                onChange={e => updateRow(i, { referenceRange: e.target.value || null })}
+                                className="w-20 bg-transparent text-xs text-[#577572] focus:bg-white focus:border focus:border-[#2d6a5e] focus:rounded focus:px-1 focus:outline-none"
+                              />
+                            </td>
                             {/* Status */}
                             <td className="px-2 py-2">
                               {!r.matchedTest ? (
