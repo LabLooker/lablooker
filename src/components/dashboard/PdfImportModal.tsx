@@ -468,7 +468,6 @@ export default function PdfImportModal({ isOpen, onClose, onSuccess }: Props) {
                                 <input type="number" value={r.value} onChange={e => updateRow(i, { value: parseFloat(e.target.value) || 0 })} className="w-16 bg-transparent text-xs font-semibold text-[#1a2e2b] focus:bg-white focus:border focus:border-[#2d6a5e] focus:rounded focus:px-1 focus:outline-none" />
                               </span>
                               {r.unit && <input type="text" value={r.unit} onChange={e => updateRow(i, { unit: e.target.value })} className="w-14 bg-transparent text-[11px] text-[#577572] focus:bg-white focus:border focus:border-[#2d6a5e] focus:rounded focus:outline-none" />}
-                              {r.referenceRange && <span className="text-[10px] text-[#577572]">{r.referenceRange}</span>}
                             </div>
                             {assignOpen === i && (
                               <div className="mt-1 w-full rounded-lg border border-[#e0ebe9] bg-white shadow-lg p-1.5">
