@@ -34,6 +34,7 @@ const ALIASES: Record<string, string> = {
   't3 free': 'free t3',
   'free triiodothyronine': 'free t3',
   'reverse t3': 'reverse t3 (rt3)',
+  't3 reverse': 'reverse t3 (rt3)',
   'reverse triiodothyronine': 'reverse t3 (rt3)',
   'rt3': 'reverse t3 (rt3)',
   'thyroid stimulating hormone': 'tsh',
@@ -519,7 +520,9 @@ function parseLabResults(text: string): ParsedResult[] {
       // Skip Z SCORE with negative sign attached to name
       if (/Z SCORE.*-$/i.test(name)) continue
       // Skip phase-specific reference range sub-rows (hormone panels)
-      if (/^(follicular|ovulation|luteal|mid-cycle|postmenopausal|premenopausal|prepubertal|male|female\s+\d|adult\s+male|adult\s+female)/i.test(name)) continue
+      if (/^(follicular|ovulation|luteal|mid-cycle|postmenopausal|premenopausal|prepubertal|male|female\s+\d|adult\s+male|adult\s+female|first\s+trimester|second\s+trimester|third\s+trimester)/i.test(name)) continue
+      // Skip Quest footnote markers ("See Note 1", "Note 1", "Note 2", etc.)
+      if (/^(see\s+note|note)\s*$/i.test(name)) continue
       // Skip lab metadata rows (CLIA numbers, accreditation info)
       if (/clia|accreditation|cap\s+number|cap\s+accreditation/i.test(name)) continue
       // Skip accession/order number rows (1-3 uppercase letters + large number)
