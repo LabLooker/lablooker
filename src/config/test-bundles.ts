@@ -44,7 +44,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     icon: '🌸',
     category: 'hormones',
     description: 'Baseline hormone panel before starting bioidentical hormone replacement therapy. Establishes your starting point for estrogen, progesterone, testosterone, and supporting markers.',
-    whoNeeds: 'Women considering or starting BHRT, perimenopause, or menopause hormone therapy. Also useful if you\'re experiencing fatigue, low libido, mood changes, or other hormonal symptoms without a clear cause.',
+    whoNeeds: 'Women considering or starting BHRT, perimenopause, or menopause hormone therapy. Also useful if you\'re experiencing fatigue, low libido, mood changes, or other hormonal symptoms without a clear cause. And worth considering for women who feel well — knowing your optimal now gives you a reference point for the future.',
     tests: [
       'Estradiol (E2)',
       'Progesterone',
@@ -142,7 +142,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     icon: '🧬',
     category: 'wellness',
     description: 'The comprehensive annual panel for catching what your doctor might miss. Covers metabolic health, cardiovascular risk, inflammation, and key nutrients.',
-    whoNeeds: 'Adults who want thorough annual bloodwork beyond the standard checkup. Especially if you have a family history of heart disease, diabetes, or autoimmune conditions.',
+    whoNeeds: 'Adults who want thorough annual bloodwork beyond the standard checkup. Especially if you have a family history of heart disease, diabetes, or autoimmune conditions. Also a strong choice for optimizers and health-focused individuals who want to know their numbers while they feel their best — not just when something goes wrong.',
     tests: [
       'CBC (Complete Blood Count) with Differential',
       'CMP (Comprehensive Metabolic Panel)',
