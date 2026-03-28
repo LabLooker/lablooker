@@ -52,7 +52,7 @@ export default function BundlesPage() {
             Recommended Panels
           </p>
           <h1 className="text-3xl font-bold tracking-tight text-[#1a2e2b] sm:text-4xl">
-            Not sure which labs to order?
+            Not sure which tests to order?
           </h1>
           <p className="mt-4 text-lg text-[#577572] max-w-2xl mx-auto">
             Curated test panels built from clinical guidelines and patient community experience. Each panel tells you exactly what to order and why.
@@ -181,7 +181,7 @@ export default function BundlesPage() {
           <p className="text-sm text-[#577572]">
             Don't see what you need?{' '}
             <a href="/search" className="font-medium text-[#2d6a5e] hover:underline">
-              Search our full database of 390+ tests →
+              Search our full database of 408+ tests →
             </a>
           </p>
         </div>

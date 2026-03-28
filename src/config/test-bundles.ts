@@ -265,7 +265,7 @@ export const TEST_BUNDLES: TestBundle[] = [
   {
     slug: 'inflammation-immune',
     name: 'Inflammation & Immune Health Panel',
-    shortName: 'Inflammation & Immune',
+    shortName: 'Inflammation',
     icon: '🔬',
     category: 'wellness',
     description: 'Screens for systemic inflammation and autoimmune markers. Useful for investigating unexplained symptoms, joint pain, or family history of autoimmune disease.',
