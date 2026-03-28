@@ -319,7 +319,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     icon: '⚖️',
     category: 'nutrition',
     description: 'The "why can\'t I lose weight?" panel. Covers insulin resistance, thyroid function, cortisol, and metabolic markers that are often missed in standard bloodwork.',
-    whoNeeds: 'Anyone struggling with unexplained weight gain, weight loss resistance, or metabolic symptoms despite diet and exercise changes.',
+    whoNeeds: 'Anyone struggling with unexplained weight gain, weight loss resistance, fatigue, or other metabolic symptoms despite diet and exercise changes.',
     tests: [
       'Insulin, Fasting',
       'Glucose, Fasting',
