@@ -26,7 +26,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     icon: '🦋',
     category: 'thyroid-energy',
     description: 'The full thyroid picture — not just TSH. Includes free hormones, antibodies, and reverse T3 for a complete assessment.',
-    whoNeeds: 'Anyone with thyroid symptoms (fatigue, brain fog, weight changes, hair loss, feeling cold or hot), Hashimoto\'s, hypothyroidism, or on thyroid medication. Especially if your doctor only checks TSH.',
+    whoNeeds: 'Anyone with thyroid symptoms, Hashimoto\'s, Graves\' disease, or on thyroid medication. Hypothyroid symptoms include fatigue, weight gain, brain fog, hair loss, and feeling cold. Hyperthyroid symptoms include weight loss, anxiety, palpitations, heat intolerance, and tremors.',
     tests: [
       'TSH (Thyroid Stimulating Hormone)',
       'Free T4 (Thyroxine)',
