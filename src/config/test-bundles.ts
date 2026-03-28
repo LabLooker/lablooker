@@ -121,7 +121,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     icon: '🩸',
     category: 'nutrition',
     description: 'Goes beyond basic iron to find the root cause of anemia or iron issues. Includes storage, transport, and production markers.',
-    whoNeeds: 'Anyone with low ferritin, anemia symptoms (fatigue, brain fog, hair loss), heavy periods, or unexplained low iron despite supplementation.',
+    whoNeeds: 'Anyone with low ferritin, heavy periods, or unexplained low iron despite supplementation. Common anemia symptoms include fatigue, brain fog, hair loss, shortness of breath, dizziness, and pale skin.',
     tests: [
       'Ferritin',
       'Serum Iron',
