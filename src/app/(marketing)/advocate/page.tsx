@@ -416,7 +416,13 @@ export default function AdvocatePage() {
                 <input
                   type="date"
                   value={dateOfBirth}
-                  onChange={(e) => setDateOfBirth(e.target.value)}
+                  min="1900-01-01"
+                  max="2099-12-31"
+                  onChange={(e) => {
+                    const year = e.target.value.split('-')[0]
+                    if (year && year.length > 4) return
+                    setDateOfBirth(e.target.value)
+                  }}
                   className="w-full px-4 py-2.5 rounded-lg border border-[#e0ebe9] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30 focus:border-[#2d6a5e]"
                 />
               </div>
