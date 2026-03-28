@@ -196,7 +196,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     icon: '🫁',
     category: 'nutrition',
     description: 'Tests for common gut issues including celiac, H. pylori, inflammation, and malabsorption markers. Pairs well with the Nutrient Deficiencies panel.',
-    whoNeeds: 'People with chronic bloating, IBS symptoms, food sensitivities, unexplained nutrient deficiencies, or suspected celiac/SIBO.',
+    whoNeeds: 'People with chronic bloating, IBS symptoms, food sensitivities, fatigue, unexplained nutrient deficiencies, or suspected celiac/SIBO.',
     tests: [
       'Celiac Panel (tTG IgA + Total IgA)',
       'H. Pylori Antibody (IgG)',
