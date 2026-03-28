@@ -26,7 +26,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     icon: '🦋',
     category: 'thyroid-energy',
     description: 'The full thyroid picture — not just TSH. Includes free hormones, antibodies, and reverse T3 for a complete assessment.',
-    whoNeeds: 'Anyone with thyroid symptoms, Hashimoto\'s, hypothyroidism, or on thyroid medication. Especially if your doctor only checks TSH.',
+    whoNeeds: 'Anyone with thyroid symptoms (fatigue, brain fog, weight changes, hair loss, feeling cold or hot), Hashimoto\'s, hypothyroidism, or on thyroid medication. Especially if your doctor only checks TSH.',
     tests: [
       'TSH (Thyroid Stimulating Hormone)',
       'Free T4 (Thyroxine)',
@@ -44,7 +44,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     icon: '🌸',
     category: 'hormones',
     description: 'Baseline hormone panel before starting bioidentical hormone replacement therapy. Establishes your starting point for estrogen, progesterone, testosterone, and supporting markers.',
-    whoNeeds: 'Women considering or starting BHRT, perimenopause, or menopause hormone therapy.',
+    whoNeeds: 'Women considering or starting BHRT, perimenopause, or menopause hormone therapy. Also useful if you\'re experiencing fatigue, low libido, mood changes, or other hormonal symptoms without a clear cause.',
     tests: [
       'Estradiol (E2)',
       'Progesterone',
@@ -93,7 +93,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     icon: '🎀',
     category: 'hormones',
     description: 'Comprehensive panel for diagnosing and monitoring polycystic ovary syndrome. Covers hormones, insulin resistance, and commonly missed markers.',
-    whoNeeds: 'Women with suspected or diagnosed PCOS. Also useful for irregular periods, acne, hirsutism, or unexplained weight gain.',
+    whoNeeds: 'Women with suspected or diagnosed PCOS, fertility challenges, or hormonal symptoms like irregular periods, acne, facial hair, thinning hair, skin changes, or unexplained weight gain.',
     tests: [
       'Testosterone, Total',
       'Testosterone, Free (Calculated)',
@@ -347,7 +347,7 @@ export const TEST_BUNDLES: TestBundle[] = [
     icon: '🧠',
     category: 'wellness',
     description: 'Key biomarkers linked to mood, cognition, and mental health. Many mood disorders have underlying nutritional or hormonal causes that go untested.',
-    whoNeeds: 'Anyone experiencing depression, anxiety, brain fog, poor focus, or mood swings — especially if standard treatments haven\'t fully worked. Also useful for anyone on psychiatric medication who wants a fuller picture.',
+    whoNeeds: 'Anyone experiencing depression, anxiety, fatigue, brain fog, poor focus, or mood swings — especially if standard treatments haven\'t fully worked. Also useful for anyone on psychiatric medication who wants a fuller picture.',
     tests: [
       'Vitamin D, 25-Hydroxy',
       'Vitamin B12 (Cobalamin)',
