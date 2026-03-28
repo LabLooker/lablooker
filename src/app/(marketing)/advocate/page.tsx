@@ -396,7 +396,7 @@ export default function AdvocatePage() {
                 {' '}to have your details filled in automatically.
               </p>
             )}
-            <p className="text-xs mb-4 sm:ml-9 italic" style={{ color: '#a3bfbb' }}>
+            <p className="text-xs mb-4 sm:ml-9 italic" style={{ color: '#577572' }}>
               🔒 This information is used only to fill in your printable letter. It is never stored, sent to LabLooker, or shared with anyone.
             </p>
 
