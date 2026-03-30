@@ -191,6 +191,7 @@ function DashboardContent() {
   const [expandedVisits, setExpandedVisits] = useState<Set<string>>(new Set())
   const [visitSort, setVisitSort] = useState<'newest' | 'oldest' | 'az'>('newest')
   const [upgradeBanner, setUpgradeBanner] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
 
   const [showLogModal, setShowLogModal] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
@@ -233,7 +234,8 @@ function DashboardContent() {
   const loadData = useCallback(async () => {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setLoading(false); return }
+    if (!user) { setLoading(false); setIsLoggedIn(false); return }
+    setIsLoggedIn(true)
 
     // Load profile
     const { data: profileData } = await supabase
@@ -471,6 +473,45 @@ function DashboardContent() {
     )
   }
 
+  if (isLoggedIn === false) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="max-w-lg w-full text-center">
+          <div className="text-4xl mb-4">📊</div>
+          <h1 className="text-2xl md:text-3xl font-bold mb-3" style={{ color: '#1a2e2b' }}>
+            Track your labs over time
+          </h1>
+          <p className="text-base mb-2" style={{ color: '#4a6b67' }}>
+            Upload your results, see trends, and spot what&apos;s changing — all in one place.
+          </p>
+          <p className="text-sm mb-8" style={{ color: '#577572' }}>
+            Premium feature — $8/month or $59/year. Import from any lab PDF or CSV.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href="/signup"
+              className="rounded-xl px-6 py-3 text-sm font-semibold text-white transition-colors"
+              style={{ backgroundColor: '#2d6a5e' }}
+            >
+              Create a free account
+            </a>
+            <a
+              href="/login"
+              className="rounded-xl px-6 py-3 text-sm font-semibold border transition-colors"
+              style={{ borderColor: '#2d6a5e', color: '#2d6a5e' }}
+            >
+              Log in
+            </a>
+          </div>
+          <p className="text-xs mt-6" style={{ color: '#577572' }}>
+            Already have results saved?{' '}
+            <a href="/login" className="underline hover:text-[#2d6a5e]">Log in to view your dashboard.</a>
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       {/* Premium activated banner */}
@@ -489,7 +530,7 @@ function DashboardContent() {
             Upgrade to Premium to save them to your dashboard and track changes over time.
           </p>
           <a
-            href="/pricing"
+            href="/plans"
             className="mt-4 inline-block rounded-xl bg-[#2d6a5e] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#245549]"
           >
             Upgrade — $8/month or $59/year

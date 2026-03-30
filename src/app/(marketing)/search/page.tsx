@@ -68,9 +68,8 @@ function SearchShell() {
           </div>
         </div>
 
-        <div className="mt-16 text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#e0ebe9] border-t-[#2d6a5e]" />
-          <p className="mt-4 text-sm text-[#577572]">Loading tests...</p>
+        <div className="mt-10 text-center">
+          <p className="text-sm text-[#577572]">Browse 408+ lab tests — free, no account required.</p>
         </div>
       </div>
     </section>
