@@ -447,24 +447,11 @@ export default function ComparePage() {
             </p>
           )}
           {!selectedTest && !activeGroup && (
-            <p className="mt-2 text-xs text-[#9ca3af]">
-              Free research tool. No account required. Always confirm final pricing before ordering.
-            </p>
-          )}
-          {!selectedTest && !activeGroup && (
-            <div className="mt-6 flex flex-wrap justify-center gap-4 text-xs" style={{ color: '#577572' }}>
-              <span className="flex items-center gap-1.5">
-                <span className="text-[#2d6a5e]">✓</span> Prices verified twice weekly
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="text-[#2d6a5e]">✓</span> Self-pay rates — no insurance needed
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="text-[#2d6a5e]">✓</span> 408+ tests across 6+ labs
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="text-[#2d6a5e]">✓</span> Same test, multiple prices — you pick
-              </span>
+            <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 max-w-sm mx-auto text-xs text-left" style={{ color: '#577572' }}>
+              <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e]">✓</span> Free, no account needed</span>
+              <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e]">✓</span> Prices verified twice weekly</span>
+              <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e]">✓</span> 408+ tests across 6+ labs</span>
+              <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e]">✓</span> Self-pay — no insurance needed</span>
             </div>
           )}
         </div>
