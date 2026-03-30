@@ -221,6 +221,14 @@ export default function Nav() {
               Track Results
               <span className="text-xs font-medium text-[#2d6a5e] bg-[#2d6a5e]/10 px-2 py-0.5 rounded-full">Premium</span>
             </Link>
+            {/* Pricing — subscription plans */}
+            <Link
+              href="/plans"
+              className="py-3 text-sm text-[#577572] border-b border-[#e0ebe9] transition-colors hover:text-[#1a2e2b]"
+              onClick={() => setMobileOpen(false)}
+            >
+              Pricing
+            </Link>
             {/* More section — collapsible */}
             <MobileMoreSection onClose={() => setMobileOpen(false)} moreNav={APP_CONFIG.moreNav} />
           </nav>
