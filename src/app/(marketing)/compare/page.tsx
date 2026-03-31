@@ -711,6 +711,123 @@ export default function ComparePage() {
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════
+         STATIC SEO CONTENT
+      ══════════════════════════════════════════════════════════════════════ */}
+      <div className="max-w-3xl mx-auto px-4 pb-20">
+
+        {/* Section 1: How price comparison works */}
+        <section className="mt-12 mb-12">
+          <h2 className="text-xl font-semibold text-[#1a2e2b] text-center mb-6">
+            How price comparison works
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white rounded-xl border border-[#e0ebe9] p-5">
+              <div className="text-2xl mb-2">🔍</div>
+              <h3 className="text-sm font-semibold text-[#1a2e2b] mb-1">Search for a test</h3>
+              <p className="text-[13px] text-[#577572] leading-relaxed">
+                Type the test name or browse by category to find the lab test you need.
+              </p>
+            </div>
+            <div className="bg-white rounded-xl border border-[#e0ebe9] p-5">
+              <div className="text-2xl mb-2">📊</div>
+              <h3 className="text-sm font-semibold text-[#1a2e2b] mb-1">Compare prices instantly</h3>
+              <p className="text-[13px] text-[#577572] leading-relaxed">
+                See retail self-pay prices across 6+ labs side by side. No account or signup required.
+              </p>
+            </div>
+            <div className="bg-white rounded-xl border border-[#e0ebe9] p-5">
+              <div className="text-2xl mb-2">📋</div>
+              <h3 className="text-sm font-semibold text-[#1a2e2b] mb-1">Order directly</h3>
+              <p className="text-[13px] text-[#577572] leading-relaxed">
+                Click through to order at the lab of your choice. Results are sent directly to you.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 2: Labs included in our comparison */}
+        <section className="mb-12 bg-[#f0f7f6] rounded-xl p-6">
+          <h2 className="text-xl font-semibold text-[#1a2e2b] text-center mb-5">
+            Labs included in our comparison
+          </h2>
+          <div className="flex flex-wrap justify-center gap-3">
+            {['Quest Diagnostics', 'LabCorp', 'Ulta Lab Tests', 'Walk-In Lab', 'Life Extension', 'empowerDX', 'Everlywell (at-home)'].map((lab) => (
+              <span key={lab} className="bg-white rounded-full border border-[#e0ebe9] px-4 py-2 text-sm font-medium text-[#1a2e2b]">
+                {lab}
+              </span>
+            ))}
+          </div>
+          <p className="mt-4 text-center text-xs text-[#577572]">
+            Prices verified twice weekly. Self-pay — no insurance required.
+          </p>
+        </section>
+
+        {/* Section 3: Why self-pay lab testing? */}
+        <section className="mb-12">
+          <h2 className="text-xl font-semibold text-[#1a2e2b] text-center mb-6">
+            Why self-pay lab testing?
+          </h2>
+          <div className="space-y-4">
+            <div className="bg-white rounded-xl border border-[#e0ebe9] p-5">
+              <h3 className="text-sm font-semibold text-[#1a2e2b] mb-1">No referral needed</h3>
+              <p className="text-[13px] text-[#577572] leading-relaxed">
+                Order when you want, not when your doctor approves. Direct-to-consumer labs let you take control of your own health monitoring.
+              </p>
+            </div>
+            <div className="bg-white rounded-xl border border-[#e0ebe9] p-5">
+              <h3 className="text-sm font-semibold text-[#1a2e2b] mb-1">Often cheaper than insurance copays</h3>
+              <p className="text-[13px] text-[#577572] leading-relaxed">
+                For out-of-network labs, self-pay prices are frequently lower than what you&apos;d pay through insurance. No surprise bills.
+              </p>
+            </div>
+            <div className="bg-white rounded-xl border border-[#e0ebe9] p-5">
+              <h3 className="text-sm font-semibold text-[#1a2e2b] mb-1">See your own results first</h3>
+              <p className="text-[13px] text-[#577572] leading-relaxed">
+                Useful for chronic illness patients who track trends over time. Get results sent directly to you, then share with your doctor.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 4: FAQ */}
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold text-[#1a2e2b] text-center mb-6">
+            Frequently asked questions
+          </h2>
+          <div className="space-y-3">
+            <details className="bg-white rounded-xl border border-[#e0ebe9] group">
+              <summary className="px-5 py-4 text-sm font-semibold text-[#1a2e2b] cursor-pointer list-none flex items-center justify-between">
+                Are these prices accurate?
+                <span className="text-[#577572] transition-transform group-open:rotate-180">▾</span>
+              </summary>
+              <div className="px-5 pb-4 text-[13px] text-[#577572] leading-relaxed">
+                Yes, we verify them twice weekly via automated checks. Exact prices can vary by location, and you should always confirm the final price at checkout.
+              </div>
+            </details>
+            <details className="bg-white rounded-xl border border-[#e0ebe9] group">
+              <summary className="px-5 py-4 text-sm font-semibold text-[#1a2e2b] cursor-pointer list-none flex items-center justify-between">
+                Do I need an account to compare prices?
+                <span className="text-[#577572] transition-transform group-open:rotate-180">▾</span>
+              </summary>
+              <div className="px-5 pb-4 text-[13px] text-[#577572] leading-relaxed">
+                No — comparing is always free, no signup required. Just search for a test and see prices instantly.
+              </div>
+            </details>
+            <details className="bg-white rounded-xl border border-[#e0ebe9] group">
+              <summary className="px-5 py-4 text-sm font-semibold text-[#1a2e2b] cursor-pointer list-none flex items-center justify-between">
+                What&apos;s the difference between these labs?
+                <span className="text-[#577572] transition-transform group-open:rotate-180">▾</span>
+              </summary>
+              <div className="px-5 pb-4 text-[13px] text-[#577572] leading-relaxed">
+                National labs like Quest Diagnostics and LabCorp have thousands of draw locations but may require a physician order in some states. Direct-to-consumer labs like Ulta Lab Tests and Walk-In Lab ship nationwide with no doctor&apos;s order needed — you order online and visit a local draw site.
+              </div>
+            </details>
+          </div>
+        </section>
+
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════════════════
          STICKY COMPARE BUTTON (only when group is active)
       ══════════════════════════════════════════════════════════════════════ */}
       {activeGroup && !selectedTest && (
