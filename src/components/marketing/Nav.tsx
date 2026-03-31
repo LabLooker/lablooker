@@ -97,7 +97,7 @@ export default function Nav() {
           </div>
 
           <Link
-            href="/dashboard"
+            href={user ? "/dashboard" : "/track-results"}
             className="text-sm text-[#2d6a5e] font-semibold transition-colors hover:text-[#1a2e2b] flex items-center gap-1.5"
           >
             Track Results
@@ -214,7 +214,7 @@ export default function Nav() {
             ))}
             {/* Track Results — premium CTA, above More */}
             <Link
-              href="/dashboard"
+              href={user ? "/dashboard" : "/track-results"}
               className="flex items-center justify-between py-3 text-sm text-[#2d6a5e] border-b border-[#e0ebe9] transition-colors hover:text-[#1a2e2b]"
               onClick={() => setMobileOpen(false)}
             >
