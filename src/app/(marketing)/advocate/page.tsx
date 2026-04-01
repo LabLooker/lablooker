@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { createClient } from '@/lib/supabase'
 import { TEST_BUNDLES, type TestBundle } from '@/config/test-bundles'
 
@@ -68,8 +68,8 @@ export default function AdvocatePage() {
   const [selectedTests, setSelectedTests] = useState<SelectedTest[]>([])
   const [reason, setReason] = useState('')
   const [isSearching, setIsSearching] = useState(false)
-  const [suggestedBundle, setSuggestedBundle] = useState<TestBundle | null>(null)
   const [dismissedBundles, setDismissedBundles] = useState<Set<string>>(new Set())
+  const [bundleExpanded, setBundleExpanded] = useState(false)
   const [showAllTests, setShowAllTests] = useState(false)
   const TESTS_PREVIEW = 3
   const [showTemplate, setShowTemplate] = useState(false)
@@ -195,23 +195,20 @@ export default function AdvocatePage() {
     return () => clearTimeout(timer)
   }, [searchQuery, searchTests])
 
-  // Suggest a bundle when the user adds a test that belongs to one
-  useEffect(() => {
-    if (selectedTests.length === 0) {
-      setSuggestedBundle(null)
-      return
-    }
+  // Reset expanded state when bundle changes
+  useEffect(() => { setBundleExpanded(false) }, [suggestedBundle?.slug])
+
+  // Compute suggested bundle directly — no async lag
+  const suggestedBundle = useMemo<TestBundle | null>(() => {
+    if (selectedTests.length === 0) return null
     const selectedNames = new Set(selectedTests.map(t => t.test_name))
     for (const bundle of TEST_BUNDLES) {
       if (dismissedBundles.has(bundle.slug)) continue
       const hasAtLeastOne = bundle.tests.some(name => selectedNames.has(name))
       const hasAll = bundle.tests.every(name => selectedNames.has(name))
-      if (hasAtLeastOne && !hasAll) {
-        setSuggestedBundle(bundle)
-        return
-      }
+      if (hasAtLeastOne && !hasAll) return bundle
     }
-    setSuggestedBundle(null)
+    return null
   }, [selectedTests, dismissedBundles])
 
   const addTest = async (test: TestResult) => {
@@ -526,7 +523,7 @@ export default function AdvocatePage() {
             </div>
 
             {/* Bundle suggestion card — persists after test is added */}
-            {suggestedBundle && !suggestedBundle.tests.every(name => selectedTests.some(st => st.test_name === name)) && (
+            {suggestedBundle && (
               <div className="mt-3 sm:ml-9 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4">
                 <div className="flex items-start gap-3">
                   <span className="text-xl">{suggestedBundle.icon}</span>
@@ -537,6 +534,27 @@ export default function AdvocatePage() {
                     <p className="text-xs text-[#4a6b67] mt-0.5 leading-relaxed">
                       {suggestedBundle.tests.length} tests — {suggestedBundle.description.split('.')[0]}.
                     </p>
+                    {/* Expandable test list */}
+                    <button
+                      onClick={() => setBundleExpanded(v => !v)}
+                      className="text-xs mt-1.5 flex items-center gap-1 transition-colors"
+                      style={{ color: '#2d6a5e' }}
+                    >
+                      <svg className={`w-3 h-3 transition-transform ${bundleExpanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                      </svg>
+                      {bundleExpanded ? 'Hide tests' : `See all ${suggestedBundle.tests.length} tests`}
+                    </button>
+                    {bundleExpanded && (
+                      <ul className="mt-2 space-y-0.5">
+                        {suggestedBundle.tests.map(name => (
+                          <li key={name} className="text-xs flex items-center gap-1.5" style={{ color: '#4a6b67' }}>
+                            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: selectedTests.some(t => t.test_name === name) ? '#2d6a5e' : '#c8ddd9' }} />
+                            {name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     <div className="flex items-center gap-3 mt-2">
                       <button
                         onClick={async () => {
@@ -553,15 +571,14 @@ export default function AdvocatePage() {
                               existingIds.add(data[0].id)
                             }
                           }
-                          setSuggestedBundle(null)
                         }}
                         className="inline-flex items-center gap-1.5 rounded-lg bg-[#2d6a5e] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#245a50] transition-colors"
                       >
                         + Add all {suggestedBundle.tests.length} tests
                       </button>
                       <button onClick={() => {
-                        if (suggestedBundle) setDismissedBundles(prev => new Set([...prev, suggestedBundle.slug]))
-                        setSuggestedBundle(null)
+                        setDismissedBundles(prev => new Set([...prev, suggestedBundle.slug]))
+                        setBundleExpanded(false)
                       }} className="text-xs text-[#577572] hover:text-[#1a2e2b]">Dismiss</button>
                     </div>
                   </div>
