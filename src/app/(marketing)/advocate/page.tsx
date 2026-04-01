@@ -69,6 +69,7 @@ export default function AdvocatePage() {
   const [reason, setReason] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [suggestedBundle, setSuggestedBundle] = useState<TestBundle | null>(null)
+  const [dismissedBundles, setDismissedBundles] = useState<Set<string>>(new Set())
   const [showAllTests, setShowAllTests] = useState(false)
   const TESTS_PREVIEW = 3
   const [showTemplate, setShowTemplate] = useState(false)
@@ -191,13 +192,27 @@ export default function AdvocatePage() {
 
   useEffect(() => {
     const timer = setTimeout(() => searchTests(searchQuery), 300)
-    // Update bundle suggestion when query matches — but don't clear it when query is empty
-    if (searchQuery.trim().length >= 3) {
-      const matched = findMatchingBundle(searchQuery)
-      if (matched) setSuggestedBundle(matched)
-    }
     return () => clearTimeout(timer)
   }, [searchQuery, searchTests])
+
+  // Suggest a bundle when the user adds a test that belongs to one
+  useEffect(() => {
+    if (selectedTests.length === 0) {
+      setSuggestedBundle(null)
+      return
+    }
+    const selectedNames = new Set(selectedTests.map(t => t.test_name))
+    for (const bundle of TEST_BUNDLES) {
+      if (dismissedBundles.has(bundle.slug)) continue
+      const hasAtLeastOne = bundle.tests.some(name => selectedNames.has(name))
+      const hasAll = bundle.tests.every(name => selectedNames.has(name))
+      if (hasAtLeastOne && !hasAll) {
+        setSuggestedBundle(bundle)
+        return
+      }
+    }
+    setSuggestedBundle(null)
+  }, [selectedTests, dismissedBundles])
 
   const addTest = async (test: TestResult) => {
     setSearchQuery('')
@@ -544,7 +559,10 @@ export default function AdvocatePage() {
                       >
                         + Add all {suggestedBundle.tests.length} tests
                       </button>
-                      <button onClick={() => setSuggestedBundle(null)} className="text-xs text-[#577572] hover:text-[#1a2e2b]">Dismiss</button>
+                      <button onClick={() => {
+                        if (suggestedBundle) setDismissedBundles(prev => new Set([...prev, suggestedBundle.slug]))
+                        setSuggestedBundle(null)
+                      }} className="text-xs text-[#577572] hover:text-[#1a2e2b]">Dismiss</button>
                     </div>
                   </div>
                 </div>
@@ -558,7 +576,7 @@ export default function AdvocatePage() {
                     {selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''} selected
                   </span>
                   <button
-                    onClick={() => setSelectedTests([])}
+                    onClick={() => { setSelectedTests([]); setDismissedBundles(new Set()) }}
                     className="text-xs hover:text-[#b85c5c] transition-colors"
                     style={{ color: '#577572' }}
                   >
