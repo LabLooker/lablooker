@@ -553,6 +553,18 @@ export default function AdvocatePage() {
 
             {selectedTests.length > 0 && (
               <div className="mt-4 sm:ml-9 space-y-2">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-medium" style={{ color: '#577572' }}>
+                    {selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''} selected
+                  </span>
+                  <button
+                    onClick={() => setSelectedTests([])}
+                    className="text-xs hover:text-[#b85c5c] transition-colors"
+                    style={{ color: '#577572' }}
+                  >
+                    Remove all
+                  </button>
+                </div>
                 {(showAllTests ? selectedTests : selectedTests.slice(0, TESTS_PREVIEW)).map(test => (
                   <div
                     key={test.id}
