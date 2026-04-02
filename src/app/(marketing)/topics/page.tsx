@@ -32,6 +32,12 @@ const TOPICS = [
     description: 'Why ferritin matters more than basic iron, what "normal" misses, and how to interpret your results.',
     tags: ['Iron', 'Fatigue', 'Anemia'],
   },
+  {
+    href: '/topics/order-your-own-labs',
+    title: 'Ordering Your Own Labs',
+    description: 'How direct-to-consumer lab testing works, which states allow it, what it costs, and which tests make sense to self-order.',
+    tags: ['DTC Testing', 'No Doctor Order', 'Getting Started'],
+  },
 ]
 
 export default function TopicsPage() {
