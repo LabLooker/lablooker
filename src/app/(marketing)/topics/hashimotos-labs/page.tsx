@@ -49,7 +49,7 @@ export default function HashimotosLabsGuide() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#1a2e2b] tracking-tight">
           Hashimoto&apos;s lab tests: which markers to order and why
         </h1>
-        <p className="mt-4 text-lg text-[#4a6b67] leading-relaxed">
+        <p className="mt-4 text-base text-[#4a6b67] leading-relaxed">
           TSH is where most thyroid workups end. For Hashimoto&apos;s thyroiditis, it&apos;s barely where they should begin. Here&apos;s the full panel that actually tells the story.
         </p>
 

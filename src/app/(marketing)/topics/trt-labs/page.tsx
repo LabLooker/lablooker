@@ -49,7 +49,7 @@ export default function TrtLabsGuide() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#1a2e2b] tracking-tight">
           TRT monitoring labs explained
         </h1>
-        <p className="mt-4 text-lg text-[#4a6b67] leading-relaxed">
+        <p className="mt-4 text-base text-[#4a6b67] leading-relaxed">
           Testosterone replacement therapy requires regular bloodwork to track both safety and effectiveness. The right panel helps show how treatment is working and whether anything needs to be adjusted.
         </p>
 

@@ -49,7 +49,7 @@ export default function OrderYourOwnLabsGuide() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#1a2e2b] tracking-tight">
           Can you order your own lab tests? What patients need to know
         </h1>
-        <p className="mt-4 text-lg text-[#4a6b67] leading-relaxed">
+        <p className="mt-4 text-base text-[#4a6b67] leading-relaxed">
           In most US states, yes — you can order blood work without a doctor&apos;s order. Direct-to-consumer lab testing is legal, affordable, and increasingly popular among people who want more control over their own health data.
         </p>
 

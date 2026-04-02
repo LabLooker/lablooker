@@ -49,7 +49,7 @@ export default function ThyroidLabsGuide() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#1a2e2b] tracking-tight">
           What thyroid labs should I ask for?
         </h1>
-        <p className="mt-4 text-lg text-[#4a6b67] leading-relaxed">
+        <p className="mt-4 text-base text-[#4a6b67] leading-relaxed">
           If your doctor only checks TSH, the picture is incomplete. A fuller thyroid panel can show issues that TSH alone may miss.
         </p>
 

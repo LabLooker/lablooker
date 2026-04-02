@@ -49,7 +49,7 @@ export default function PcosLabsGuide() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#1a2e2b] tracking-tight">
           PCOS bloodwork: which tests to order
         </h1>
-        <p className="mt-4 text-lg text-[#4a6b67] leading-relaxed">
+        <p className="mt-4 text-base text-[#4a6b67] leading-relaxed">
           Polycystic ovary syndrome affects about 1 in 10 women, and a lot of people still do not get a complete workup. A useful PCOS lab panel should help with both diagnosis and ongoing management.
         </p>
 
