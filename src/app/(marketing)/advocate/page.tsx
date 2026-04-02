@@ -195,9 +195,6 @@ export default function AdvocatePage() {
     return () => clearTimeout(timer)
   }, [searchQuery, searchTests])
 
-  // Reset expanded state when bundle changes
-  useEffect(() => { setBundleExpanded(false) }, [suggestedBundle?.slug])
-
   // Compute suggested bundle directly — no async lag
   const suggestedBundle = useMemo<TestBundle | null>(() => {
     if (selectedTests.length === 0) return null
@@ -210,6 +207,9 @@ export default function AdvocatePage() {
     }
     return null
   }, [selectedTests, dismissedBundles])
+
+  // Reset expanded state when bundle changes
+  useEffect(() => { setBundleExpanded(false) }, [suggestedBundle?.slug])
 
   const addTest = async (test: TestResult) => {
     setSearchQuery('')

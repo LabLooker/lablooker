@@ -1,93 +1,150 @@
-# LabLooker — Share Results Feature
-_March 18, 2026_
+# Task: Deepen Compare Prices + Search Pages (SEO + Destination Feel)
 
 ## Goal
-Let premium users generate a shareable link to their lab results. The recipient page (`/shared/[token]`) already exists and works — we just need to build the UI to CREATE a share link from the dashboard.
+Both the Compare Prices (`/compare`) and Search Tests (`/search`) pages are currently 100%
+client-rendered shells. Static crawlers (Google, social link previews, Chekov's audit tool)
+see almost no content. Real users see the full interactive experience, but it still feels
+thin — there's a search bar, some results, and then footer. No educational depth, no "this
+is a real product" signal.
+
+Add server-rendered static content to both pages so they feel like genuine destination pages.
+This improves SEO AND gives real users more context.
+
+## Design System
+- Primary/sage: `#2d6a5e`
+- Brick rose: `#b85c5c`
+- Dark: `#1a2e2b`
+- Light bg: `#f0f7f6`
+- Border: `#e0ebe9`
+- Placeholder text: `#577572`
+- All content cards: left-align text, center pills/tags
 
 ---
 
-## Background
+## Page 1: Compare Prices (`/compare`)
 
-- `lab_shares` table already exists in Supabase with columns:
-  `id, user_id, share_token, test_ids (uuid[]), title, note, is_active, created_at`
-- View page at `src/app/(marketing)/shared/[token]/page.tsx` already exists — shows charts + results to anyone with the link, with a LabLooker signup CTA at the bottom
-- Need to check exact column names with a quick Supabase query before building
+### Current state
+`src/app/(marketing)/compare/page.tsx` — fully `'use client'` component. Has a search bar
+and category buttons. Results are dynamic. 4 trust chips already added (Mar 30).
 
----
+### What to add (BELOW the existing interactive tool)
+Add a server-rendered `<section>` below the client component. Do NOT break the existing
+interactive functionality — just add static HTML after it.
 
-## Task: Share Button + Modal on Dashboard
+**Section 1: "How price comparison works"**
+- 3-column (desktop) / stacked (mobile) explainer cards:
+  1. 🔍 Search for a test — type the test name or browse by category
+  2. 📊 Compare prices instantly — see retail self-pay prices across 6+ labs side by side
+  3. 📋 Order directly — click through to order at the lab of your choice
+- Keep it brief — 1 headline + 1-2 sentence explanation per card
 
-**Where:** `src/app/(app)/dashboard/page.tsx`
+**Section 2: "Labs included in our comparison"**
+- Simple grid of lab names (text, not logos — no logo assets available):
+  - Quest Diagnostics, LabCorp, Ulta Lab Tests, Walk-In Lab, Life Extension, empowerDX,
+    Everlywell (at-home)
+- Small note: "Prices verified twice weekly. Self-pay — no insurance required."
 
-### 1. "Share Results" button
+**Section 3: "Why self-pay lab testing?"**
+- 3 honest bullet points or short paragraphs:
+  1. No referral needed — order when you want, not when your doctor approves
+  2. Often cheaper than insurance copays for out-of-network labs
+  3. See your own results first — useful for chronic illness patients who track trends
 
-Add a "Share" or "Share Results" button near the top of the dashboard (near the Export button). Only show for users with saved results.
-
-### 2. Share Modal
-
-When clicked, open a modal with:
-
-**Step 1 — Configure the share:**
-- Optional title field (placeholder: "My Thyroid Results" or "Results for Dr. Smith")
-- Optional note field (placeholder: "Here are my recent labs for your review")
-- Test selector: checkboxes for each test the user has saved results for — they pick which ones to include in the share
-- "Generate Link" button
-
-**Step 2 — Link generated:**
-- Show the full URL: `https://lablooker.com/shared/[token]`
-- Large "Copy Link" button (copies to clipboard, shows "Copied!" confirmation)
-- Small note: "Anyone with this link can view these results. No account required."
-- "Done" button to close
-
-### 3. API route to create share
-
-**Create:** `src/app/api/share/create/route.ts`
-
-- POST request, requires authenticated user
-- Body: `{ title?: string, note?: string, testIds: string[] }`
-- Validate: at least one testId required
-- Generate a random token: `crypto.randomUUID()` or a shorter 12-char random string (use `nanoid`-style: `Math.random().toString(36).slice(2, 14)`)
-- Insert into `lab_shares`: `{ user_id, share_token, test_ids, title, note, is_active: true }`
-- Return: `{ token, url: "https://lablooker.com/shared/[token]" }`
-
-### 4. Manage existing shares (stretch goal — do if time allows)
-
-On the dashboard, below the share button or in a small "Shared Links" section:
-- List any existing active share links the user has created
-- Show: title (or "Untitled"), date created, "Copy" button, "Deactivate" button
-- Deactivate sets `is_active = false` — the link then shows "invalid or deactivated" to visitors
+**Section 4: Short FAQ (3 questions)**
+Use simple `<details>/<summary>` or styled expand/collapse. Questions:
+1. "Are these prices accurate?" → Yes, we verify them twice weekly via automated checks.
+   Exact prices can vary by location.
+2. "Do I need an account to compare prices?" → No — comparing is always free, no signup.
+3. "What's the difference between these labs?" → Brief 1-liner on each type
+   (national labs like Quest/LabCorp require physician order in some states; direct-to-
+   consumer like Ulta/Walk-In Lab ship nationwide, no order needed).
 
 ---
 
-## Share token format
+## Page 2: Search Tests (`/search`)
 
-Use a 16-char alphanumeric token for URLs that look clean:
-```ts
-const token = Array.from(crypto.getRandomValues(new Uint8Array(12)))
-  .map(b => b.toString(36).padStart(2, '0'))
-  .join('')
-  .slice(0, 16)
+### Current state
+`src/app/(marketing)/search/page.tsx` — fully `'use client'`. Has a search bar and browse
+shortcuts. We already removed the "Loading..." spinner and added "Browse 408+ lab tests"
+static text (deployed Mar 30). Still feels thin below the search bar.
+
+### What to add (BELOW the existing interactive tool)
+Again — server-rendered section appended after the client component.
+
+**Section 1: "What you can search for"**
+- 3 short cards explaining the search:
+  1. 🩸 Lab test names — search "ferritin", "TSH", "HbA1c", "CBC" etc.
+  2. 🔤 Lab codes — paste codes from your lab report like "004267" or "006627"
+  3. 🧬 Symptoms or conditions — search "fatigue", "thyroid", "iron deficiency"
+- Keep it brief — this is orientation, not a feature pitch
+
+**Section 2: "Popular tests right now"**
+- Static list of ~12 common tests as text links to `/search?q=TestName`:
+  - TSH (Thyroid), Free T3, Free T4, Ferritin, Vitamin D, B12, CBC, CMP, Cortisol,
+    DHEA-S, Testosterone (Total), hs-CRP
+- Display as a pill/tag grid (centered, soft sage background)
+
+**Section 3: "Browse by health focus"**
+- 6 category cards (2-col mobile, 3-col desktop) with icon + label + 1-line description:
+  - 🦋 Thyroid — TSH, Free T3, Free T4, Anti-TPO, TRAb
+  - ⚡ Energy & Iron — Ferritin, CBC, B12, Folate, Iron Panel
+  - ⚖️ Hormones — Estradiol, Testosterone, Progesterone, DHEA-S, Cortisol
+  - 🧠 Mood & Brain — Vitamin D, B12, Homocysteine, hs-CRP, Magnesium
+  - 💪 Metabolic — HbA1c, Fasting Glucose, Insulin, Lipid Panel, ApoB
+  - 🛡️ Immune & Inflammation — hs-CRP, ESR, ANA, Anti-TPO, Ferritin
+- Each card links to the existing category browse functionality if possible, or just
+  to `/search?q=category-name`
+
+---
+
+## Implementation Notes
+
+### How to structure this in Next.js App Router:
+The cleanest pattern is to keep the existing client component but wrap it in a server
+component page. Example for compare:
+
 ```
-Or just use `crypto.randomUUID()` if the above is complex — UUIDs are fine.
+// src/app/(marketing)/compare/page.tsx  (server component — no 'use client')
+import CompareClient from '@/components/compare/CompareClient'  // existing client code moved here
+
+export default function ComparePage() {
+  return (
+    <>
+      <CompareClient />        {/* existing interactive tool */}
+      <CompareStaticContent /> {/* new static SEO sections */}
+    </>
+  )
+}
+```
+
+If refactoring the whole client component is risky/complex, it's also fine to just append
+a static `<section>` at the bottom of the existing client component files. Static JSX
+inside a client component still renders server-side in Next.js App Router (it just
+hydrates). The SEO content will still be in the initial HTML payload.
+
+**Use whichever approach is simpler and lower risk.**
+
+### Styling
+- Use existing Tailwind classes consistent with the rest of the site
+- Section headings: `text-xl font-semibold` in `text-[#1a2e2b]`
+- Cards: `bg-white rounded-xl border border-[#e0ebe9] p-5`
+- Soft section backgrounds: `bg-[#f0f7f6]`
+- No new dependencies
+
+### Do NOT change
+- The existing search/filter/results functionality
+- The existing trust chips on the compare page
+- Anything in the nav or footer
+- Any other pages
 
 ---
 
-## Style Notes
+## When done
+Run:
+```
+openclaw system event --text "Done: Compare + Search pages deepened with static SEO content" --mode now
+```
 
-- Modal style: match existing modals in the codebase (white card, sage border/accents, brick rose for destructive actions)
-- Copy button: sage background, shows "Copied ✓" for 2 seconds after click
-- Deactivate button: brick rose text, confirmation before deactivating
-- The share page already has the LabLooker branding and signup CTA — no changes needed there
-
----
-
-## Commit Instructions
-
-After completing:
-1. `git config user.email "scotty@houserussell.com" && git config user.name "Scotty Russell"`
-2. `git add -A && git commit -m "feat: share results — generate shareable links from dashboard"`
-3. `git push`
-4. `git config user.email "spock@the-forge" && git config user.name "Spock"`
-
-Then notify:
-`openclaw system event --text "Share results feature done: users can generate shareable links from dashboard" --mode now`
+Then commit with message: `deepen compare + search pages with static educational content`
+Use git author: `Scotty Russell <scotty@houserussell.com>`, then restore to `spock@the-forge`.
+Push to main.
