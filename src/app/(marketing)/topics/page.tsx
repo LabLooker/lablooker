@@ -38,6 +38,12 @@ const TOPICS = [
     description: 'How direct-to-consumer lab testing works, which states allow it, what it costs, and which tests make sense to self-order.',
     tags: ['DTC Testing', 'No Doctor Order', 'Getting Started'],
   },
+  {
+    href: '/topics/hashimotos-labs',
+    title: "Hashimoto's Thyroiditis Labs",
+    description: "Go beyond TSH — the full panel for Hashimoto's diagnosis and monitoring: TPO antibodies, Free T3, Free T4, Reverse T3, and more.",
+    tags: ["Hashimoto's", 'Autoimmune', 'Thyroid'],
+  },
 ]
 
 export default function TopicsPage() {
