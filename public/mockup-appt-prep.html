@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Appointment Prep Report — Mockup</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f7f6; }
+  .sage { color: #2d6a5e; }
+  .brick { color: #b85c5c; }
+  .dark { color: #1a2e2b; }
+  .muted { color: #577572; }
+  .body-text { color: #4a6b67; }
+
+  /* --- PRINT STYLES --- */
+  @media print {
+    .no-print { display: none !important; }
+    .print-only { display: block !important; }
+    body { background: white; font-size: 11pt; }
+    .report-card { box-shadow: none; border: none; }
+  }
+  .print-only { display: none; }
+
+  /* Toggle */
+  #modal { display: none; }
+  #modal.open { display: flex; }
+  #report-view { display: none; }
+  #report-view.open { display: block; }
+  #dashboard-view { display: block; }
+  #dashboard-view.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ===================== DASHBOARD VIEW ===================== -->
+<div id="dashboard-view">
+  <!-- Nav -->
+  <nav class="bg-white border-b border-[#e0ebe9] px-6 py-4 flex items-center justify-between no-print">
+    <span class="text-xl font-bold" style="color:#1a2e2b">Lab<span style="color:#2d6a5e">Loo</span>ker</span>
+    <div class="flex items-center gap-3">
+      <button onclick="openModal()" class="inline-flex items-center gap-2 rounded-lg border-2 border-[#b85c5c] px-4 py-2 text-sm font-semibold text-[#b85c5c] hover:bg-[#b85c5c] hover:text-white transition-colors">
+        📋 Appointment Report
+        <span class="text-xs bg-[#2d6a5e] text-white rounded-full px-1.5 py-0.5 font-medium">PRO</span>
+      </button>
+      <div class="w-8 h-8 rounded-full bg-[#2d6a5e] text-white flex items-center justify-center text-sm font-bold">R</div>
+    </div>
+  </nav>
+
+  <!-- Dashboard content (abbreviated) -->
+  <div class="max-w-3xl mx-auto px-4 pt-8 pb-16">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold" style="color:#1a2e2b">My Results</h1>
+        <p class="text-sm" style="color:#577572">Latest results • 14 markers tracked</p>
+      </div>
+    </div>
+
+    <!-- Filter pills -->
+    <div class="flex gap-2 mb-4">
+      <button class="px-3 py-1.5 rounded-full text-xs font-semibold bg-[#b85c5c] text-white">Out of Range</button>
+      <button class="px-3 py-1.5 rounded-full text-xs font-semibold border border-[#e0ebe9] text-[#577572]">Suboptimal</button>
+    </div>
+
+    <!-- Sample results table -->
+    <div class="bg-white rounded-xl border border-[#e0ebe9] overflow-hidden mb-6">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-[#e0ebe9] bg-[#faf8f5]">
+            <th class="text-left px-4 py-3 text-xs font-semibold text-[#577572] uppercase tracking-wide">Marker</th>
+            <th class="text-left px-4 py-3 text-xs font-semibold text-[#577572] uppercase tracking-wide">Value</th>
+            <th class="text-left px-4 py-3 text-xs font-semibold text-[#577572] uppercase tracking-wide hidden sm:table-cell">Unit</th>
+            <th class="text-left px-4 py-3 text-xs font-semibold text-[#577572] uppercase tracking-wide">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#e0ebe9]">
+          <tr class="hover:bg-[#faf8f5] cursor-pointer border-l-4 border-[#b85c5c]">
+            <td class="px-4 py-3 font-medium text-[#1a2e2b]">Ferritin</td>
+            <td class="px-4 py-3 text-[#1a2e2b]">29</td>
+            <td class="px-4 py-3 text-[#577572] hidden sm:table-cell">ng/mL</td>
+            <td class="px-4 py-3"><span class="text-[#b85c5c] font-semibold text-xs">Out of Range</span></td>
+          </tr>
+          <tr class="hover:bg-[#faf8f5] cursor-pointer border-l-4 border-[#d4a017]">
+            <td class="px-4 py-3 font-medium text-[#1a2e2b]">Free T3</td>
+            <td class="px-4 py-3 text-[#1a2e2b]">2.3</td>
+            <td class="px-4 py-3 text-[#577572] hidden sm:table-cell">pg/mL</td>
+            <td class="px-4 py-3"><span class="text-amber-600 font-semibold text-xs">Suboptimal</span></td>
+          </tr>
+          <tr class="hover:bg-[#faf8f5] cursor-pointer border-l-4 border-[#b85c5c]">
+            <td class="px-4 py-3 font-medium text-[#1a2e2b]">Cortisol, AM</td>
+            <td class="px-4 py-3 text-[#1a2e2b]">27.0</td>
+            <td class="px-4 py-3 text-[#577572] hidden sm:table-cell">mcg/dL</td>
+            <td class="px-4 py-3"><span class="text-[#b85c5c] font-semibold text-xs">Out of Range</span></td>
+          </tr>
+          <tr class="hover:bg-[#faf8f5] cursor-pointer">
+            <td class="px-4 py-3 font-medium text-[#1a2e2b]">TSH</td>
+            <td class="px-4 py-3 text-[#1a2e2b]">1.8</td>
+            <td class="px-4 py-3 text-[#577572] hidden sm:table-cell">mIU/L</td>
+            <td class="px-4 py-3"><span class="text-[#577572] text-xs">In Range</span></td>
+          </tr>
+          <tr class="hover:bg-[#faf8f5] cursor-pointer">
+            <td class="px-4 py-3 font-medium text-[#1a2e2b]">Free T4</td>
+            <td class="px-4 py-3 text-[#1a2e2b]">1.1</td>
+            <td class="px-4 py-3 text-[#577572] hidden sm:table-cell">ng/dL</td>
+            <td class="px-4 py-3"><span class="text-[#577572] text-xs">In Range</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="rounded-xl border border-[#e0ebe9] bg-white p-5 flex items-center justify-between">
+      <div>
+        <p class="text-sm font-semibold text-[#1a2e2b]">Preparing for an appointment?</p>
+        <p class="text-xs text-[#577572] mt-0.5">Generate a clean one-pager to bring to your doctor.</p>
+      </div>
+      <button onclick="openModal()" class="text-sm font-semibold text-[#2d6a5e] hover:underline whitespace-nowrap ml-4">Generate report →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL ===================== -->
+<div id="modal" class="fixed inset-0 bg-black/40 z-50 items-center justify-center p-4 no-print">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md">
+    <div class="p-6 border-b border-[#e0ebe9]">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold text-[#1a2e2b]">Generate Appointment Report</h2>
+        <button onclick="closeModal()" class="text-[#577572] hover:text-[#1a2e2b] text-xl leading-none">×</button>
+      </div>
+      <p class="text-sm text-[#4a6b67] mt-1">A printable summary to bring to your next visit.</p>
+    </div>
+
+    <div class="p-6 space-y-5">
+      <!-- Date range -->
+      <div>
+        <label class="text-sm font-semibold text-[#1a2e2b] block mb-2">Results from the last</label>
+        <div class="grid grid-cols-4 gap-2">
+          <button class="px-3 py-2 rounded-lg border border-[#e0ebe9] text-sm text-[#577572] hover:border-[#2d6a5e]">30 days</button>
+          <button class="px-3 py-2 rounded-lg border-2 border-[#2d6a5e] text-sm font-semibold text-[#2d6a5e] bg-[#f0f7f6]">90 days</button>
+          <button class="px-3 py-2 rounded-lg border border-[#e0ebe9] text-sm text-[#577572] hover:border-[#2d6a5e]">180 days</button>
+          <button class="px-3 py-2 rounded-lg border border-[#e0ebe9] text-sm text-[#577572] hover:border-[#2d6a5e]">1 year</button>
+        </div>
+      </div>
+
+      <!-- Include filter -->
+      <div>
+        <label class="text-sm font-semibold text-[#1a2e2b] block mb-2">Include</label>
+        <div class="space-y-2">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="include" checked class="accent-[#2d6a5e]">
+            <span class="text-sm text-[#4a6b67]">All results</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="include" class="accent-[#2d6a5e]">
+            <span class="text-sm text-[#4a6b67]">Out of range &amp; suboptimal only</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div>
+        <label class="text-sm font-semibold text-[#1a2e2b] block mb-2">Questions to ask my doctor <span class="font-normal text-[#577572]">(optional)</span></label>
+        <textarea rows="3" placeholder="Questions I want to ask my doctor..." class="w-full rounded-lg border border-[#e0ebe9] px-3 py-2 text-sm text-[#4a6b67] placeholder-[#577572] focus:outline-none focus:border-[#2d6a5e] resize-none"></textarea>
+      </div>
+    </div>
+
+    <div class="p-6 pt-0 flex gap-3">
+      <button onclick="closeModal()" class="flex-1 px-4 py-2.5 rounded-lg border border-[#e0ebe9] text-sm font-semibold text-[#577572] hover:bg-[#f0f7f6]">Cancel</button>
+      <button onclick="showReport()" class="flex-1 px-4 py-2.5 rounded-lg bg-[#2d6a5e] text-sm font-semibold text-white hover:bg-[#245a50]">Preview Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== REPORT VIEW ===================== -->
+<div id="report-view">
+  <!-- Print toolbar -->
+  <div class="bg-[#1a2e2b] text-white px-6 py-3 flex items-center justify-between no-print">
+    <button onclick="backToDashboard()" class="text-sm text-[#a0c4be] hover:text-white">← Back to dashboard</button>
+    <div class="flex items-center gap-3">
+      <span class="text-sm text-[#a0c4be]">Appointment Prep Report</span>
+      <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2d6a5e] text-sm font-semibold hover:bg-[#245a50]">
+        🖨️ Print / Save as PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Report document -->
+  <div class="max-w-2xl mx-auto my-8 px-4">
+    <div class="bg-white rounded-xl shadow-md border border-[#e0ebe9] overflow-hidden report-card">
+
+      <!-- Header -->
+      <div class="px-8 py-6 border-b border-[#e0ebe9]" style="background: #1a2e2b;">
+        <div class="flex items-start justify-between">
+          <div>
+            <div class="text-white text-xl font-bold mb-1">Lab<span style="color:#6dbfb0">Loo</span>ker</div>
+            <div class="text-[#a0c4be] text-sm">Appointment Prep Report</div>
+          </div>
+          <div class="text-right">
+            <div class="text-white font-semibold">Rosa Russell</div>
+            <div class="text-[#a0c4be] text-sm">DOB: 12/12/1972</div>
+            <div class="text-[#a0c4be] text-sm">Generated: April 2, 2026</div>
+          </div>
+        </div>
+        <div class="mt-3 text-xs text-[#6dbfb0]">Results from January 2, 2026 – April 2, 2026 (90 days) &nbsp;•&nbsp; 14 markers</div>
+      </div>
+
+      <!-- Needs Attention -->
+      <div class="px-8 py-6 border-b border-[#e0ebe9]">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-[#b85c5c] mb-4">⚠ Needs Attention</h2>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-[#e0ebe9]">
+              <th class="text-left pb-2 text-xs font-semibold text-[#577572] uppercase tracking-wide">Marker</th>
+              <th class="text-left pb-2 text-xs font-semibold text-[#577572] uppercase tracking-wide">Result</th>
+              <th class="text-left pb-2 text-xs font-semibold text-[#577572] uppercase tracking-wide">Reference</th>
+              <th class="text-left pb-2 text-xs font-semibold text-[#577572] uppercase tracking-wide">Status</th>
+              <th class="text-left pb-2 text-xs font-semibold text-[#577572] uppercase tracking-wide">Trend</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#f0f7f6]">
+            <tr>
+              <td class="py-2.5 font-semibold text-[#1a2e2b]">Ferritin</td>
+              <td class="py-2.5 text-[#b85c5c] font-semibold">29 ng/mL</td>
+              <td class="py-2.5 text-[#577572]">15–150</td>
+              <td class="py-2.5"><span class="text-xs font-semibold text-[#b85c5c]">Out of Range</span></td>
+              <td class="py-2.5 text-[#577572]">↓ Declining</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 font-semibold text-[#1a2e2b]">Free T3</td>
+              <td class="py-2.5 text-amber-600 font-semibold">2.3 pg/mL</td>
+              <td class="py-2.5 text-[#577572]">2.0–4.4</td>
+              <td class="py-2.5"><span class="text-xs font-semibold text-amber-600">Suboptimal</span></td>
+              <td class="py-2.5 text-[#577572]">→ Stable</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 font-semibold text-[#1a2e2b]">Cortisol, AM</td>
+              <td class="py-2.5 text-[#b85c5c] font-semibold">27.0 mcg/dL</td>
+              <td class="py-2.5 text-[#577572]">6.0–18.4</td>
+              <td class="py-2.5"><span class="text-xs font-semibold text-[#b85c5c]">Out of Range</span></td>
+              <td class="py-2.5 text-[#577572]">↑ Rising</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 font-semibold text-[#1a2e2b]">Vitamin D</td>
+              <td class="py-2.5 text-amber-600 font-semibold">58 ng/mL</td>
+              <td class="py-2.5 text-[#577572]">30–100</td>
+              <td class="py-2.5"><span class="text-xs font-semibold text-amber-600">Suboptimal</span></td>
+              <td class="py-2.5 text-[#577572]">↑ Rising</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- All Results -->
+      <div class="px-8 py-6 border-b border-[#e0ebe9]">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-[#2d6a5e] mb-4">All Results</h2>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-[#e0ebe9]">
+              <th class="text-left pb-2 text-xs font-semibold text-[#577572] uppercase tracking-wide">Marker</th>
+              <th class="text-left pb-2 text-xs font-semibold text-[#577572] uppercase tracking-wide">Result</th>
+              <th class="text-left pb-2 text-xs font-semibold text-[#577572] uppercase tracking-wide">Reference</th>
+              <th class="text-left pb-2 text-xs font-semibold text-[#577572] uppercase tracking-wide">Status</th>
+              <th class="text-left pb-2 text-xs font-semibold text-[#577572] uppercase tracking-wide">Trend</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#f0f7f6] text-[#4a6b67]">
+            <tr><td class="py-2 text-[#1a2e2b]">TSH</td><td class="py-2">1.8 mIU/L</td><td class="py-2">0.5–4.5</td><td class="py-2 text-[#577572] text-xs">In Range</td><td class="py-2">→ Stable</td></tr>
+            <tr><td class="py-2 text-[#1a2e2b]">Free T4</td><td class="py-2">1.1 ng/dL</td><td class="py-2">0.8–1.8</td><td class="py-2 text-[#577572] text-xs">In Range</td><td class="py-2">→ Stable</td></tr>
+            <tr><td class="py-2 text-[#1a2e2b]">Anti-TPO</td><td class="py-2">42 IU/mL</td><td class="py-2">0–34</td><td class="py-2"><span class="text-xs font-semibold text-[#b85c5c]">Out of Range</span></td><td class="py-2">↓ Declining</td></tr>
+            <tr><td class="py-2 text-[#1a2e2b]">Calcium</td><td class="py-2">9.1 mg/dL</td><td class="py-2">8.5–10.5</td><td class="py-2 text-[#577572] text-xs">In Range</td><td class="py-2">→ Stable</td></tr>
+            <tr><td class="py-2 text-[#1a2e2b]">B12</td><td class="py-2">412 pg/mL</td><td class="py-2">200–900</td><td class="py-2 text-[#577572] text-xs">In Range</td><td class="py-2">↑ Rising</td></tr>
+            <tr><td class="py-2 text-[#1a2e2b]">Hemoglobin A1c</td><td class="py-2">5.2%</td><td class="py-2">&lt;5.7</td><td class="py-2 text-[#577572] text-xs">In Range</td><td class="py-2">→ Stable</td></tr>
+            <tr><td class="py-2 text-[#1a2e2b]">hs-CRP</td><td class="py-2">0.8 mg/L</td><td class="py-2">0–3.0</td><td class="py-2 text-[#577572] text-xs">In Range</td><td class="py-2">→ Stable</td></tr>
+            <tr><td class="py-2 text-[#1a2e2b]">Serum Iron</td><td class="py-2">66 mcg/dL</td><td class="py-2">60–170</td><td class="py-2 text-[#577572] text-xs">In Range</td><td class="py-2">→ Stable</td></tr>
+            <tr><td class="py-2 text-[#1a2e2b]">DHEA-S</td><td class="py-2">78 mcg/dL</td><td class="py-2">44–332</td><td class="py-2 text-[#577572] text-xs">In Range</td><td class="py-2">— First draw</td></tr>
+            <tr><td class="py-2 text-[#1a2e2b]">PTH Intact</td><td class="py-2">22 pg/mL</td><td class="py-2">10–65</td><td class="py-2 text-[#577572] text-xs">In Range</td><td class="py-2">→ Stable</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- My Questions -->
+      <div class="px-8 py-6 border-b border-[#e0ebe9]">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-[#2d6a5e] mb-3">My Questions for This Visit</h2>
+        <div class="text-sm text-[#4a6b67] space-y-1.5">
+          <p>• Should we discuss starting Cymbalta as a bridge off amitriptyline given my cortisol pattern?</p>
+          <p>• Ferritin has declined 3 draws in a row — do I need to increase my iron protocol?</p>
+          <p>• Free T3 is in range but low — is there room to adjust my liothyronine dose?</p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-8 py-4 bg-[#faf8f5]">
+        <p class="text-xs text-[#577572] text-center">
+          Generated by <strong>LabLooker.com</strong> &nbsp;•&nbsp; For personal reference only &nbsp;•&nbsp; This report does not constitute medical advice. Share with your healthcare provider for interpretation.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function openModal() {
+    document.getElementById('modal').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+  }
+  function showReport() {
+    document.getElementById('modal').classList.remove('open');
+    document.getElementById('dashboard-view').classList.add('hidden');
+    document.getElementById('report-view').classList.add('open');
+  }
+  function backToDashboard() {
+    document.getElementById('report-view').classList.remove('open');
+    document.getElementById('dashboard-view').classList.remove('hidden');
+  }
+</script>
+</body>
+</html>
