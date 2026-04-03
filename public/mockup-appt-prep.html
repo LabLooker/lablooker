@@ -147,13 +147,75 @@
         <label class="text-sm font-semibold text-[#1a2e2b] block mb-2">Include</label>
         <div class="space-y-2">
           <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="include" checked class="accent-[#2d6a5e]">
+            <input type="radio" name="include" class="accent-[#2d6a5e]" onchange="toggleMarkers(false)">
             <span class="text-sm text-[#4a6b67]">All results</span>
           </label>
           <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="include" class="accent-[#2d6a5e]">
+            <input type="radio" name="include" class="accent-[#2d6a5e]" onchange="toggleMarkers(false)">
             <span class="text-sm text-[#4a6b67]">Out of range &amp; suboptimal only</span>
           </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="include" class="accent-[#2d6a5e]" onchange="toggleMarkers(true)" id="radio-choose">
+            <span class="text-sm text-[#4a6b67]">Choose specific markers</span>
+          </label>
+        </div>
+
+        <!-- Marker checklist — shown when "Choose specific" selected -->
+        <div id="marker-list" class="hidden mt-3 border border-[#e0ebe9] rounded-xl overflow-hidden max-h-56 overflow-y-auto">
+
+          <!-- Thyroid -->
+          <div class="px-3 py-2 bg-[#f0f7f6]">
+            <span class="text-xs font-bold uppercase tracking-wide text-[#2d6a5e]">Thyroid</span>
+          </div>
+          <div class="divide-y divide-[#f0f7f6]">
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" checked class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">TSH</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" checked class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Free T3</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" checked class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Free T4</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" checked class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Anti-TPO</span></label>
+          </div>
+
+          <!-- Hormones -->
+          <div class="px-3 py-2 bg-[#f0f7f6]">
+            <span class="text-xs font-bold uppercase tracking-wide text-[#2d6a5e]">Hormones</span>
+          </div>
+          <div class="divide-y divide-[#f0f7f6]">
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Estradiol</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Progesterone</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Testosterone, Free</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">DHEA-S</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Cortisol, AM</span></label>
+          </div>
+
+          <!-- Iron & Blood -->
+          <div class="px-3 py-2 bg-[#f0f7f6]">
+            <span class="text-xs font-bold uppercase tracking-wide text-[#2d6a5e]">Iron &amp; Blood</span>
+          </div>
+          <div class="divide-y divide-[#f0f7f6]">
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" checked class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Ferritin</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Serum Iron</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Transferrin Saturation</span></label>
+          </div>
+
+          <!-- Vitamins -->
+          <div class="px-3 py-2 bg-[#f0f7f6]">
+            <span class="text-xs font-bold uppercase tracking-wide text-[#2d6a5e]">Vitamins</span>
+          </div>
+          <div class="divide-y divide-[#f0f7f6]">
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" checked class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Vitamin D</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" checked class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">B12</span></label>
+          </div>
+
+          <!-- Metabolic -->
+          <div class="px-3 py-2 bg-[#f0f7f6]">
+            <span class="text-xs font-bold uppercase tracking-wide text-[#2d6a5e]">Metabolic</span>
+          </div>
+          <div class="divide-y divide-[#f0f7f6]">
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Hemoglobin A1c</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">Calcium</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">PTH Intact</span></label>
+            <label class="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-[#faf8f5]"><input type="checkbox" class="accent-[#2d6a5e]"><span class="text-sm text-[#4a6b67]">hs-CRP</span></label>
+          </div>
+
         </div>
       </div>
 
@@ -305,6 +367,10 @@
   }
   function closeModal() {
     document.getElementById('modal').classList.remove('open');
+  }
+  function toggleMarkers(show) {
+    const list = document.getElementById('marker-list');
+    list.classList.toggle('hidden', !show);
   }
   function showReport() {
     document.getElementById('modal').classList.remove('open');
