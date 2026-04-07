@@ -546,13 +546,36 @@ export default function AdvocatePage() {
                       {bundleExpanded ? 'Hide tests' : `See all ${suggestedBundle.tests.length} tests`}
                     </button>
                     {bundleExpanded && (
-                      <ul className="mt-2 space-y-0.5">
-                        {suggestedBundle.tests.map(name => (
-                          <li key={name} className="text-xs flex items-center gap-1.5" style={{ color: '#4a6b67' }}>
-                            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: selectedTests.some(t => t.test_name === name) ? '#2d6a5e' : '#c8ddd9' }} />
-                            {name}
-                          </li>
-                        ))}
+                      <ul className="mt-2 space-y-1">
+                        {suggestedBundle.tests.map(name => {
+                          const alreadyAdded = selectedTests.some(t => t.test_name === name)
+                          return (
+                            <li key={name} className="text-xs flex items-center justify-between gap-2">
+                              <span className="flex items-center gap-1.5" style={{ color: '#4a6b67' }}>
+                                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: alreadyAdded ? '#2d6a5e' : '#c8ddd9' }} />
+                                {name}
+                              </span>
+                              {alreadyAdded ? (
+                                <span className="text-[#2d6a5e] font-medium">✓ Added</span>
+                              ) : (
+                                <button
+                                  onClick={async () => {
+                                    const supabase = createClient()
+                                    const { data } = await supabase
+                                      .from('tests')
+                                      .select('id, test_name, cpt_codes, category, description')
+                                      .eq('test_name', name)
+                                      .limit(1)
+                                    if (data && data.length > 0) await addTest(data[0])
+                                  }}
+                                  className="text-[#2d6a5e] font-semibold hover:underline whitespace-nowrap"
+                                >
+                                  + Add
+                                </button>
+                              )}
+                            </li>
+                          )
+                        })}
                       </ul>
                     )}
                     <div className="flex items-center gap-3 mt-2">
