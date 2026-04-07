@@ -390,7 +390,7 @@ export default function PanelBuilderPage() {
               <ul className="mt-4 space-y-2">
                 {[
                   'Unlimited tests per panel',
-                  'Real pricing from 15+ labs',
+                  'Real pricing from 7+ labs',
                   'Smart lab combination optimizer',
                   'Export panel as PDF',
                   'Save and share panels',
