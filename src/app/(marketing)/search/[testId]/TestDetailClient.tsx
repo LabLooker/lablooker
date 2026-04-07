@@ -30,15 +30,17 @@ const PLACEHOLDER_LABS = [
   'DirectLabs', 'Personalabs', 'Life Extension',
 ]
 
-export default function TestDetailClient({ params }: { params: Promise<{ testId: string }> }) {
-  const [test, setTest] = useState<Test | null>(null)
-  const [icd10Codes, setIcd10Codes] = useState<ICD10Code[]>([])
-  const [relatedTests, setRelatedTests] = useState<Test[]>([])
-  const [loading, setLoading] = useState(true)
-  const [pricing, setPricing] = useState<{ price: number; requires_rx: boolean; lab_name: string; website: string; notes: string | null }[]>([])
-  const [labCodes, setLabCodes] = useState<{ lab_name: string; proprietary_code: string; code_type: string }[]>([])
+type Props = {
+  testId: string
+  test: Test
+  pricing: { price: number; requires_rx: boolean; lab_name: string; website: string; notes: string | null }[]
+  icd10Codes: ICD10Code[]
+  labCodes: { lab_name: string; proprietary_code: string; code_type: string }[]
+  relatedTests: Test[]
+}
+
+export default function TestDetailClient({ testId, test, pricing, icd10Codes, labCodes, relatedTests }: Props) {
   const [copiedCpt, setCopiedCpt] = useState(false)
-  const [testId, setTestId] = useState<string>('')
   const { userState, isRestricted, setShowStatePicker } = useStateRestriction()
 
   // Tracker panel state
@@ -48,82 +50,8 @@ export default function TestDetailClient({ params }: { params: Promise<{ testId:
   const [showLogModal, setShowLogModal] = useState(false)
   const [trackerLoaded, setTrackerLoaded] = useState(false)
 
+  // Load tracker data for this test (user-specific, must be client-side)
   useEffect(() => {
-    params.then((p) => setTestId(p.testId))
-  }, [params])
-
-  useEffect(() => {
-    if (!testId) return
-    const supabase = createClient()
-
-    async function load() {
-      const { data: testData } = await supabase
-        .from('tests')
-        .select('*')
-        .eq('id', testId)
-        .single()
-
-      if (!testData) {
-        setLoading(false)
-        return
-      }
-      setTest(testData)
-
-      const { data: junctions } = await supabase
-        .from('test_icd10_codes')
-        .select('icd10_code_id')
-        .eq('test_id', testId)
-
-      if (junctions && junctions.length > 0) {
-        const codeIds = junctions.map((j) => j.icd10_code_id)
-        const { data: codes } = await supabase
-          .from('icd10_codes')
-          .select('*')
-          .in('id', codeIds)
-          .order('code')
-        if (codes) setIcd10Codes(codes)
-      }
-
-      // Fetch pricing with lab details
-      const { data: pricingData } = await supabase
-        .from('pricing')
-        .select('price, requires_rx, labs(lab_name, website, notes)')
-        .eq('test_id', testId)
-        .order('price', { ascending: true })
-      if (pricingData) {
-        setPricing(pricingData.map((row: any) => ({
-          price: row.price,
-          requires_rx: row.requires_rx,
-          lab_name: row.labs.lab_name,
-          website: row.labs.website,
-          notes: row.labs.notes,
-        })))
-      }
-
-      // Fetch lab codes
-      const { data: labCodesData } = await supabase
-        .from('lab_codes')
-        .select('lab_name, proprietary_code, code_type')
-        .eq('test_id', testId)
-        .order('lab_name')
-      if (labCodesData) setLabCodes(labCodesData)
-
-      if (testData.related_tests && testData.related_tests.length > 0) {
-        const { data: related } = await supabase
-          .from('tests')
-          .select('*')
-          .in('id', testData.related_tests)
-        if (related) setRelatedTests(related)
-      }
-
-      setLoading(false)
-    }
-    load()
-  }, [testId])
-
-  // Load tracker data for this test
-  useEffect(() => {
-    if (!testId) return
     const supabase = createClient()
     async function loadTracker() {
       const { data: { user } } = await supabase.auth.getUser()
@@ -154,33 +82,9 @@ export default function TestDetailClient({ params }: { params: Promise<{ testId:
   }, [testId])
 
   function copyCpt() {
-    if (!test) return
     navigator.clipboard.writeText(test.cpt_codes.join(', '))
     setCopiedCpt(true)
     setTimeout(() => setCopiedCpt(false), 2000)
-  }
-
-  if (loading) {
-    return (
-      <section className="pt-28 pb-20 sm:pt-36">
-        <div className="mx-auto max-w-4xl px-6 text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#e0ebe9] border-t-[#2d6a5e]" />
-          <p className="mt-4 text-sm text-[#577572]">Loading test details...</p>
-        </div>
-      </section>
-    )
-  }
-
-  if (!test) {
-    return (
-      <section className="pt-28 pb-20 sm:pt-36">
-        <div className="mx-auto max-w-4xl px-6 text-center">
-          <h1 className="text-2xl font-bold text-[#1a2e2b]">Test not found</h1>
-          <p className="mt-2 text-[#577572]">This test may have been removed or the link is invalid.</p>
-          <Button href="/search" className="mt-6">Back to Search</Button>
-        </div>
-      </section>
-    )
   }
 
   return (

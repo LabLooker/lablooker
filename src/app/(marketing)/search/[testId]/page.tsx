@@ -1,17 +1,22 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import TestDetailClient from './TestDetailClient'
 
 const siteUrl = 'https://lablooker.com'
 
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
+  )
+}
+
 export async function generateMetadata(
   { params }: { params: Promise<{ testId: string }> }
 ): Promise<Metadata> {
   const { testId } = await params
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
-  )
+  const supabase = getSupabase()
 
   const { data: test } = await supabase
     .from('tests')
@@ -40,6 +45,77 @@ export async function generateMetadata(
   }
 }
 
-export default function TestDetailPage({ params }: { params: Promise<{ testId: string }> }) {
-  return <TestDetailClient params={params} />
+export default async function TestDetailPage({ params }: { params: Promise<{ testId: string }> }) {
+  const { testId } = await params
+  const supabase = getSupabase()
+
+  // Fetch test details
+  const { data: test } = await supabase
+    .from('tests')
+    .select('*')
+    .eq('id', testId)
+    .single()
+
+  if (!test) {
+    notFound()
+  }
+
+  // Fetch pricing, ICD10 codes, lab codes, and related tests in parallel
+  const [pricingRes, junctionsRes, labCodesRes, relatedRes] = await Promise.all([
+    supabase
+      .from('pricing')
+      .select('price, requires_rx, labs(lab_name, website, notes)')
+      .eq('test_id', testId)
+      .order('price', { ascending: true }),
+
+    supabase
+      .from('test_icd10_codes')
+      .select('icd10_code_id')
+      .eq('test_id', testId),
+
+    supabase
+      .from('lab_codes')
+      .select('lab_name, proprietary_code, code_type')
+      .eq('test_id', testId)
+      .order('lab_name'),
+
+    test.related_tests && test.related_tests.length > 0
+      ? supabase
+          .from('tests')
+          .select('*')
+          .in('id', test.related_tests)
+      : Promise.resolve({ data: [] }),
+  ])
+
+  // Resolve ICD10 codes from junction table
+  let icd10Codes: { id: string; code: string; description: string; created_at: string }[] = []
+  if (junctionsRes.data && junctionsRes.data.length > 0) {
+    const codeIds = junctionsRes.data.map((j: { icd10_code_id: string }) => j.icd10_code_id)
+    const { data: codes } = await supabase
+      .from('icd10_codes')
+      .select('*')
+      .in('id', codeIds)
+      .order('code')
+    if (codes) icd10Codes = codes
+  }
+
+  // Transform pricing data
+  const pricing = (pricingRes.data ?? []).map((row: any) => ({
+    price: row.price,
+    requires_rx: row.requires_rx,
+    lab_name: row.labs.lab_name,
+    website: row.labs.website,
+    notes: row.labs.notes,
+  }))
+
+  return (
+    <TestDetailClient
+      testId={testId}
+      test={test}
+      pricing={pricing}
+      icd10Codes={icd10Codes}
+      labCodes={labCodesRes.data ?? []}
+      relatedTests={relatedRes.data ?? []}
+    />
+  )
 }
