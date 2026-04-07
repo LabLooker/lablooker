@@ -183,6 +183,18 @@ export default function SettingsPage() {
             />
           </div>
           <div>
+            <label htmlFor="dob" className="block text-sm font-medium text-[#4a6b67]">
+              Date of birth <span className="font-normal text-[#577572]">(used to prepopulate lab request letters)</span>
+            </label>
+            <input
+              id="dob"
+              type="date"
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-[#e0ebe9] bg-[#faf8f5] px-4 py-2.5 text-sm text-[#1a2e2b] focus:border-[#2d6a5e] focus:outline-none focus:ring-1 focus:ring-[#2d6a5e]"
+            />
+          </div>
+          <div>
             <label className="block text-sm font-medium text-[#4a6b67] mb-1">Email</label>
             <input
               type="email"
