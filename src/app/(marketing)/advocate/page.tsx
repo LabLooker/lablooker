@@ -546,33 +546,37 @@ export default function AdvocatePage() {
                       {bundleExpanded ? 'Hide tests' : `See all ${suggestedBundle.tests.length} tests`}
                     </button>
                     {bundleExpanded && (
-                      <ul className="mt-2 space-y-1">
+                      <ul className="mt-2 space-y-0.5">
                         {suggestedBundle.tests.map(name => {
                           const alreadyAdded = selectedTests.some(t => t.test_name === name)
                           return (
-                            <li key={name} className="text-xs flex items-center justify-between gap-2">
-                              <span className="flex items-center gap-1.5" style={{ color: '#4a6b67' }}>
-                                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: alreadyAdded ? '#2d6a5e' : '#c8ddd9' }} />
+                            <li key={name}>
+                              <button
+                                disabled={alreadyAdded}
+                                onClick={async () => {
+                                  if (alreadyAdded) return
+                                  const supabase = createClient()
+                                  const { data } = await supabase
+                                    .from('tests')
+                                    .select('id, test_name, cpt_codes, category, description')
+                                    .eq('test_name', name)
+                                    .limit(1)
+                                  if (data && data.length > 0) await addTest(data[0])
+                                }}
+                                className={`text-xs flex items-center gap-1.5 w-full text-left transition-colors ${
+                                  alreadyAdded
+                                    ? 'cursor-default'
+                                    : 'hover:text-[#2d6a5e] cursor-pointer'
+                                }`}
+                                style={{ color: alreadyAdded ? '#2d6a5e' : '#4a6b67' }}
+                              >
+                                <span
+                                  className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                                  style={{ backgroundColor: alreadyAdded ? '#2d6a5e' : '#c8ddd9' }}
+                                />
                                 {name}
-                              </span>
-                              {alreadyAdded ? (
-                                <span className="text-[#2d6a5e] font-medium">✓ Added</span>
-                              ) : (
-                                <button
-                                  onClick={async () => {
-                                    const supabase = createClient()
-                                    const { data } = await supabase
-                                      .from('tests')
-                                      .select('id, test_name, cpt_codes, category, description')
-                                      .eq('test_name', name)
-                                      .limit(1)
-                                    if (data && data.length > 0) await addTest(data[0])
-                                  }}
-                                  className="text-[#2d6a5e] font-semibold hover:underline whitespace-nowrap"
-                                >
-                                  + Add
-                                </button>
-                              )}
+                                {alreadyAdded && <span className="ml-auto text-[10px] font-medium" style={{ color: '#2d6a5e' }}>✓</span>}
+                              </button>
                             </li>
                           )
                         })}
