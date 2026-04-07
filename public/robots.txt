@@ -1,1 +1,4 @@
-<!-- deploy trigger -->
+User-agent: *
+Allow: /
+
+Sitemap: https://www.lablooker.com/sitemap.xml

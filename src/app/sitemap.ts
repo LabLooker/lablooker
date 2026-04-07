@@ -28,6 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/topics/ferritin`, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${siteUrl}/topics/order-your-own-labs`, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${siteUrl}/topics/hashimotos-labs`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${siteUrl}/about`, changeFrequency: 'yearly', priority: 0.5 },
     { url: `${siteUrl}/privacy`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${siteUrl}/terms`, changeFrequency: 'yearly', priority: 0.3 },
   ]
