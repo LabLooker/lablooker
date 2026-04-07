@@ -212,8 +212,8 @@ export default function AdvocatePage() {
   useEffect(() => { setBundleExpanded(false) }, [suggestedBundle?.slug])
 
   const addTest = async (test: TestResult) => {
-    setSearchQuery('')
-    setSearchResults([])
+    // Don't clear search — keep dropdown open so user can keep adding
+    setSearchResults(prev => prev.filter(t => t.id !== test.id))
     // Fetch ICD-10 codes for this test
     let icd10Codes: ICD10Code[] = []
     try {
@@ -505,11 +505,13 @@ export default function AdvocatePage() {
               )}
               {searchResults.length > 0 && (
                 <div className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg max-h-60 overflow-y-auto" style={{ borderColor: '#e0ebe9' }}>
+                  <div className="px-4 py-2 text-xs border-b" style={{ color: '#577572', borderColor: '#e0ebe9' }}>Click any test to add it — you can add multiple</div>
                   {searchResults.map(test => (
                     <button
                       key={test.id}
+                      onMouseDown={e => e.preventDefault()}
                       onClick={() => addTest(test)}
-                      className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b last:border-b-0 transition-colors"
+                      className="w-full text-left px-4 py-3 hover:bg-[#f0f7f6] border-b last:border-b-0 transition-colors"
                       style={{ borderColor: '#e0ebe9' }}
                     >
                       <div className="font-medium" style={{ color: '#1a2e2b' }}>{test.test_name}</div>
@@ -553,6 +555,7 @@ export default function AdvocatePage() {
                             <li key={name}>
                               <button
                                 disabled={alreadyAdded}
+                                onMouseDown={e => e.preventDefault()}
                                 onClick={async () => {
                                   if (alreadyAdded) return
                                   const supabase = createClient()
