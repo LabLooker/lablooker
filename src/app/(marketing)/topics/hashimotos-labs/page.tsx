@@ -50,7 +50,7 @@ export default function HashimotosLabsGuide() {
           Hashimoto&apos;s lab tests: which markers to order and why
         </h1>
         <p className="mt-4 text-base text-[#4a6b67] leading-relaxed">
-          TSH is where most thyroid workups end. For Hashimoto&apos;s thyroiditis, it&apos;s barely where they should begin. Here&apos;s the full panel that actually tells the story.
+          A lot of Hashimoto&apos;s workups start and stop with TSH. That can miss part of the picture. If you&apos;re trying to understand your symptoms, antibodies and free hormone levels usually add more context.
         </p>
 
         {/* Content */}
@@ -58,10 +58,10 @@ export default function HashimotosLabsGuide() {
 
           <h2 className="text-xl font-bold text-[#1a2e2b]">Why TSH alone isn&apos;t enough</h2>
           <p>
-            TSH — thyroid-stimulating hormone — is a signal from the pituitary gland telling the thyroid to produce more hormone. It&apos;s a useful screening tool, but it measures pituitary feedback, not what&apos;s actually happening in the thyroid or in the cells that depend on thyroid hormone. In Hashimoto&apos;s, the immune system attacks the thyroid gland over time, often causing fluctuating hormone levels, persistent symptoms, and significant antibody elevation — all while TSH sits comfortably in the &ldquo;normal&rdquo; range.
+            TSH — thyroid-stimulating hormone — is a signal from the pituitary gland telling the thyroid to produce more hormone. It&apos;s a useful screening tool, but it reflects pituitary feedback, not what&apos;s actually happening in the thyroid tissue or in the cells that depend on thyroid hormone. In Hashimoto&apos;s, the immune system attacks the thyroid gland over time, often causing fluctuating hormone levels, persistent symptoms, and elevated antibodies — all while TSH sits within the &ldquo;normal&rdquo; range.
           </p>
           <p>
-            Hashimoto&apos;s is the most common cause of hypothyroidism in the developed world. It&apos;s an autoimmune condition, not simply a hormone problem — and that distinction changes what labs matter. A standard TSH check can miss active autoimmune thyroid disease entirely. Antibody testing, free hormone levels, and markers that affect conversion all add critical information that TSH cannot provide.
+            Hashimoto&apos;s is the most common cause of hypothyroidism in the developed world. It&apos;s an autoimmune condition, not simply a hormone problem — and that distinction affects which labs are worth ordering. Antibody testing, free hormone levels, and markers that affect conversion can all add information that TSH alone doesn&apos;t capture.
           </p>
 
           <h2 className="text-xl font-bold text-[#1a2e2b] pt-2">The core Hashimoto&apos;s panel</h2>
@@ -105,7 +105,7 @@ export default function HashimotosLabsGuide() {
             <div>
               <h3 className="font-semibold text-[#1a2e2b]">Reverse T3 (RT3)</h3>
               <p>
-                Reverse T3 is an inactive isomer of T3 — same atoms, different configuration, and it doesn&apos;t bind to receptors the way active T3 does. The body produces more Reverse T3 under stress, caloric restriction, illness, elevated cortisol, or iron deficiency. A high Reverse T3 relative to Free T3 can functionally block thyroid receptor activity even when T4 levels look fine. It&apos;s not a first-line test, but it&apos;s useful in people who are symptomatic despite otherwise reasonable labs. Some labs offer a Free T3 to Reverse T3 ratio — values above 20 are generally considered favorable.
+                Reverse T3 is an inactive isomer of T3 — same atoms, different configuration, but it doesn&apos;t bind to receptors the way active T3 does. The body produces more Reverse T3 under stress, caloric restriction, illness, elevated cortisol, or iron deficiency. Some clinicians look at Reverse T3 when symptoms don&apos;t line up with the rest of the thyroid panel — it&apos;s not a first-line marker, but in the right context it can add another piece to the picture. Some labs offer a Free T3 to Reverse T3 ratio; a ratio above 20 is generally considered more favorable, though this isn&apos;t a universally standardized target.
               </p>
             </div>
           </div>
@@ -126,7 +126,7 @@ export default function HashimotosLabsGuide() {
             <div>
               <h3 className="font-semibold text-[#1a2e2b]">Vitamin D</h3>
               <p>
-                Vitamin D deficiency is significantly more common in people with autoimmune thyroid disease than in the general population. It plays a role in immune regulation, and low levels are associated with higher antibody titers. Many practitioners target 25-OH Vitamin D between 50 and 80 ng/mL in patients with autoimmune conditions.
+                Vitamin D deficiency tends to be more common in people with autoimmune thyroid disease than in the general population, and low levels are associated with higher antibody titers. Some practitioners prefer a higher vitamin D level in people with autoimmune conditions — roughly 50 to 80 ng/mL — though targets vary by clinician and individual context.
               </p>
             </div>
 
@@ -147,10 +147,10 @@ export default function HashimotosLabsGuide() {
 
           <h2 className="text-xl font-bold text-[#1a2e2b] pt-2">What &ldquo;in range&rdquo; vs. optimal actually means</h2>
           <p>
-            Lab reference ranges are built from large population samples and are designed to flag disease, not optimize health. For thyroid hormones, the range is wide by design — it includes both people who feel fine and people who are symptomatic at the edges. A Free T3 at the very bottom of the range and a Free T3 in the upper half are both &ldquo;normal,&rdquo; but they represent very different physiological states.
+            Lab reference ranges are built from large population samples and are designed to flag disease, not optimize health. For thyroid hormones, the range is intentionally wide — it includes people who feel well and people who are symptomatic at the edges. A Free T3 at the very bottom of the range and a Free T3 in the upper half are both technically &ldquo;normal,&rdquo; but they can represent meaningfully different physiological states.
           </p>
           <p>
-            For someone with Hashimoto&apos;s, functional medicine and integrative thyroid specialists typically target:
+            Some functional medicine and integrative thyroid practitioners aim for narrower targets in people with Hashimoto&apos;s — though these aren&apos;t universal standards and clinicians vary in their approach:
           </p>
           <ul className="list-disc pl-6 space-y-1 text-[#4a6b67]">
             <li>TSH: 1.0 – 2.0 mIU/L</li>

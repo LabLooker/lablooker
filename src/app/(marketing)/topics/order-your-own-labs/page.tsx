@@ -64,7 +64,7 @@ export default function OrderYourOwnLabsGuide() {
           </p>
 
           <h2 className="text-xl font-bold text-[#1a2e2b] pt-2">How it works</h2>
-          <p>The process is straightforward:</p>
+          <p>In practice, it usually looks something like this:</p>
           <ol className="list-decimal list-outside ml-5 space-y-2 text-[#4a6b67]">
             <li>Search for the test you want and compare prices across ordering companies</li>
             <li>Purchase online — most ordering companies accept HSA/FSA cards</li>
@@ -89,7 +89,7 @@ export default function OrderYourOwnLabsGuide() {
 
           <h2 className="text-xl font-bold text-[#1a2e2b] pt-2">What does it cost?</h2>
           <p>
-            Prices vary widely — and that variation is not random. The same test, processed at the same Quest or LabCorp facility, can cost anywhere from $9 to $90+ depending on which company you order through. Ordering companies set their own prices, and competition between them is real.
+            You can see pretty wide price swings for the exact same test depending on who you order through. The same test, processed at the same Quest or LabCorp facility, can run anywhere from $9 to $90+ depending on the ordering company. They set their own prices, and the differences are real.
           </p>
           <p>
             A basic thyroid panel (TSH, Free T3, Free T4) typically runs $25–$90 across different ordering companies. A ferritin test alone can be as low as $7. A comprehensive metabolic panel is often under $30. Comparing prices before you order can save a significant amount, especially if you test regularly.
