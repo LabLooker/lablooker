@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const FAQ = [
   {
     q: 'Is TSH enough to check my thyroid?',
-    a: 'No. TSH is useful, but it does not tell the whole story. A more complete thyroid panel usually includes TSH, Free T3, Free T4, Reverse T3, and thyroid antibodies such as Anti-TPO and Anti-Thyroglobulin.',
+    a: 'For a basic screen, maybe. But it often misses things. A fuller thyroid panel usually includes TSH, Free T3, Free T4, Reverse T3, and thyroid antibodies such as Anti-TPO and Anti-Thyroglobulin — especially if you have symptoms that a normal TSH doesn\'t explain.',
   },
   {
     q: 'What is Reverse T3 and why does it matter?',
@@ -50,7 +50,7 @@ export default function ThyroidLabsGuide() {
           What thyroid labs should I ask for?
         </h1>
         <p className="mt-4 text-base text-[#4a6b67] leading-relaxed">
-          If your doctor only checks TSH, the picture is incomplete. A fuller thyroid panel can show issues that TSH alone may miss.
+          If the only thyroid number you got back was TSH, you may still be missing useful context. A fuller panel can surface things TSH alone won&apos;t catch.
         </p>
 
         {/* Content */}
@@ -59,10 +59,10 @@ export default function ThyroidLabsGuide() {
             TSH (thyroid stimulating hormone) is the standard screening test, but it is a pituitary signal, not a thyroid hormone. It reflects how the brain is signaling the thyroid rather than showing the full hormone picture directly. That is one reason some patients with fatigue, weight gain, hair loss, brain fog, or cold intolerance are told their labs are normal based on TSH alone.
           </p>
           <p>
-            A more complete thyroid evaluation adds Free T3, Free T4, Reverse T3, and thyroid antibodies such as Anti-TPO and Anti-Thyroglobulin. Together, those markers give a broader view of thyroid hormone production, conversion, and autoimmune thyroid activity.
+            A fuller workup usually includes Free T3, Free T4, Reverse T3, and thyroid antibodies like Anti-TPO and Anti-Thyroglobulin. Together those give a broader view of production, conversion, and whether autoimmune activity is involved.
           </p>
           <p>
-            Some clinicians use narrower target ranges than the standard lab reference range. For example, many labs still mark TSH as normal up to about 4.5 to 5.0, while some practitioners prefer to see it lower. Free T3 is also often interpreted in context rather than by range alone. The point is that a result can be technically in range without fully matching the symptom picture.
+            Some clinicians work with narrower targets than the standard lab reference range. Many labs still mark TSH as normal up to about 4.5 to 5.0, while some practitioners prefer to see it lower. Free T3 tends to get interpreted in the context of symptoms rather than by range cutoff alone. That&apos;s why people can be told everything looks normal and still feel very much not normal.
           </p>
         </div>
 

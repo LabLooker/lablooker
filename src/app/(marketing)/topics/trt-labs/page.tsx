@@ -50,13 +50,13 @@ export default function TrtLabsGuide() {
           TRT monitoring labs explained
         </h1>
         <p className="mt-4 text-base text-[#4a6b67] leading-relaxed">
-          Testosterone replacement therapy requires regular bloodwork to track both safety and effectiveness. The right panel helps show how treatment is working and whether anything needs to be adjusted.
+          Testosterone replacement therapy requires regular bloodwork to track both safety and effectiveness. The goal is to see both whether TRT is helping and whether it’s creating issues you’d want to catch early.
         </p>
 
         {/* Content */}
         <div className="mt-10 space-y-6 text-[#4a6b67] leading-relaxed">
           <p>
-            TRT monitoring includes more than testosterone alone. A useful panel looks at how your body is responding overall, including red blood cell production, estrogen conversion, liver and kidney function, cardiovascular markers, and prostate-related screening.
+            Testosterone is only part of the monitoring picture. A useful panel looks at how your body is responding overall, including red blood cell production, estrogen conversion, liver and kidney function, cardiovascular markers, and prostate-related screening.
           </p>
           <p>
             One of the most common mistakes is checking only Total Testosterone. Free Testosterone is the biologically active portion, and it can be low even when Total Testosterone looks adequate, especially if SHBG is elevated. Estradiol matters too. Water retention, mood changes, low libido, and other symptoms can show up when estradiol is either too high or too low.

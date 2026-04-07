@@ -56,10 +56,10 @@ export default function PcosLabsGuide() {
         {/* Content */}
         <div className="mt-10 space-y-6 text-[#4a6b67] leading-relaxed">
           <p>
-            PCOS affects both hormones and metabolism, so the lab work needs to cover both. On the hormone side, that usually includes androgens such as testosterone and DHEA-S, along with reproductive hormones like LH, FSH, estradiol, progesterone, AMH, and prolactin. On the metabolic side, it should include fasting insulin, glucose, HbA1c, and a lipid panel, since insulin resistance plays a major role in many PCOS cases.
+            A useful PCOS workup usually needs more than reproductive hormones alone. On the hormone side, that tends to include androgens like testosterone and DHEA-S, plus reproductive hormones — LH, FSH, estradiol, progesterone, AMH, prolactin. On the metabolic side, fasting insulin, glucose, HbA1c, and a lipid panel matter, because insulin resistance shows up in a significant portion of PCOS cases.
           </p>
           <p>
-            A lot of people get told their labs look normal after only a basic metabolic panel and TSH. That leaves out many of the markers most relevant to PCOS. Free testosterone, DHEA-S, and fasting insulin are often missing from routine bloodwork even though they are some of the most useful pieces of the picture. The panel below includes the markers commonly used to evaluate PCOS more thoroughly.
+            A lot of people get told their labs look normal after only a basic metabolic panel and TSH. Free testosterone, DHEA-S, and fasting insulin are often missing from routine bloodwork, even though they tend to be among the more informative markers. The panel below pulls together the markers people often wish had been checked the first time.
           </p>
           <p>
             Other conditions can look a lot like PCOS, so ruling those out matters too. 17-OH progesterone helps screen for non-classic congenital adrenal hyperplasia. TSH and Free T3 help evaluate thyroid function. Prolactin helps rule out pituitary-related causes of irregular cycles.

@@ -73,7 +73,7 @@ export default function OrderYourOwnLabsGuide() {
             <li>You own your results and can share them with any provider</li>
           </ol>
           <p>
-            No referral, no waiting for an appointment, no fighting with insurance over what gets covered.
+            For a lot of people, the appeal is simple: you can get the data without adding another appointment to the process.
           </p>
 
           <h2 className="text-xl font-bold text-[#1a2e2b] pt-2">Why people self-order labs</h2>
@@ -119,7 +119,7 @@ export default function OrderYourOwnLabsGuide() {
         {/* Bundle */}
         <div className="mt-10">
           <h2 className="text-xl font-bold text-[#1a2e2b] mb-4">Popular starting point: the thyroid panel</h2>
-          <p className="text-sm text-[#4a6b67] mb-4">The thyroid panel is one of the most commonly self-ordered tests — and one of the most frequently underprescribed in conventional care.</p>
+          <p className="text-sm text-[#4a6b67] mb-4">Thyroid testing is one of the most common places people start, especially when they feel like a basic workup didn&apos;t answer much.</p>
           <GuideBundleCard bundleSlug="thyroid-complete" />
         </div>
 

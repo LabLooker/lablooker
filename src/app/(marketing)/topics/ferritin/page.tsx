@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const FAQ = [
   {
     q: 'What is a good ferritin level?',
-    a: 'A lab may mark ferritin as normal at 12+ ng/mL for women, but symptom relief often happens at higher levels. Ferritin under 30 is commonly associated with symptoms. Between 30 and 50 can still be low enough to matter, especially in people with fatigue, hair loss, or restless legs. Many clinicians focused on symptom improvement aim for roughly 50 to 150 ng/mL.',
+    a: 'A lab may mark ferritin as normal at 12+ ng/mL for women, but a lot of people find symptom relief only at higher levels. Ferritin below 30 is often associated with fatigue, hair shedding, and restless legs. Between 30 and 50 can still be low enough to matter depending on the person. Some clinicians aim for roughly 50 to 150 ng/mL when symptoms suggest the low end isn\'t cutting it, though targets vary.',
   },
   {
     q: 'Why is my ferritin low even though I take iron supplements?',
@@ -59,7 +59,7 @@ export default function FerritinGuide() {
             Ferritin measures iron stores — the iron your body has in reserve. It is often the first marker to drop when iron is running low, well before hemoglobin changes. That means someone can have iron deficiency symptoms without meeting the usual definition of anemia.
           </p>
           <p>
-            The problem is the reference range. Many labs list ferritin as &ldquo;normal&rdquo; from about 12 to 150 ng/mL for women. In practice, that range is broad enough to include levels that are technically in range but still associated with symptoms. Ferritin under 30 is commonly linked to fatigue, hair shedding, brain fog, and exercise intolerance. Many clinicians aiming for symptom improvement look for ferritin in a higher range, often around 50 to 150, with some hair-loss discussions using 70+ as a practical target. If a ferritin of 15 gets dismissed as &ldquo;fine,&rdquo; that usually reflects the lab range, not symptom-based interpretation.
+            The problem is the reference range. Many labs list ferritin as &ldquo;normal&rdquo; from about 12 to 150 ng/mL for women — a range broad enough to include levels that are technically fine on paper but still associated with symptoms. Ferritin below 30 often gets attention in people dealing with fatigue, hair shedding, brain fog, or poor exercise tolerance. Some clinicians prefer to see it higher when symptoms suggest the low end of the range isn&apos;t working well for the patient — roughly 50 to 150, with hair-loss discussions sometimes using 70+ as a working target. A ferritin of 15 getting flagged as fine usually reflects the lab&apos;s reference range, not a symptom-based read.
           </p>
           <p>
             Women of reproductive age are especially likely to deal with low ferritin because of menstrual blood loss and, in many cases, lower iron intake. It also gets missed often. A CBC may stay normal until iron depletion is more advanced, so ferritin never gets checked. In someone with unexplained fatigue, hair loss, restless legs, dizziness, poor focus, or reduced exercise tolerance, ferritin is often one of the first labs worth checking.
