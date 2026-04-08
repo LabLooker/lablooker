@@ -12,6 +12,48 @@ function getSupabase() {
   )
 }
 
+function buildSchemaMarkup(test: any, icd10Codes: any[]) {
+  const schema: Record<string, any> = {
+    "@context": "https://schema.org",
+    "@type": "MedicalTest",
+    "name": test.test_name,
+    "url": `https://lablooker.com/search/${test.id}`,
+  }
+
+  if (test.description) {
+    schema["description"] = test.description
+  }
+
+  if (test.cpt_codes?.length > 0) {
+    schema["code"] = test.cpt_codes.map((code: string) => ({
+      "@type": "MedicalCode",
+      "code": code,
+      "codingSystem": "CPT"
+    }))
+  }
+
+  if (test.category) {
+    schema["relevantSpecialty"] = {
+      "@type": "MedicalSpecialty",
+      "name": test.category
+    }
+  }
+
+  if (icd10Codes.length > 0) {
+    schema["usedToDiagnose"] = icd10Codes.map((c: any) => ({
+      "@type": "MedicalCondition",
+      "name": c.description,
+      "code": {
+        "@type": "MedicalCode",
+        "code": c.code,
+        "codingSystem": "ICD-10"
+      }
+    }))
+  }
+
+  return schema
+}
+
 export async function generateMetadata(
   { params }: { params: Promise<{ testId: string }> }
 ): Promise<Metadata> {
@@ -109,13 +151,21 @@ export default async function TestDetailPage({ params }: { params: Promise<{ tes
   }))
 
   return (
-    <TestDetailClient
-      testId={testId}
-      test={test}
-      pricing={pricing}
-      icd10Codes={icd10Codes}
-      labCodes={labCodesRes.data ?? []}
-      relatedTests={relatedRes.data ?? []}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildSchemaMarkup(test, icd10Codes))
+        }}
+      />
+      <TestDetailClient
+        testId={testId}
+        test={test}
+        pricing={pricing}
+        icd10Codes={icd10Codes}
+        labCodes={labCodesRes.data ?? []}
+        relatedTests={relatedRes.data ?? []}
+      />
+    </>
   )
 }
