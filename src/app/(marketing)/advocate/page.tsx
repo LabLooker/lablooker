@@ -503,7 +503,7 @@ export default function AdvocatePage() {
                 <div className="absolute right-3 top-3.5 text-sm" style={{ color: '#577572' }}>Searching...</div>
               )}
               {searchResults.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg max-h-60 overflow-y-auto" style={{ borderColor: '#e0ebe9' }}>
+                <div onMouseDown={e => e.preventDefault()} className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg max-h-60 overflow-y-auto" style={{ borderColor: '#e0ebe9' }}>
                   <div className="px-4 py-2 text-xs border-b" style={{ color: '#577572', borderColor: '#e0ebe9' }}>Click any test to add it — you can add multiple</div>
                   {searchResults.map(test => (
                     <button
