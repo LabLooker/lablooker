@@ -214,39 +214,38 @@ export default function AdvocatePage() {
   const addTest = async (test: TestResult) => {
     // Don't clear search — keep dropdown open so user can keep adding
     setSearchResults(prev => prev.filter(t => t.id !== test.id))
-    // Fetch ICD-10 codes for this test
-    let icd10Codes: ICD10Code[] = []
-    try {
-      const { data: junctionData } = await supabase
-        .from('test_icd10_codes')
-        .select('icd10_code_id')
-        .eq('test_id', test.id)
-      if (junctionData && junctionData.length > 0) {
-        const codeIds = junctionData.map((j: { icd10_code_id: string }) => j.icd10_code_id)
-        const { data: codesData } = await supabase
-          .from('icd10_codes')
-          .select('code, description')
-          .in('id', codeIds)
-        if (codesData) {
-          icd10Codes = codesData
-        }
-      }
-    } catch (e) {
-      console.error('ICD-10 fetch error:', e)
-    }
-    // Fetch lab codes for this test
-    let labCodes: LabCode[] = []
-    try {
-      const { data: lcData } = await supabase
-        .from('lab_codes')
-        .select('lab_name, proprietary_code')
-        .eq('test_id', test.id)
-      if (lcData) labCodes = lcData
-    } catch (e) {
-      console.error('Lab code fetch error:', e)
-    }
-    setSelectedTests(prev => [...prev, { ...test, icd10Codes, labCodes }])
+    // Add test instantly — codes load in background
+    setSelectedTests(prev => [...prev, { ...test, icd10Codes: [], labCodes: [] }])
     setShowTemplate(false)
+    // Fetch ICD-10 + lab codes in background, then update
+    ;(async () => {
+      let icd10Codes: ICD10Code[] = []
+      try {
+        const { data: junctionData } = await supabase
+          .from('test_icd10_codes')
+          .select('icd10_code_id')
+          .eq('test_id', test.id)
+        if (junctionData && junctionData.length > 0) {
+          const codeIds = junctionData.map((j: { icd10_code_id: string }) => j.icd10_code_id)
+          const { data: codesData } = await supabase
+            .from('icd10_codes')
+            .select('code, description')
+            .in('id', codeIds)
+          if (codesData) icd10Codes = codesData
+        }
+      } catch (e) { console.error('ICD-10 fetch error:', e) }
+      let labCodes: LabCode[] = []
+      try {
+        const { data: lcData } = await supabase
+          .from('lab_codes')
+          .select('lab_name, proprietary_code')
+          .eq('test_id', test.id)
+        if (lcData) labCodes = lcData
+      } catch (e) { console.error('Lab code fetch error:', e) }
+      setSelectedTests(prev => prev.map(t =>
+        t.id === test.id ? { ...t, icd10Codes, labCodes } : t
+      ))
+    })()
   }
 
   const removeTest = (testId: string) => {
