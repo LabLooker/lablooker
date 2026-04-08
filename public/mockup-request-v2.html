@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generate Request — Mockup v2</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f7f6; }
+</style>
+</head>
+<body class="p-4 md:p-8">
+
+<div class="max-w-2xl mx-auto">
+
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-[#1a2e2b]">Generate Lab Request Letter</h1>
+    <p class="text-sm text-[#577572] mt-1">Add the tests you'd like to discuss with your doctor.</p>
+  </div>
+
+  <!-- STEP 1: Search -->
+  <div class="bg-white rounded-2xl border border-[#e0ebe9] p-5 mb-4">
+    <h2 class="text-sm font-semibold text-[#1a2e2b] mb-3">1. Add tests</h2>
+
+    <!-- Search bar -->
+    <div class="relative">
+      <input
+        id="search-input"
+        type="text"
+        placeholder="Search by test name or symptom (e.g. Ferritin, fatigue, hormones...)"
+        class="w-full px-4 py-3 rounded-lg border-2 border-[#2d6a5e] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20"
+        oninput="handleSearch(this.value)"
+        onfocus="showDropdown()"
+        onblur="setTimeout(hideDropdown, 150)"
+      />
+
+      <!-- Dropdown results -->
+      <div id="dropdown" class="hidden absolute z-20 w-full mt-1 bg-white rounded-xl border border-[#e0ebe9] shadow-lg overflow-hidden">
+        <div class="px-4 py-2 bg-[#faf8f5] border-b border-[#e0ebe9] text-xs text-[#577572]">Click to add — you can select multiple</div>
+        <div id="dropdown-results"></div>
+      </div>
+    </div>
+
+    <!-- Panel suggestion (appears after adding a relevant test) -->
+    <div id="panel-suggestion" class="hidden mt-3 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4">
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex items-start gap-2">
+          <span class="text-lg">🩸</span>
+          <div>
+            <p class="text-sm font-semibold text-[#1a2e2b]">Looking for a full iron panel?</p>
+            <p class="text-xs text-[#4a6b67] mt-0.5">Iron & Anemia Deep Dive — 9 tests covering storage, transport, and production</p>
+          </div>
+        </div>
+        <button onclick="dismissPanel()" class="text-[#577572] hover:text-[#1a2e2b] text-lg leading-none flex-shrink-0">×</button>
+      </div>
+      <!-- Expandable test list -->
+      <div class="mt-3">
+        <button onclick="togglePanel()" class="text-xs text-[#2d6a5e] font-semibold flex items-center gap-1">
+          <span id="panel-arrow">▶</span> <span id="panel-toggle-text">Show all 9 tests</span>
+        </button>
+        <div id="panel-tests" class="hidden mt-2 grid grid-cols-1 gap-0.5">
+          <!-- Each test row: name on left, + Add or ✓ on right -->
+          <div class="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/60">
+            <span class="text-xs text-[#4a6b67]">Ferritin</span>
+            <span class="text-xs font-semibold text-[#2d6a5e]">✓ Added</span>
+          </div>
+          <div class="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/60 cursor-pointer" onclick="addFromPanel(this, 'Iron, Serum')">
+            <span class="text-xs text-[#4a6b67]">Iron, Serum</span>
+            <span class="text-xs font-semibold text-[#2d6a5e] add-btn">+ Add</span>
+          </div>
+          <div class="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/60 cursor-pointer" onclick="addFromPanel(this, 'TIBC')">
+            <span class="text-xs text-[#4a6b67]">TIBC (Total Iron Binding Capacity)</span>
+            <span class="text-xs font-semibold text-[#2d6a5e] add-btn">+ Add</span>
+          </div>
+          <div class="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/60 cursor-pointer" onclick="addFromPanel(this, 'Transferrin Saturation')">
+            <span class="text-xs text-[#4a6b67]">Transferrin Saturation</span>
+            <span class="text-xs font-semibold text-[#2d6a5e] add-btn">+ Add</span>
+          </div>
+          <div class="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/60 cursor-pointer" onclick="addFromPanel(this, 'CBC w/ Differential')">
+            <span class="text-xs text-[#4a6b67]">CBC with Differential</span>
+            <span class="text-xs font-semibold text-[#2d6a5e] add-btn">+ Add</span>
+          </div>
+          <div class="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/60 cursor-pointer" onclick="addFromPanel(this, 'Reticulocyte Count')">
+            <span class="text-xs text-[#4a6b67]">Reticulocyte Count</span>
+            <span class="text-xs font-semibold text-[#2d6a5e] add-btn">+ Add</span>
+          </div>
+          <div class="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/60 cursor-pointer" onclick="addFromPanel(this, 'Vitamin B12')">
+            <span class="text-xs text-[#4a6b67]">Vitamin B12</span>
+            <span class="text-xs font-semibold text-[#2d6a5e] add-btn">+ Add</span>
+          </div>
+          <div class="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/60 cursor-pointer" onclick="addFromPanel(this, 'Folate, Serum')">
+            <span class="text-xs text-[#4a6b67]">Folate, Serum</span>
+            <span class="text-xs font-semibold text-[#2d6a5e] add-btn">+ Add</span>
+          </div>
+          <div class="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/60 cursor-pointer" onclick="addFromPanel(this, 'Haptoglobin')">
+            <span class="text-xs text-[#4a6b67]">Haptoglobin</span>
+            <span class="text-xs font-semibold text-[#2d6a5e] add-btn">+ Add</span>
+          </div>
+        </div>
+        <button onclick="addAllFromPanel()" class="mt-3 text-xs bg-[#2d6a5e] text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-[#245a50]">+ Add all 8 remaining</button>
+      </div>
+    </div>
+
+    <!-- Selected tests list -->
+    <div id="selected-tests" class="mt-4 space-y-1.5 hidden">
+      <div class="flex items-center justify-between mb-2">
+        <span id="test-count" class="text-xs font-semibold text-[#577572]">1 test selected</span>
+        <button onclick="clearAll()" class="text-xs text-[#577572] hover:text-[#b85c5c]">Remove all</button>
+      </div>
+      <div id="test-list" class="space-y-1.5"></div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Your info -->
+  <div class="bg-white rounded-2xl border border-[#e0ebe9] p-5 mb-4">
+    <h2 class="text-sm font-semibold text-[#1a2e2b] mb-3">2. Your information <span class="font-normal text-[#577572]">(pre-filled from your account)</span></h2>
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="text-xs text-[#577572] block mb-1">Full name</label>
+        <input type="text" value="Rosa Russell" class="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] bg-[#faf8f5] focus:outline-none focus:border-[#2d6a5e]">
+      </div>
+      <div>
+        <label class="text-xs text-[#577572] block mb-1">Date of birth</label>
+        <input type="text" value="12/12/1972" class="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] bg-[#faf8f5] focus:outline-none focus:border-[#2d6a5e]">
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Reason -->
+  <div class="bg-white rounded-2xl border border-[#e0ebe9] p-5 mb-4">
+    <h2 class="text-sm font-semibold text-[#1a2e2b] mb-3">3. Reason for request <span class="font-normal text-[#577572]">(optional)</span></h2>
+    <textarea rows="2" placeholder="e.g. Monitoring iron levels due to ongoing fatigue and hair loss..." class="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] placeholder-[#577572] focus:outline-none focus:border-[#2d6a5e] resize-none"></textarea>
+  </div>
+
+  <!-- Generate button -->
+  <button class="w-full py-3 rounded-xl bg-[#b85c5c] text-white font-semibold text-sm hover:bg-[#a04f4f] transition-colors">
+    Generate Letter
+  </button>
+
+</div>
+
+<script>
+const tests = [
+  { name: 'Ferritin', cpt: '82728' },
+  { name: 'TSH (Thyroid Stimulating Hormone)', cpt: '84443' },
+  { name: 'Free T3', cpt: '86480' },
+  { name: 'Free T4', cpt: '84480' },
+  { name: 'Anti-TPO', cpt: '86376' },
+  { name: 'Iron, Serum', cpt: '83540' },
+  { name: 'TIBC', cpt: '83550' },
+  { name: 'Transferrin Saturation', cpt: '83550' },
+  { name: 'Cortisol, AM', cpt: '82533' },
+  { name: 'Vitamin D, 25-OH', cpt: '82306' },
+  { name: 'Vitamin B12', cpt: '82607' },
+  { name: 'DHEA-Sulfate', cpt: '82627' },
+  { name: 'CBC w/ Differential', cpt: '85025' },
+  { name: 'Estradiol', cpt: '82670' },
+  { name: 'Progesterone', cpt: '84144' },
+]
+
+let selectedTests = []
+let panelOpen = false
+let panelExpanded = false
+
+function handleSearch(q) {
+  const results = document.getElementById('dropdown-results')
+  if (!q.trim()) { results.innerHTML = ''; return }
+  const matches = tests.filter(t => t.name.toLowerCase().includes(q.toLowerCase())).slice(0, 8)
+  results.innerHTML = matches.map(t => `
+    <button onclick="addTest('${t.name}', '${t.cpt}')" class="w-full text-left px-4 py-2.5 hover:bg-[#f0f7f6] border-b border-[#f0f7f6] last:border-0 transition-colors">
+      <span class="text-sm font-medium text-[#1a2e2b]">${t.name}</span>
+      <span class="text-xs text-[#577572] ml-2">CPT ${t.cpt}</span>
+    </button>
+  `).join('')
+
+  // Show panel suggestion if ferritin typed
+  if (q.toLowerCase().includes('ferr')) {
+    document.getElementById('panel-suggestion').classList.remove('hidden')
+  }
+}
+
+function showDropdown() {
+  if (document.getElementById('dropdown-results').innerHTML)
+    document.getElementById('dropdown').classList.remove('hidden')
+}
+function hideDropdown() {
+  document.getElementById('dropdown').classList.add('hidden')
+}
+
+function addTest(name, cpt, fromPanel = false) {
+  if (selectedTests.find(t => t.name === name)) return
+  selectedTests.push({ name, cpt, fromPanel })
+  renderTests()
+  document.getElementById('dropdown').classList.add('hidden')
+  document.getElementById('search-input').value = ''
+  if (!fromPanel && name.toLowerCase().includes('ferritin')) {
+    document.getElementById('panel-suggestion').classList.remove('hidden')
+  }
+}
+
+function addFromPanel(row, name) {
+  const cpt = tests.find(t => t.name === name)?.cpt || ''
+  addTest(name, cpt, true)
+  row.querySelector('.add-btn').textContent = '✓ Added'
+  row.classList.remove('cursor-pointer')
+  row.onclick = null
+}
+
+function addAllFromPanel() {
+  const rows = document.querySelectorAll('#panel-tests [onclick]')
+  rows.forEach(row => {
+    const name = row.querySelector('span').textContent
+    addFromPanel(row, name)
+  })
+  document.querySelector('[onclick="addAllFromPanel()"]').textContent = '✓ All added'
+}
+
+function dismissPanel() {
+  document.getElementById('panel-suggestion').classList.add('hidden')
+}
+
+function togglePanel() {
+  panelExpanded = !panelExpanded
+  document.getElementById('panel-tests').classList.toggle('hidden', !panelExpanded)
+  document.getElementById('panel-arrow').textContent = panelExpanded ? '▼' : '▶'
+  document.getElementById('panel-toggle-text').textContent = panelExpanded ? 'Hide tests' : 'Show all 9 tests'
+}
+
+function renderTests() {
+  const container = document.getElementById('selected-tests')
+  const list = document.getElementById('test-list')
+  const count = document.getElementById('test-count')
+  if (selectedTests.length === 0) { container.classList.add('hidden'); return }
+  container.classList.remove('hidden')
+  count.textContent = `${selectedTests.length} test${selectedTests.length !== 1 ? 's' : ''} selected`
+  list.innerHTML = selectedTests.map((t, i) => `
+    <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-[#faf8f5] border border-[#e0ebe9] group">
+      <div>
+        <span class="text-sm font-medium text-[#1a2e2b]">${t.name}</span>
+        <span class="text-xs text-[#577572] ml-2">CPT ${t.cpt}</span>
+      </div>
+      <button onclick="removeTest(${i})" class="text-[#577572] hover:text-[#b85c5c] transition-colors ml-3 opacity-50 group-hover:opacity-100 text-base leading-none">×</button>
+    </div>
+  `).join('')
+}
+
+function removeTest(i) {
+  selectedTests.splice(i, 1)
+  renderTests()
+}
+
+function clearAll() {
+  selectedTests = []
+  renderTests()
+}
+
+// Demo: pre-add Ferritin
+addTest('Ferritin', '82728')
+document.getElementById('panel-suggestion').classList.remove('hidden')
+</script>
+</body>
+</html>
