@@ -64,7 +64,8 @@ type SelectedTest = TestResult & {
 
 export default function AdvocatePage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<TestResult[]>([])
+  const [searchResults, setSearchResults] = useState<TestResult[]>([])  
+  const [searchFocused, setSearchFocused] = useState(false)
   const [selectedTests, setSelectedTests] = useState<SelectedTest[]>([])
   const [reason, setReason] = useState('')
   const [isSearching, setIsSearching] = useState(false)
@@ -195,9 +196,15 @@ export default function AdvocatePage() {
     return () => clearTimeout(timer)
   }, [searchQuery, searchTests])
 
+  // Track last action direction so bundle only suggests on add, not remove
+  const prevTestCount = useRef(0)
+  const isAdding = selectedTests.length >= prevTestCount.current
+  useEffect(() => { prevTestCount.current = selectedTests.length }, [selectedTests.length])
+
   // Compute suggested bundle directly — no async lag
   const suggestedBundle = useMemo<TestBundle | null>(() => {
     if (selectedTests.length === 0) return null
+    if (!isAdding) return null
     const selectedNames = new Set(selectedTests.map(t => t.test_name))
     for (const bundle of TEST_BUNDLES) {
       if (dismissedBundles.has(bundle.slug)) continue
@@ -206,7 +213,7 @@ export default function AdvocatePage() {
       if (hasAtLeastOne && !hasAll) return bundle
     }
     return null
-  }, [selectedTests, dismissedBundles])
+  }, [selectedTests, dismissedBundles, isAdding])
 
   // Reset expanded state when bundle changes
   useEffect(() => { setBundleExpanded(false) }, [suggestedBundle?.slug])
@@ -496,19 +503,20 @@ export default function AdvocatePage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
                 placeholder="Search for a test (e.g., TSH, Ferritin)..."
                 className="w-full px-4 py-3 rounded-lg border-2 border-[#2d6a5e] text-base text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30"
               />
               {isSearching && (
                 <div className="absolute right-3 top-3.5 text-sm" style={{ color: '#577572' }}>Searching...</div>
               )}
-              {searchResults.length > 0 && (
-                <div onMouseDown={e => e.preventDefault()} className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg max-h-60 overflow-y-auto" style={{ borderColor: '#e0ebe9' }}>
+              {searchFocused && searchResults.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg max-h-60 overflow-y-auto" style={{ borderColor: '#e0ebe9' }}>
                   <div className="px-4 py-2 text-xs border-b" style={{ color: '#577572', borderColor: '#e0ebe9' }}>Click any test to add it — you can add multiple</div>
                   {searchResults.map(test => (
                     <button
                       key={test.id}
-                      onMouseDown={e => e.preventDefault()}
                       onClick={() => addTest(test)}
                       className="w-full text-left px-4 py-3 hover:bg-[#f0f7f6] border-b last:border-b-0 transition-colors"
                       style={{ borderColor: '#e0ebe9' }}
