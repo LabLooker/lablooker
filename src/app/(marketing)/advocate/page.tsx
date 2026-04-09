@@ -198,13 +198,16 @@ export default function AdvocatePage() {
 
   // Track last action direction so bundle only suggests on add, not remove
   const prevTestCount = useRef(0)
-  const isAdding = selectedTests.length >= prevTestCount.current
-  useEffect(() => { prevTestCount.current = selectedTests.length }, [selectedTests.length])
+  const [lastActionWasAdd, setLastActionWasAdd] = useState(false)
+  useEffect(() => {
+    setLastActionWasAdd(selectedTests.length > prevTestCount.current)
+    prevTestCount.current = selectedTests.length
+  }, [selectedTests.length])
 
   // Compute suggested bundle directly — no async lag
   const suggestedBundle = useMemo<TestBundle | null>(() => {
     if (selectedTests.length === 0) return null
-    if (!isAdding) return null
+    if (!lastActionWasAdd) return null
     const selectedNames = new Set(selectedTests.map(t => t.test_name))
     for (const bundle of TEST_BUNDLES) {
       if (dismissedBundles.has(bundle.slug)) continue
@@ -213,12 +216,12 @@ export default function AdvocatePage() {
       if (hasAtLeastOne && !hasAll) return bundle
     }
     return null
-  }, [selectedTests, dismissedBundles, isAdding])
+  }, [selectedTests, dismissedBundles, lastActionWasAdd])
 
   // Reset expanded state when bundle changes
   useEffect(() => { setBundleExpanded(false) }, [suggestedBundle?.slug])
 
-  const addTest = async (test: TestResult) => {
+  const addTest = (test: TestResult) => {
     // Don't clear search — keep dropdown open so user can keep adding
     setSearchResults(prev => prev.filter(t => t.id !== test.id))
     // Add test instantly — codes load in background
@@ -504,7 +507,7 @@ export default function AdvocatePage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
-                onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+                onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
                 placeholder="Search for a test (e.g., TSH, Ferritin)..."
                 className="w-full px-4 py-3 rounded-lg border-2 border-[#2d6a5e] text-base text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30"
               />
@@ -512,11 +515,16 @@ export default function AdvocatePage() {
                 <div className="absolute right-3 top-3.5 text-sm" style={{ color: '#577572' }}>Searching...</div>
               )}
               {searchFocused && searchResults.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg max-h-60 overflow-y-auto" style={{ borderColor: '#e0ebe9' }}>
+                <div
+                  className="absolute z-10 w-full mt-1 bg-white rounded-lg border shadow-lg max-h-60 overflow-y-auto"
+                  style={{ borderColor: '#e0ebe9' }}
+                  onMouseDown={e => e.preventDefault()}
+                >
                   <div className="px-4 py-2 text-xs border-b" style={{ color: '#577572', borderColor: '#e0ebe9' }}>Click any test to add it — you can add multiple</div>
                   {searchResults.map(test => (
                     <button
                       key={test.id}
+                      onMouseDown={e => e.preventDefault()}
                       onClick={() => addTest(test)}
                       className="w-full text-left px-4 py-3 hover:bg-[#f0f7f6] border-b last:border-b-0 transition-colors"
                       style={{ borderColor: '#e0ebe9' }}
@@ -533,7 +541,10 @@ export default function AdvocatePage() {
 
             {/* Bundle suggestion card — persists after test is added */}
             {suggestedBundle && (
-              <div className="mt-3 sm:ml-9 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4">
+              <div
+                className="mt-3 sm:ml-9 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4"
+                onMouseDown={e => e.preventDefault()}
+              >
                 <div className="flex items-start gap-3">
                   <span className="text-xl">{suggestedBundle.icon}</span>
                   <div className="flex-1 min-w-0">
@@ -561,21 +572,25 @@ export default function AdvocatePage() {
                           return (
                             <li key={name}>
                               <button
-                                disabled={alreadyAdded}
                                 onMouseDown={e => e.preventDefault()}
                                 onClick={async () => {
-                                  if (alreadyAdded) return
-                                  const supabase = createClient()
-                                  const { data } = await supabase
-                                    .from('tests')
-                                    .select('id, test_name, cpt_codes, category, description')
-                                    .eq('test_name', name)
-                                    .limit(1)
-                                  if (data && data.length > 0) await addTest(data[0])
+                                  if (alreadyAdded) {
+                                    // Toggle off: remove from selected
+                                    const match = selectedTests.find(t => t.test_name === name)
+                                    if (match) removeTest(match.id)
+                                  } else {
+                                    // Toggle on: add to selected
+                                    const { data } = await supabase
+                                      .from('tests')
+                                      .select('id, test_name, cpt_codes, category, description')
+                                      .eq('test_name', name)
+                                      .limit(1)
+                                    if (data && data.length > 0) addTest(data[0])
+                                  }
                                 }}
                                 className={`text-xs flex items-center gap-1.5 w-full text-left transition-colors ${
                                   alreadyAdded
-                                    ? 'cursor-default'
+                                    ? 'hover:text-[#b85c5c] cursor-pointer'
                                     : 'hover:text-[#2d6a5e] cursor-pointer'
                                 }`}
                                 style={{ color: alreadyAdded ? '#2d6a5e' : '#4a6b67' }}
@@ -584,7 +599,7 @@ export default function AdvocatePage() {
                                   className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                                   style={{ backgroundColor: alreadyAdded ? '#2d6a5e' : '#c8ddd9' }}
                                 />
-                                {name}
+                                <span className={alreadyAdded ? '' : 'opacity-60'}>{name}</span>
                                 {alreadyAdded && <span className="ml-auto text-[10px] font-medium" style={{ color: '#2d6a5e' }}>✓</span>}
                               </button>
                             </li>
@@ -595,23 +610,20 @@ export default function AdvocatePage() {
                     <div className="flex items-center gap-3 mt-2">
                       <button
                         onClick={async () => {
-                          const existingIds = new Set(selectedTests.map(t => t.id))
-                          const supabase = createClient()
-                          for (const testName of suggestedBundle.tests) {
+                          const existingNames = new Set(selectedTests.map(t => t.test_name))
+                          const remaining = suggestedBundle.tests.filter(name => !existingNames.has(name))
+                          for (const testName of remaining) {
                             const { data } = await supabase
                               .from('tests')
                               .select('id, test_name, cpt_codes, category, description')
                               .eq('test_name', testName)
                               .limit(1)
-                            if (data && data.length > 0 && !existingIds.has(data[0].id)) {
-                              await addTest(data[0])
-                              existingIds.add(data[0].id)
-                            }
+                            if (data && data.length > 0) addTest(data[0])
                           }
                         }}
                         className="inline-flex items-center gap-1.5 rounded-lg bg-[#2d6a5e] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#245a50] transition-colors"
                       >
-                        + Add all {suggestedBundle.tests.length} tests
+                        + Add remaining tests
                       </button>
                       <button onClick={() => {
                         setDismissedBundles(prev => new Set([...prev, suggestedBundle.slug]))
@@ -630,7 +642,7 @@ export default function AdvocatePage() {
                     {selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''} selected
                   </span>
                   <button
-                    onClick={() => { setSelectedTests([]); setDismissedBundles(new Set()) }}
+                    onClick={() => { setSelectedTests([]); setDismissedBundles(new Set()); setShowTemplate(false) }}
                     className="text-xs hover:text-[#b85c5c] transition-colors"
                     style={{ color: '#577572' }}
                   >
@@ -640,20 +652,21 @@ export default function AdvocatePage() {
                 {(showAllTests ? selectedTests : selectedTests.slice(0, TESTS_PREVIEW)).map(test => (
                   <div
                     key={test.id}
-                    className="flex items-center justify-between px-4 py-2.5 rounded-lg"
+                    onClick={() => removeTest(test.id)}
+                    className="flex items-center justify-between px-4 py-2.5 rounded-lg cursor-pointer hover:bg-[#f5f0ec] transition-colors group"
                     style={{ backgroundColor: '#faf8f5', border: '1px solid #e0ebe9' }}
                   >
-                    <div>
-                      <span className="font-medium" style={{ color: '#1a2e2b' }}>{test.test_name}</span>
+                    <div className="min-w-0">
+                      <div className="font-medium text-sm" style={{ color: '#1a2e2b' }}>{test.test_name}</div>
                       {test.cpt_codes?.length > 0 && (
-                        <span className="text-xs ml-2" style={{ color: '#577572' }}>CPT: {test.cpt_codes.join(', ')}</span>
+                        <div className="text-xs mt-0.5" style={{ color: '#577572' }}>CPT: {test.cpt_codes.join(', ')}</div>
                       )}
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 flex-shrink-0">
                       {/* Info tooltip */}
                       <div className="relative">
                         {tooltipTestId === test.id && (
-                          <div className="fixed inset-0 z-40" onClick={() => setTooltipTestId(null)} />
+                          <div className="fixed inset-0 z-40" onClick={(e) => { e.stopPropagation(); setTooltipTestId(null) }} />
                         )}
                         <button
                           onClick={(e) => { e.stopPropagation(); setTooltipTestId(v => v === test.id ? null : test.id) }}
@@ -676,8 +689,8 @@ export default function AdvocatePage() {
                         )}
                       </div>
                       <button
-                        onClick={() => removeTest(test.id)}
-                        className="text-red-400 hover:text-red-600 text-lg font-bold px-2"
+                        onClick={(e) => { e.stopPropagation(); removeTest(test.id) }}
+                        className="text-[#577572] group-hover:text-red-400 hover:!text-red-600 text-lg font-bold px-2 transition-colors"
                         aria-label={`Remove ${test.test_name}`}
                       >×</button>
                     </div>
