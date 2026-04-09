@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { GuideBundleCard } from '../GuideBundleCard'
 import ReviewedByBadge from '@/components/ReviewedByBadge'
+import TopicCTAs from '@/components/TopicCTAs'
 
 export const metadata: Metadata = {
   title: "Hashimoto's Lab Tests: Which Markers to Order and Why | LabLooker",
@@ -185,27 +186,8 @@ export default function HashimotosLabsGuide() {
           <GuideBundleCard bundleSlug="thyroid-complete" />
         </div>
 
-        {/* CTA */}
-        <div className="mt-10 rounded-2xl border border-[#e0ebe9] bg-[#faf8f5] p-6 sm:p-8 text-center">
-          <h2 className="text-lg font-bold text-[#1a2e2b]">Ready to get your thyroid panel?</h2>
-          <p className="mt-2 text-sm text-[#4a6b67]">
-            Track your results over time or compare thyroid test prices across labs to find the best value.
-          </p>
-          <div className="mt-5 flex flex-wrap justify-center gap-3">
-            <Link
-              href="/track-results"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#b85c5c] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#a04f4f]"
-            >
-              Track my labs
-            </Link>
-            <Link
-              href="/compare"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#f0f7f6] border border-[#cfe0dc] px-5 py-3 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#e0ebe9]"
-            >
-              Compare thyroid test prices
-            </Link>
-          </div>
-        </div>
+        {/* CTAs */}
+        <TopicCTAs topic="Hashimoto's" />
 
         {/* FAQ */}
         <div className="mt-12">

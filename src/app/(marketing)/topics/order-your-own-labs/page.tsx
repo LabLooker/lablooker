@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { GuideBundleCard } from '../GuideBundleCard'
 import ReviewedByBadge from '@/components/ReviewedByBadge'
+import TopicCTAs from '@/components/TopicCTAs'
 
 export const metadata: Metadata = {
   title: "Can You Order Your Own Lab Tests? A Patient's Guide | LabLooker",
@@ -127,27 +128,8 @@ export default function OrderYourOwnLabsGuide() {
           <GuideBundleCard bundleSlug="thyroid-complete" />
         </div>
 
-        {/* CTA */}
-        <div className="mt-10 rounded-2xl border border-[#e0ebe9] bg-[#faf8f5] p-6 sm:p-8 text-center">
-          <h2 className="text-lg font-bold text-[#1a2e2b]">Compare prices before you order</h2>
-          <p className="mt-2 text-sm text-[#4a6b67]">
-            The same test can cost $15 or $90 depending on where you order. LabLooker shows you all your options side by side — no account required.
-          </p>
-          <div className="mt-5 flex flex-wrap justify-center gap-3">
-            <Link
-              href="/compare"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#b85c5c] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#a04f4f]"
-            >
-              Compare prices
-            </Link>
-            <Link
-              href="/search"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#f0f7f6] border border-[#cfe0dc] px-5 py-3 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#e0ebe9]"
-            >
-              Browse all tests
-            </Link>
-          </div>
-        </div>
+        {/* CTAs */}
+        <TopicCTAs topic="lab test" />
 
         {/* FAQ */}
         <div className="mt-12">

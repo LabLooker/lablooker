@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { GuideBundleCard } from '../GuideBundleCard'
 import ReviewedByBadge from '@/components/ReviewedByBadge'
+import TopicCTAs from '@/components/TopicCTAs'
 
 export const metadata: Metadata = {
   title: 'TRT Monitoring Labs Explained — What to Test and When',
@@ -76,27 +77,8 @@ export default function TrtLabsGuide() {
           <GuideBundleCard bundleSlug="trt-monitoring" />
         </div>
 
-        {/* CTA */}
-        <div className="mt-10 rounded-2xl border border-[#e0ebe9] bg-[#faf8f5] p-6 sm:p-8 text-center">
-          <h2 className="text-lg font-bold text-[#1a2e2b]">Compare TRT lab prices</h2>
-          <p className="mt-2 text-sm text-[#4a6b67]">
-            TRT clinics often charge a premium for monitoring labs. Direct-order options can be less expensive for the same core tests.
-          </p>
-          <div className="mt-5 flex flex-wrap justify-center gap-3">
-            <Link
-              href="/compare"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#b85c5c] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#a04f4f]"
-            >
-              Compare prices
-            </Link>
-            <Link
-              href="/search?topic=testosterone"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#f0f7f6] border border-[#cfe0dc] px-5 py-3 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#e0ebe9]"
-            >
-              Browse testosterone tests
-            </Link>
-          </div>
-        </div>
+        {/* CTAs */}
+        <TopicCTAs topic="TRT" />
 
         {/* FAQ */}
         <div className="mt-12">

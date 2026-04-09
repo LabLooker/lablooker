@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { GuideBundleCard } from '../GuideBundleCard'
 import ReviewedByBadge from '@/components/ReviewedByBadge'
+import TopicCTAs from '@/components/TopicCTAs'
 
 export const metadata: Metadata = {
   title: 'PCOS Bloodwork: Which Tests to Order — Complete Guide',
@@ -76,27 +77,8 @@ export default function PcosLabsGuide() {
           <GuideBundleCard bundleSlug="pcos-panel" />
         </div>
 
-        {/* CTA */}
-        <div className="mt-10 rounded-2xl border border-[#e0ebe9] bg-[#faf8f5] p-6 sm:p-8 text-center">
-          <h2 className="text-lg font-bold text-[#1a2e2b]">Compare PCOS lab prices</h2>
-          <p className="mt-2 text-sm text-[#4a6b67]">
-            Getting PCOS labs through a doctor and insurance can be expensive, and sometimes the workup is still incomplete. Direct-order labs can make it easier to get a broader panel with transparent pricing.
-          </p>
-          <div className="mt-5 flex flex-wrap justify-center gap-3">
-            <Link
-              href="/compare"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#b85c5c] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#a04f4f]"
-            >
-              Compare prices
-            </Link>
-            <Link
-              href="/search?topic=bhrt"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#f0f7f6] border border-[#cfe0dc] px-5 py-3 text-sm font-semibold text-[#2d6a5e] transition-colors hover:bg-[#e0ebe9]"
-            >
-              Browse hormone tests
-            </Link>
-          </div>
-        </div>
+        {/* CTAs */}
+        <TopicCTAs topic="PCOS" />
 
         {/* FAQ */}
         <div className="mt-12">
