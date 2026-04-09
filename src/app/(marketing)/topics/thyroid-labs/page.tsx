@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { GuideBundleCard } from '../GuideBundleCard'
+import ReviewedByBadge from '@/components/ReviewedByBadge'
 
 export const metadata: Metadata = {
   title: 'What Thyroid Labs Should I Ask For? — Complete Guide',
@@ -49,6 +50,9 @@ export default function ThyroidLabsGuide() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#1a2e2b] tracking-tight">
           What thyroid labs should I ask for?
         </h1>
+        <div className="mt-4">
+          <ReviewedByBadge />
+        </div>
         <p className="mt-4 text-base text-[#4a6b67] leading-relaxed">
           If the only thyroid number you got back was TSH, you may still be missing useful context. A fuller panel can surface things TSH alone won&apos;t catch.
         </p>

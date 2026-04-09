@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { GuideBundleCard } from '../GuideBundleCard'
+import ReviewedByBadge from '@/components/ReviewedByBadge'
 
 export const metadata: Metadata = {
   title: 'PCOS Bloodwork: Which Tests to Order — Complete Guide',
@@ -49,6 +50,9 @@ export default function PcosLabsGuide() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#1a2e2b] tracking-tight">
           PCOS bloodwork: which tests to order
         </h1>
+        <div className="mt-4">
+          <ReviewedByBadge />
+        </div>
         <p className="mt-4 text-base text-[#4a6b67] leading-relaxed">
           Polycystic ovary syndrome affects about 1 in 10 women, and a lot of people still do not get a complete workup. A useful PCOS lab panel should help with both diagnosis and ongoing management.
         </p>

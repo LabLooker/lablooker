@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { GuideBundleCard } from '../GuideBundleCard'
+import ReviewedByBadge from '@/components/ReviewedByBadge'
 
 export const metadata: Metadata = {
   title: 'TRT Monitoring Labs Explained — What to Test and When',
@@ -49,6 +50,9 @@ export default function TrtLabsGuide() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#1a2e2b] tracking-tight">
           TRT monitoring labs explained
         </h1>
+        <div className="mt-4">
+          <ReviewedByBadge />
+        </div>
         <p className="mt-4 text-base text-[#4a6b67] leading-relaxed">
           Testosterone replacement therapy requires regular bloodwork to track both safety and effectiveness. The goal is to see both whether TRT is helping and whether it’s creating issues you’d want to catch early.
         </p>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { GuideBundleCard } from '../GuideBundleCard'
+import ReviewedByBadge from '@/components/ReviewedByBadge'
 
 export const metadata: Metadata = {
   title: 'Ferritin Test: What Your Doctor Isn\'t Telling You',
@@ -49,6 +50,9 @@ export default function FerritinGuide() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#1a2e2b] tracking-tight">
           Ferritin test: what your doctor isn&apos;t telling you
         </h1>
+        <div className="mt-4">
+          <ReviewedByBadge />
+        </div>
         <p className="mt-4 text-base text-[#4a6b67] leading-relaxed">
           Ferritin is one of the most useful lab tests for fatigue, and one of the easiest to misread. A result can fall inside the lab&apos;s reference range and still be low enough to cause symptoms.
         </p>
