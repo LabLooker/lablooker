@@ -1,0 +1,62 @@
+# LabLooker
+
+> Compare lab test prices across providers and order without a doctor's visit.
+
+LabLooker is a lab test comparison and education platform. Users can search 384+ lab tests, compare prices across providers (Quest, LabCorp, Ulta Lab Tests, Everlywell, and more), translate complex results into plain English, track results over time, and generate advocacy letters for insurance reimbursement.
+
+## Core Features
+
+- **Search**: Browse 384+ lab tests with plain-English explanations, reference ranges, and preparation instructions.
+- **Compare**: Side-by-side pricing from multiple direct-to-consumer lab providers.
+- **Translate**: Upload lab results and get clear, jargon-free explanations of what each marker means.
+- **Track**: Dashboard to log results over time, spot trends, and flag out-of-range values.
+- **Advocate**: Generate letters to insurance companies requesting reimbursement for out-of-pocket labs.
+- **Bundles**: Pre-built lab panels for common health goals (thyroid, hormones, heart health, etc.).
+- **Calculators**: Free medical calculators — corrected calcium, free testosterone, HOMA-IR, iron saturation, non-HDL cholesterol.
+
+## Topic Guides
+
+In-depth guides on which labs to order for specific health conditions:
+
+- [PCOS Lab Tests](https://www.lablooker.com/topics/pcos-labs)
+- [Thyroid Lab Tests](https://www.lablooker.com/topics/thyroid-labs)
+- [Hashimoto's Lab Tests](https://www.lablooker.com/topics/hashimotos-labs)
+- [TRT Lab Tests](https://www.lablooker.com/topics/trt-labs)
+- [Ferritin Guide](https://www.lablooker.com/topics/ferritin)
+- [How to Order Your Own Labs](https://www.lablooker.com/topics/order-your-own-labs)
+
+## Key Pages
+
+- Homepage: https://www.lablooker.com
+- Search All Tests: https://www.lablooker.com/search
+- Compare Prices: https://www.lablooker.com/compare
+- Translate Results: https://www.lablooker.com/translate
+- Track Results: https://www.lablooker.com/track-results
+- Bundles (Lab Panels): https://www.lablooker.com/bundles
+- Calculators: https://www.lablooker.com/calculators
+- Advocate (Insurance Letters): https://www.lablooker.com/advocate
+- Pricing: https://www.lablooker.com/pricing
+- About: https://www.lablooker.com/about
+
+## Calculators
+
+- [Corrected Calcium Calculator](https://www.lablooker.com/calculators/corrected-calcium)
+- [Free Testosterone Calculator](https://www.lablooker.com/calculators/free-testosterone)
+- [HOMA-IR Calculator](https://www.lablooker.com/calculators/homa-ir)
+- [Iron Saturation Calculator](https://www.lablooker.com/calculators/iron-saturation)
+- [Non-HDL Cholesterol Calculator](https://www.lablooker.com/calculators/non-hdl-cholesterol)
+
+## Data
+
+- 384+ lab tests with descriptions, reference ranges, and prep instructions
+- ~1,300 lab codes mapped to tests
+- 265 pricing data points across providers
+- 178 symptom-to-test mappings
+- 174 ICD-10 codes with 917 test mappings
+- 45 community notes with practical testing tips
+
+## About
+
+LabLooker was built by a patient who spent years navigating complex lab work for a family member's rare endocrine conditions. The platform exists to make lab testing transparent, affordable, and understandable for everyone — especially people managing chronic conditions who need regular monitoring.
+
+No supplement sales. No sponsored results. Just honest lab test information.
