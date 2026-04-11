@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generate Request — Mockup v3</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f0f7f6] min-h-screen p-4 md:p-8" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+
+<div class="max-w-2xl mx-auto">
+
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-[#1a2e2b]">Generate Lab Request</h1>
+    <p class="text-sm text-[#577572] mt-1">Build your test list, then generate a letter for your doctor or a reference for ordering yourself.</p>
+  </div>
+
+  <!-- SEARCH CARD -->
+  <div class="bg-white rounded-2xl border border-[#e0ebe9] p-5 mb-4">
+
+    <!-- Search bar -->
+    <div class="relative">
+      <div class="absolute left-3.5 top-3.5 text-[#577572]">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+        </svg>
+      </div>
+      <input
+        id="search"
+        type="text"
+        placeholder="Search by test name, symptom, or condition..."
+        class="w-full pl-9 pr-4 py-3 rounded-xl border-2 border-[#2d6a5e] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20"
+        oninput="handleSearch(this.value)"
+        onfocus="onFocus()"
+        onblur="onBlur()"
+      />
+      <div id="hint" class="absolute right-3.5 top-3 text-xs text-[#577572] pointer-events-none">test · symptom · CPT</div>
+    </div>
+
+    <!-- Dropdown -->
+    <div id="dropdown" class="hidden mt-1 rounded-xl border border-[#e0ebe9] bg-white shadow-lg overflow-hidden">
+      <div id="dropdown-inner"></div>
+    </div>
+
+    <!-- Panel suggestion -->
+    <div id="panel" class="hidden mt-3 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-sm font-semibold text-[#1a2e2b]" id="panel-title"></p>
+          <p class="text-xs text-[#4a6b67] mt-0.5" id="panel-desc"></p>
+          <p class="text-xs text-[#577572] mt-2">Click any test to add or remove:</p>
+        </div>
+        <button onclick="dismissPanel()" class="text-[#577572] hover:text-[#1a2e2b] text-xl ml-3 flex-shrink-0 leading-none">×</button>
+      </div>
+      <ul id="panel-list" class="mt-2 space-y-0.5"></ul>
+      <button id="panel-add-all" onclick="addAllPanel()" class="mt-3 text-xs bg-[#2d6a5e] text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-[#245a50]"></button>
+    </div>
+
+    <!-- Selected tests -->
+    <div id="selected" class="hidden mt-4">
+      <div class="flex items-center justify-between mb-2">
+        <span id="selected-count" class="text-xs font-semibold text-[#577572]"></span>
+        <button onclick="clearAll()" class="text-xs text-[#577572] hover:text-[#b85c5c]">Remove all</button>
+      </div>
+      <div id="selected-list" class="space-y-1.5"></div>
+    </div>
+  </div>
+
+  <!-- OUTPUT OPTIONS -->
+  <div id="output-section" class="hidden bg-white rounded-2xl border border-[#e0ebe9] p-5 mb-4">
+    <h2 class="text-sm font-semibold text-[#1a2e2b] mb-3">What do you need?</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+      <button onclick="selectOutput('letter')" id="btn-letter" class="output-btn rounded-xl border-2 border-[#e0ebe9] p-3 text-left hover:border-[#2d6a5e] transition-colors">
+        <div class="text-lg mb-1">📋</div>
+        <div class="text-sm font-semibold text-[#1a2e2b]">Letter for my doctor</div>
+        <div class="text-xs text-[#577572] mt-0.5">Formal request with your info + reason</div>
+      </button>
+      <button onclick="selectOutput('list')" id="btn-list" class="output-btn rounded-xl border-2 border-[#e0ebe9] p-3 text-left hover:border-[#2d6a5e] transition-colors">
+        <div class="text-lg mb-1">📝</div>
+        <div class="text-sm font-semibold text-[#1a2e2b]">Test list + codes</div>
+        <div class="text-xs text-[#577572] mt-0.5">For ordering yourself or quick reference</div>
+      </button>
+      <button onclick="selectOutput('share')" id="btn-share" class="output-btn rounded-xl border-2 border-[#e0ebe9] p-3 text-left hover:border-[#2d6a5e] transition-colors">
+        <div class="text-lg mb-1">🔗</div>
+        <div class="text-sm font-semibold text-[#1a2e2b]">Shareable link</div>
+        <div class="text-xs text-[#577572] mt-0.5">Send to a provider or save for later</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- LETTER FIELDS (conditional) -->
+  <div id="letter-fields" class="hidden bg-white rounded-2xl border border-[#e0ebe9] p-5 mb-4">
+    <h2 class="text-sm font-semibold text-[#1a2e2b] mb-3">Your details</h2>
+    <div class="grid grid-cols-2 gap-3 mb-3">
+      <div>
+        <label class="text-xs text-[#577572] block mb-1">Full name</label>
+        <input type="text" value="Rosa Russell" class="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] focus:outline-none focus:border-[#2d6a5e]">
+      </div>
+      <div>
+        <label class="text-xs text-[#577572] block mb-1">Date of birth</label>
+        <input type="text" value="12/12/1972" class="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] focus:outline-none focus:border-[#2d6a5e]">
+      </div>
+    </div>
+    <div>
+      <label class="text-xs text-[#577572] block mb-1">Reason for request <span class="text-[#a0b8b4]">(optional)</span></label>
+      <textarea rows="2" placeholder="e.g. Monitoring thyroid levels, experiencing fatigue and hair loss..." class="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] placeholder-[#577572] focus:outline-none focus:border-[#2d6a5e] resize-none"></textarea>
+    </div>
+  </div>
+
+  <!-- GENERATE BUTTON -->
+  <button id="generate-btn" class="hidden w-full py-3 rounded-xl bg-[#b85c5c] text-white font-semibold text-sm hover:bg-[#a04f4f] transition-colors">
+    Generate
+  </button>
+
+</div>
+
+<script>
+// ─── Data ───────────────────────────────────────────────────
+const TESTS = [
+  { name: 'TSH (Thyroid Stimulating Hormone)', cpt: '84443', tags: ['thyroid','tsh'] },
+  { name: 'Free T3 (Triiodothyronine, Free)', cpt: '86480', tags: ['thyroid','t3','fatigue','hair loss'] },
+  { name: 'Free T4 (Thyroxine, Free)', cpt: '84480', tags: ['thyroid','t4'] },
+  { name: 'Anti-TPO (Thyroid Peroxidase Antibody)', cpt: '86376', tags: ['thyroid','hashimotos','autoimmune'] },
+  { name: 'Anti-Thyroglobulin Antibody (TgAb)', cpt: '86800', tags: ['thyroid','hashimotos','autoimmune'] },
+  { name: 'Reverse T3 (rT3)', cpt: '84482', tags: ['thyroid','fatigue'] },
+  { name: 'Ferritin', cpt: '82728', tags: ['iron','fatigue','hair loss','anemia'] },
+  { name: 'Iron, Serum', cpt: '83540', tags: ['iron','anemia','fatigue'] },
+  { name: 'TIBC (Total Iron Binding Capacity)', cpt: '83550', tags: ['iron','anemia'] },
+  { name: 'Transferrin Saturation', cpt: '83550', tags: ['iron','anemia'] },
+  { name: 'CBC with Differential', cpt: '85025', tags: ['blood','anemia','immune','fatigue'] },
+  { name: 'Vitamin D, 25-OH (Total)', cpt: '82306', tags: ['vitamins','fatigue','immune','bones'] },
+  { name: 'Vitamin B12 (Cobalamin)', cpt: '82607', tags: ['vitamins','fatigue','brain fog','nerve'] },
+  { name: 'Cortisol, AM (Serum)', cpt: '82533', tags: ['hormones','fatigue','adrenal','stress'] },
+  { name: 'DHEA-Sulfate (DHEA-S)', cpt: '82627', tags: ['hormones','fatigue','adrenal'] },
+  { name: 'Estradiol (E2)', cpt: '82670', tags: ['hormones','menopause','pcos','bhrt'] },
+  { name: 'Progesterone', cpt: '84144', tags: ['hormones','menopause','pcos','bhrt'] },
+  { name: 'Testosterone, Total', cpt: '84403', tags: ['hormones','trt','pcos','libido'] },
+  { name: 'HbA1c (Hemoglobin A1c)', cpt: '83036', tags: ['metabolic','diabetes','blood sugar'] },
+  { name: 'Magnesium, Serum', cpt: '83735', tags: ['minerals','fatigue','muscle','sleep'] },
+]
+
+const PANELS = [
+  {
+    slug: 'thyroid-complete',
+    name: 'Thyroid Complete Panel',
+    desc: 'Full thyroid picture — not just TSH',
+    triggers: ['tsh','thyroid','t3','t4','hashimoto','graves','fatigue','hair loss','brain fog','cold'],
+    tests: ['TSH (Thyroid Stimulating Hormone)','Free T4 (Thyroxine, Free)','Free T3 (Triiodothyronine, Free)','Reverse T3 (rT3)','Anti-TPO (Thyroid Peroxidase Antibody)','Anti-Thyroglobulin Antibody (TgAb)'],
+  },
+  {
+    slug: 'iron-deep-dive',
+    name: 'Iron & Anemia Deep Dive',
+    desc: 'Storage, transport, and production markers',
+    triggers: ['ferritin','iron','anemia','fatigue','hair loss','tired'],
+    tests: ['Ferritin','Iron, Serum','TIBC (Total Iron Binding Capacity)','Transferrin Saturation','CBC with Differential','Vitamin B12 (Cobalamin)'],
+  },
+  {
+    slug: 'hormone-baseline',
+    name: 'Hormone Baseline Panel',
+    desc: 'Essential hormones for BHRT or menopause',
+    triggers: ['hormone','estrogen','estradiol','progesterone','menopause','bhrt','libido','mood'],
+    tests: ['Estradiol (E2)','Progesterone','Testosterone, Total','DHEA-Sulfate (DHEA-S)','Cortisol, AM (Serum)'],
+  },
+]
+
+// ─── State ──────────────────────────────────────────────────
+let selected = []  // { name, cpt }
+let currentPanel = null
+let searchFocused = false
+let outputMode = null
+let panelDismissed = new Set()
+
+// ─── Search ─────────────────────────────────────────────────
+function handleSearch(q) {
+  const inner = document.getElementById('dropdown-inner')
+  document.getElementById('hint').style.display = q ? 'none' : 'block'
+
+  if (!q.trim()) { inner.innerHTML = ''; hideDrop(); return }
+
+  const ql = q.toLowerCase()
+  const matches = TESTS.filter(t =>
+    t.name.toLowerCase().includes(ql) ||
+    t.cpt.includes(ql) ||
+    t.tags.some(tag => tag.includes(ql))
+  ).slice(0, 8)
+
+  // Check for panel match
+  const panelMatch = PANELS.find(p =>
+    !panelDismissed.has(p.slug) &&
+    p.triggers.some(tr => ql.includes(tr) || tr.includes(ql))
+  )
+
+  if (panelMatch && panelMatch !== currentPanel) {
+    currentPanel = panelMatch
+    showPanel(panelMatch)
+  }
+
+  if (matches.length === 0) {
+    inner.innerHTML = `<div class="px-4 py-3 text-sm text-[#577572]">No tests found for "${q}" — try a different term</div>`
+  } else {
+    inner.innerHTML = matches.map(t => {
+      const isAdded = selected.some(s => s.name === t.name)
+      return `
+        <button onmousedown="event.preventDefault()" onclick="toggleTest('${t.name}','${t.cpt}')"
+          class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-[#f0f7f6] border-b border-[#f5f5f5] last:border-0 transition-colors text-left">
+          <div>
+            <span class="text-sm font-medium text-[#1a2e2b]">${t.name}</span>
+            <span class="text-xs text-[#577572] ml-2">CPT ${t.cpt}</span>
+          </div>
+          <span class="text-xs font-semibold ml-3 flex-shrink-0" style="color: ${isAdded ? '#b85c5c' : '#2d6a5e'}">${isAdded ? '✓ Remove' : '+ Add'}</span>
+        </button>`
+    }).join('')
+  }
+
+  if (searchFocused) showDrop()
+}
+
+function onFocus() {
+  searchFocused = true
+  if (document.getElementById('dropdown-inner').innerHTML) showDrop()
+}
+function onBlur() {
+  setTimeout(() => { searchFocused = false; hideDrop() }, 200)
+}
+function showDrop() { document.getElementById('dropdown').classList.remove('hidden') }
+function hideDrop() { document.getElementById('dropdown').classList.add('hidden') }
+
+// ─── Test toggle ─────────────────────────────────────────────
+function toggleTest(name, cpt) {
+  const idx = selected.findIndex(s => s.name === name)
+  if (idx >= 0) selected.splice(idx, 1)
+  else selected.push({ name, cpt })
+  renderSelected()
+  // Refresh dropdown to update add/remove labels
+  handleSearch(document.getElementById('search').value)
+  // Refresh panel list
+  if (currentPanel) renderPanelList(currentPanel)
+}
+
+// ─── Panel ───────────────────────────────────────────────────
+function showPanel(panel) {
+  document.getElementById('panel-title').textContent = `💡 Looking for a full panel? Try the ${panel.name}`
+  document.getElementById('panel-desc').textContent = panel.desc
+  renderPanelList(panel)
+  document.getElementById('panel').classList.remove('hidden')
+}
+
+function renderPanelList(panel) {
+  const remaining = panel.tests.filter(n => !selected.some(s => s.name === n))
+  document.getElementById('panel-add-all').textContent =
+    remaining.length > 0 ? `+ Add all ${remaining.length} remaining` : '✓ All added'
+  document.getElementById('panel-add-all').disabled = remaining.length === 0
+
+  document.getElementById('panel-list').innerHTML = panel.tests.map(name => {
+    const isAdded = selected.some(s => s.name === name)
+    const test = TESTS.find(t => t.name === name)
+    const cpt = test?.cpt || ''
+    return `
+      <li>
+        <button onmousedown="event.preventDefault()" onclick="toggleTest('${name}','${cpt}')"
+          class="flex items-center justify-between w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/80 transition-colors">
+          <span class="text-sm font-medium" style="color: ${isAdded ? '#2d6a5e' : '#1a2e2b'}">${name}</span>
+          <span class="text-xs font-semibold ml-3 flex-shrink-0" style="color: ${isAdded ? '#b85c5c' : '#2d6a5e'}">${isAdded ? '✓ Remove' : '+ Add'}</span>
+        </button>
+      </li>`
+  }).join('')
+}
+
+function addAllPanel() {
+  if (!currentPanel) return
+  currentPanel.tests.forEach(name => {
+    if (!selected.some(s => s.name === name)) {
+      const test = TESTS.find(t => t.name === name)
+      selected.push({ name, cpt: test?.cpt || '' })
+    }
+  })
+  renderSelected()
+  renderPanelList(currentPanel)
+}
+
+function dismissPanel() {
+  if (currentPanel) panelDismissed.add(currentPanel.slug)
+  currentPanel = null
+  document.getElementById('panel').classList.add('hidden')
+}
+
+// ─── Selected list ───────────────────────────────────────────
+function renderSelected() {
+  const container = document.getElementById('selected')
+  const list = document.getElementById('selected-list')
+  const count = document.getElementById('selected-count')
+  const output = document.getElementById('output-section')
+  const genBtn = document.getElementById('generate-btn')
+
+  if (selected.length === 0) {
+    container.classList.add('hidden')
+    output.classList.add('hidden')
+    genBtn.classList.add('hidden')
+    return
+  }
+
+  container.classList.remove('hidden')
+  output.classList.remove('hidden')
+  if (outputMode) genBtn.classList.remove('hidden')
+  count.textContent = `${selected.length} test${selected.length !== 1 ? 's' : ''} selected`
+
+  list.innerHTML = selected.map((t, i) => `
+    <div class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#faf8f5] border border-[#e0ebe9]">
+      <div>
+        <span class="text-sm font-medium text-[#1a2e2b]">${t.name}</span>
+        <span class="text-xs text-[#577572] ml-2">CPT ${t.cpt}</span>
+      </div>
+      <button onclick="removeAt(${i})" class="text-[#c8ddd9] hover:text-[#b85c5c] transition-colors ml-3 text-lg leading-none flex-shrink-0">×</button>
+    </div>`).join('')
+}
+
+function removeAt(i) {
+  selected.splice(i, 1)
+  renderSelected()
+  if (currentPanel) renderPanelList(currentPanel)
+  handleSearch(document.getElementById('search').value)
+}
+
+function clearAll() {
+  selected = []
+  currentPanel = null
+  panelDismissed = new Set()
+  document.getElementById('panel').classList.add('hidden')
+  renderSelected()
+}
+
+// ─── Output mode ─────────────────────────────────────────────
+function selectOutput(mode) {
+  outputMode = mode
+  document.querySelectorAll('.output-btn').forEach(b => {
+    b.style.borderColor = '#e0ebe9'
+    b.style.background = 'white'
+  })
+  const btn = document.getElementById(`btn-${mode}`)
+  btn.style.borderColor = '#2d6a5e'
+  btn.style.background = '#f0f7f6'
+
+  const letterFields = document.getElementById('letter-fields')
+  letterFields.classList.toggle('hidden', mode !== 'letter')
+
+  const genBtn = document.getElementById('generate-btn')
+  const labels = { letter: 'Generate Letter', list: 'Generate Test List', share: 'Generate Shareable Link' }
+  genBtn.textContent = labels[mode]
+  genBtn.classList.remove('hidden')
+}
+</script>
+</body>
+</html>
