@@ -18,7 +18,7 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
-const COMPED = ['banoo32@gmail.com', 'padfieldc@gmail.com']
+const COMPED = ['banoo32@gmail.com', 'padfieldc@gmail.com', 'arianadietrich@gmail.com']
 
 async function main() {
   const { data, error } = await sb.from('profiles').select('email,is_premium,created_at')
