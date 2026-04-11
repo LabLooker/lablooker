@@ -652,8 +652,7 @@ export default function AdvocatePage() {
                 {(showAllTests ? selectedTests : selectedTests.slice(0, TESTS_PREVIEW)).map(test => (
                   <div
                     key={test.id}
-                    onClick={() => removeTest(test.id)}
-                    className="flex items-center justify-between px-4 py-2.5 rounded-lg cursor-pointer hover:bg-[#f5f0ec] transition-colors group"
+                    className="flex items-center justify-between px-4 py-2.5 rounded-lg transition-colors group"
                     style={{ backgroundColor: '#faf8f5', border: '1px solid #e0ebe9' }}
                   >
                     <div className="min-w-0">
