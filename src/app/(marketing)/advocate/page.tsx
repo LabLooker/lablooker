@@ -551,59 +551,41 @@ export default function AdvocatePage() {
                     <p className="text-xs text-[#4a6b67] mt-0.5 leading-relaxed">
                       {suggestedBundle.tests.length} tests — {suggestedBundle.description.split('.')[0]}.
                     </p>
-                    {/* Expandable test list */}
-                    <button
-                      onClick={() => setBundleExpanded(v => !v)}
-                      className="text-xs mt-1.5 flex items-center gap-1 transition-colors"
-                      style={{ color: '#2d6a5e' }}
-                    >
-                      <svg className={`w-3 h-3 transition-transform ${bundleExpanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                      </svg>
-                      {bundleExpanded ? 'Hide tests' : `See all ${suggestedBundle.tests.length} tests`}
-                    </button>
-                    {bundleExpanded && (
-                      <ul className="mt-2 space-y-0.5">
-                        {suggestedBundle.tests.map(name => {
-                          const alreadyAdded = selectedTests.some(t => t.test_name === name)
-                          return (
-                            <li key={name}>
-                              <button
-                                onMouseDown={e => e.preventDefault()}
-                                onClick={async () => {
-                                  if (alreadyAdded) {
-                                    // Toggle off: remove from selected
-                                    const match = selectedTests.find(t => t.test_name === name)
-                                    if (match) removeTest(match.id)
-                                  } else {
-                                    // Toggle on: add to selected
-                                    const { data } = await supabase
-                                      .from('tests')
-                                      .select('id, test_name, cpt_codes, category, description')
-                                      .eq('test_name', name)
-                                      .limit(1)
-                                    if (data && data.length > 0) addTest(data[0])
-                                  }
-                                }}
-                                className={`text-xs flex items-center gap-1.5 w-full text-left transition-colors ${
-                                  alreadyAdded
-                                    ? 'hover:text-[#b85c5c] cursor-pointer'
-                                    : 'hover:text-[#2d6a5e] cursor-pointer'
-                                }`}
-                                style={{ color: alreadyAdded ? '#2d6a5e' : '#4a6b67' }}
-                              >
-                                <span
-                                  className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                                  style={{ backgroundColor: alreadyAdded ? '#2d6a5e' : '#c8ddd9' }}
-                                />
-                                <span className={alreadyAdded ? '' : 'opacity-60'}>{name}</span>
-                                {alreadyAdded && <span className="ml-auto text-[10px] font-medium" style={{ color: '#2d6a5e' }}>✓</span>}
-                              </button>
-                            </li>
-                          )
-                        })}
-                      </ul>
-                    )}
+                    <p className="text-xs text-[#577572] mt-1.5">Click any test to add or remove it:</p>
+                    {/* Test list — always visible */}
+                    <ul className="mt-2 space-y-1">
+                      {suggestedBundle.tests.map(name => {
+                        const alreadyAdded = selectedTests.some(t => t.test_name === name)
+                        return (
+                          <li key={name}>
+                            <button
+                              onMouseDown={e => e.preventDefault()}
+                              onClick={async () => {
+                                if (alreadyAdded) {
+                                  const match = selectedTests.find(t => t.test_name === name)
+                                  if (match) removeTest(match.id)
+                                } else {
+                                  const { data } = await supabase
+                                    .from('tests')
+                                    .select('id, test_name, cpt_codes, category, description')
+                                    .eq('test_name', name)
+                                    .limit(1)
+                                  if (data && data.length > 0) addTest(data[0])
+                                }
+                              }}
+                              className="flex items-center justify-between w-full text-left px-2 py-1 rounded-lg hover:bg-white/70 transition-colors cursor-pointer"
+                            >
+                              <span className="text-sm font-medium" style={{ color: alreadyAdded ? '#2d6a5e' : '#1a2e2b' }}>
+                                {name}
+                              </span>
+                              <span className="text-xs font-semibold ml-3 flex-shrink-0" style={{ color: alreadyAdded ? '#2d6a5e' : '#577572' }}>
+                                {alreadyAdded ? '✓ Added' : '+ Add'}
+                              </span>
+                            </button>
+                          </li>
+                        )
+                      })}
+                    </ul>
                     <div className="flex items-center gap-3 mt-2">
                       <button
                         onClick={async () => {
