@@ -34,7 +34,17 @@
         onfocus="onFocus()"
         onblur="onBlur()"
       />
-      <div id="hint" class="absolute right-3.5 top-3 text-xs text-[#577572] pointer-events-none">test · symptom · CPT</div>
+    </div>
+
+    <!-- Search hint chips — visible before typing --> 
+    <div id="search-hint" class="flex flex-wrap gap-2 mt-2.5">
+      <span class="text-xs text-[#577572] self-center">Try:</span>
+      <button onclick="setSearch('fatigue')" class="hint-chip px-2.5 py-1 rounded-full border border-[#e0ebe9] text-xs text-[#4a6b67] hover:border-[#2d6a5e] hover:text-[#2d6a5e] transition-colors bg-white">fatigue</button>
+      <button onclick="setSearch('thyroid')" class="hint-chip px-2.5 py-1 rounded-full border border-[#e0ebe9] text-xs text-[#4a6b67] hover:border-[#2d6a5e] hover:text-[#2d6a5e] transition-colors bg-white">thyroid</button>
+      <button onclick="setSearch('hormones')" class="hint-chip px-2.5 py-1 rounded-full border border-[#e0ebe9] text-xs text-[#4a6b67] hover:border-[#2d6a5e] hover:text-[#2d6a5e] transition-colors bg-white">hormones</button>
+      <button onclick="setSearch('hair loss')" class="hint-chip px-2.5 py-1 rounded-full border border-[#e0ebe9] text-xs text-[#4a6b67] hover:border-[#2d6a5e] hover:text-[#2d6a5e] transition-colors bg-white">hair loss</button>
+      <button onclick="setSearch('TSH')" class="hint-chip px-2.5 py-1 rounded-full border border-[#e0ebe9] text-xs text-[#4a6b67] hover:border-[#2d6a5e] hover:text-[#2d6a5e] transition-colors bg-white">TSH</button>
+      <button onclick="setSearch('85025')" class="hint-chip px-2.5 py-1 rounded-full border border-[#e0ebe9] text-xs text-[#4a6b67] hover:border-[#2d6a5e] hover:text-[#2d6a5e] transition-colors bg-white">CPT code</button>
     </div>
 
     <!-- Dropdown -->
@@ -171,9 +181,18 @@ let outputMode = null
 let panelDismissed = new Set()
 
 // ─── Search ─────────────────────────────────────────────────
+function setSearch(q) {
+  const input = document.getElementById('search')
+  input.value = q
+  searchFocused = true
+  handleSearch(q)
+  input.focus()
+}
+
 function handleSearch(q) {
   const inner = document.getElementById('dropdown-inner')
-  document.getElementById('hint').style.display = q ? 'none' : 'block'
+  // Hide hint chips once user starts typing
+  document.getElementById('search-hint').style.display = q ? 'none' : 'flex'
 
   if (!q.trim()) { inner.innerHTML = ''; hideDrop(); return }
 
