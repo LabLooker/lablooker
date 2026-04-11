@@ -81,6 +81,8 @@ export default function AdvocatePage() {
   const [reason, setReason] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [dismissedBundles, setDismissedBundles] = useState<Set<string>>(new Set())
+  const [suppressAllPanels, setSuppressAllPanels] = useState(false)
+  const dismissCount = useRef(0)
   const [showAllTests, setShowAllTests] = useState(false)
   const TESTS_PREVIEW = 5
   const [showTemplate, setShowTemplate] = useState(false)
@@ -253,6 +255,7 @@ export default function AdvocatePage() {
     prevTestCount.current = selectedTests.length
     if (selectedTests.length === 0) return null
     if (!isAdding) return null
+    if (suppressAllPanels) return null
     const selectedNames = new Set(selectedTests.map(t => t.test_name))
     for (const bundle of TEST_BUNDLES) {
       if (dismissedBundles.has(bundle.slug)) continue
@@ -261,7 +264,7 @@ export default function AdvocatePage() {
       if (hasAtLeastOne && !hasAll) return bundle
     }
     return null
-  }, [selectedTests, dismissedBundles])
+  }, [selectedTests, dismissedBundles, suppressAllPanels])
 
   const addTest = (test: TestResult) => {
     // 1. Add instantly — no waiting
@@ -576,8 +579,11 @@ export default function AdvocatePage() {
                   <button
                     onClick={() => {
                       setDismissedBundles(prev => new Set([...prev, suggestedBundle.slug]))
+                      dismissCount.current += 1
+                      if (dismissCount.current >= 2) setSuppressAllPanels(true)
                     }}
                     className="text-[#577572] hover:text-[#1a2e2b] text-xl ml-3 flex-shrink-0 leading-none"
+                    title={dismissCount.current >= 1 ? 'Dismiss (won\'t suggest more panels)' : 'Dismiss'}
                   >×</button>
                 </div>
                 <ul className="mt-2 space-y-0.5">
@@ -641,7 +647,7 @@ export default function AdvocatePage() {
                     {selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''} selected
                   </span>
                   <button
-                    onClick={() => { setSelectedTests([]); setDismissedBundles(new Set()); setShowTemplate(false) }}
+                    onClick={() => { setSelectedTests([]); setDismissedBundles(new Set()); setSuppressAllPanels(false); dismissCount.current = 0; setShowTemplate(false) }}
                     className="text-xs hover:text-[#b85c5c] transition-colors"
                     style={{ color: '#577572' }}
                   >
