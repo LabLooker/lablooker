@@ -196,18 +196,15 @@ export default function AdvocatePage() {
     return () => clearTimeout(timer)
   }, [searchQuery, searchTests])
 
-  // Track last action direction so bundle only suggests on add, not remove
+    // Track count synchronously via ref so useMemo reads current value
   const prevTestCount = useRef(0)
-  const [lastActionWasAdd, setLastActionWasAdd] = useState(false)
-  useEffect(() => {
-    setLastActionWasAdd(selectedTests.length > prevTestCount.current)
-    prevTestCount.current = selectedTests.length
-  }, [selectedTests.length])
 
-  // Compute suggested bundle directly — no async lag
+  // Compute suggested bundle — only show when adding (not removing)
   const suggestedBundle = useMemo<TestBundle | null>(() => {
+    const isAdding = selectedTests.length >= prevTestCount.current
+    prevTestCount.current = selectedTests.length
     if (selectedTests.length === 0) return null
-    if (!lastActionWasAdd) return null
+    if (!isAdding) return null
     const selectedNames = new Set(selectedTests.map(t => t.test_name))
     for (const bundle of TEST_BUNDLES) {
       if (dismissedBundles.has(bundle.slug)) continue
@@ -216,7 +213,7 @@ export default function AdvocatePage() {
       if (hasAtLeastOne && !hasAll) return bundle
     }
     return null
-  }, [selectedTests, dismissedBundles, lastActionWasAdd])
+  }, [selectedTests, dismissedBundles])
 
   // Reset expanded state when bundle changes
   useEffect(() => { setBundleExpanded(false) }, [suggestedBundle?.slug])
