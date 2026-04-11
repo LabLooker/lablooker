@@ -3,14 +3,15 @@
 const { createClient } = require('@supabase/supabase-js')
 const fs = require('fs')
 
-// Load .env.local manually (no dotenv dependency needed)
+// Load .env.local using absolute path (works regardless of cwd)
 try {
-  const env = fs.readFileSync('.env.local', 'utf8')
+  const envPath = require('path').join(__dirname, '..', '.env.local')
+  const env = fs.readFileSync(envPath, 'utf8')
   for (const line of env.split('\n')) {
     const [k, ...v] = line.split('=')
     if (k && v.length) process.env[k.trim()] = v.join('=').trim()
   }
-} catch {}
+} catch (e) { console.error('Could not load .env.local:', e.message) }
 
 const sb = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
