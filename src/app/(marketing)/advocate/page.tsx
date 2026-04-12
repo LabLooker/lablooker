@@ -261,13 +261,21 @@ export default function AdvocatePage() {
       if (dismissedBundles.has(bundle.slug)) continue
       const hasAtLeastOne = bundle.tests.some(name => selectedNames.has(name))
       const hasAll = bundle.tests.every(name => selectedNames.has(name))
-      // Also trigger by category match (e.g. adding any thyroid test triggers thyroid panel)
-      const categoryMatch = (
-        (bundle.slug === 'thyroid-complete' && selectedCategories.has('thyroid')) ||
-        (bundle.slug === 'iron-deep-dive' && (selectedCategories.has('iron') || selectedCategories.has('iron_blood'))) ||
-        (bundle.slug === 'hormone-baseline' && selectedCategories.has('hormones'))
-      )
-      if ((hasAtLeastOne || categoryMatch) && !hasAll) return bundle
+      // Trigger by direct test name match only — no category matching
+      // (category matching caused unrelated panels to appear after dismissal)
+      if (hasAtLeastOne && !hasAll) return bundle
+    }
+    // Fallback: category-based suggestion only if no name match found above
+    // and no panels have been dismissed yet
+    if (dismissedBundles.size === 0) {
+      if (selectedCategories.has('thyroid') && !dismissedBundles.has('thyroid-complete')) {
+        const bundle = TEST_BUNDLES.find(b => b.slug === 'thyroid-complete')
+        if (bundle && !bundle.tests.every(name => selectedNames.has(name))) return bundle
+      }
+      if ((selectedCategories.has('iron') || selectedCategories.has('iron_blood')) && !dismissedBundles.has('iron-deep-dive')) {
+        const bundle = TEST_BUNDLES.find(b => b.slug === 'iron-deep-dive')
+        if (bundle && !bundle.tests.every(name => selectedNames.has(name))) return bundle
+      }
     }
     return null
   }, [selectedTests, dismissedBundles, suppressAllPanels])
