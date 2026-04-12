@@ -459,6 +459,9 @@ export default function AdvocatePage() {
                         {test.cpt_codes?.length > 0 && (
                           <span className="text-xs text-[#577572] ml-2">CPT {test.cpt_codes.join(', ')}</span>
                         )}
+                        {test.description && (
+                          <p className="text-xs text-[#577572] mt-0.5 line-clamp-1">{test.description}</p>
+                        )}
                       </div>
                       <span
                         className="text-xs font-semibold ml-3 flex-shrink-0"
