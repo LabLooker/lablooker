@@ -455,7 +455,12 @@ export default function AdvocatePage() {
                       style={{ borderColor: '#f5f5f5' }}
                     >
                       <div>
-                        <span className="text-sm font-medium text-[#1a2e2b]">{test.test_name}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-[#1a2e2b]">{test.test_name}</span>
+                          {test.test_name.toLowerCase().includes('panel') && (
+                            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[#e0ebe9] text-[#2d6a5e]">Lab panel</span>
+                          )}
+                        </div>
                         {test.description && (
                           <p className="text-xs text-[#577572] mt-0.5 line-clamp-1">{test.description}</p>
                         )}
