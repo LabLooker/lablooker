@@ -456,9 +456,6 @@ export default function AdvocatePage() {
                     >
                       <div>
                         <span className="text-sm font-medium text-[#1a2e2b]">{test.test_name}</span>
-                        {test.cpt_codes?.length > 0 && (
-                          <span className="text-xs text-[#577572] ml-2">CPT {test.cpt_codes.join(', ')}</span>
-                        )}
                         {test.description && (
                           <p className="text-xs text-[#577572] mt-0.5 line-clamp-1">{test.description}</p>
                         )}
@@ -481,13 +478,14 @@ export default function AdvocatePage() {
                 className="mt-3 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4"
                 onMouseDown={e => e.preventDefault()}
               >
+                <div className="text-xs font-bold uppercase tracking-widest text-[#2d6a5e] mb-2">💡 Suggested Panel</div>
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-sm font-semibold text-[#1a2e2b]">
-                      Looking for a full panel? Try the {suggestedBundle.name}
+                      {suggestedBundle.name}
                     </p>
                     <p className="text-xs text-[#4a6b67] mt-0.5">
-                      {suggestedBundle.tests.length} tests — {suggestedBundle.description.split('.')[0]}.
+                      {suggestedBundle.description.split('.')[0]}.
                     </p>
                     <p className="text-xs text-[#577572] mt-2">Click any test to add or remove:</p>
                   </div>
