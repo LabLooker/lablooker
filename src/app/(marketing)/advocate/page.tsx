@@ -88,6 +88,7 @@ export default function AdvocatePage() {
   const [dismissedBundles, setDismissedBundles] = useState<Set<string>>(new Set())
   const [suppressAllPanels, setSuppressAllPanels] = useState(false)
   const dismissCount = useRef(0)
+  const letterRef = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState(false)
   const [includeICD10, setIncludeICD10] = useState(false)
   const [includeLabCodes, setIncludeLabCodes] = useState(false)
@@ -265,7 +266,13 @@ export default function AdvocatePage() {
 
   const addTest = (test: TestResult) => {
     // 1. Add instantly — no waiting
-    setSelectedTests(prev => [...prev, { ...test, icd10Codes: [], labCodes: [] }])
+    setSelectedTests(prev => {
+      // Scroll to letter on first add
+      if (prev.length === 0) {
+        setTimeout(() => letterRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
+      }
+      return [...prev, { ...test, icd10Codes: [], labCodes: [] }]
+    })
     // 2. Remove from search results
     setSearchResults(prev => prev.filter(t => t.id !== test.id))
     // 3. Fetch codes in background, then update
@@ -575,7 +582,7 @@ export default function AdvocatePage() {
           </div>
 
           {/* Live Letter Preview */}
-          <div className="bg-white rounded-xl shadow-sm border p-8 mb-4 print-template" style={{ borderColor: '#e0ebe9', fontFamily: 'Georgia, "Times New Roman", serif' }}>
+          <div ref={letterRef} className="bg-white rounded-xl shadow-sm border p-8 mb-4 print-template" style={{ borderColor: '#e0ebe9', fontFamily: 'Georgia, "Times New Roman", serif' }}>
 
             {/* Date — right-aligned */}
             <p className="text-right text-sm mb-6" style={{ color: '#1a2e2b' }}>
