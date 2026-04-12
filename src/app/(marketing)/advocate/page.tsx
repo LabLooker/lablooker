@@ -204,7 +204,8 @@ export default function AdvocatePage() {
       if (!error && data) {
         let matched = data.filter(t =>
           !selectedIds.has(t.id) &&
-          words.every(w => t.test_name.toLowerCase().includes(w))
+          words.every(w => t.test_name.toLowerCase().includes(w)) &&
+          !t.test_name.toLowerCase().includes('panel') // exclude lab panel products
         )
 
         // If CPT search or few name matches, also search by CPT code
@@ -255,24 +256,25 @@ export default function AdvocatePage() {
     if (!isAdding) return null
     if (suppressAllPanels) return null
     const selectedNames = new Set(selectedTests.map(t => t.test_name))
+    const selectedCategories = new Set(selectedTests.map(t => t.category))
     for (const bundle of TEST_BUNDLES) {
       if (dismissedBundles.has(bundle.slug)) continue
       const hasAtLeastOne = bundle.tests.some(name => selectedNames.has(name))
       const hasAll = bundle.tests.every(name => selectedNames.has(name))
-      if (hasAtLeastOne && !hasAll) return bundle
+      // Also trigger by category match (e.g. adding any thyroid test triggers thyroid panel)
+      const categoryMatch = (
+        (bundle.slug === 'thyroid-complete' && selectedCategories.has('thyroid')) ||
+        (bundle.slug === 'iron-deep-dive' && (selectedCategories.has('iron') || selectedCategories.has('iron_blood'))) ||
+        (bundle.slug === 'hormone-baseline' && selectedCategories.has('hormones'))
+      )
+      if ((hasAtLeastOne || categoryMatch) && !hasAll) return bundle
     }
     return null
   }, [selectedTests, dismissedBundles, suppressAllPanels])
 
   const addTest = (test: TestResult) => {
     // 1. Add instantly — no waiting
-    setSelectedTests(prev => {
-      // Scroll to letter on first add
-      if (prev.length === 0) {
-        setTimeout(() => letterRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
-      }
-      return [...prev, { ...test, icd10Codes: [], labCodes: [] }]
-    })
+    setSelectedTests(prev => [...prev, { ...test, icd10Codes: [], labCodes: [] }])
     // 2. Remove from search results
     setSearchResults(prev => prev.filter(t => t.id !== test.id))
     // 3. Fetch codes in background, then update
