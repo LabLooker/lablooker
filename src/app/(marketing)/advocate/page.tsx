@@ -544,7 +544,7 @@ export default function AdvocatePage() {
                     onClick={() => {
                       setDismissedBundles(prev => new Set([...prev, suggestedBundle.slug]))
                       dismissCount.current += 1
-                      if (dismissCount.current >= 2) setSuppressAllPanels(true)
+                      // panelSuggestionDone already set above
                     }}
                     className="text-[#577572] hover:text-[#1a2e2b] text-xl ml-3 flex-shrink-0 leading-none"
                     title={dismissCount.current >= 1 ? 'Dismiss (won\'t suggest more panels)' : 'Dismiss'}
