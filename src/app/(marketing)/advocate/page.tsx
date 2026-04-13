@@ -86,7 +86,8 @@ export default function AdvocatePage() {
   const [reason, setReason] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [dismissedBundles, setDismissedBundles] = useState<Set<string>>(new Set())
-  const [suppressAllPanels, setSuppressAllPanels] = useState(false)
+  const [panelSuggestionDone, setPanelSuggestionDone] = useState(false)
+  const [outputFormat, setOutputFormat] = useState<'letter' | 'plain'>('letter')
   const dismissCount = useRef(0)
   const letterRef = useRef<HTMLDivElement>(null)
   const [expandedDescId, setExpandedDescId] = useState<string | null>(null)
@@ -255,7 +256,7 @@ export default function AdvocatePage() {
     prevTestCount.current = selectedTests.length
     if (selectedTests.length === 0) return null
     if (!isAdding) return null
-    if (suppressAllPanels) return null
+    if (panelSuggestionDone) return null
     const selectedNames = new Set(selectedTests.map(t => t.test_name))
     const selectedCategories = new Set(selectedTests.map(t => t.category))
     for (const bundle of TEST_BUNDLES) {
@@ -279,7 +280,7 @@ export default function AdvocatePage() {
       }
     }
     return null
-  }, [selectedTests, dismissedBundles, suppressAllPanels])
+  }, [selectedTests, dismissedBundles, panelSuggestionDone])
 
   const addTest = (test: TestResult) => {
     // 1. Add instantly — no waiting
@@ -324,6 +325,20 @@ export default function AdvocatePage() {
   // Build letter plain text for copy
   const getLetterPlainText = () => {
     const lines: string[] = []
+    if (outputFormat === 'plain') {
+      lines.push('Lab tests I’d like to request:')
+      lines.push('')
+      selectedTests.forEach(test => {
+        const cpt = test.cpt_codes?.length > 0 ? ` (CPT ${test.cpt_codes.join(', ')})` : ''
+        lines.push(`• ${test.test_name}${cpt}`)
+      })
+      if (reason.trim()) {
+        lines.push('')
+        lines.push(`Reason: ${reason.trim()}`)
+      }
+      return lines.join('\n')
+    }
+    // Formal letter format
     lines.push(todayFormatted)
     lines.push('')
     lines.push('To Whom It May Concern,')
@@ -595,7 +610,7 @@ export default function AdvocatePage() {
                   {selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''} in letter
                 </span>
                 <button
-                  onClick={() => { setSelectedTests([]); setDismissedBundles(new Set()); setSuppressAllPanels(false); dismissCount.current = 0 }}
+                  onClick={() => { setSelectedTests([]); setDismissedBundles(new Set()); setPanelSuggestionDone(false); dismissCount.current = 0 }}
                   className="text-xs hover:text-[#b85c5c] transition-colors"
                   style={{ color: '#577572' }}
                 >
@@ -605,23 +620,47 @@ export default function AdvocatePage() {
             )}
           </div>
 
+          {/* Format toggle */}
+          <div className="flex items-center gap-1 mb-3">
+            <span className="text-xs text-[#577572] mr-2">Format:</span>
+            <button
+              onClick={() => setOutputFormat('letter')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                outputFormat === 'letter'
+                  ? 'bg-[#2d6a5e] text-white'
+                  : 'bg-white border border-[#e0ebe9] text-[#577572] hover:border-[#2d6a5e]'
+              }`}
+            >
+              📋 Formal letter
+            </button>
+            <button
+              onClick={() => setOutputFormat('plain')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                outputFormat === 'plain'
+                  ? 'bg-[#2d6a5e] text-white'
+                  : 'bg-white border border-[#e0ebe9] text-[#577572] hover:border-[#2d6a5e]'
+              }`}
+            >
+              📝 Plain list (copy/paste)
+            </button>
+          </div>
+
           {/* Live Letter Preview */}
-          <div ref={letterRef} className="bg-white rounded-xl shadow-sm border p-8 mb-4 print-template" style={{ borderColor: '#e0ebe9', fontFamily: 'Georgia, "Times New Roman", serif' }}>
+          <div ref={letterRef} className="bg-white rounded-xl shadow-sm border p-8 mb-4 print-template" style={{ borderColor: '#e0ebe9', fontFamily: outputFormat === 'letter' ? 'Georgia, "Times New Roman", serif' : 'inherit' }}>
 
-            {/* Date — right-aligned */}
-            <p className="text-right text-sm mb-6" style={{ color: '#1a2e2b' }}>
-              {todayFormatted}
-            </p>
-
-            {/* Salutation */}
-            <p className="text-sm mb-4" style={{ color: '#1a2e2b' }}>
-              To Whom It May Concern,
-            </p>
-
-            {/* Body */}
-            <p className="text-sm leading-relaxed mb-4" style={{ color: '#1a2e2b' }}>
-              I am writing to request the following lab tests for my records and to facilitate a conversation with my healthcare provider:
-            </p>
+            {/* Letter header — only in letter format */}
+            {outputFormat === 'letter' && (
+              <>
+                <p className="text-right text-sm mb-6" style={{ color: '#1a2e2b' }}>{todayFormatted}</p>
+                <p className="text-sm mb-4" style={{ color: '#1a2e2b' }}>To Whom It May Concern,</p>
+                <p className="text-sm leading-relaxed mb-4" style={{ color: '#1a2e2b' }}>
+                  I am writing to request the following lab tests for my records and to facilitate a conversation with my healthcare provider:
+                </p>
+              </>
+            )}
+            {outputFormat === 'plain' && hasTests && (
+              <p className="text-xs text-[#577572] mb-3">Lab tests I’d like to request — copy and paste into your patient portal:</p>
+            )}
 
             {/* Test list */}
             {hasTests ? (
