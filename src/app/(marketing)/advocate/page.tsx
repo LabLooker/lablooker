@@ -87,7 +87,7 @@ export default function AdvocatePage() {
   const [isSearching, setIsSearching] = useState(false)
   const [dismissedBundles, setDismissedBundles] = useState<Set<string>>(new Set())
   const [panelSuggestionDone, setPanelSuggestionDone] = useState(false)
-  const [outputFormat, setOutputFormat] = useState<'letter' | 'plain'>('letter')
+  const [outputFormat, setOutputFormat] = useState<'letter' | 'plain'>('plain')
   const dismissCount = useRef(0)
   const letterRef = useRef<HTMLDivElement>(null)
   const [expandedDescId, setExpandedDescId] = useState<string | null>(null)
