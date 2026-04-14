@@ -642,7 +642,7 @@ export default function AdvocatePage() {
                   : 'bg-white border border-[#e0ebe9] text-[#577572] hover:border-[#2d6a5e]'
               }`}
             >
-              📋 Formal letter
+              Formal letter
             </button>
             <button
               onClick={() => setOutputFormat('plain')}
@@ -652,7 +652,7 @@ export default function AdvocatePage() {
                   : 'bg-white border border-[#e0ebe9] text-[#577572] hover:border-[#2d6a5e]'
               }`}
             >
-              📝 Plain list (copy/paste)
+              Plain list (copy/paste)
             </button>
           </div>
 
