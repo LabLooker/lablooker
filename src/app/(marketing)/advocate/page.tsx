@@ -96,6 +96,7 @@ export default function AdvocatePage() {
   const [outputFormat, setOutputFormat] = useState<'letter' | 'plain'>('plain')
   const dismissCount = useRef(0)
   const letterRef = useRef<HTMLDivElement>(null)
+  const searchContainerRef = useRef<HTMLDivElement>(null)
   const [expandedDescId, setExpandedDescId] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [includeICD10, setIncludeICD10] = useState(false)
@@ -278,6 +279,21 @@ export default function AdvocatePage() {
     }
   }, [suggestedBundle?.slug])
 
+  // Click-outside closes dropdown (more reliable than onBlur on mobile)
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent | TouchEvent) {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setSearchFocused(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [])
+
   // Persist selected tests to localStorage
   useEffect(() => {
     try {
@@ -446,7 +462,7 @@ export default function AdvocatePage() {
           <div className="bg-white rounded-2xl border p-5 mb-4 no-print" style={{ borderColor: '#e0ebe9' }}>
 
             {/* Search bar */}
-            <div className="relative">
+            <div className="relative" ref={searchContainerRef}>
               <div className="absolute left-3.5 top-3.5 text-[#577572]">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -457,7 +473,6 @@ export default function AdvocatePage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
-                onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
                 placeholder="Search by test name, symptom, or condition..."
                 className="w-full pl-9 pr-4 py-3 rounded-xl border-2 border-[#2d6a5e] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20"
               />
