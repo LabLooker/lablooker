@@ -54,8 +54,6 @@ export const TEST_BUNDLES: TestBundle[] = [
       'DHEA-Sulfate (DHEA-S)',
       'FSH (Follicle Stimulating Hormone)',
       'LH (Luteinizing Hormone)',
-      'Free T3 (Triiodothyronine, Free)',
-      'TSH (Thyroid Stimulating Hormone)',
       'Cortisol, AM (Serum)',
       'CBC with Differential (CBC w/ Diff)',
       'CMP (Comprehensive Metabolic Panel)',
