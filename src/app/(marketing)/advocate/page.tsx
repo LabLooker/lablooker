@@ -249,14 +249,10 @@ export default function AdvocatePage() {
   }, [searchQuery, searchTests])
 
   // Track count synchronously via ref so useMemo reads current value
-  const prevTestCount = useRef(0)
 
   // Compute suggested bundle — only show when adding (not removing)
   const suggestedBundle = useMemo<TestBundle | null>(() => {
-    const isAdding = selectedTests.length >= prevTestCount.current
-    prevTestCount.current = selectedTests.length
     if (selectedTests.length === 0) return null
-    if (!isAdding) return null
     if (panelSuggestionDone) return null
     const selectedNames = new Set(selectedTests.map(t => t.test_name))
     for (const bundle of TEST_BUNDLES) {
