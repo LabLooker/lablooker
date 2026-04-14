@@ -264,6 +264,14 @@ export default function AdvocatePage() {
     return null
   }, [selectedTests, dismissedBundles, panelSuggestionDone])
 
+  // Close search dropdown when panel suggestion is active
+  useEffect(() => {
+    if (suggestedBundle) {
+      setSearchFocused(false)
+      setSearchResults([])
+    }
+  }, [suggestedBundle?.slug])
+
   const addTest = (test: TestResult) => {
     // 1. Add instantly — no waiting
     setSelectedTests(prev => [...prev, { ...test, icd10Codes: [], labCodes: [] }])
