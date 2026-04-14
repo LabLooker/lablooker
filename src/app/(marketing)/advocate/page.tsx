@@ -92,9 +92,8 @@ export default function AdvocatePage() {
   const [reason, setReason] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [dismissedBundles, setDismissedBundles] = useState<Set<string>>(new Set())
-  const [panelSuggestionDone, setPanelSuggestionDone] = useState(false)
+  const [expandedPanelSlugs, setExpandedPanelSlugs] = useState<Set<string>>(new Set())
   const [outputFormat, setOutputFormat] = useState<'letter' | 'plain'>('plain')
-  const dismissCount = useRef(0)
   const letterRef = useRef<HTMLDivElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const [expandedDescId, setExpandedDescId] = useState<string | null>(null)
@@ -255,29 +254,17 @@ export default function AdvocatePage() {
     return () => clearTimeout(timer)
   }, [searchQuery, searchTests])
 
-  // Track count synchronously via ref so useMemo reads current value
-
-  // Compute suggested bundle — only show when adding (not removing)
-  const suggestedBundle = useMemo<TestBundle | null>(() => {
-    if (selectedTests.length === 0) return null
-    if (panelSuggestionDone) return null
+  // Compute all suggested bundles at once
+  const suggestedBundles = useMemo<TestBundle[]>(() => {
+    if (selectedTests.length === 0) return []
     const selectedNames = new Set(selectedTests.map(t => t.test_name))
-    for (const bundle of TEST_BUNDLES) {
-      if (dismissedBundles.has(bundle.slug)) continue
+    return TEST_BUNDLES.filter(bundle => {
+      if (dismissedBundles.has(bundle.slug)) return false
       const hasAtLeastOne = bundle.tests.some(name => selectedNames.has(name))
       const hasAll = bundle.tests.every(name => selectedNames.has(name))
-      if (hasAtLeastOne && !hasAll) return bundle
-    }
-    return null
-  }, [selectedTests, dismissedBundles, panelSuggestionDone])
-
-  // Close search dropdown when panel suggestion is active
-  useEffect(() => {
-    if (suggestedBundle) {
-      setSearchFocused(false)
-      setSearchResults([])
-    }
-  }, [suggestedBundle?.slug])
+      return hasAtLeastOne && !hasAll
+    })
+  }, [selectedTests, dismissedBundles])
 
   // Click-outside closes dropdown (more reliable than onBlur on mobile)
   useEffect(() => {
@@ -554,87 +541,107 @@ export default function AdvocatePage() {
               </div>
             )}
 
-            {/* Panel suggestion card */}
-            {suggestedBundle && (
+            {/* Panel suggestions card — all relevant bundles at once */}
+            {suggestedBundles.length > 0 && (
               <div
                 className="mt-3 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4"
                 onMouseDown={e => e.preventDefault()}
               >
-                <div className="text-xs font-bold uppercase tracking-widest text-[#2d6a5e] mb-2">💡 Suggested Panel</div>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-[#1a2e2b]">
-                      {suggestedBundle.name}
-                    </p>
-                    <p className="text-xs text-[#4a6b67] mt-0.5">
-                      {suggestedBundle.description.split('.')[0]}.
-                    </p>
-                    <p className="text-xs text-[#577572] mt-2">Click any test to add or remove:</p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setDismissedBundles(prev => new Set([...prev, suggestedBundle.slug]))
-                      dismissCount.current += 1
-                      // panelSuggestionDone already set above
-                    }}
-                    className="text-[#577572] hover:text-[#1a2e2b] text-xl ml-3 flex-shrink-0 leading-none"
-                    title={dismissCount.current >= 1 ? 'Dismiss (won\'t suggest more panels)' : 'Dismiss'}
-                  >×</button>
-                </div>
-                <ul className="mt-2 space-y-0.5">
-                  {suggestedBundle.tests.map(name => {
-                    const alreadyAdded = selectedTests.some(t => t.test_name === name)
+                <div className="text-xs font-bold uppercase tracking-widest text-[#2d6a5e] mb-3">💡 Suggested Panels</div>
+                <div className="space-y-3">
+                  {suggestedBundles.map(bundle => {
+                    const isExpanded = expandedPanelSlugs.has(bundle.slug)
+                    const remainingCount = bundle.tests.filter(name => !selectedTests.some(t => t.test_name === name)).length
                     return (
-                      <li key={name}>
-                        <button
-                          onMouseDown={e => e.preventDefault()}
-                          onClick={async () => {
-                            if (alreadyAdded) {
-                              const match = selectedTests.find(t => t.test_name === name)
-                              if (match) removeTest(match.id)
-                            } else {
-                              const { data } = await supabase
-                                .from('tests')
-                                .select('id, test_name, cpt_codes, category, description')
-                                .eq('test_name', name)
-                                .limit(1)
-                              if (data && data.length > 0) addTest(data[0])
-                            }
-                          }}
-                          className="flex items-center justify-between w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/80 transition-colors cursor-pointer"
-                        >
-                          <span className="text-sm font-medium" style={{ color: alreadyAdded ? '#2d6a5e' : '#1a2e2b' }}>
-                            {name}
-                          </span>
-                          <span className={`text-xs font-semibold ml-3 flex-shrink-0 px-2 py-0.5 rounded-full ${
-                            alreadyAdded
-                              ? 'text-[#2d6a5e] bg-[#f0f7f6] border border-[#2d6a5e]'
-                              : 'text-[#2d6a5e]'
-                          }`}>
-                            {alreadyAdded ? '✓ Added' : '+ Add'}
-                          </span>
-                        </button>
-                      </li>
+                      <div key={bundle.slug} className="bg-white/60 rounded-lg p-3">
+                        <div className="flex items-start justify-between">
+                          <button
+                            onClick={() => setExpandedPanelSlugs(prev => {
+                              const next = new Set(prev)
+                              if (next.has(bundle.slug)) next.delete(bundle.slug)
+                              else next.add(bundle.slug)
+                              return next
+                            })}
+                            className="flex items-center gap-2 text-left flex-1 min-w-0"
+                          >
+                            <svg className={`w-3.5 h-3.5 flex-shrink-0 text-[#577572] transition-transform ${isExpanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                            <div>
+                              <span className="text-sm font-semibold text-[#1a2e2b]">{bundle.name}</span>
+                              <span className="text-xs text-[#577572] ml-1.5">{bundle.tests.length} tests</span>
+                            </div>
+                          </button>
+                          <button
+                            onClick={() => setDismissedBundles(prev => new Set([...prev, bundle.slug]))}
+                            className="text-[#577572] hover:text-[#1a2e2b] text-lg ml-2 flex-shrink-0 leading-none"
+                            title="Dismiss"
+                          >×</button>
+                        </div>
+                        {isExpanded && (
+                          <>
+                            <ul className="mt-2 space-y-0.5">
+                              {bundle.tests.map(name => {
+                                const alreadyAdded = selectedTests.some(t => t.test_name === name)
+                                return (
+                                  <li key={name}>
+                                    <button
+                                      onMouseDown={e => e.preventDefault()}
+                                      onClick={async () => {
+                                        if (alreadyAdded) {
+                                          const match = selectedTests.find(t => t.test_name === name)
+                                          if (match) removeTest(match.id)
+                                        } else {
+                                          const { data } = await supabase
+                                            .from('tests')
+                                            .select('id, test_name, cpt_codes, category, description')
+                                            .eq('test_name', name)
+                                            .limit(1)
+                                          if (data && data.length > 0) addTest(data[0])
+                                        }
+                                      }}
+                                      className="flex items-center justify-between w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/80 transition-colors cursor-pointer"
+                                    >
+                                      <span className="text-sm font-medium" style={{ color: alreadyAdded ? '#2d6a5e' : '#1a2e2b' }}>
+                                        {name}
+                                      </span>
+                                      <span className={`text-xs font-semibold ml-3 flex-shrink-0 px-2 py-0.5 rounded-full ${
+                                        alreadyAdded
+                                          ? 'text-[#2d6a5e] bg-[#f0f7f6] border border-[#2d6a5e]'
+                                          : 'text-[#2d6a5e]'
+                                      }`}>
+                                        {alreadyAdded ? '✓ Added' : '+ Add'}
+                                      </span>
+                                    </button>
+                                  </li>
+                                )
+                              })}
+                            </ul>
+                            {remainingCount > 0 && (
+                              <button
+                                onClick={async () => {
+                                  const existingNames = new Set(selectedTests.map(t => t.test_name))
+                                  const remaining = bundle.tests.filter(name => !existingNames.has(name))
+                                  for (const testName of remaining) {
+                                    const { data } = await supabase
+                                      .from('tests')
+                                      .select('id, test_name, cpt_codes, category, description')
+                                      .eq('test_name', testName)
+                                      .limit(1)
+                                    if (data && data.length > 0) addTest(data[0])
+                                  }
+                                }}
+                                className="mt-2 text-xs bg-[#2d6a5e] text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-[#245a50] transition-colors"
+                              >
+                                + Add all {remainingCount} remaining
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
                     )
                   })}
-                </ul>
-                <button
-                  onClick={async () => {
-                    const existingNames = new Set(selectedTests.map(t => t.test_name))
-                    const remaining = suggestedBundle.tests.filter(name => !existingNames.has(name))
-                    for (const testName of remaining) {
-                      const { data } = await supabase
-                        .from('tests')
-                        .select('id, test_name, cpt_codes, category, description')
-                        .eq('test_name', testName)
-                        .limit(1)
-                      if (data && data.length > 0) addTest(data[0])
-                    }
-                  }}
-                  className="mt-3 text-xs bg-[#2d6a5e] text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-[#245a50] transition-colors"
-                >
-                  + Add all {suggestedBundle.tests.filter(name => !selectedTests.some(t => t.test_name === name)).length} remaining
-                </button>
+                </div>
               </div>
             )}
 
@@ -645,7 +652,7 @@ export default function AdvocatePage() {
                   {selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''} in letter
                 </span>
                 <button
-                  onClick={() => { setSelectedTests([]); setDismissedBundles(new Set()); setPanelSuggestionDone(false); dismissCount.current = 0; try { localStorage.removeItem('ll_request_tests') } catch {} }}
+                  onClick={() => { setSelectedTests([]); setDismissedBundles(new Set()); setExpandedPanelSlugs(new Set()); try { localStorage.removeItem('ll_request_tests') } catch {} }}
                   className="text-xs hover:text-[#b85c5c] transition-colors"
                   style={{ color: '#577572' }}
                 >
