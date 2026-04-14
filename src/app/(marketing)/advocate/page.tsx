@@ -259,26 +259,11 @@ export default function AdvocatePage() {
     if (!isAdding) return null
     if (panelSuggestionDone) return null
     const selectedNames = new Set(selectedTests.map(t => t.test_name))
-    const selectedCategories = new Set(selectedTests.map(t => t.category))
     for (const bundle of TEST_BUNDLES) {
       if (dismissedBundles.has(bundle.slug)) continue
       const hasAtLeastOne = bundle.tests.some(name => selectedNames.has(name))
       const hasAll = bundle.tests.every(name => selectedNames.has(name))
-      // Trigger by direct test name match only — no category matching
-      // (category matching caused unrelated panels to appear after dismissal)
       if (hasAtLeastOne && !hasAll) return bundle
-    }
-    // Fallback: category-based suggestion only if no name match found above
-    // and no panels have been dismissed yet
-    if (dismissedBundles.size === 0) {
-      if (selectedCategories.has('thyroid') && !dismissedBundles.has('thyroid-complete')) {
-        const bundle = TEST_BUNDLES.find(b => b.slug === 'thyroid-complete')
-        if (bundle && !bundle.tests.every(name => selectedNames.has(name))) return bundle
-      }
-      if ((selectedCategories.has('iron') || selectedCategories.has('iron_blood')) && !dismissedBundles.has('iron-deep-dive')) {
-        const bundle = TEST_BUNDLES.find(b => b.slug === 'iron-deep-dive')
-        if (bundle && !bundle.tests.every(name => selectedNames.has(name))) return bundle
-      }
     }
     return null
   }, [selectedTests, dismissedBundles, panelSuggestionDone])
