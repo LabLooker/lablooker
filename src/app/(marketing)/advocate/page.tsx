@@ -525,10 +525,13 @@ export default function AdvocatePage() {
                       <button
                         onMouseDown={e => e.preventDefault()}
                         onClick={() => toggleTest(test)}
-                        className="text-xs font-semibold flex-shrink-0 mt-0.5"
-                        style={{ color: added ? '#b85c5c' : '#2d6a5e' }}
+                        className={`text-xs font-semibold flex-shrink-0 mt-0.5 px-2 py-0.5 rounded-full transition-colors ${
+                          added
+                            ? 'text-[#2d6a5e] bg-[#f0f7f6] border border-[#2d6a5e]'
+                            : 'text-[#2d6a5e] hover:text-[#1a2e2b]'
+                        }`}
                       >
-                        {added ? '✓ Remove' : '+ Add'}
+                        {added ? '✓ Added' : '+ Add'}
                       </button>
                     </div>
                   )
@@ -588,8 +591,12 @@ export default function AdvocatePage() {
                           <span className="text-sm font-medium" style={{ color: alreadyAdded ? '#2d6a5e' : '#1a2e2b' }}>
                             {name}
                           </span>
-                          <span className="text-xs font-semibold ml-3 flex-shrink-0" style={{ color: alreadyAdded ? '#b85c5c' : '#2d6a5e' }}>
-                            {alreadyAdded ? '✓ Remove' : '+ Add'}
+                          <span className={`text-xs font-semibold ml-3 flex-shrink-0 px-2 py-0.5 rounded-full ${
+                            alreadyAdded
+                              ? 'text-[#2d6a5e] bg-[#f0f7f6] border border-[#2d6a5e]'
+                              : 'text-[#2d6a5e]'
+                          }`}>
+                            {alreadyAdded ? '✓ Added' : '+ Add'}
                           </span>
                         </button>
                       </li>
