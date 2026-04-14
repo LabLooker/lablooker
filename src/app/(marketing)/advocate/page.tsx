@@ -82,7 +82,13 @@ export default function AdvocatePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<TestResult[]>([])
   const [searchFocused, setSearchFocused] = useState(false)
-  const [selectedTests, setSelectedTests] = useState<SelectedTest[]>([])
+  const [selectedTests, setSelectedTests] = useState<SelectedTest[]>(() => {
+    if (typeof window === 'undefined') return []
+    try {
+      const saved = localStorage.getItem('ll_request_tests')
+      return saved ? JSON.parse(saved) : []
+    } catch { return [] }
+  })
   const [reason, setReason] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [dismissedBundles, setDismissedBundles] = useState<Set<string>>(new Set())
@@ -271,6 +277,13 @@ export default function AdvocatePage() {
       setSearchResults([])
     }
   }, [suggestedBundle?.slug])
+
+  // Persist selected tests to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('ll_request_tests', JSON.stringify(selectedTests))
+    } catch {}
+  }, [selectedTests])
 
   const addTest = (test: TestResult) => {
     // 1. Add instantly — no waiting
@@ -610,7 +623,7 @@ export default function AdvocatePage() {
                   {selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''} in letter
                 </span>
                 <button
-                  onClick={() => { setSelectedTests([]); setDismissedBundles(new Set()); setPanelSuggestionDone(false); dismissCount.current = 0 }}
+                  onClick={() => { setSelectedTests([]); setDismissedBundles(new Set()); setPanelSuggestionDone(false); dismissCount.current = 0; try { localStorage.removeItem('ll_request_tests') } catch {} }}
                   className="text-xs hover:text-[#b85c5c] transition-colors"
                   style={{ color: '#577572' }}
                 >
