@@ -100,6 +100,7 @@ export default function AdvocatePage() {
   // Patient info fields
   const [patientName, setPatientName] = useState('')
   const [dateOfBirth, setDateOfBirth] = useState('')
+  const [doctorName, setDoctorName] = useState('')
 
   // Saved providers state
   const [savedProviders, setSavedProviders] = useState<SavedProviderOption[]>([])
@@ -341,7 +342,7 @@ export default function AdvocatePage() {
     // Formal letter format
     lines.push(todayFormatted)
     lines.push('')
-    lines.push('To Whom It May Concern,')
+    lines.push(doctorName.trim() ? `Dear Dr. ${doctorName.trim()},` : 'To Whom It May Concern,')
     lines.push('')
     lines.push('I am writing to request the following lab tests for my records and to facilitate a conversation with my healthcare provider:')
     lines.push('')
@@ -424,9 +425,19 @@ export default function AdvocatePage() {
             <h1 className="text-2xl md:text-3xl font-bold text-[#1a2e2b]">
               Generate Lab Request
             </h1>
-            <p className="text-sm mt-1" style={{ color: '#577572' }}>
-              Know what you want? Search by test name or CPT code. Not sure? Search a symptom or condition and we&apos;ll suggest relevant tests.
+            <p className="text-base mt-2 font-medium" style={{ color: '#1a2e2b' }}>
+              Build a list of lab tests to request from your doctor — or order yourself.
             </p>
+            <p className="text-sm mt-2" style={{ color: '#577572' }}>
+              Search by test name, symptom, or condition. Add the tests you want, fill in your details, then copy or print a ready-to-use request.
+            </p>
+            <div className="flex items-center gap-6 mt-4 text-xs" style={{ color: '#577572' }}>
+              <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e] font-bold">1</span> Search &amp; add tests</span>
+              <span className="text-[#e0ebe9]">→</span>
+              <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e] font-bold">2</span> Fill in your details</span>
+              <span className="text-[#e0ebe9]">→</span>
+              <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e] font-bold">3</span> Copy or print</span>
+            </div>
           </div>
 
           {/* Search Card */}
@@ -652,7 +663,9 @@ export default function AdvocatePage() {
             {outputFormat === 'letter' && (
               <>
                 <p className="text-right text-sm mb-6" style={{ color: '#1a2e2b' }}>{todayFormatted}</p>
-                <p className="text-sm mb-4" style={{ color: '#1a2e2b' }}>To Whom It May Concern,</p>
+                <p className="text-sm mb-4" style={{ color: doctorName.trim() ? '#1a2e2b' : '#a0b8b4' }}>
+                  {doctorName.trim() ? `Dear Dr. ${doctorName.trim()},` : 'To Whom It May Concern,'}
+                </p>
                 <p className="text-sm leading-relaxed mb-4" style={{ color: '#1a2e2b' }}>
                   I am writing to request the following lab tests for my records and to facilitate a conversation with my healthcare provider:
                 </p>
@@ -727,6 +740,18 @@ export default function AdvocatePage() {
 
           {/* Patient Details + Options (below letter) */}
           <div className="bg-white rounded-2xl border p-5 mb-4 no-print" style={{ borderColor: '#e0ebe9' }}>
+
+            {/* Doctor name */}
+            <div className="mb-3">
+              <label className="text-xs text-[#577572] block mb-1">Doctor name <span className="text-[#a0b8b4]">(optional)</span></label>
+              <input
+                type="text"
+                value={doctorName}
+                onChange={(e) => setDoctorName(e.target.value)}
+                placeholder="e.g. Smith (letter will read: Dear Dr. Smith)"
+                className="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] placeholder-[#a0b8b4] focus:outline-none focus:border-[#2d6a5e] focus:ring-2 focus:ring-[#2d6a5e]/30"
+              />
+            </div>
 
             {/* Patient info fields */}
             <div className="grid grid-cols-2 gap-3 mb-4">
