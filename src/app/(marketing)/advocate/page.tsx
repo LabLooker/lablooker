@@ -258,13 +258,34 @@ export default function AdvocatePage() {
   const suggestedBundles = useMemo<TestBundle[]>(() => {
     if (selectedTests.length === 0) return []
     const selectedNames = new Set(selectedTests.map(t => t.test_name))
-    return TEST_BUNDLES.filter(bundle => {
-      if (dismissedBundles.has(bundle.slug)) return false
-      const hasAtLeastOne = bundle.tests.some(name => selectedNames.has(name))
-      const hasAll = bundle.tests.every(name => selectedNames.has(name))
-      return hasAtLeastOne && !hasAll
-    })
+    // Score bundles by how many selected tests overlap with bundle tests
+    const scored = TEST_BUNDLES
+      .filter(bundle => {
+        if (dismissedBundles.has(bundle.slug)) return false
+        const matchCount = bundle.tests.filter(name => selectedNames.has(name)).length
+        const hasAll = bundle.tests.every(name => selectedNames.has(name))
+        // Require at least 1 match and not all already added
+        // Require >1 match OR the match is the primary test (not just CBC/CMP triggering everything)
+        const primaryMatch = bundle.tests.slice(0, 3).some(name => selectedNames.has(name))
+        return matchCount >= 1 && primaryMatch && !hasAll
+      })
+      .map(bundle => ({
+        bundle,
+        score: bundle.tests.filter(name => selectedNames.has(name)).length
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3) // max 3 suggestions
+      .map(({ bundle }) => bundle)
+    return scored
   }, [selectedTests, dismissedBundles])
+
+  // Close search dropdown when panels appear
+  useEffect(() => {
+    if (suggestedBundles.length > 0) {
+      setSearchFocused(false)
+      setSearchResults([])
+    }
+  }, [suggestedBundles.length])
 
   // Click-outside closes dropdown (more reliable than onBlur on mobile)
   useEffect(() => {
