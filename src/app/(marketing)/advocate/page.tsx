@@ -134,12 +134,19 @@ export default function AdvocatePage() {
   // Click-outside to close dropdown
   useEffect(() => {
     function handleClickOutside(e: MouseEvent | TouchEvent) {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
-        setSearchFocused(false)
+      const target = e.target as Node
+      // Only close if tap/click is clearly outside the search container
+      if (searchContainerRef.current && !searchContainerRef.current.contains(target)) {
+        // Small delay on touch to let the tap event register first
+        if (e.type === 'touchstart') {
+          setTimeout(() => setSearchFocused(false), 100)
+        } else {
+          setSearchFocused(false)
+        }
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
-    document.addEventListener('touchstart', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside, { passive: true })
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('touchstart', handleClickOutside)
