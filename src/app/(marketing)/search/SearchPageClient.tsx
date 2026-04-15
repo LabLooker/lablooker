@@ -638,19 +638,29 @@ export default function SearchPageClient() {
                       )
                     })}
                   </div>
-                ) : viewMode === 'grid' ? (
-                  <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {filteredTests.map((test) => (
-                      <TestCard key={test.id} test={test} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="mt-4 mx-auto max-w-5xl flex flex-col gap-2">
-                    {filteredTests.map((test) => (
-                      <TestListItem key={test.id} test={test} />
-                    ))}
-                  </div>
-                )}
+                ) : (() => {
+                  // When symptom match exists, show best-match symptom tests instead of text-search results
+                  const bestMatch = matchedSymptoms.length > 0
+                    ? (matchedSymptoms.find(s => s.name.toLowerCase() === query.trim().toLowerCase())
+                      ?? matchedSymptoms.sort((a, b) => b.related_test_ids.length - a.related_test_ids.length)[0])
+                    : null
+                  const displayTests = bestMatch
+                    ? sortByFmPriority(tests.filter(t => bestMatch.related_test_ids.includes(t.id)))
+                    : filteredTests
+                  return viewMode === 'grid' ? (
+                    <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {displayTests.map((test) => (
+                        <TestCard key={test.id} test={test} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mt-4 mx-auto max-w-5xl flex flex-col gap-2">
+                      {displayTests.map((test) => (
+                        <TestListItem key={test.id} test={test} />
+                      ))}
+                    </div>
+                  )
+                })()}
 
                 {filteredTests.length === 0 && matchedSymptoms.length === 0 && (
                   <div className="mt-16 text-center">
