@@ -397,10 +397,22 @@ export default function AdvocatePage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
                 placeholder={`Try "${PLACEHOLDERS[placeholderIdx]}"...`}
-                className="w-full pl-9 pr-4 py-3 rounded-xl border-2 border-[#2d6a5e] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20"
+                className={`w-full pl-9 py-3 rounded-xl border-2 border-[#2d6a5e] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20 ${searchQuery ? 'pr-9' : 'pr-4'}`}
               />
-              {isSearching && (
+              {isSearching && !searchQuery && (
                 <div className="absolute right-3 top-3.5 text-xs text-[#577572]">Searching...</div>
+              )}
+              {searchQuery && (
+                <button
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={() => { setSearchQuery(''); setSearchResults([]) }}
+                  className="absolute right-3 top-3 p-0.5 rounded-full text-[#577572] hover:text-[#1a2e2b] hover:bg-[#e0ebe9] transition-colors"
+                  aria-label="Clear search"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               )}
 
               {/* Hint chips */}
