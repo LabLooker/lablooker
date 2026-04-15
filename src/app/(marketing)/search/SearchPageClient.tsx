@@ -523,8 +523,9 @@ export default function SearchPageClient() {
             <div className="mt-6 flex items-center justify-between mx-auto max-w-5xl">
               <p className="text-sm text-[#577572]">
                 {query.trim() ? (
-                  matchedSymptoms.length > 0
-                    ? null  // hide count when showing symptom results — avoids confusing "0 tests found"
+                  // Hide count when showing symptom results with no direct matches
+                  matchedSymptoms.length > 0 && filteredTests.length === 0
+                    ? null
                     : <>{filteredTests.length} test{filteredTests.length !== 1 ? 's' : ''} found</>
                 ) : (
                   `${filteredTests.length} tests available`
@@ -580,8 +581,8 @@ export default function SearchPageClient() {
               </div>
             )}
 
-            {/* Symptom context header — clean single-match approach */}
-            {query.trim().length >= 3 && matchedSymptoms.length > 0 && !showRedFlag && (() => {
+            {/* Symptom context header — only show when no direct test matches */}
+            {query.trim().length >= 3 && matchedSymptoms.length > 0 && filteredTests.length === 0 && !showRedFlag && (() => {
               // Find best match: exact → starts-with → keyword exact → keyword starts-with → most tests
               const q2 = query.trim().toLowerCase()
               const bestMatch = matchedSymptoms.find(s => s.name.toLowerCase() === q2)
@@ -642,9 +643,9 @@ export default function SearchPageClient() {
                     })}
                   </div>
                 ) : (() => {
-                  // When symptom match exists, show best-match symptom tests instead of text-search results
+                  // Only use symptom tests when no direct test name matches exist
                   const q = query.trim().toLowerCase()
-                  const bestMatch = matchedSymptoms.length > 0
+                  const bestMatch = matchedSymptoms.length > 0 && filteredTests.length === 0
                     ? (// 1. Exact name match
                        matchedSymptoms.find(s => s.name.toLowerCase() === q)
                       // 2. Name starts with query
