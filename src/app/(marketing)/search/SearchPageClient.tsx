@@ -594,7 +594,7 @@ export default function SearchPageClient() {
               return (
                 <div className="mt-6 mx-auto max-w-5xl mb-2">
                   <div className="rounded-xl border border-[#e0ebe9] bg-[#f0f7f6] px-5 py-4">
-                    <p className="text-sm font-semibold text-[#1a2e2b] mb-1">Commonly ordered tests for: {bestMatch.name}</p>
+                    <p className="text-sm font-semibold text-[#1a2e2b] mb-1">Tests commonly ordered for: {query.trim().toLowerCase()}</p>
                     {bestMatch.description && (
                       <p className="text-xs text-[#4a6b67] leading-relaxed">{bestMatch.description}</p>
                     )}
