@@ -58,6 +58,13 @@ type SearchResultItem =
 
 export default function AdvocatePage() {
   const [searchQuery, setSearchQuery] = useState('')
+  const PLACEHOLDERS = ['TSH', 'Ferritin', 'fatigue', 'Vitamin D', 'hormones', 'Free T3', 'hair loss', 'Cortisol']
+  const [placeholderIdx, setPlaceholderIdx] = useState(0)
+  useEffect(() => {
+    if (searchQuery) return
+    const timer = setInterval(() => setPlaceholderIdx(i => (i + 1) % PLACEHOLDERS.length), 2000)
+    return () => clearInterval(timer)
+  }, [searchQuery])
   const [searchResults, setSearchResults] = useState<SearchResultItem[]>([])
   const [searchFocused, setSearchFocused] = useState(false)
   const [selectedTests, setSelectedTests] = useState<SelectedTest[]>([])
@@ -382,7 +389,7 @@ export default function AdvocatePage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
-                placeholder="Search by test name, symptom, or panel..."
+                placeholder={`Try "${PLACEHOLDERS[placeholderIdx]}"...`}
                 className="w-full pl-9 pr-4 py-3 rounded-xl border-2 border-[#2d6a5e] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20"
               />
               {isSearching && (
