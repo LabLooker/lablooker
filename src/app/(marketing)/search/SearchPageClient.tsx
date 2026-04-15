@@ -582,7 +582,7 @@ export default function SearchPageClient() {
             )}
 
             {/* Symptom matches — show above test results */}
-            {query.trim() && matchedSymptoms.length > 0 && !showRedFlag && (
+            {query.trim().length >= 3 && matchedSymptoms.length > 0 && !showRedFlag && (
               <div className="mt-6 mx-auto max-w-5xl">
                 {matchedSymptoms.map((symptom) => (
                   <div key={symptom.id} className="mb-6">
