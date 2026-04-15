@@ -523,10 +523,9 @@ export default function SearchPageClient() {
             <div className="mt-6 flex items-center justify-between mx-auto max-w-5xl">
               <p className="text-sm text-[#577572]">
                 {query.trim() ? (
-                  <>
-                    {matchedSymptoms.length > 0 && `${matchedSymptoms.length} symptom match${matchedSymptoms.length !== 1 ? 'es' : ''} · `}
-                    {filteredTests.length} test{filteredTests.length !== 1 ? 's' : ''} found
-                  </>
+                  matchedSymptoms.length > 0
+                    ? null  // hide count when showing symptom results — avoids confusing "0 tests found"
+                    : <>{filteredTests.length} test{filteredTests.length !== 1 ? 's' : ''} found</>
                 ) : (
                   `${filteredTests.length} tests available`
                 )}
@@ -583,8 +582,12 @@ export default function SearchPageClient() {
 
             {/* Symptom context header — clean single-match approach */}
             {query.trim().length >= 3 && matchedSymptoms.length > 0 && !showRedFlag && (() => {
-              // Find best match: exact name match first, then highest related_test_ids count
-              const bestMatch = matchedSymptoms.find(s => s.name.toLowerCase() === query.trim().toLowerCase())
+              // Find best match: exact → starts-with → keyword exact → keyword starts-with → most tests
+              const q2 = query.trim().toLowerCase()
+              const bestMatch = matchedSymptoms.find(s => s.name.toLowerCase() === q2)
+                ?? matchedSymptoms.find(s => s.name.toLowerCase().startsWith(q2))
+                ?? matchedSymptoms.find(s => s.keywords.some(k => k.toLowerCase() === q2))
+                ?? matchedSymptoms.find(s => s.keywords.some(k => k.toLowerCase().startsWith(q2)))
                 ?? matchedSymptoms.sort((a, b) => b.related_test_ids.length - a.related_test_ids.length)[0]
               if (!bestMatch) return null
               return (
@@ -640,8 +643,17 @@ export default function SearchPageClient() {
                   </div>
                 ) : (() => {
                   // When symptom match exists, show best-match symptom tests instead of text-search results
+                  const q = query.trim().toLowerCase()
                   const bestMatch = matchedSymptoms.length > 0
-                    ? (matchedSymptoms.find(s => s.name.toLowerCase() === query.trim().toLowerCase())
+                    ? (// 1. Exact name match
+                       matchedSymptoms.find(s => s.name.toLowerCase() === q)
+                      // 2. Name starts with query
+                      ?? matchedSymptoms.find(s => s.name.toLowerCase().startsWith(q))
+                      // 3. Keyword exact match
+                      ?? matchedSymptoms.find(s => s.keywords.some(k => k.toLowerCase() === q))
+                      // 4. Keyword starts with query
+                      ?? matchedSymptoms.find(s => s.keywords.some(k => k.toLowerCase().startsWith(q)))
+                      // 5. Fallback: most related tests
                       ?? matchedSymptoms.sort((a, b) => b.related_test_ids.length - a.related_test_ids.length)[0])
                     : null
                   const displayTests = bestMatch
