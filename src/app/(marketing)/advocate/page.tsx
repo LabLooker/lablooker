@@ -509,8 +509,8 @@ export default function AdvocatePage() {
             {/* Search results dropdown */}
             {searchFocused && searchResults.length > 0 && (
               <div
-                className="mt-1 rounded-xl border bg-white shadow-lg overflow-hidden"
-                style={{ borderColor: '#e0ebe9' }}
+                className="absolute left-0 right-0 z-50 mt-1 rounded-xl border bg-white shadow-lg overflow-hidden"
+                style={{ borderColor: '#e0ebe9', top: '100%' }}
                 onMouseDown={e => e.preventDefault()}
               >
                 {searchResults.map(test => {
@@ -548,10 +548,10 @@ export default function AdvocatePage() {
                       <button
                         onMouseDown={e => e.preventDefault()}
                         onClick={() => toggleTest(test)}
-                        className={`text-xs font-semibold flex-shrink-0 mt-0.5 px-2 py-0.5 rounded-full transition-colors ${
+                        className={`text-xs font-semibold flex-shrink-0 px-3 py-1 rounded-full border transition-colors ${
                           added
-                            ? 'text-[#2d6a5e] bg-[#f0f7f6] border border-[#2d6a5e]'
-                            : 'text-[#2d6a5e] hover:text-[#1a2e2b]'
+                            ? 'text-[#2d6a5e] bg-[#f0f7f6] border-[#2d6a5e]'
+                            : 'text-[#2d6a5e] border-[#2d6a5e] bg-white hover:bg-[#f0f7f6]'
                         }`}
                       >
                         {added ? '✓ Added' : '+ Add'}
@@ -626,10 +626,10 @@ export default function AdvocatePage() {
                                       <span className="text-sm font-medium" style={{ color: alreadyAdded ? '#2d6a5e' : '#1a2e2b' }}>
                                         {name}
                                       </span>
-                                      <span className={`text-xs font-semibold ml-3 flex-shrink-0 px-2 py-0.5 rounded-full ${
+                                      <span className={`text-xs font-semibold ml-3 flex-shrink-0 px-3 py-1 rounded-full border ${
                                         alreadyAdded
-                                          ? 'text-[#2d6a5e] bg-[#f0f7f6] border border-[#2d6a5e]'
-                                          : 'text-[#2d6a5e]'
+                                          ? 'text-[#2d6a5e] bg-[#f0f7f6] border-[#2d6a5e]'
+                                          : 'text-[#2d6a5e] border-[#2d6a5e] bg-white'
                                       }`}>
                                         {alreadyAdded ? '✓ Added' : '+ Add'}
                                       </span>
