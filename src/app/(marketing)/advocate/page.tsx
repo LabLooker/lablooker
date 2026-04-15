@@ -687,16 +687,6 @@ export default function AdvocatePage() {
           <div className="flex items-center gap-1 mb-3">
             <span className="text-xs text-[#577572] mr-2">Format:</span>
             <button
-              onClick={() => setOutputFormat('letter')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                outputFormat === 'letter'
-                  ? 'bg-[#2d6a5e] text-white'
-                  : 'bg-white border border-[#e0ebe9] text-[#577572] hover:border-[#2d6a5e]'
-              }`}
-            >
-              Formal letter
-            </button>
-            <button
               onClick={() => setOutputFormat('plain')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                 outputFormat === 'plain'
@@ -705,6 +695,16 @@ export default function AdvocatePage() {
               }`}
             >
               Plain list (copy/paste)
+            </button>
+            <button
+              onClick={() => setOutputFormat('letter')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                outputFormat === 'letter'
+                  ? 'bg-[#2d6a5e] text-white'
+                  : 'bg-white border border-[#e0ebe9] text-[#577572] hover:border-[#2d6a5e]'
+              }`}
+            >
+              Formal letter
             </button>
           </div>
 
