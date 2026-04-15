@@ -515,34 +515,16 @@ export default function AdvocatePage() {
               >
                 {searchResults.map(test => {
                   const added = isTestSelected(test.id)
-                  const descExpanded = expandedDescId === test.id
                   return (
                     <div
                       key={test.id}
-                      className="flex items-start justify-between px-4 py-2.5 border-b last:border-b-0 hover:bg-[#f0f7f6] transition-colors"
+                      className="flex items-start justify-between px-4 py-3 border-b last:border-b-0 hover:bg-[#f0f7f6] transition-colors"
                       style={{ borderColor: '#f5f5f5' }}
                     >
                       <div className="flex-1 min-w-0 mr-3">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-sm font-medium text-[#1a2e2b]">{test.test_name}</span>
-                          {test.description && (
-                            <button
-                              onMouseDown={e => e.preventDefault()}
-                              onClick={() => setExpandedDescId(descExpanded ? null : test.id)}
-                              className="text-[#577572] hover:text-[#2d6a5e] transition-colors flex-shrink-0"
-                              title="What does this test measure?"
-                            >
-                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-                              </svg>
-                            </button>
-                          )}
-                        </div>
-                        {test.description && descExpanded && (
-                          <p className="text-xs text-[#577572] mt-1 leading-relaxed">{test.description}</p>
-                        )}
-                        {test.description && !descExpanded && (
-                          <p className="text-xs text-[#577572] mt-0.5 line-clamp-1">{test.description}</p>
+                        <span className="text-sm font-medium text-[#1a2e2b] block">{test.test_name}</span>
+                        {test.description && (
+                          <p className="text-xs text-[#577572] mt-0.5 leading-relaxed">{test.description}</p>
                         )}
                       </div>
                       <button
