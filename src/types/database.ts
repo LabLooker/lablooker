@@ -19,6 +19,7 @@ export type Symptom = {
   name: string
   keywords: string[]
   related_test_ids: string[]
+  description?: string | null
   created_at: string
 }
 

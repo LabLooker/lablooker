@@ -601,6 +601,9 @@ export default function SearchPageClient() {
                           <p className="text-xs text-[#577572]">
                             {symptom.related_test_ids.length} commonly ordered tests
                           </p>
+                          {symptom.description && (
+                            <p className="text-xs text-[#4a6b67] mt-1.5 leading-relaxed max-w-xl">{symptom.description}</p>
+                          )}
                         </div>
                       </div>
                     </div>
