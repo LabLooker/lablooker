@@ -581,77 +581,24 @@ export default function SearchPageClient() {
               </div>
             )}
 
-            {/* Symptom matches — show above test results */}
-            {query.trim().length >= 3 && matchedSymptoms.length > 0 && !showRedFlag && (
-              <div className="mt-6 mx-auto max-w-5xl">
-                {matchedSymptoms.map((symptom) => (
-                  <div key={symptom.id} className="mb-6">
-                    {/* Symptom header */}
-                    <div className="rounded-t-xl border border-[#e0ebe9] bg-white p-5">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#2d6a5e]/10">
-                          <svg className="h-4 w-4 text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-                          </svg>
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-[#1a2e2b]">
-                            Symptom match: {symptom.name}
-                          </h3>
-                          <p className="text-xs text-[#577572]">
-                            {symptom.related_test_ids.length} commonly ordered tests
-                          </p>
-                          {symptom.description && (
-                            <p className="text-xs text-[#4a6b67] mt-1.5 leading-relaxed max-w-xl">{symptom.description}</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Disclaimer */}
-                    <div className="border-x border-[#e0ebe9] bg-amber-50 px-5 py-3">
-                      <p className="text-xs text-amber-700">
-                        These tests are commonly associated with this symptom. This is not medical advice — always consult your healthcare provider.
-                      </p>
-                    </div>
-
-                    {/* Related tests */}
-                    <div className="rounded-b-xl border border-t-0 border-[#e0ebe9] bg-[#faf8f5] p-4">
-                      <div className="flex flex-col gap-2">
-                        {sortByFmPriority(tests.filter((t) => symptom.related_test_ids.includes(t.id))).map((test) => (
-                          <Link
-                            key={test.id}
-                            href={`/search/${test.id}`}
-                            className="group flex items-center gap-4 rounded-lg bg-white border border-[#e0ebe9] px-4 py-3 transition-all hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5"
-                          >
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-sm font-medium text-[#1a2e2b] group-hover:text-[#2d6a5e] truncate">
-                                {test.test_name}
-                              </h4>
-                              {test.cpt_codes.length > 0 && (
-                                <span className="text-xs font-mono text-[#577572]">CPT: {test.cpt_codes[0]}</span>
-                              )}
-                            </div>
-                            <svg className="h-4 w-4 shrink-0 text-[#577572] group-hover:text-[#2d6a5e]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
+            {/* Symptom context header — clean single-match approach */}
+            {query.trim().length >= 3 && matchedSymptoms.length > 0 && !showRedFlag && (() => {
+              // Find best match: exact name match first, then highest related_test_ids count
+              const bestMatch = matchedSymptoms.find(s => s.name.toLowerCase() === query.trim().toLowerCase())
+                ?? matchedSymptoms.sort((a, b) => b.related_test_ids.length - a.related_test_ids.length)[0]
+              if (!bestMatch) return null
+              return (
+                <div className="mt-6 mx-auto max-w-5xl mb-2">
+                  <div className="rounded-xl border border-[#e0ebe9] bg-[#f0f7f6] px-5 py-4">
+                    <p className="text-sm font-semibold text-[#1a2e2b] mb-1">Commonly ordered tests for: {bestMatch.name}</p>
+                    {bestMatch.description && (
+                      <p className="text-xs text-[#4a6b67] leading-relaxed">{bestMatch.description}</p>
+                    )}
+                    <p className="text-xs text-[#577572] mt-2">Results below include tests commonly associated with this symptom. Not medical advice — always discuss with your provider.</p>
                   </div>
-                ))}
-
-                {/* Divider if both symptoms and tests match */}
-                {filteredTests.length > 0 && (
-                  <div className="flex items-center gap-4 my-4">
-                    <div className="flex-1 border-t border-[#e0ebe9]" />
-                    <span className="text-xs text-[#577572]">Test results</span>
-                    <div className="flex-1 border-t border-[#e0ebe9]" />
-                  </div>
-                )}
-              </div>
-            )}
+                </div>
+              )
+            })()}
 
             {/* Test results */}
             {!showRedFlag && (
@@ -823,28 +770,38 @@ function TestListItem({ test }: { test: Test }) {
 }
 
 function TestCard({ test }: { test: Test }) {
+  const [showDesc, setShowDesc] = useState(false)
   return (
-    <Link
-      href={`/search/${test.id}`}
-      className="group rounded-xl border border-[#e0ebe9] bg-white p-6 transition-all duration-200 hover:border-[#2d6a5e]/30 hover:bg-[#2d6a5e]/5"
-    >
+    <div className="group rounded-xl border border-[#e0ebe9] bg-white p-6 transition-all duration-200 hover:border-[#2d6a5e]/30">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="text-sm font-semibold text-[#1a2e2b] group-hover:text-[#2d6a5e]">
-          {test.test_name}
-        </h3>
-        {test.fasting_required && (
-          <span className="shrink-0 rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-xs font-medium text-amber-700">
-            Fasting
-          </span>
-        )}
+        <Link href={`/search/${test.id}`} className="flex-1 min-w-0">
+          <h3 className="text-sm font-semibold text-[#1a2e2b] group-hover:text-[#2d6a5e]">
+            {test.test_name}
+          </h3>
+        </Link>
+        <div className="flex items-center gap-2 shrink-0">
+          {test.fasting_required && (
+            <span className="rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-xs font-medium text-amber-700">
+              Fasting
+            </span>
+          )}
+          {test.description && (
+            <button
+              onClick={() => setShowDesc(v => !v)}
+              className="text-xs text-[#2d6a5e] hover:underline whitespace-nowrap"
+            >
+              {showDesc ? 'Hide' : 'Why order this?'}
+            </button>
+          )}
+        </div>
       </div>
       {test.cpt_codes.length > 0 && (
         <p className="mt-1 text-xs font-mono text-[#2d6a5e]/70">
           CPT: {test.cpt_codes.join(', ')}
         </p>
       )}
-      {test.description && (
-        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-[#577572]">
+      {showDesc && test.description && (
+        <p className="mt-2 text-xs leading-relaxed text-[#4a6b67] bg-[#f0f7f6] rounded-lg px-3 py-2">
           {test.description}
         </p>
       )}
@@ -854,11 +811,11 @@ function TestCard({ test }: { test: Test }) {
             {CATEGORY_LABELS[test.category] || test.category}
           </span>
         )}
-        <span className="text-xs font-medium text-[#2d6a5e] opacity-0 transition-opacity group-hover:opacity-100">
+        <Link href={`/search/${test.id}`} className="text-xs font-medium text-[#2d6a5e] opacity-0 transition-opacity group-hover:opacity-100">
           View Details →
-        </span>
+        </Link>
       </div>
-    </Link>
+    </div>
   )
 }
 
