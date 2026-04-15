@@ -4,49 +4,16 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { createClient } from '@/lib/supabase'
 import { TEST_BUNDLES, type TestBundle } from '@/config/test-bundles'
 
-// Symptom tag → test name mapping for search-by-symptom
 const SYMPTOM_TAGS: Record<string, string[]> = {
   fatigue: ['Ferritin', 'Free T3 (Triiodothyronine, Free)', 'TSH (Thyroid Stimulating Hormone)', 'Vitamin D, 25-OH (Total)', 'Vitamin B12 (Cobalamin)', 'Cortisol, AM (Serum)', 'CBC with Differential (CBC w/ Diff)', 'Magnesium, Serum'],
   weight: ['TSH (Thyroid Stimulating Hormone)', 'Free T3 (Triiodothyronine, Free)', 'HbA1c (Hemoglobin A1c)', 'Insulin, Fasting', 'Cortisol, AM (Serum)', 'Testosterone, Total'],
-  mood: ['Free T3 (Triiodothyronine, Free)', 'Vitamin D, 25-OH (Total)', 'Vitamin B12 (Cobalamin)', 'Magnesium, Serum', 'Estradiol (E2)', 'Progesterone', 'Cortisol, AM (Serum)', 'DHEA-Sulfate (DHEA-S)'],
-  hormones: ['Estradiol (E2)', 'Progesterone', 'Testosterone, Total', 'DHEA-Sulfate (DHEA-S)', 'Cortisol, AM (Serum)', 'SHBG (Sex Hormone Binding Globulin)', 'FSH (Follicle Stimulating Hormone)', 'LH (Luteinizing Hormone)'],
+  mood: ['Free T3 (Triiodothyronine, Free)', 'Vitamin D, 25-OH (Total)', 'Vitamin B12 (Cobalamin)', 'Estradiol (E2)', 'Progesterone', 'Cortisol, AM (Serum)', 'Magnesium, Serum'],
+  hormones: ['Estradiol (E2)', 'Progesterone', 'Testosterone, Total', 'DHEA-Sulfate (DHEA-S)', 'SHBG (Sex Hormone Binding Globulin)', 'FSH (Follicle Stimulating Hormone)', 'LH (Luteinizing Hormone)', 'Cortisol, AM (Serum)'],
   thyroid: ['TSH (Thyroid Stimulating Hormone)', 'Free T4 (Thyroxine, Free)', 'Free T3 (Triiodothyronine, Free)', 'Reverse T3 (rT3)', 'Anti-TPO (Thyroid Peroxidase Antibody)', 'Anti-Thyroglobulin Antibody (TgAb)'],
+  'hair loss': ['Ferritin', 'TSH (Thyroid Stimulating Hormone)', 'Free T3 (Triiodothyronine, Free)', 'Testosterone, Total', 'DHEA-Sulfate (DHEA-S)', 'Zinc, Serum', 'Vitamin D, 25-OH (Total)'],
 }
 
-// Keyword → bundle slug mapping for search suggestions
-const BUNDLE_KEYWORDS: Record<string, string[]> = {
-  'thyroid-complete': ['thyroid', 'hashimoto', 'hypothyroid', 'hyperthyroid', 'tsh'],
-  'hormone-baseline': ['bhrt', 'menopause', 'perimenopause', 'hrt', 'hormone replacement', 'hot flash'],
-  'bhrt-monitoring': ['bhrt monitoring', 'hormone monitoring'],
-  'trt-monitoring': ['trt', 'low t', 'testosterone replacement', 'low testosterone'],
-  'weight-metabolism': ['weight loss', 'weight gain', 'metabolism', 'metabolic', 'obesity', 'insulin resistance'],
-  'iron-deep-dive': ['iron', 'anemia', 'ferritin low', 'iron deficiency', 'tired all the time'],
-  'pcos-panel': ['pcos', 'irregular period', 'hirsutism', 'polycystic'],
-  'energy-fatigue': ['fatigue', 'tired', 'energy', 'exhausted', 'burnout', 'no energy'],
-  'inflammation-immune': ['inflammation', 'autoimmune', 'lupus', 'rheumatoid', 'ra ', 'joint pain'],
-  'gut-health': ['gut', 'digestive', 'ibs', 'sibo', 'bloating', 'celiac'],
-  'nutrient-deficiencies': ['vitamin', 'deficiency', 'nutrient', 'supplement', 'malabsorption'],
-  'mood-brain-health': ['mood', 'depression', 'anxiety', 'brain fog', 'mental health', 'focus', 'cognitive'],
-  'preventive-health': ['longevity', 'preventive', 'annual', 'checkup', 'baseline', 'wellness'],
-  'cycle-health': ['cycle', 'fertility', 'ovulation', 'period', 'menstrual'],
-}
-
-function findMatchingBundle(query: string): TestBundle | null {
-  const q = query.toLowerCase().trim()
-  if (q.length < 3) return null
-  for (const [slug, keywords] of Object.entries(BUNDLE_KEYWORDS)) {
-    if (keywords.some(kw => q.includes(kw))) {
-      return TEST_BUNDLES.find(b => b.slug === slug) ?? null
-    }
-  }
-  return null
-}
-
-type SavedProviderOption = {
-  id: string
-  nickname: string
-  provider_name: string
-}
+const HINT_CHIPS = ['fatigue', 'weight', 'mood', 'hormones', 'thyroid', 'hair loss']
 
 type TestResult = {
   id: string
@@ -71,81 +38,79 @@ type SelectedTest = TestResult & {
   labCodes: LabCode[]
 }
 
-const REASON_CHIPS = [
-  'Monitoring a known condition',
-  'Investigating new symptoms',
-  'Annual wellness baseline',
-  'Preparing for a specialist visit',
-]
+type SymptomResult = {
+  type: 'symptom'
+  name: string
+  description: string | null
+  tests: TestResult[]
+}
+
+type PanelResult = {
+  type: 'panel'
+  bundle: TestBundle
+  tests: TestResult[]
+}
+
+type SearchResultItem =
+  | { type: 'test'; test: TestResult }
+  | SymptomResult
+  | PanelResult
 
 export default function AdvocatePage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<TestResult[]>([])
+  const [searchResults, setSearchResults] = useState<SearchResultItem[]>([])
   const [searchFocused, setSearchFocused] = useState(false)
-  const [selectedTests, setSelectedTests] = useState<SelectedTest[]>(() => {
-    if (typeof window === 'undefined') return []
-    try {
-      const saved = localStorage.getItem('ll_request_tests')
-      return saved ? JSON.parse(saved) : []
-    } catch { return [] }
-  })
+  const [selectedTests, setSelectedTests] = useState<SelectedTest[]>([])
   const [reason, setReason] = useState('')
   const [isSearching, setIsSearching] = useState(false)
-  const [dismissedBundles, setDismissedBundles] = useState<Set<string>>(new Set())
-  const [expandedPanelSlugs, setExpandedPanelSlugs] = useState<Set<string>>(new Set())
-  const [outputFormat, setOutputFormat] = useState<'letter' | 'plain'>('plain')
-  const letterRef = useRef<HTMLDivElement>(null)
-  const searchContainerRef = useRef<HTMLDivElement>(null)
-  const [expandedDescId, setExpandedDescId] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
-  const [includeICD10, setIncludeICD10] = useState(false)
+  const [includeCPT, setIncludeCPT] = useState(false)
   const [includeLabCodes, setIncludeLabCodes] = useState(false)
   const [selectedLab, setSelectedLab] = useState('')
   const [availableLabs, setAvailableLabs] = useState<string[]>([])
-
-  // Patient info fields
-  const [patientName, setPatientName] = useState('')
-  const [dateOfBirth, setDateOfBirth] = useState('')
-  const [doctorName, setDoctorName] = useState('')
-
-  // Saved providers state
-  const [savedProviders, setSavedProviders] = useState<SavedProviderOption[]>([])
+  const [copied, setCopied] = useState(false)
   const [isSignedIn, setIsSignedIn] = useState(false)
+  const [isPremium, setIsPremium] = useState(false)
+  const [expandedSymptoms, setExpandedSymptoms] = useState<Set<string>>(new Set())
+  const [expandedPanels, setExpandedPanels] = useState<Set<string>>(new Set())
+  const [initialized, setInitialized] = useState(false)
 
+  const searchContainerRef = useRef<HTMLDivElement>(null)
   const supabase = createClient()
 
-  // Check auth, load saved providers, and pre-fill user info
+  // Load from localStorage on mount
   useEffect(() => {
-    async function loadUserData() {
+    try {
+      const saved = localStorage.getItem('ll_request_tests')
+      if (saved) setSelectedTests(JSON.parse(saved))
+    } catch { /* ignore */ }
+    setInitialized(true)
+  }, [])
+
+  // Persist to localStorage on change
+  useEffect(() => {
+    if (!initialized) return
+    try {
+      localStorage.setItem('ll_request_tests', JSON.stringify(selectedTests))
+    } catch { /* ignore */ }
+  }, [selectedTests, initialized])
+
+  // Check auth
+  useEffect(() => {
+    async function checkAuth() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       setIsSignedIn(true)
-
-      // Load profile for name pre-fill
-      const { data: profile } = await supabase
+      const { data } = await supabase
         .from('profiles')
-        .select('full_name, date_of_birth')
+        .select('is_premium')
         .eq('id', user.id)
         .single()
-      if (profile?.full_name && !patientName) {
-        setPatientName(profile.full_name)
-      }
-      if (profile?.date_of_birth && !dateOfBirth) {
-        setDateOfBirth(profile.date_of_birth)
-      }
-
-      // Load saved providers
-      const { data } = await supabase
-        .from('saved_providers')
-        .select('id, nickname, provider_name')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: true })
-      if (data) setSavedProviders(data)
+      setIsPremium(data?.is_premium ?? false)
     }
-    loadUserData()
+    checkAuth()
   }, [supabase])
 
-  // Load available lab names for lab code selector
+  // Load available labs
   useEffect(() => {
     async function loadLabs() {
       const { data } = await supabase
@@ -159,135 +124,7 @@ export default function AdvocatePage() {
     loadLabs()
   }, [supabase])
 
-  // Format date for display (YYYY-MM-DD → readable)
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return ''
-    const d = new Date(dateStr + 'T00:00:00')
-    if (isNaN(d.getTime())) return dateStr
-    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-  }
-
-  // Today's date formatted for the letter
-  const todayFormatted = useMemo(() => {
-    return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-  }, [])
-
-  const searchTests = useCallback(async (query: string) => {
-    if (query.length < 2) {
-      setSearchResults([])
-      return
-    }
-    setIsSearching(true)
-    try {
-      const q = query.trim().toLowerCase()
-      const selectedIds = new Set(selectedTests.map(t => t.id))
-
-      // Check if query matches a symptom tag — return those tests directly from DB
-      const symptomTests = SYMPTOM_TAGS[q]
-      if (symptomTests) {
-        const { data, error } = await supabase
-          .from('tests')
-          .select('id, test_name, cpt_codes, category, description')
-          .in('test_name', symptomTests)
-          .order('test_name')
-        if (!error && data) {
-          setSearchResults(data.filter(t => !selectedIds.has(t.id)))
-          setIsSearching(false)
-          return
-        }
-      }
-
-      // Check if query is a CPT code (all digits, 4-5 chars)
-      const isCptSearch = /^\d{4,5}$/.test(q)
-
-      // Normal search: test name ilike + CPT contains
-      const words = q.split(/\s+/).filter(Boolean)
-      const firstWord = words[0]
-      const { data, error } = await supabase
-        .from('tests')
-        .select('id, test_name, cpt_codes, category, description')
-        .ilike('test_name', `%${firstWord}%`)
-        .order('test_name')
-        .limit(50)
-
-      if (!error && data) {
-        let matched = data.filter(t =>
-          !selectedIds.has(t.id) &&
-          words.every(w => t.test_name.toLowerCase().includes(w)) &&
-          !t.test_name.toLowerCase().includes('panel') // exclude lab panel products
-        )
-
-        // If CPT search or few name matches, also search by CPT code
-        if (isCptSearch || matched.length < 3) {
-          const { data: cptData } = await supabase
-            .from('tests')
-            .select('id, test_name, cpt_codes, category, description')
-            .order('test_name')
-            .limit(200)
-          if (cptData) {
-            const cptMatches = cptData.filter(t =>
-              !selectedIds.has(t.id) &&
-              !matched.some(m => m.id === t.id) &&
-              t.cpt_codes?.some((c: string) => c.includes(q))
-            )
-            matched = [...matched, ...cptMatches]
-          }
-        }
-
-        // Sort: starts-with first, then alphabetical
-        matched.sort((a, b) => {
-          const aStarts = a.test_name.toLowerCase().startsWith(q) ? 0 : 1
-          const bStarts = b.test_name.toLowerCase().startsWith(q) ? 0 : 1
-          if (aStarts !== bStarts) return aStarts - bStarts
-          return a.test_name.localeCompare(b.test_name)
-        })
-        setSearchResults(matched.slice(0, 10))
-      }
-    } catch (e) {
-      console.error('Search error:', e)
-    }
-    setIsSearching(false)
-  }, [selectedTests, supabase])
-
-  useEffect(() => {
-    const timer = setTimeout(() => searchTests(searchQuery), 300)
-    return () => clearTimeout(timer)
-  }, [searchQuery, searchTests])
-
-  // Compute all suggested bundles at once
-  const suggestedBundles = useMemo<TestBundle[]>(() => {
-    if (selectedTests.length === 0) return []
-    const selectedNames = new Set(selectedTests.map(t => t.test_name))
-    // Score bundles by how many selected tests overlap with bundle tests
-    const scored = TEST_BUNDLES
-      .filter(bundle => {
-        if (dismissedBundles.has(bundle.slug)) return false
-        const matchCount = bundle.tests.filter(name => selectedNames.has(name)).length
-        const hasAll = bundle.tests.every(name => selectedNames.has(name))
-        // Require at least 1 match and not all already added
-        // Require >1 match OR the match is the primary test (not just CBC/CMP triggering everything)
-        const primaryMatch = bundle.tests.slice(0, 3).some(name => selectedNames.has(name))
-        return matchCount >= 1 && primaryMatch && !hasAll
-      })
-      .map(bundle => ({
-        bundle,
-        score: bundle.tests.filter(name => selectedNames.has(name)).length
-      }))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 3) // max 3 suggestions
-      .map(({ bundle }) => bundle)
-    return scored
-  }, [selectedTests, dismissedBundles])
-
-  // Close search dropdown when panels appear
-  useEffect(() => {
-    if (suggestedBundles.length > 0) {
-      setSearchFocused(false)
-      setSearchResults([])
-    }
-  }, [suggestedBundles.length])
-
-  // Click-outside closes dropdown (more reliable than onBlur on mobile)
+  // Click-outside to close dropdown
   useEffect(() => {
     function handleClickOutside(e: MouseEvent | TouchEvent) {
       if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
@@ -302,104 +139,194 @@ export default function AdvocatePage() {
     }
   }, [])
 
-  // Persist selected tests to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('ll_request_tests', JSON.stringify(selectedTests))
-    } catch {}
+  const isTestSelected = useCallback((testId: string) => {
+    return selectedTests.some(t => t.id === testId)
   }, [selectedTests])
 
-  const addTest = (test: TestResult) => {
-    // 1. Add instantly — no waiting
-    setSelectedTests(prev => [...prev, { ...test, icd10Codes: [], labCodes: [] }])
-    // 2. Remove from search results
-    setSearchResults(prev => prev.filter(t => t.id !== test.id))
-    // 3. Fetch codes in background, then update
-    ;(async () => {
-      let icd10Codes: ICD10Code[] = []
-      try {
-        const { data: junctionData } = await supabase
-          .from('test_icd10_codes')
-          .select('icd10_code_id')
-          .eq('test_id', test.id)
-        if (junctionData && junctionData.length > 0) {
-          const codeIds = junctionData.map((j: { icd10_code_id: string }) => j.icd10_code_id)
-          const { data: codesData } = await supabase
-            .from('icd10_codes')
-            .select('code, description')
-            .in('id', codeIds)
-          if (codesData) icd10Codes = codesData
-        }
-      } catch (e) { console.error('ICD-10 fetch error:', e) }
-      let labCodes: LabCode[] = []
-      try {
-        const { data: lcData } = await supabase
-          .from('lab_codes')
-          .select('lab_name, proprietary_code')
-          .eq('test_id', test.id)
-        if (lcData) labCodes = lcData
-      } catch (e) { console.error('Lab code fetch error:', e) }
-      setSelectedTests(prev => prev.map(t =>
-        t.id === test.id ? { ...t, icd10Codes, labCodes } : t
-      ))
-    })()
-  }
-
-  const removeTest = (testId: string) => {
-    setSelectedTests(prev => prev.filter(t => t.id !== testId))
-  }
-
-  // Build letter plain text for copy
-  const getLetterPlainText = () => {
-    const lines: string[] = []
-    if (outputFormat === 'plain') {
-      lines.push('Lab tests I’d like to request:')
-      lines.push('')
-      selectedTests.forEach(test => {
-        const cpt = test.cpt_codes?.length > 0 ? ` (CPT ${test.cpt_codes.join(', ')})` : ''
-        lines.push(`• ${test.test_name}${cpt}`)
-      })
-      if (reason.trim()) {
-        lines.push('')
-        lines.push(`Reason: ${reason.trim()}`)
+  const fetchCodesBackground = useCallback(async (testId: string) => {
+    let icd10Codes: ICD10Code[] = []
+    try {
+      const { data: junctionData } = await supabase
+        .from('test_icd10_codes')
+        .select('icd10_code_id')
+        .eq('test_id', testId)
+      if (junctionData && junctionData.length > 0) {
+        const codeIds = junctionData.map((j: { icd10_code_id: string }) => j.icd10_code_id)
+        const { data: codesData } = await supabase
+          .from('icd10_codes')
+          .select('code, description')
+          .in('id', codeIds)
+        if (codesData) icd10Codes = codesData
       }
-      return lines.join('\n')
-    }
-    // Formal letter format
-    lines.push(todayFormatted)
-    lines.push('')
-    lines.push(doctorName.trim() ? `Dear Dr. ${doctorName.trim()},` : 'To Whom It May Concern,')
-    lines.push('')
-    lines.push('I am writing to request the following lab tests for my records and to facilitate a conversation with my healthcare provider:')
-    lines.push('')
-    selectedTests.forEach(test => {
-      const cpt = test.cpt_codes?.length > 0 ? ` — CPT ${test.cpt_codes.join(', ')}` : ''
-      const icd = includeICD10 && test.icd10Codes.length > 0 ? ` — ICD-10: ${test.icd10Codes.map(c => c.code).join(', ')}` : ''
-      const labCode = includeLabCodes && selectedLab ? test.labCodes.find(lc => lc.lab_name === selectedLab) : null
-      const lc = labCode ? ` — ${selectedLab}: ${labCode.proprietary_code}` : ''
-      lines.push(`  • ${test.test_name}${cpt}${icd}${lc}`)
-    })
-    lines.push('')
-    if (reason.trim()) {
-      lines.push(`Reason for request: ${reason.trim()}`)
-      lines.push('')
-    }
-    const name = patientName.trim() || 'Your name'
-    const dob = dateOfBirth ? formatDate(dateOfBirth) : 'Date of birth'
-    lines.push(`Patient: ${name}  |  Date of Birth: ${dob}`)
-    lines.push('')
-    lines.push('─'.repeat(56))
-    lines.push('This letter is for personal reference and communication')
-    lines.push('purposes only. It does not constitute a medical order.')
-    return lines.join('\n')
-  }
+    } catch { /* ignore */ }
 
-  const copyToClipboard = async () => {
-    const text = getLetterPlainText()
+    let labCodes: LabCode[] = []
+    try {
+      const { data: lcData } = await supabase
+        .from('lab_codes')
+        .select('lab_name, proprietary_code')
+        .eq('test_id', testId)
+      if (lcData) labCodes = lcData
+    } catch { /* ignore */ }
+
+    setSelectedTests(prev => prev.map(t =>
+      t.id === testId ? { ...t, icd10Codes, labCodes } : t
+    ))
+  }, [supabase])
+
+  const addTest = useCallback((test: TestResult) => {
+    setSelectedTests(prev => {
+      if (prev.some(t => t.id === test.id)) return prev
+      return [...prev, { ...test, icd10Codes: [], labCodes: [] }]
+    })
+    fetchCodesBackground(test.id)
+  }, [fetchCodesBackground])
+
+  const removeTest = useCallback((testId: string) => {
+    setSelectedTests(prev => prev.filter(t => t.id !== testId))
+  }, [])
+
+  const toggleTest = useCallback((test: TestResult) => {
+    if (isTestSelected(test.id)) {
+      removeTest(test.id)
+    } else {
+      addTest(test)
+    }
+  }, [isTestSelected, removeTest, addTest])
+
+  // Search logic
+  const searchTests = useCallback(async (query: string) => {
+    if (query.length < 2) {
+      setSearchResults([])
+      return
+    }
+    setIsSearching(true)
+    try {
+      const q = query.trim().toLowerCase()
+      const results: SearchResultItem[] = []
+
+      // 1. Check symptom matches
+      for (const [symptom, testNames] of Object.entries(SYMPTOM_TAGS)) {
+        if (q.length >= 3 && symptom.includes(q)) {
+          // Fetch symptom description from DB
+          const { data: symptomData } = await supabase
+            .from('symptoms')
+            .select('name, description')
+            .ilike('name', `%${q}%`)
+            .limit(1)
+
+          // Fetch the tests for this symptom
+          const { data: tests } = await supabase
+            .from('tests')
+            .select('id, test_name, cpt_codes, category, description')
+            .in('test_name', testNames)
+            .order('test_name')
+          if (tests && tests.length > 0) {
+            results.push({
+              type: 'symptom',
+              name: symptom.charAt(0).toUpperCase() + symptom.slice(1),
+              description: symptomData?.[0]?.description ?? null,
+              tests,
+            })
+          }
+        }
+      }
+
+      // 2. Check panel/bundle matches
+      for (const bundle of TEST_BUNDLES) {
+        const nameMatch = bundle.name.toLowerCase().includes(q) || bundle.slug.includes(q)
+        if (nameMatch) {
+          const { data: tests } = await supabase
+            .from('tests')
+            .select('id, test_name, cpt_codes, category, description')
+            .in('test_name', bundle.tests)
+            .order('test_name')
+          if (tests && tests.length > 0) {
+            results.push({ type: 'panel', bundle, tests })
+          }
+        }
+      }
+
+      // 3. Individual test search
+      const isCptSearch = /^\d{4,5}$/.test(q)
+      const words = q.split(/\s+/).filter(Boolean)
+      const firstWord = words[0]
+
+      const { data } = await supabase
+        .from('tests')
+        .select('id, test_name, cpt_codes, category, description')
+        .ilike('test_name', `%${firstWord}%`)
+        .order('test_name')
+        .limit(50)
+
+      if (data) {
+        let matched = data.filter(t =>
+          words.every(w => t.test_name.toLowerCase().includes(w))
+        )
+
+        // CPT code search
+        if (isCptSearch || matched.length < 3) {
+          const { data: cptData } = await supabase
+            .from('tests')
+            .select('id, test_name, cpt_codes, category, description')
+            .order('test_name')
+            .limit(200)
+          if (cptData) {
+            const cptMatches = cptData.filter(t =>
+              !matched.some(m => m.id === t.id) &&
+              t.cpt_codes?.some((c: string) => c.includes(q))
+            )
+            matched = [...matched, ...cptMatches]
+          }
+        }
+
+        // Sort: starts-with first
+        matched.sort((a, b) => {
+          const aStarts = a.test_name.toLowerCase().startsWith(q) ? 0 : 1
+          const bStarts = b.test_name.toLowerCase().startsWith(q) ? 0 : 1
+          if (aStarts !== bStarts) return aStarts - bStarts
+          return a.test_name.localeCompare(b.test_name)
+        })
+
+        for (const test of matched.slice(0, 10)) {
+          results.push({ type: 'test', test })
+        }
+      }
+
+      setSearchResults(results)
+    } catch (e) {
+      console.error('Search error:', e)
+    }
+    setIsSearching(false)
+  }, [supabase])
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => searchTests(searchQuery), 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery, searchTests])
+
+  // Copy list to clipboard
+  const getPlainText = useCallback(() => {
+    const lines: string[] = []
+    selectedTests.forEach(test => {
+      if (includeCPT && test.cpt_codes?.length > 0) {
+        lines.push(`${test.test_name} (CPT ${test.cpt_codes.join(', ')})`)
+      } else {
+        lines.push(test.test_name)
+      }
+    })
+    if (reason.trim()) {
+      lines.push('')
+      lines.push(`Reason: ${reason.trim()}`)
+    }
+    return lines.join('\n')
+  }, [selectedTests, includeCPT, reason])
+
+  const copyToClipboard = useCallback(async () => {
+    const text = getPlainText()
     try {
       await navigator.clipboard.writeText(text)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
     } catch {
       const textarea = document.createElement('textarea')
       textarea.value = text
@@ -407,70 +334,44 @@ export default function AdvocatePage() {
       textarea.select()
       document.execCommand('copy')
       document.body.removeChild(textarea)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
     }
-  }
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }, [getPlainText])
 
-  // Check if a test is already selected (for toggle in dropdown)
-  const isTestSelected = (testId: string) => selectedTests.some(t => t.id === testId)
-
-  // Toggle test add/remove from dropdown
-  const toggleTest = (test: TestResult) => {
-    if (isTestSelected(test.id)) {
-      removeTest(test.id)
-    } else {
-      addTest(test)
-    }
-  }
+  const clearAll = useCallback(() => {
+    setSelectedTests([])
+    try { localStorage.removeItem('ll_request_tests') } catch { /* ignore */ }
+  }, [])
 
   const hasTests = selectedTests.length > 0
 
   return (
     <>
-      {/* Print styles */}
       <style jsx global>{`
         @media print {
           header, nav, footer, .no-print { display: none !important; }
-          body { background: white !important; }
+          body { font-size: 11pt; background: white !important; }
           .print-only { display: block !important; }
-          .print-template {
-            box-shadow: none !important;
-            border: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-          }
         }
       `}</style>
 
       <div className="min-h-screen" style={{ backgroundColor: '#faf8f5' }}>
         <div className="max-w-2xl mx-auto px-4 pt-24 pb-12">
 
-          {/* Header */}
-          <div className="mb-6 no-print">
+          {/* Page Header */}
+          <div className="mb-8 no-print">
             <h1 className="text-2xl md:text-3xl font-bold text-[#1a2e2b]">
-              Generate Lab Request
+              Build Your Lab Request
             </h1>
-            <p className="text-base mt-2 font-medium" style={{ color: '#1a2e2b' }}>
-              Build a list of lab tests to request from your doctor — or order yourself.
+            <p className="text-sm mt-2 leading-relaxed" style={{ color: '#577572' }}>
+              Add the tests you want to request. Copy the list to paste into your patient portal, or print it to bring to your appointment.
             </p>
-            <p className="text-sm mt-2" style={{ color: '#577572' }}>
-              Search by test name, symptom, or condition. Add the tests you want, fill in your details, then copy or print a ready-to-use request.
-            </p>
-            <div className="flex items-center gap-6 mt-4 text-xs" style={{ color: '#577572' }}>
-              <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e] font-bold">1</span> Search &amp; add tests</span>
-              <span className="text-[#e0ebe9]">→</span>
-              <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e] font-bold">2</span> Fill in your details</span>
-              <span className="text-[#e0ebe9]">→</span>
-              <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e] font-bold">3</span> Copy or print</span>
-            </div>
           </div>
 
-          {/* Search Card */}
-          <div className="bg-white rounded-2xl border p-5 mb-4 no-print" style={{ borderColor: '#e0ebe9' }}>
-
-            {/* Search bar */}
-            <div className="relative" ref={searchContainerRef}>
+          {/* Section 1: Search */}
+          <div className="mb-6 no-print" ref={searchContainerRef}>
+            <div className="relative">
               <div className="absolute left-3.5 top-3.5 text-[#577572]">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -481,394 +382,263 @@ export default function AdvocatePage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
-                placeholder="Search by test name, symptom, or condition..."
+                placeholder="Search by test name, symptom, or panel..."
                 className="w-full pl-9 pr-4 py-3 rounded-xl border-2 border-[#2d6a5e] text-sm text-[#1a2e2b] placeholder-[#577572] bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/20"
               />
               {isSearching && (
-                <div className="absolute right-3 top-3.5 text-xs" style={{ color: '#577572' }}>Searching...</div>
+                <div className="absolute right-3 top-3.5 text-xs text-[#577572]">Searching...</div>
               )}
-            </div>
 
-            {/* Hint chips — visible before typing */}
-            {searchQuery.length === 0 && (
-              <div className="flex flex-wrap gap-2 mt-2.5">
-                <span className="text-xs text-[#577572] self-center">Try:</span>
-                {['fatigue', 'weight', 'mood', 'hormones', 'thyroid'].map(chip => (
-                  <button
-                    key={chip}
-                    onClick={() => { setSearchQuery(chip); setSearchFocused(true) }}
-                    className="px-2.5 py-1 rounded-full border border-[#e0ebe9] text-xs text-[#4a6b67] hover:border-[#2d6a5e] hover:text-[#2d6a5e] transition-colors bg-white"
-                  >
-                    {chip}
-                  </button>
-                ))}
-                <span className="text-xs text-[#a0b8b4] self-center italic">or any CPT code</span>
-              </div>
-            )}
-
-            {/* Search results dropdown */}
-            {searchFocused && searchResults.length > 0 && (
-              <div
-                className="absolute left-0 right-0 z-50 mt-1 rounded-xl border bg-white shadow-lg overflow-hidden"
-                style={{ borderColor: '#e0ebe9', top: '100%' }}
-                onMouseDown={e => e.preventDefault()}
-              >
-                {searchResults.map(test => {
-                  const added = isTestSelected(test.id)
-                  return (
-                    <div
-                      key={test.id}
-                      className="flex items-start justify-between px-4 py-3 border-b last:border-b-0 hover:bg-[#f0f7f6] transition-colors"
-                      style={{ borderColor: '#f5f5f5' }}
+              {/* Hint chips */}
+              {searchQuery.length === 0 && (
+                <div className="flex flex-wrap gap-2 mt-2.5">
+                  {HINT_CHIPS.map(chip => (
+                    <button
+                      key={chip}
+                      onClick={() => { setSearchQuery(chip); setSearchFocused(true) }}
+                      className="px-2.5 py-1 rounded-full border border-[#e0ebe9] text-xs text-[#4a6b67] hover:border-[#2d6a5e] hover:text-[#2d6a5e] transition-colors bg-white"
                     >
-                      <div className="flex-1 min-w-0 mr-3">
-                        <span className="text-sm font-medium text-[#1a2e2b] block">{test.test_name}</span>
-                        {test.description && (
-                          <p className="text-xs text-[#577572] mt-0.5 leading-relaxed">{test.description}</p>
-                        )}
-                      </div>
-                      <button
-                        onMouseDown={e => e.preventDefault()}
-                        onClick={() => toggleTest(test)}
-                        className={`text-xs font-semibold flex-shrink-0 px-3 py-1 rounded-full border transition-colors ${
-                          added
-                            ? 'text-[#2d6a5e] bg-[#f0f7f6] border-[#2d6a5e]'
-                            : 'text-[#2d6a5e] border-[#2d6a5e] bg-white hover:bg-[#f0f7f6]'
-                        }`}
-                      >
-                        {added ? '✓ Added' : '+ Add'}
-                      </button>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
+                      {chip}
+                    </button>
+                  ))}
+                  <span className="text-xs text-[#a0b8b4] self-center italic">or any CPT code</span>
+                </div>
+              )}
 
-            {/* Panel suggestions card — all relevant bundles at once */}
-            {suggestedBundles.length > 0 && (
-              <div
-                className="mt-3 rounded-xl border-2 border-dashed border-[#2d6a5e]/40 bg-[#f0f7f6] p-4"
-                onMouseDown={e => e.preventDefault()}
-              >
-                <div className="text-xs font-bold uppercase tracking-widest text-[#2d6a5e] mb-3">💡 Suggested Panels</div>
-                <div className="space-y-3">
-                  {suggestedBundles.map(bundle => {
-                    const isExpanded = expandedPanelSlugs.has(bundle.slug)
-                    const remainingCount = bundle.tests.filter(name => !selectedTests.some(t => t.test_name === name)).length
-                    return (
-                      <div key={bundle.slug} className="bg-white/60 rounded-lg p-3">
-                        <div className="flex items-start justify-between">
-                          <button
-                            onClick={() => setExpandedPanelSlugs(prev => {
-                              const next = new Set(prev)
-                              if (next.has(bundle.slug)) next.delete(bundle.slug)
-                              else next.add(bundle.slug)
-                              return next
-                            })}
-                            className="flex items-center gap-2 text-left flex-1 min-w-0"
+              {/* Search results dropdown */}
+              {searchFocused && searchResults.length > 0 && (
+                <div
+                  className="absolute left-0 right-0 z-50 mt-1 rounded-xl border bg-white shadow-lg overflow-y-auto"
+                  style={{ borderColor: '#e0ebe9', maxHeight: '24rem' }}
+                >
+                  {searchResults.map((item, idx) => {
+                    if (item.type === 'test') {
+                      const added = isTestSelected(item.test.id)
+                      return (
+                        <div
+                          key={`test-${item.test.id}`}
+                          onClick={() => toggleTest(item.test)}
+                          className="flex items-start justify-between px-4 py-3 border-b last:border-b-0 hover:bg-[#f0f7f6] transition-colors cursor-pointer"
+                          style={{ borderColor: '#f5f5f5' }}
+                        >
+                          <div className="flex-1 min-w-0 mr-3">
+                            <span className="text-sm font-medium text-[#1a2e2b]">{item.test.test_name}</span>
+                            {item.test.description && (
+                              <p className="text-xs text-[#577572] mt-0.5 leading-relaxed">{item.test.description}</p>
+                            )}
+                          </div>
+                          <span
+                            className={`text-xs font-semibold flex-shrink-0 px-3 py-1 rounded-full border transition-colors ${
+                              added
+                                ? 'text-[#2d6a5e] bg-[#f0f7f6] border-[#2d6a5e]'
+                                : 'text-[#2d6a5e] border-[#2d6a5e] bg-white'
+                            }`}
                           >
-                            <svg className={`w-3.5 h-3.5 flex-shrink-0 text-[#577572] transition-transform ${isExpanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                            {added ? '\u2713 Added' : '+ Add'}
+                          </span>
+                        </div>
+                      )
+                    }
+
+                    if (item.type === 'panel') {
+                      const isExpanded = expandedPanels.has(item.bundle.slug)
+                      return (
+                        <div key={`panel-${item.bundle.slug}`} className="border-b last:border-b-0" style={{ borderColor: '#f5f5f5' }}>
+                          <div
+                            onClick={() => {
+                              setExpandedPanels(prev => {
+                                const next = new Set(prev)
+                                if (next.has(item.bundle.slug)) next.delete(item.bundle.slug)
+                                else next.add(item.bundle.slug)
+                                return next
+                              })
+                            }}
+                            className="flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] transition-colors cursor-pointer"
+                          >
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <span className="text-sm font-medium text-[#1a2e2b]">{item.bundle.name}</span>
+                              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#f0f7f6] text-[#2d6a5e] border border-[#e0ebe9]">Panel</span>
+                            </div>
+                            <svg className={`w-4 h-4 flex-shrink-0 text-[#577572] transition-transform ${isExpanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                             </svg>
-                            <div>
-                              <span className="text-sm font-semibold text-[#1a2e2b]">{bundle.name}</span>
-                              <span className="text-xs text-[#577572] ml-1.5">{bundle.tests.length} tests</span>
-                            </div>
-                          </button>
-                          <button
-                            onClick={() => setDismissedBundles(prev => new Set([...prev, bundle.slug]))}
-                            className="text-[#577572] hover:text-[#1a2e2b] text-lg ml-2 flex-shrink-0 leading-none"
-                            title="Dismiss"
-                          >×</button>
-                        </div>
-                        {isExpanded && (
-                          <>
-                            <ul className="mt-2 space-y-0.5">
-                              {bundle.tests.map(name => {
-                                const alreadyAdded = selectedTests.some(t => t.test_name === name)
+                          </div>
+                          {isExpanded && (
+                            <div className="px-4 pb-3">
+                              {item.tests.map(test => {
+                                const added = isTestSelected(test.id)
                                 return (
-                                  <li key={name}>
-                                    <button
-                                      onMouseDown={e => e.preventDefault()}
-                                      onClick={async () => {
-                                        if (alreadyAdded) {
-                                          const match = selectedTests.find(t => t.test_name === name)
-                                          if (match) removeTest(match.id)
-                                        } else {
-                                          const { data } = await supabase
-                                            .from('tests')
-                                            .select('id, test_name, cpt_codes, category, description')
-                                            .eq('test_name', name)
-                                            .limit(1)
-                                          if (data && data.length > 0) addTest(data[0])
-                                        }
-                                      }}
-                                      className="flex items-center justify-between w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/80 transition-colors cursor-pointer"
-                                    >
-                                      <span className="text-sm font-medium" style={{ color: alreadyAdded ? '#2d6a5e' : '#1a2e2b' }}>
-                                        {name}
-                                      </span>
-                                      <span className={`text-xs font-semibold ml-3 flex-shrink-0 px-3 py-1 rounded-full border ${
-                                        alreadyAdded
+                                  <div
+                                    key={test.id}
+                                    onClick={() => toggleTest(test)}
+                                    className="flex items-center justify-between py-2 pl-4 hover:bg-[#f0f7f6] rounded-lg transition-colors cursor-pointer"
+                                  >
+                                    <span className="text-sm text-[#1a2e2b]">{test.test_name}</span>
+                                    <span
+                                      className={`text-xs font-semibold flex-shrink-0 px-3 py-1 rounded-full border transition-colors ${
+                                        added
                                           ? 'text-[#2d6a5e] bg-[#f0f7f6] border-[#2d6a5e]'
                                           : 'text-[#2d6a5e] border-[#2d6a5e] bg-white'
-                                      }`}>
-                                        {alreadyAdded ? '✓ Added' : '+ Add'}
-                                      </span>
-                                    </button>
-                                  </li>
+                                      }`}
+                                    >
+                                      {added ? '\u2713 Added' : '+ Add'}
+                                    </span>
+                                  </div>
                                 )
                               })}
-                            </ul>
-                            {remainingCount > 0 && (
                               <button
-                                onClick={async () => {
-                                  const existingNames = new Set(selectedTests.map(t => t.test_name))
-                                  const remaining = bundle.tests.filter(name => !existingNames.has(name))
-                                  for (const testName of remaining) {
-                                    const { data } = await supabase
-                                      .from('tests')
-                                      .select('id, test_name, cpt_codes, category, description')
-                                      .eq('test_name', testName)
-                                      .limit(1)
-                                    if (data && data.length > 0) addTest(data[0])
-                                  }
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  item.tests.forEach(test => {
+                                    if (!isTestSelected(test.id)) addTest(test)
+                                  })
                                 }}
-                                className="mt-2 text-xs bg-[#2d6a5e] text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-[#245a50] transition-colors"
+                                className="mt-2 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#2d6a5e] text-[#2d6a5e] hover:bg-[#f0f7f6] transition-colors"
                               >
-                                + Add all {remainingCount} remaining
+                                Add all
                               </button>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    )
+                            </div>
+                          )}
+                        </div>
+                      )
+                    }
+
+                    if (item.type === 'symptom') {
+                      const isExpanded = expandedSymptoms.has(item.name)
+                      return (
+                        <div key={`symptom-${item.name}-${idx}`} className="border-b last:border-b-0" style={{ borderColor: '#f5f5f5' }}>
+                          <div
+                            onClick={() => {
+                              setExpandedSymptoms(prev => {
+                                const next = new Set(prev)
+                                if (next.has(item.name)) next.delete(item.name)
+                                else next.add(item.name)
+                                return next
+                              })
+                            }}
+                            className="flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] transition-colors cursor-pointer"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-[#1a2e2b]">{item.name}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">Symptom</span>
+                              </div>
+                              {item.description && (
+                                <p className="text-xs text-[#577572] mt-0.5">{item.description}</p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+                              <span className="text-xs text-[#577572]">
+                                {isExpanded ? 'Hide' : `Show ${item.tests.length} related tests`}
+                              </span>
+                              <svg className={`w-4 h-4 text-[#577572] transition-transform ${isExpanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                              </svg>
+                            </div>
+                          </div>
+                          {isExpanded && (
+                            <div className="px-4 pb-3">
+                              {item.tests.map(test => {
+                                const added = isTestSelected(test.id)
+                                return (
+                                  <div
+                                    key={test.id}
+                                    onClick={() => toggleTest(test)}
+                                    className="flex items-center justify-between py-2 pl-4 hover:bg-[#f0f7f6] rounded-lg transition-colors cursor-pointer"
+                                  >
+                                    <span className="text-sm text-[#1a2e2b]">{test.test_name}</span>
+                                    <span
+                                      className={`text-xs font-semibold flex-shrink-0 px-3 py-1 rounded-full border transition-colors ${
+                                        added
+                                          ? 'text-[#2d6a5e] bg-[#f0f7f6] border-[#2d6a5e]'
+                                          : 'text-[#2d6a5e] border-[#2d6a5e] bg-white'
+                                      }`}
+                                    >
+                                      {added ? '\u2713 Added' : '+ Add'}
+                                    </span>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    }
+
+                    return null
                   })}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+          </div>
 
-            {/* Test count indicator */}
-            {hasTests && (
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#e0ebe9]">
-                <span className="text-xs font-semibold" style={{ color: '#577572' }}>
-                  {selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''} in letter
+          {/* Section 2: Your list */}
+          {hasTests && (
+            <div className="bg-white rounded-2xl border p-5 mb-4" style={{ borderColor: '#e0ebe9' }}>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-semibold text-[#1a2e2b]">
+                  {selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''} selected
                 </span>
                 <button
-                  onClick={() => { setSelectedTests([]); setDismissedBundles(new Set()); setExpandedPanelSlugs(new Set()); try { localStorage.removeItem('ll_request_tests') } catch {} }}
-                  className="text-xs hover:text-[#b85c5c] transition-colors"
-                  style={{ color: '#577572' }}
+                  onClick={clearAll}
+                  className="text-xs text-[#577572] hover:text-[#b85c5c] transition-colors"
                 >
-                  Remove all
+                  Clear all
                 </button>
               </div>
-            )}
-          </div>
 
-          {/* Format toggle */}
-          <div className="flex items-center gap-1 mb-3">
-            <span className="text-xs text-[#577572] mr-2">Format:</span>
-            <button
-              onClick={() => setOutputFormat('plain')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                outputFormat === 'plain'
-                  ? 'bg-[#2d6a5e] text-white'
-                  : 'bg-white border border-[#e0ebe9] text-[#577572] hover:border-[#2d6a5e]'
-              }`}
-            >
-              Plain list (copy/paste)
-            </button>
-            <button
-              onClick={() => setOutputFormat('letter')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                outputFormat === 'letter'
-                  ? 'bg-[#2d6a5e] text-white'
-                  : 'bg-white border border-[#e0ebe9] text-[#577572] hover:border-[#2d6a5e]'
-              }`}
-            >
-              Formal letter
-            </button>
-          </div>
-
-          {/* Live Letter Preview */}
-          <div ref={letterRef} className="bg-white rounded-xl shadow-sm border p-8 mb-4 print-template" style={{ borderColor: '#e0ebe9', fontFamily: outputFormat === 'letter' ? 'Georgia, "Times New Roman", serif' : 'inherit' }}>
-
-            {/* Letter header — only in letter format */}
-            {outputFormat === 'letter' && (
-              <>
-                <p className="text-right text-sm mb-6" style={{ color: '#1a2e2b' }}>{todayFormatted}</p>
-                <p className="text-sm mb-4" style={{ color: doctorName.trim() ? '#1a2e2b' : '#a0b8b4' }}>
-                  {doctorName.trim() ? `Dear Dr. ${doctorName.trim()},` : 'To Whom It May Concern,'}
-                </p>
-                <p className="text-sm leading-relaxed mb-4" style={{ color: '#1a2e2b' }}>
-                  I am writing to request the following lab tests for my records and to facilitate a conversation with my healthcare provider:
-                </p>
-              </>
-            )}
-            {outputFormat === 'plain' && hasTests && (
-              <p className="text-xs text-[#577572] mb-3">Lab tests I’d like to request — copy and paste into your patient portal:</p>
-            )}
-
-            {/* Test list */}
-            {hasTests ? (
-              <ul className="mb-4 space-y-1 ml-4">
-                {selectedTests.map(test => {
-                  const cpt = test.cpt_codes?.length > 0 ? test.cpt_codes.join(', ') : null
-                  const icd = includeICD10 && test.icd10Codes.length > 0 ? test.icd10Codes.map(c => c.code).join(', ') : null
-                  const labCode = includeLabCodes && selectedLab ? test.labCodes.find(lc => lc.lab_name === selectedLab) : null
-                  return (
-                    <li key={test.id} className="flex items-start justify-between group text-sm" style={{ color: '#1a2e2b' }}>
-                      <div className="flex-1 min-w-0">
-                        <span className="mr-2">•</span>
-                        <span className="font-medium">{test.test_name}</span>
-                        {cpt && (
-                          <span className="text-[#577572]"> — CPT {cpt}</span>
-                        )}
-                        {icd && (
-                          <span className="text-[#577572]"> — ICD-10: {icd}</span>
-                        )}
-                        {labCode && (
-                          <span className="text-[#577572]"> — {selectedLab}: {labCode.proprietary_code}</span>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => removeTest(test.id)}
-                        className="ml-2 text-[#d4d4d4] hover:text-[#b85c5c] transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0 no-print"
-                        style={{ fontFamily: 'system-ui, sans-serif' }}
-                        aria-label={`Remove ${test.test_name}`}
-                      >×</button>
-                    </li>
-                  )
-                })}
-              </ul>
-            ) : (
-              <p className="mb-4 ml-4 text-sm italic" style={{ color: '#a0b8b4' }}>
-                Add tests above to populate this letter
-              </p>
-            )}
-
-            {/* Reason */}
-            {reason.trim() && (
-              <p className="text-sm mb-4" style={{ color: '#1a2e2b' }}>
-                <span className="font-medium">Reason for request:</span> {reason.trim()}
-              </p>
-            )}
-
-            {/* Patient info */}
-            <p className="text-sm mb-6" style={{ color: '#1a2e2b' }}>
-              Patient:{' '}
-              <span style={{ color: patientName.trim() ? '#1a2e2b' : '#a0b8b4' }}>
-                {patientName.trim() || 'Your name'}
-              </span>
-              {'  |  Date of Birth: '}
-              <span style={{ color: dateOfBirth ? '#1a2e2b' : '#a0b8b4' }}>
-                {dateOfBirth ? formatDate(dateOfBirth) : 'DOB'}
-              </span>
-            </p>
-
-            {/* Divider + disclaimer */}
-            <div className="border-t pt-3 text-xs text-center" style={{ borderColor: '#ddd', color: '#999' }}>
-              This letter is for personal reference and communication purposes only. It does not constitute a medical order.
-            </div>
-          </div>
-
-          {/* Patient Details + Options (below letter) */}
-          <div className="bg-white rounded-2xl border p-5 mb-4 no-print" style={{ borderColor: '#e0ebe9' }}>
-
-            {/* Doctor name */}
-            <div className="mb-3">
-              <label className="text-xs text-[#577572] block mb-1">Doctor name <span className="text-[#a0b8b4]">(optional)</span></label>
-              <input
-                type="text"
-                value={doctorName}
-                onChange={(e) => setDoctorName(e.target.value)}
-                placeholder="e.g. Smith (letter will read: Dear Dr. Smith)"
-                className="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] placeholder-[#a0b8b4] focus:outline-none focus:border-[#2d6a5e] focus:ring-2 focus:ring-[#2d6a5e]/30"
-              />
-            </div>
-
-            {/* Patient info fields */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div>
-                <label className="text-xs text-[#577572] block mb-1">Patient name</label>
-                <input
-                  type="text"
-                  value={patientName}
-                  onChange={(e) => setPatientName(e.target.value)}
-                  placeholder="Your name"
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] placeholder-[#a0b8b4] focus:outline-none focus:border-[#2d6a5e] focus:ring-2 focus:ring-[#2d6a5e]/30"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-[#577572] block mb-1">Date of birth</label>
-                <input
-                  type="date"
-                  value={dateOfBirth}
-                  min="1900-01-01"
-                  max="2099-12-31"
-                  onChange={(e) => {
-                    const year = e.target.value.split('-')[0]
-                    if (year && year.length > 4) return
-                    setDateOfBirth(e.target.value)
-                  }}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] focus:outline-none focus:border-[#2d6a5e] focus:ring-2 focus:ring-[#2d6a5e]/30"
-                />
-              </div>
-            </div>
-
-            {/* Reason for request */}
-            <div className="mb-4">
-              <label className="text-xs text-[#577572] block mb-1">Reason for request <span className="text-[#a0b8b4]">(optional)</span></label>
-              <textarea
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                placeholder="e.g., Monitoring thyroid levels, experiencing fatigue and hair loss..."
-                rows={2}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] placeholder-[#a0b8b4] focus:outline-none focus:border-[#2d6a5e] focus:ring-2 focus:ring-[#2d6a5e]/30 resize-none"
-              />
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {REASON_CHIPS.map(chip => (
-                  <button
-                    key={chip}
-                    onClick={() => setReason(chip)}
-                    className="px-2.5 py-1 rounded-full border text-xs transition-colors"
-                    style={{
-                      borderColor: reason === chip ? '#2d6a5e' : '#e0ebe9',
-                      color: reason === chip ? '#2d6a5e' : '#577572',
-                      backgroundColor: reason === chip ? '#f0f7f6' : 'white',
-                    }}
-                  >
-                    {chip}
-                  </button>
+              <ul className="space-y-1 mb-4">
+                {selectedTests.map(test => (
+                  <li key={test.id} className="flex items-center justify-between group py-1.5">
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium text-[#1a2e2b]">{test.test_name}</span>
+                      {includeCPT && test.cpt_codes?.length > 0 && (
+                        <span className="text-xs text-[#577572] ml-1.5">CPT {test.cpt_codes.join(', ')}</span>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => removeTest(test.id)}
+                      className="ml-2 text-[#d4d4d4] hover:text-[#b85c5c] transition-colors flex-shrink-0 text-lg leading-none no-print"
+                      aria-label={`Remove ${test.test_name}`}
+                    >
+                      &times;
+                    </button>
+                  </li>
                 ))}
+              </ul>
+
+              {/* Notes field */}
+              <div className="mb-4">
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Reason / what to discuss (optional)"
+                  rows={2}
+                  className="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] placeholder-[#a0b8b4] focus:outline-none focus:border-[#2d6a5e] focus:ring-2 focus:ring-[#2d6a5e]/30 resize-none"
+                />
               </div>
-            </div>
 
-            {/* Code toggles */}
-            <div className="pt-4 border-t border-[#e0ebe9]">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[#577572] mb-3">Include in your letter</p>
-              <div className="space-y-3">
-                {/* ICD-10 toggle */}
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={includeICD10}
-                      onChange={(e) => setIncludeICD10(e.target.checked)}
-                      className="sr-only peer"
-                    />
-                    <div className="w-9 h-5 rounded-full bg-[#e0ebe9] peer-checked:bg-[#2d6a5e] transition-colors" />
-                    <div className="absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-[#1a2e2b]">Diagnostic codes (ICD-10)</span>
-                    <span className="text-xs text-[#577572] ml-1.5">— billing justification</span>
-                  </div>
-                </label>
+              {/* CPT toggle */}
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeCPT}
+                  onChange={(e) => {
+                    setIncludeCPT(e.target.checked)
+                    if (!e.target.checked) {
+                      setIncludeLabCodes(false)
+                      setSelectedLab('')
+                    }
+                  }}
+                  className="w-4 h-4 rounded border-[#e0ebe9] text-[#2d6a5e] focus:ring-[#2d6a5e]"
+                />
+                <span className="text-sm text-[#1a2e2b]">Include CPT codes in output</span>
+              </label>
 
-                {/* Lab-specific codes toggle */}
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <div className="relative">
+              {/* Lab codes toggle — only when CPT is on */}
+              {includeCPT && (
+                <div className="mt-3 ml-6">
+                  <label className="flex items-center gap-2.5 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={includeLabCodes}
@@ -876,90 +646,66 @@ export default function AdvocatePage() {
                         setIncludeLabCodes(e.target.checked)
                         if (!e.target.checked) setSelectedLab('')
                       }}
-                      className="sr-only peer"
+                      className="w-4 h-4 rounded border-[#e0ebe9] text-[#2d6a5e] focus:ring-[#2d6a5e]"
                     />
-                    <div className="w-9 h-5 rounded-full bg-[#e0ebe9] peer-checked:bg-[#2d6a5e] transition-colors" />
-                    <div className="absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium text-[#1a2e2b]">Lab-specific order codes</span>
-                    {includeLabCodes && (
-                      <select
-                        value={selectedLab}
-                        onChange={(e) => setSelectedLab(e.target.value)}
-                        className="px-3 py-1 rounded-lg border text-xs text-[#1a2e2b] focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30"
-                        style={{ borderColor: selectedLab ? '#2d6a5e' : '#e0ebe9' }}
-                      >
-                        <option value="">Select lab...</option>
-                        {availableLabs.map(lab => (
-                          <option key={lab} value={lab}>{lab}</option>
-                        ))}
-                      </select>
-                    )}
-                  </div>
-                </label>
-              </div>
+                    <span className="text-sm text-[#1a2e2b]">Include lab-specific codes</span>
+                  </label>
+                  {includeLabCodes && (
+                    <select
+                      value={selectedLab}
+                      onChange={(e) => setSelectedLab(e.target.value)}
+                      className="mt-2 px-3 py-1.5 rounded-lg border text-sm text-[#1a2e2b] focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30"
+                      style={{ borderColor: selectedLab ? '#2d6a5e' : '#e0ebe9' }}
+                    >
+                      <option value="">Select lab...</option>
+                      {availableLabs.map(lab => (
+                        <option key={lab} value={lab}>{lab}</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              )}
             </div>
+          )}
 
-            {/* Saved providers */}
-            {isSignedIn && savedProviders.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-[#e0ebe9]">
-                <label className="text-xs text-[#577572] block mb-1">Saved providers</label>
-                <select
-                  onChange={(e) => {
-                    const p = savedProviders.find(sp => sp.id === e.target.value)
-                    if (p) setPatientName(prev => prev) // keep name, just noting provider selected
-                  }}
-                  defaultValue=""
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-[#e0ebe9] text-[#1a2e2b] focus:outline-none focus:border-[#2d6a5e] focus:ring-2 focus:ring-[#2d6a5e]/30"
+          {/* Section 3: Output */}
+          {hasTests && (
+            <div className="no-print">
+              <div className="flex gap-2 mb-3">
+                <button
+                  onClick={copyToClipboard}
+                  className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all"
+                  style={{ backgroundColor: '#2d6a5e', color: 'white' }}
                 >
-                  <option value="" disabled>Select a saved provider...</option>
-                  {savedProviders.map(sp => (
-                    <option key={sp.id} value={sp.id}>{sp.nickname}</option>
-                  ))}
-                </select>
+                  {copied ? '\u2713 Copied!' : 'Copy list'}
+                </button>
+                <button
+                  onClick={() => window.print()}
+                  className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all border-2"
+                  style={{ backgroundColor: '#faf8f5', color: '#2d6a5e', borderColor: '#2d6a5e' }}
+                >
+                  Print
+                </button>
               </div>
-            )}
-          </div>
 
-          {/* Action Buttons */}
-          <div className="space-y-2 no-print">
-            <div className="flex gap-2">
-              <button
-                onClick={copyToClipboard}
-                disabled={!hasTests}
-                className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ backgroundColor: '#2d6a5e', color: 'white' }}
-              >
-                {copied ? '✓ Copied!' : 'Copy letter'}
-              </button>
-              <button
-                onClick={() => window.print()}
-                disabled={!hasTests}
-                className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ backgroundColor: '#faf8f5', color: '#2d6a5e', border: '2px solid #2d6a5e' }}
-              >
-                Print / Save PDF
-              </button>
+              {/* Share link — premium only */}
+              {isSignedIn && isPremium && (
+                <button
+                  onClick={() => {
+                    alert('Shareable links are available with a premium account.')
+                  }}
+                  className="w-full py-3 rounded-xl font-semibold text-sm transition-all mb-3"
+                  style={{ backgroundColor: 'white', color: '#577572', border: '1px solid #e0ebe9' }}
+                >
+                  Share link
+                </button>
+              )}
+
+              <p className="text-center text-xs" style={{ color: '#a0b8b4' }}>
+                Your information is not stored or shared. This is for personal reference only.
+              </p>
             </div>
-            <button
-              onClick={async () => {
-                if (!isSignedIn) {
-                  window.location.href = '/signup'
-                  return
-                }
-                // Premium-gated shareable link placeholder
-                alert('Shareable links are available with a premium account.')
-              }}
-              className="w-full py-3 rounded-xl font-semibold text-sm transition-all"
-              style={{ backgroundColor: 'white', color: '#577572', border: '1px solid #e0ebe9' }}
-            >
-              {isSignedIn ? 'Shareable link (Premium)' : 'Shareable link — Sign up'}
-            </button>
-            <p className="text-center text-xs pt-1" style={{ color: '#a0b8b4' }}>
-              Not a medical order · Your info is not stored or shared
-            </p>
-          </div>
+          )}
 
         </div>
       </div>
