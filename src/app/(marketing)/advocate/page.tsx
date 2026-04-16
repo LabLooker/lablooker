@@ -324,18 +324,19 @@ export default function AdvocatePage() {
   const getPlainText = useCallback(() => {
     const lines: string[] = []
     selectedTests.forEach(test => {
-      if (includeCPT && test.cpt_codes?.length > 0) {
-        lines.push(`${test.test_name} (CPT ${test.cpt_codes.join(', ')})`)
-      } else {
-        lines.push(test.test_name)
-      }
+      const cpt = includeCPT && test.cpt_codes?.length > 0 ? ` (CPT ${test.cpt_codes.join(', ')})` : ''
+      const labCode = includeLabCodes && selectedLab
+        ? test.labCodes?.find((lc: LabCode) => lc.lab_name === selectedLab)
+        : null
+      const lc = labCode ? ` [${selectedLab}: ${labCode.proprietary_code}]` : ''
+      lines.push(`${test.test_name}${cpt}${lc}`)
     })
     if (reason.trim()) {
       lines.push('')
       lines.push(`Reason: ${reason.trim()}`)
     }
     return lines.join('\n')
-  }, [selectedTests, includeCPT, reason])
+  }, [selectedTests, includeCPT, includeLabCodes, selectedLab, reason])
 
   const copyToClipboard = useCallback(async () => {
     const text = getPlainText()
@@ -621,6 +622,12 @@ export default function AdvocatePage() {
                       {includeCPT && test.cpt_codes?.length > 0 && (
                         <span className="text-xs text-[#577572] ml-1.5">CPT {test.cpt_codes.join(', ')}</span>
                       )}
+                      {includeLabCodes && selectedLab && (() => {
+                        const lc = test.labCodes?.find((c: LabCode) => c.lab_name === selectedLab)
+                        return lc ? (
+                          <span className="text-xs text-[#577572] ml-1.5">{selectedLab}: {lc.proprietary_code}</span>
+                        ) : null
+                      })()}
                     </div>
                     <button
                       onClick={() => removeTest(test.id)}
