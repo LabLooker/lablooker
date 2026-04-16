@@ -700,15 +700,15 @@ export default function AdvocatePage() {
               <div className="flex gap-2 mb-3">
                 <button
                   onClick={copyToClipboard}
-                  className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all"
-                  style={{ backgroundColor: '#2d6a5e', color: 'white' }}
+                  className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all border-2"
+                  style={copied ? { backgroundColor: '#2d6a5e', color: 'white', borderColor: '#2d6a5e' } : { backgroundColor: 'white', color: '#2d6a5e', borderColor: '#2d6a5e' }}
                 >
                   {copied ? '\u2713 Copied!' : 'Copy list'}
                 </button>
                 <button
                   onClick={() => window.print()}
                   className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all border-2"
-                  style={{ backgroundColor: '#faf8f5', color: '#2d6a5e', borderColor: '#2d6a5e' }}
+                  style={{ backgroundColor: 'white', color: '#2d6a5e', borderColor: '#2d6a5e' }}
                 >
                   Print
                 </button>
