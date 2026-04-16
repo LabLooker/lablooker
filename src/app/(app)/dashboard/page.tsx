@@ -992,7 +992,7 @@ function DashboardContent() {
                   <div className="flex items-center gap-2 flex-shrink-0 ml-4">
                     <button
                       onClick={async () => {
-                        await navigator.clipboard.writeText(`https://lablooker.com/shared/${share.share_token}`)
+                        await navigator.clipboard.writeText(`https://www.lablooker.com/shared/${share.share_token}`)
                         setShareCopied(share.id)
                         setTimeout(() => setShareCopied(null), 2000)
                       }}

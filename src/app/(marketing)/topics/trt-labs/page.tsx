@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   title: 'TRT Monitoring Labs Explained — What to Test and When',
   description:
     'Essential lab tests for testosterone replacement therapy. Learn what to monitor (total T, free T, estradiol, hematocrit, PSA), when to test, and how to compare lab prices.',
-  alternates: { canonical: 'https://lablooker.com/topics/trt-labs' },
+  alternates: { canonical: 'https://www.lablooker.com/topics/trt-labs' },
   openGraph: {
     title: 'TRT Monitoring Labs Explained',
     description:
       'Essential lab tests for testosterone replacement therapy. Learn what to monitor, when to test, and how to compare prices.',
-    url: 'https://lablooker.com/topics/trt-labs',
+    url: 'https://www.lablooker.com/topics/trt-labs',
   },
 }
 

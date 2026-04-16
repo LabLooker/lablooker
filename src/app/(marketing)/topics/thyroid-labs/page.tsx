@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   title: 'What Thyroid Labs Should I Ask For? — Complete Guide',
   description:
     'Go beyond TSH. Learn which thyroid tests to order (Free T3, Free T4, Reverse T3, antibodies), why they matter, and how to compare prices across labs.',
-  alternates: { canonical: 'https://lablooker.com/topics/thyroid-labs' },
+  alternates: { canonical: 'https://www.lablooker.com/topics/thyroid-labs' },
   openGraph: {
     title: 'What Thyroid Labs Should I Ask For?',
     description:
       'Go beyond TSH. Learn which thyroid tests to order, why they matter, and how to compare prices across labs.',
-    url: 'https://lablooker.com/topics/thyroid-labs',
+    url: 'https://www.lablooker.com/topics/thyroid-labs',
   },
 }
 

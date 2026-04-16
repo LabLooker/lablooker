@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       token,
-      url: `https://lablooker.com/shared/${token}`,
+      url: `https://www.lablooker.com/shared/${token}`,
     })
   } catch (error: unknown) {
     console.error('[share/create] Error:', error)

@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   title: "Can You Order Your Own Lab Tests? A Patient's Guide | LabLooker",
   description:
     'Yes — in most US states you can order blood work without a doctor. Here\'s how direct-to-consumer lab testing works, what it costs, and which tests to start with.',
-  alternates: { canonical: 'https://lablooker.com/topics/order-your-own-labs' },
+  alternates: { canonical: 'https://www.lablooker.com/topics/order-your-own-labs' },
   openGraph: {
     title: "Can You Order Your Own Lab Tests? A Patient's Guide",
     description:
       'Yes — in most US states you can order blood work without a doctor. Here\'s how direct-to-consumer lab testing works, what it costs, and which tests to start with.',
-    url: 'https://lablooker.com/topics/order-your-own-labs',
+    url: 'https://www.lablooker.com/topics/order-your-own-labs',
   },
 }
 

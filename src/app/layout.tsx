@@ -3,7 +3,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { APP_CONFIG } from '@/config/app'
 import './globals.css'
 
-const siteUrl = 'https://lablooker.com'
+const siteUrl = 'https://www.lablooker.com'
 
 export const metadata: Metadata = {
   title: {

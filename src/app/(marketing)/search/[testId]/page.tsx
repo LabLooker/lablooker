@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import TestDetailClient from './TestDetailClient'
 
-const siteUrl = 'https://lablooker.com'
+const siteUrl = 'https://www.lablooker.com'
 
 function getSupabase() {
   return createClient(
@@ -17,7 +17,7 @@ function buildSchemaMarkup(test: any, icd10Codes: any[]) {
     "@context": "https://schema.org",
     "@type": "MedicalTest",
     "name": test.test_name,
-    "url": `https://lablooker.com/search/${test.id}`,
+    "url": `https://www.lablooker.com/search/${test.id}`,
   }
 
   if (test.description) {

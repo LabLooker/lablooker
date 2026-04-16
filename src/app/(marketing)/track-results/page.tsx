@@ -4,7 +4,7 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Track Your Lab Results Over Time — LabLooker Premium',
   description: 'Save your lab results, track trends, spot what\'s changing, and get reminders when tests are due. Premium tracking for patients who take their health seriously.',
-  alternates: { canonical: 'https://lablooker.com/track-results' },
+  alternates: { canonical: 'https://www.lablooker.com/track-results' },
 }
 
 const FEATURES = [

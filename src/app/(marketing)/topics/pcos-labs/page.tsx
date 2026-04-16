@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   title: 'PCOS Bloodwork: Which Tests to Order — Complete Guide',
   description:
     'The complete PCOS lab panel — testosterone, DHEA-S, insulin, AMH, and more. Learn which tests diagnose and monitor polycystic ovary syndrome and how to compare prices.',
-  alternates: { canonical: 'https://lablooker.com/topics/pcos-labs' },
+  alternates: { canonical: 'https://www.lablooker.com/topics/pcos-labs' },
   openGraph: {
     title: 'PCOS Bloodwork: Which Tests to Order',
     description:
       'The complete PCOS lab panel — testosterone, DHEA-S, insulin, AMH, and more. Learn which tests to order and compare prices.',
-    url: 'https://lablooker.com/topics/pcos-labs',
+    url: 'https://www.lablooker.com/topics/pcos-labs',
   },
 }
 

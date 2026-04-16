@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   title: "Hashimoto's Lab Tests: Which Markers to Order and Why | LabLooker",
   description:
     "TPO antibodies, Free T3, Free T4, Reverse T3 — the complete lab panel for Hashimoto's thyroiditis diagnosis and monitoring. Learn why TSH alone isn't enough.",
-  alternates: { canonical: 'https://lablooker.com/topics/hashimotos-labs' },
+  alternates: { canonical: 'https://www.lablooker.com/topics/hashimotos-labs' },
   openGraph: {
     title: "Hashimoto's Lab Tests: Which Markers to Order and Why | LabLooker",
     description:
       "TPO antibodies, Free T3, Free T4, Reverse T3 — the complete lab panel for Hashimoto's thyroiditis diagnosis and monitoring.",
-    url: 'https://lablooker.com/topics/hashimotos-labs',
+    url: 'https://www.lablooker.com/topics/hashimotos-labs',
   },
 }
 

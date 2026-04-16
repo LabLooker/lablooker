@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   title: 'Ferritin Test: What Your Doctor Isn\'t Telling You',
   description:
     'Why ferritin is the most important iron marker, what "normal" really means (hint: lab ranges are too wide), and the full iron panel you actually need.',
-  alternates: { canonical: 'https://lablooker.com/topics/ferritin' },
+  alternates: { canonical: 'https://www.lablooker.com/topics/ferritin' },
   openGraph: {
     title: 'Ferritin Test: What Your Doctor Isn\'t Telling You',
     description:
       'Why ferritin is the most important iron marker, what "normal" really means, and the full iron panel you actually need.',
-    url: 'https://lablooker.com/topics/ferritin',
+    url: 'https://www.lablooker.com/topics/ferritin',
   },
 }
 

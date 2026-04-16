@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Recommended Lab Panels & Test Bundles',
     description: 'Curated lab test panels for thyroid, PCOS, TRT, BHRT, iron, weight loss, and longevity. Know exactly which tests to order.',
-    url: 'https://lablooker.com/bundles',
+    url: 'https://www.lablooker.com/bundles',
   },
 }
 

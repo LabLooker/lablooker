@@ -4,7 +4,7 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Lab Test Topics — LabLooker',
   description: 'In-depth guides on common lab tests and conditions. Learn what to order, why it matters, and how to compare prices across labs.',
-  alternates: { canonical: 'https://lablooker.com/topics' },
+  alternates: { canonical: 'https://www.lablooker.com/topics' },
 }
 
 const TOPICS = [
