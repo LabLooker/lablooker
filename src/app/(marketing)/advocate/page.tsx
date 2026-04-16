@@ -679,7 +679,7 @@ export default function AdvocatePage() {
                     />
                     <div>
                       <span className="text-sm text-[#1a2e2b]">Include lab-specific codes</span>
-                      <p className="text-xs text-[#577572] mt-0.5">Some labs use their own internal codes (e.g. Quest, LabCorp). Useful if ordering directly.</p>
+                      <p className="text-xs text-[#577572] mt-0.5">Some labs use their own internal codes. Useful if you have a preferred lab like Quest or LabCorp.</p>
                     </div>
                   </label>
                   {includeLabCodes && (
