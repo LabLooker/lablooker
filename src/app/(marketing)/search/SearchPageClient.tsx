@@ -210,7 +210,6 @@ export default function SearchPageClient() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [tests, setTests] = useState<Test[]>([])
-  const [symptoms, setSymptoms] = useState<Symptom[]>([])
   const [query, setQuery] = useState(searchParams.get('q') || '')
   const [loading, setLoading] = useState(true)
   const [codeMatch, setCodeMatch] = useState<{ testId: string; testName: string; labName: string; code: string } | null>(null)
@@ -234,9 +233,8 @@ export default function SearchPageClient() {
   useEffect(() => {
     const supabase = createClient()
     async function load() {
-      const [testsRes, symptomsRes] = await Promise.all([
+      const [testsRes] = await Promise.all([
         supabase.from('tests').select('*').order('test_name'),
-        supabase.from('symptoms').select('*').order('name'),
       ])
       if (testsRes.data) {
         setTests(testsRes.data)
@@ -244,7 +242,6 @@ export default function SearchPageClient() {
         testsRes.data.forEach((t: Test) => { map[t.test_name] = t.id })
         setTestMap(map)
       }
-      if (symptomsRes.data) setSymptoms(symptomsRes.data)
       setLoading(false)
     }
     load()
@@ -377,24 +374,7 @@ export default function SearchPageClient() {
     })
   }
 
-  // Match symptoms to query
-  const matchedSymptoms = useMemo(() => {
-    if (!query.trim()) return []
-    const q = query.toLowerCase()
-    return symptoms.filter(
-      (s) =>
-        s.name.toLowerCase().includes(q) ||
-        s.keywords.some((k) => k.toLowerCase().includes(q))
-    )
-  }, [symptoms, query])
 
-  // Get related tests for matched symptoms (deduplicated)
-  const symptomTests = useMemo(() => {
-    if (matchedSymptoms.length === 0) return []
-    const testIds = new Set<string>()
-    matchedSymptoms.forEach((s) => s.related_test_ids.forEach((id) => testIds.add(id)))
-    return tests.filter((t) => testIds.has(t.id))
-  }, [matchedSymptoms, tests])
 
   return (
     <section className="pt-24 pb-20">
@@ -405,7 +385,7 @@ export default function SearchPageClient() {
             Search lab tests
           </h1>
           <p className="text-lg text-[#4a6b67]">
-            Search by test name, CPT code, symptom, or lab code. Free, no account required.
+            Search by test name, CPT code, or lab code. Free, no account required.
           </p>
         </div>
 
@@ -430,7 +410,7 @@ export default function SearchPageClient() {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSearchSubmit()
                 }}
-                placeholder="Search tests, CPT codes, or symptoms..."
+                placeholder="Search by test name, CPT code, or lab code..."
                 className="ml-3 flex-1 bg-transparent text-[#1a2e2b] placeholder-[#577572] focus:outline-none"
               />
               {query && (
@@ -523,10 +503,7 @@ export default function SearchPageClient() {
             <div className="mt-6 flex items-center justify-between mx-auto max-w-5xl">
               <p className="text-sm text-[#577572]">
                 {query.trim() ? (
-                  // Hide count when showing symptom results with no direct matches
-                  matchedSymptoms.length > 0 && filteredTests.length === 0
-                    ? null
-                    : <>{filteredTests.length} test{filteredTests.length !== 1 ? 's' : ''} found</>
+                  <>{filteredTests.length} test{filteredTests.length !== 1 ? 's' : ''} found</>
                 ) : (
                   `${filteredTests.length} tests available`
                 )}
@@ -581,28 +558,7 @@ export default function SearchPageClient() {
               </div>
             )}
 
-            {/* Symptom context header — only show when no direct test matches */}
-            {query.trim().length >= 3 && matchedSymptoms.length > 0 && filteredTests.length === 0 && !showRedFlag && (() => {
-              // Find best match: exact → starts-with → keyword exact → keyword starts-with → most tests
-              const q2 = query.trim().toLowerCase()
-              const bestMatch = matchedSymptoms.find(s => s.name.toLowerCase() === q2)
-                ?? matchedSymptoms.find(s => s.name.toLowerCase().startsWith(q2))
-                ?? matchedSymptoms.find(s => s.keywords.some(k => k.toLowerCase() === q2))
-                ?? matchedSymptoms.find(s => s.keywords.some(k => k.toLowerCase().startsWith(q2)))
-                ?? matchedSymptoms.sort((a, b) => b.related_test_ids.length - a.related_test_ids.length)[0]
-              if (!bestMatch) return null
-              return (
-                <div className="mt-6 mx-auto max-w-5xl mb-2">
-                  <div className="rounded-xl border border-[#e0ebe9] bg-[#f0f7f6] px-5 py-4">
-                    <p className="text-sm font-semibold text-[#1a2e2b] mb-1">Tests commonly ordered for: {query.trim().toLowerCase()}</p>
-                    {bestMatch.description && (
-                      <p className="text-xs text-[#4a6b67] leading-relaxed">{bestMatch.description}</p>
-                    )}
-                    <p className="text-xs text-[#577572] mt-2">Results below include tests commonly associated with this symptom. Not medical advice — always discuss with your provider.</p>
-                  </div>
-                </div>
-              )
-            })()}
+
 
             {/* Test results */}
             {!showRedFlag && (
@@ -643,23 +599,7 @@ export default function SearchPageClient() {
                     })}
                   </div>
                 ) : (() => {
-                  // Only use symptom tests when no direct test name matches exist
-                  const q = query.trim().toLowerCase()
-                  const bestMatch = matchedSymptoms.length > 0 && filteredTests.length === 0
-                    ? (// 1. Exact name match
-                       matchedSymptoms.find(s => s.name.toLowerCase() === q)
-                      // 2. Name starts with query
-                      ?? matchedSymptoms.find(s => s.name.toLowerCase().startsWith(q))
-                      // 3. Keyword exact match
-                      ?? matchedSymptoms.find(s => s.keywords.some(k => k.toLowerCase() === q))
-                      // 4. Keyword starts with query
-                      ?? matchedSymptoms.find(s => s.keywords.some(k => k.toLowerCase().startsWith(q)))
-                      // 5. Fallback: most related tests
-                      ?? matchedSymptoms.sort((a, b) => b.related_test_ids.length - a.related_test_ids.length)[0])
-                    : null
-                  const displayTests = bestMatch
-                    ? sortByFmPriority(tests.filter(t => bestMatch.related_test_ids.includes(t.id)))
-                    : filteredTests
+                  const displayTests = filteredTests
                   return viewMode === 'grid' ? (
                     <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {displayTests.map((test) => (
@@ -675,7 +615,7 @@ export default function SearchPageClient() {
                   )
                 })()}
 
-                {filteredTests.length === 0 && matchedSymptoms.length === 0 && (
+                {filteredTests.length === 0 && (
                   <div className="mt-16 text-center">
                     <p className="text-lg text-[#577572]">No results found.</p>
                     <p className="mt-2 text-sm text-[#577572]">
