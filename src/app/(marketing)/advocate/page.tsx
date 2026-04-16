@@ -13,7 +13,7 @@ const SYMPTOM_TAGS: Record<string, string[]> = {
   'hair loss': ['Ferritin', 'TSH (Thyroid Stimulating Hormone)', 'Free T3 (Triiodothyronine, Free)', 'Testosterone, Total', 'DHEA-Sulfate (DHEA-S)', 'Zinc, Serum', 'Vitamin D, 25-OH (Total)'],
 }
 
-const HINT_CHIPS = ['fatigue', 'weight', 'mood', 'hormones', 'thyroid', 'hair loss']
+const HINT_CHIPS = ['TSH', 'Ferritin', 'Vitamin D', 'HbA1c', 'Testosterone', 'CBC']
 
 type TestResult = {
   id: string
@@ -38,13 +38,6 @@ type SelectedTest = TestResult & {
   labCodes: LabCode[]
 }
 
-type SymptomResult = {
-  type: 'symptom'
-  name: string
-  description: string | null
-  tests: TestResult[]
-}
-
 type PanelResult = {
   type: 'panel'
   bundle: TestBundle
@@ -53,7 +46,6 @@ type PanelResult = {
 
 type SearchResultItem =
   | { type: 'test'; test: TestResult }
-  | SymptomResult
   | PanelResult
 
 export default function AdvocatePage() {
@@ -77,7 +69,6 @@ export default function AdvocatePage() {
   const [copied, setCopied] = useState(false)
   const [isSignedIn, setIsSignedIn] = useState(false)
   const [isPremium, setIsPremium] = useState(false)
-  const [expandedSymptoms, setExpandedSymptoms] = useState<Set<string>>(new Set())
   const [expandedPanels, setExpandedPanels] = useState<Set<string>>(new Set())
   const [initialized, setInitialized] = useState(false)
 
@@ -219,34 +210,7 @@ export default function AdvocatePage() {
       const q = query.trim().toLowerCase()
       const results: SearchResultItem[] = []
 
-      // 1. Check symptom matches
-      for (const [symptom, testNames] of Object.entries(SYMPTOM_TAGS)) {
-        if (q.length >= 3 && symptom.includes(q)) {
-          // Fetch symptom description from DB
-          const { data: symptomData } = await supabase
-            .from('symptoms')
-            .select('name, description')
-            .ilike('name', `%${q}%`)
-            .limit(1)
-
-          // Fetch the tests for this symptom
-          const { data: tests } = await supabase
-            .from('tests')
-            .select('id, test_name, cpt_codes, category, description')
-            .in('test_name', testNames)
-            .order('test_name')
-          if (tests && tests.length > 0) {
-            results.push({
-              type: 'symptom',
-              name: symptom.charAt(0).toUpperCase() + symptom.slice(1),
-              description: symptomData?.[0]?.description ?? null,
-              tests,
-            })
-          }
-        }
-      }
-
-      // 2. Check panel/bundle matches
+      // 1. Check panel/bundle matches
       for (const bundle of TEST_BUNDLES) {
         const nameMatch = bundle.name.toLowerCase().includes(q) || bundle.slug.includes(q)
         if (nameMatch) {
@@ -261,7 +225,7 @@ export default function AdvocatePage() {
         }
       }
 
-      // 3. Individual test search
+      // 2. Individual test search
       const isCptSearch = /^\d{4,5}$/.test(q)
       const words = q.split(/\s+/).filter(Boolean)
       const firstWord = words[0]
@@ -428,7 +392,7 @@ export default function AdvocatePage() {
                       {chip}
                     </button>
                   ))}
-                  <span className="text-xs text-[#a0b8b4] self-center italic">or any CPT code</span>
+                  <span className="text-xs text-[#a0b8b4] self-center italic">or search any CPT code</span>
                 </div>
               )}
 
@@ -530,70 +494,9 @@ export default function AdvocatePage() {
                       )
                     }
 
-                    if (item.type === 'symptom') {
-                      const isExpanded = expandedSymptoms.has(item.name)
-                      return (
-                        <div key={`symptom-${item.name}-${idx}`} className="border-b last:border-b-0" style={{ borderColor: '#f5f5f5' }}>
-                          <div
-                            onClick={() => {
-                              setExpandedSymptoms(prev => {
-                                const next = new Set(prev)
-                                if (next.has(item.name)) next.delete(item.name)
-                                else next.add(item.name)
-                                return next
-                              })
-                            }}
-                            className="flex items-center justify-between px-4 py-3 hover:bg-[#f0f7f6] transition-colors cursor-pointer"
-                          >
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-[#1a2e2b]">{item.name}</span>
-                                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">Symptom</span>
-                              </div>
-                              {item.description && (
-                                <p className="text-xs text-[#577572] mt-0.5">{item.description}</p>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                              <span className="text-xs text-[#577572]">
-                                {isExpanded ? 'Hide' : `Show ${item.tests.length} related tests`}
-                              </span>
-                              <svg className={`w-4 h-4 text-[#577572] transition-transform ${isExpanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                              </svg>
-                            </div>
-                          </div>
-                          {isExpanded && (
-                            <div className="px-4 pb-3">
-                              {item.tests.map(test => {
-                                const added = isTestSelected(test.id)
-                                return (
-                                  <div
-                                    key={test.id}
-                                    onClick={() => toggleTest(test)}
-                                    className="flex items-center justify-between py-2 pl-4 hover:bg-[#f0f7f6] rounded-lg transition-colors cursor-pointer"
-                                  >
-                                    <span className="text-sm text-[#1a2e2b]">{test.test_name}</span>
-                                    <span
-                                      className={`text-xs font-semibold flex-shrink-0 px-3 py-1 rounded-full border transition-colors ${
-                                        added
-                                          ? 'text-[#2d6a5e] bg-[#f0f7f6] border-[#2d6a5e]'
-                                          : 'text-[#2d6a5e] border-[#2d6a5e] bg-white'
-                                      }`}
-                                    >
-                                      {added ? '\u2713 Added' : '+ Add'}
-                                    </span>
-                                  </div>
-                                )
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      )
-                    }
-
                     return null
                   })}
+
                 </div>
               )}
             </div>
