@@ -617,10 +617,17 @@ export default function SearchPageClient() {
 
                 {filteredTests.length === 0 && (
                   <div className="mt-16 text-center">
-                    <p className="text-lg text-[#577572]">No results found.</p>
+                    <p className="text-lg text-[#577572]">No tests found for &ldquo;{query}&rdquo;.</p>
                     <p className="mt-2 text-sm text-[#577572]">
-                      Try a different search term or browse by category.
+                      Try searching by test name, CPT code, or lab code.
                     </p>
+                    <div className="mt-6 inline-block rounded-xl border border-[#e0ebe9] bg-[#f0f7f6] px-6 py-4 text-left max-w-sm">
+                      <p className="text-sm font-semibold text-[#1a2e2b] mb-1">Not sure what to order?</p>
+                      <p className="text-xs text-[#577572] mb-3">If you&apos;re searching by symptom or condition, our Explore page can help you figure out which tests are right for you.</p>
+                      <a href="/explore" className="inline-flex items-center gap-1 text-xs font-semibold text-[#2d6a5e] hover:underline">
+                        Go to Explore →
+                      </a>
+                    </div>
                   </div>
                 )}
               </>

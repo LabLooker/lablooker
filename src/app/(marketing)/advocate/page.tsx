@@ -396,6 +396,15 @@ export default function AdvocatePage() {
                 </div>
               )}
 
+              {/* No results prompt */}
+              {searchFocused && searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
+                <div className="absolute left-0 right-0 z-50 mt-1 rounded-xl border bg-white shadow-lg px-4 py-4" style={{ borderColor: '#e0ebe9' }}>
+                  <p className="text-sm text-[#577572] mb-2">No tests found for &ldquo;{searchQuery}&rdquo;.</p>
+                  <p className="text-xs text-[#577572] mb-3">Not sure what to order? Our Explore page can help you find the right tests based on symptoms or conditions.</p>
+                  <a href="/explore" className="inline-flex items-center gap-1 text-xs font-semibold text-[#2d6a5e] hover:underline">Go to Explore →</a>
+                </div>
+              )}
+
               {/* Search results dropdown */}
               {searchFocused && searchResults.length > 0 && (
                 <div
