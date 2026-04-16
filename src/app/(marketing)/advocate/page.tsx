@@ -603,7 +603,7 @@ export default function AdvocatePage() {
             <div className="bg-white rounded-2xl border p-5 mb-4" style={{ borderColor: '#e0ebe9' }}>
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-semibold text-[#1a2e2b]">
-                  {selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''} selected
+                  {selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''} added
                 </span>
                 <button
                   onClick={clearAll}
