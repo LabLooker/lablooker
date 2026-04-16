@@ -656,53 +656,43 @@ export default function AdvocatePage() {
                 <input
                   type="checkbox"
                   checked={includeCPT}
+                  onChange={(e) => setIncludeCPT(e.target.checked)}
+                  className="w-4 h-4 rounded border-[#e0ebe9] text-[#2d6a5e] focus:ring-[#2d6a5e]"
+                />
+                <div>
+                  <span className="text-sm text-[#1a2e2b]">Include CPT codes</span>
+                  <p className="text-xs text-[#577572] mt-0.5">Billing codes that help your doctor or lab identify the exact test to order.</p>
+                </div>
+              </label>
+
+              {/* Lab codes toggle — independent of CPT */}
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeLabCodes}
                   onChange={(e) => {
-                    setIncludeCPT(e.target.checked)
-                    if (!e.target.checked) {
-                      setIncludeLabCodes(false)
-                      setSelectedLab('')
-                    }
+                    setIncludeLabCodes(e.target.checked)
+                    if (!e.target.checked) setSelectedLab('')
                   }}
                   className="w-4 h-4 rounded border-[#e0ebe9] text-[#2d6a5e] focus:ring-[#2d6a5e]"
                 />
                 <div>
-                    <span className="text-sm text-[#1a2e2b]">Include CPT codes</span>
-                    <p className="text-xs text-[#577572] mt-0.5">CPT codes help your doctor or lab identify the exact test to order.</p>
-                  </div>
-              </label>
-
-              {/* Lab codes toggle — only when CPT is on */}
-              {includeCPT && (
-                <div className="mt-3 ml-6">
-                  <label className="flex items-center gap-2.5 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={includeLabCodes}
-                      onChange={(e) => {
-                        setIncludeLabCodes(e.target.checked)
-                        if (!e.target.checked) setSelectedLab('')
-                      }}
-                      className="w-4 h-4 rounded border-[#e0ebe9] text-[#2d6a5e] focus:ring-[#2d6a5e]"
-                    />
-                    <div>
-                      <span className="text-sm text-[#1a2e2b]">Include lab-specific codes</span>
-                      <p className="text-xs text-[#577572] mt-0.5">Some labs use their own internal codes. Useful if you have a preferred lab like Quest or LabCorp.</p>
-                    </div>
-                  </label>
-                  {includeLabCodes && (
-                    <select
-                      value={selectedLab}
-                      onChange={(e) => setSelectedLab(e.target.value)}
-                      className="mt-2 px-3 py-1.5 rounded-lg border text-sm text-[#1a2e2b] focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30"
-                      style={{ borderColor: selectedLab ? '#2d6a5e' : '#e0ebe9' }}
-                    >
-                      <option value="">Select lab...</option>
-                      {availableLabs.map(lab => (
-                        <option key={lab} value={lab}>{lab}</option>
-                      ))}
-                    </select>
-                  )}
+                  <span className="text-sm text-[#1a2e2b]">Include lab-specific codes</span>
+                  <p className="text-xs text-[#577572] mt-0.5">Some labs use their own internal codes. Useful if you have a preferred lab like Quest or LabCorp.</p>
                 </div>
+              </label>
+              {includeLabCodes && (
+                <select
+                  value={selectedLab}
+                  onChange={(e) => setSelectedLab(e.target.value)}
+                  className="mt-1 px-3 py-1.5 rounded-lg border text-sm text-[#1a2e2b] focus:outline-none focus:ring-2 focus:ring-[#2d6a5e]/30"
+                  style={{ borderColor: selectedLab ? '#2d6a5e' : '#e0ebe9' }}
+                >
+                  <option value="">Select lab...</option>
+                  {availableLabs.map(lab => (
+                    <option key={lab} value={lab}>{lab}</option>
+                  ))}
+                </select>
               )}
             </div>
           )}

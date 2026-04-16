@@ -60,8 +60,9 @@ export default function Nav() {
     <header className="fixed top-0 z-50 w-full border-b border-[#e0ebe9] bg-[#faf8f5]/80 backdrop-blur-xl">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center gap-2">
           <img src="/logo-nav.png" alt={APP_CONFIG.name} className="h-8" />
+          <span className="text-[10px] font-semibold uppercase tracking-wide bg-[#e8f0ee] text-[#2d6a5e] px-1.5 py-0.5 rounded-full">Beta</span>
         </Link>
 
         {/* Desktop nav */}
