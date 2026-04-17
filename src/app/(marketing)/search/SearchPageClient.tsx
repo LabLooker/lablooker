@@ -233,13 +233,15 @@ export default function SearchPageClient() {
   useEffect(() => {
     const supabase = createClient()
     async function load() {
-      const [testsRes] = await Promise.all([
-        supabase.from('tests').select('*').order('test_name'),
-      ])
-      if (testsRes.data) {
-        setTests(testsRes.data)
+      const { data } = await supabase
+        .from('tests')
+        .select('id, test_name, category, description, cpt_codes, also_known_as, sample_type, fasting_required, turnaround_time')
+        .order('test_name')
+      if (data) {
+        const typed = data as unknown as Test[]
+        setTests(typed)
         const map: Record<string, string> = {}
-        testsRes.data.forEach((t: Test) => { map[t.test_name] = t.id })
+        typed.forEach((t: Test) => { map[t.test_name] = t.id })
         setTestMap(map)
       }
       setLoading(false)
