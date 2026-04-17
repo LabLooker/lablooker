@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase'
 import type { Test, Symptom } from '@/types/database'
 
 const CATEGORIES: { label: string; keywords: string[] }[] = [
@@ -46,24 +45,29 @@ export default function ExplorePage() {
   }, [])
 
   useEffect(() => {
-    const supabase = createClient()
     async function load() {
       try {
-        const { data: sData, error: sErr } = await supabase
-          .from('symptoms')
-          .select('id, name, keywords, description, related_test_ids')
-          .order('name')
-          .limit(300)
-        if (sErr) { setError('symptoms: ' + sErr.message); setLoading(false); return }
-        if (sData) setSymptoms(sData as Symptom[])
+        const base = process.env.NEXT_PUBLIC_SUPABASE_URL
+        const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        if (!base || !key) { setError('Missing Supabase config'); setLoading(false); return }
 
-        const { data: tData, error: tErr } = await supabase
-          .from('tests')
-          .select('id, test_name, description, category, cpt_codes')
-          .order('test_name')
-          .limit(500)
-        if (tErr) { setError('tests: ' + tErr.message); setLoading(false); return }
-        if (tData) setTests(tData as Test[])
+        const headers = { apikey: key, Authorization: `Bearer ${key}` }
+
+        const sRes = await fetch(
+          `${base}/rest/v1/symptoms?select=id,name,keywords,description,related_test_ids&order=name&limit=300`,
+          { headers }
+        )
+        if (!sRes.ok) { setError('symptoms fetch: ' + sRes.status); setLoading(false); return }
+        const sData = await sRes.json()
+        setSymptoms(sData as Symptom[])
+
+        const tRes = await fetch(
+          `${base}/rest/v1/tests?select=id,test_name,description,category,cpt_codes&order=test_name&limit=500`,
+          { headers }
+        )
+        if (!tRes.ok) { setError('tests fetch: ' + tRes.status); setLoading(false); return }
+        const tData = await tRes.json()
+        setTests(tData as Test[])
       } catch (e) {
         setError(String(e))
       } finally {
