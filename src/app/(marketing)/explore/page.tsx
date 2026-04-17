@@ -115,13 +115,18 @@ export default function ExplorePage() {
   useEffect(() => {
     const supabase = createClient()
     async function load() {
-      const [symptomsRes, testsRes] = await Promise.all([
-        supabase.from('symptoms').select('*').order('name'),
-        supabase.from('tests').select('id, test_name, description, category, cpt_codes').order('test_name'),
-      ])
-      if (symptomsRes.data) setSymptoms(symptomsRes.data)
-      if (testsRes.data) setTests(testsRes.data as Test[])
-      setLoading(false)
+      try {
+        const [symptomsRes, testsRes] = await Promise.all([
+          supabase.from('symptoms').select('id, name, keywords, description, related_test_ids').order('name'),
+          supabase.from('tests').select('id, test_name, description, category, cpt_codes').order('test_name'),
+        ])
+        if (symptomsRes.data) setSymptoms(symptomsRes.data as Symptom[])
+        if (testsRes.data) setTests(testsRes.data as Test[])
+      } catch (e) {
+        console.error('Explore load error:', e)
+      } finally {
+        setLoading(false)
+      }
     }
     load()
   }, [])
