@@ -108,6 +108,11 @@ export default function ExplorePage() {
   const [symptoms, setSymptoms] = useState<Symptom[]>([])
   const [tests, setTests] = useState<Test[]>([])
   const [loading, setLoading] = useState(true)
+  // Safety timeout — never spin forever
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 8000)
+    return () => clearTimeout(t)
+  }, [])
   const [searching, setSearching] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -116,11 +121,18 @@ export default function ExplorePage() {
     const supabase = createClient()
     async function load() {
       try {
-        const [symptomsRes, testsRes] = await Promise.all([
-          supabase.from('symptoms').select('id, name, keywords, description, related_test_ids').order('name'),
-          supabase.from('tests').select('id, test_name, description, category, cpt_codes').order('test_name'),
-        ])
+        const symptomsRes = await supabase
+          .from('symptoms')
+          .select('id, name, keywords, description, related_test_ids')
+          .order('name')
+          .limit(300)
         if (symptomsRes.data) setSymptoms(symptomsRes.data as Symptom[])
+
+        const testsRes = await supabase
+          .from('tests')
+          .select('id, test_name, description, category, cpt_codes')
+          .order('test_name')
+          .limit(500)
         if (testsRes.data) setTests(testsRes.data as Test[])
       } catch (e) {
         console.error('Explore load error:', e)
