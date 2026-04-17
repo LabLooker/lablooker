@@ -36,6 +36,7 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(true)
   const [expandedSymptom, setExpandedSymptom] = useState<string | null>(null)
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Safety timeout
@@ -48,21 +49,23 @@ export default function ExplorePage() {
     const supabase = createClient()
     async function load() {
       try {
-        const { data: sData } = await supabase
+        const { data: sData, error: sErr } = await supabase
           .from('symptoms')
           .select('id, name, keywords, description, related_test_ids')
           .order('name')
           .limit(300)
+        if (sErr) { setError('symptoms: ' + sErr.message); setLoading(false); return }
         if (sData) setSymptoms(sData as Symptom[])
 
-        const { data: tData } = await supabase
+        const { data: tData, error: tErr } = await supabase
           .from('tests')
           .select('id, test_name, description, category, cpt_codes')
           .order('test_name')
           .limit(500)
+        if (tErr) { setError('tests: ' + tErr.message); setLoading(false); return }
         if (tData) setTests(tData as Test[])
       } catch (e) {
-        console.error('Explore load error:', e)
+        setError(String(e))
       } finally {
         setLoading(false)
       }
@@ -142,8 +145,15 @@ export default function ExplorePage() {
       </section>
 
       <div className="mx-auto max-w-4xl px-4 pb-20">
+        {/* Error state */}
+        {error && (
+          <div className="text-center py-16">
+            <p className="text-sm text-red-500">Failed to load: {error}</p>
+          </div>
+        )}
+
         {/* Loading */}
-        {loading && (
+        {!error && loading && (
           <div className="text-center py-16">
             <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-[#e0ebe9] border-t-[#2d6a5e]" />
             <p className="mt-3 text-sm text-[#577572]">Loading...</p>
@@ -151,7 +161,7 @@ export default function ExplorePage() {
         )}
 
         {/* Search results */}
-        {!loading && isSearching && (
+        {!loading && !error && isSearching && (
           <div>
             {searchResults === null || searchResults.length === 0 ? (
               <div className="text-center py-16">
@@ -176,7 +186,7 @@ export default function ExplorePage() {
         )}
 
         {/* Browse by category */}
-        {!loading && !isSearching && (
+        {!loading && !error && !isSearching && (
           <div>
             {/* Category grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4 mb-10">
