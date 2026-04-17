@@ -67,6 +67,7 @@ export const APP_CONFIG = {
   ],
 
   moreNav: [
+    { label: 'Explore', href: '/explore' },
     { label: 'Generate Request', href: '/advocate' },
     { label: 'Calculators', href: '/calculators' },
     { label: 'Panels', href: '/bundles' },
