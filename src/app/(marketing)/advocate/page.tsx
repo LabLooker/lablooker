@@ -4,14 +4,6 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { createClient } from '@/lib/supabase'
 import { TEST_BUNDLES, type TestBundle } from '@/config/test-bundles'
 
-const SYMPTOM_TAGS: Record<string, string[]> = {
-  fatigue: ['Ferritin', 'Free T3 (Triiodothyronine, Free)', 'TSH (Thyroid Stimulating Hormone)', 'Vitamin D, 25-OH (Total)', 'Vitamin B12 (Cobalamin)', 'Cortisol, AM (Serum)', 'CBC with Differential (CBC w/ Diff)', 'Magnesium, Serum'],
-  weight: ['TSH (Thyroid Stimulating Hormone)', 'Free T3 (Triiodothyronine, Free)', 'HbA1c (Hemoglobin A1c)', 'Insulin, Fasting', 'Cortisol, AM (Serum)', 'Testosterone, Total'],
-  mood: ['Free T3 (Triiodothyronine, Free)', 'Vitamin D, 25-OH (Total)', 'Vitamin B12 (Cobalamin)', 'Estradiol (E2)', 'Progesterone', 'Cortisol, AM (Serum)', 'Magnesium, Serum'],
-  hormones: ['Estradiol (E2)', 'Progesterone', 'Testosterone, Total', 'DHEA-Sulfate (DHEA-S)', 'SHBG (Sex Hormone Binding Globulin)', 'FSH (Follicle Stimulating Hormone)', 'LH (Luteinizing Hormone)', 'Cortisol, AM (Serum)'],
-  thyroid: ['TSH (Thyroid Stimulating Hormone)', 'Free T4 (Thyroxine, Free)', 'Free T3 (Triiodothyronine, Free)', 'Reverse T3 (rT3)', 'Anti-TPO (Thyroid Peroxidase Antibody)', 'Anti-Thyroglobulin Antibody (TgAb)'],
-  'hair loss': ['Ferritin', 'TSH (Thyroid Stimulating Hormone)', 'Free T3 (Triiodothyronine, Free)', 'Testosterone, Total', 'DHEA-Sulfate (DHEA-S)', 'Zinc, Serum', 'Vitamin D, 25-OH (Total)'],
-}
 
 const HINT_CHIPS = ['TSH', 'Ferritin', 'Vitamin D', 'HbA1c', 'Testosterone', 'CBC']
 
@@ -50,7 +42,7 @@ type SearchResultItem =
 
 export default function AdvocatePage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const PLACEHOLDERS = ['TSH', 'Ferritin', 'fatigue', 'Vitamin D', 'hormones', 'Free T3', 'hair loss', 'Cortisol']
+  const PLACEHOLDERS = ['TSH', 'Ferritin', 'Vitamin D', 'HbA1c', 'Free T3', 'Cortisol', 'CBC', 'Magnesium']
   const [placeholderIdx, setPlaceholderIdx] = useState(0)
   useEffect(() => {
     if (searchQuery) return
