@@ -10,9 +10,9 @@ export default function Problem() {
       ),
       title: "You don't know what to order",
       description: "Doctors use codes you've never heard of. Insurance denies tests without explanation. You're left Googling at midnight.",
-      solution: "LabLooker lets you search by symptom — fatigue, hair loss, brain fog — and see which tests to ask for.",
-      href: '/bundles',
-      cta: 'Browse test panels →',
+      solution: "Explore LabLooker by symptom or condition — fatigue, hair loss, brain fog — and see which tests are commonly discussed.",
+      href: '/explore',
+      cta: 'Explore by symptom →',
     },
     {
       icon: (

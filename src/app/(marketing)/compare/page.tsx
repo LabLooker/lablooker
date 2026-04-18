@@ -450,7 +450,7 @@ export default function ComparePage() {
             <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 max-w-sm mx-auto text-xs text-left" style={{ color: '#577572' }}>
               <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e]">✓</span> Free, no account needed</span>
               <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e]">✓</span> Prices verified twice weekly</span>
-              <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e]">✓</span> 408+ tests across 6+ labs</span>
+              <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e]">✓</span> 408+ tests across 7+ labs</span>
               <span className="flex items-center gap-1.5"><span className="text-[#2d6a5e]">✓</span> Self-pay — no insurance needed</span>
             </div>
           )}
@@ -732,7 +732,7 @@ export default function ComparePage() {
               <div className="text-2xl mb-2">📊</div>
               <h3 className="text-sm font-semibold text-[#1a2e2b] mb-1">Compare prices instantly</h3>
               <p className="text-[13px] text-[#577572] leading-relaxed">
-                See retail self-pay prices across 6+ labs side by side. No account or signup required.
+                See retail self-pay prices across 7+ labs side by side. No account or signup required.
               </p>
             </div>
             <div className="bg-white rounded-xl border border-[#e0ebe9] p-5">

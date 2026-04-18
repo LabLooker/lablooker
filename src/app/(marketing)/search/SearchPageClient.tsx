@@ -442,7 +442,8 @@ export default function SearchPageClient() {
             {/* Health topic cards — show when browsing (no query and no active topic filter) */}
             {!query.trim() && !categoryFilter && !keywordFilter && (
               <div className="mt-8 mx-auto max-w-4xl">
-                <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-[#577572] mb-4">Lab Tests by Health Topic</h2>
+                <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-[#577572] mb-1">Browse tests by category</h2>
+                <p className="text-center text-xs text-[#a0b8b4] mb-4">Filter the test list by area — or search by name above. Looking for symptom guidance? <a href="/explore" className="text-[#2d6a5e] hover:underline">Try Explore →</a></p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {HEALTH_TOPICS.map((topic) => (
                     <button
