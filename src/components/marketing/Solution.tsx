@@ -8,9 +8,9 @@ export default function Solution() {
           <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
         </svg>
       ),
-      title: 'Search by symptom or test name',
+      title: 'Search & compare tests',
       description:
-        "Find what you need whether you know the test name or just your symptoms. LabLooker connects either one to the right tests.",
+        "Know what you need? Search by test name, CPT code, or lab code and compare real self-pay prices across 7+ providers instantly.",
       href: '/search',
       cta: 'Search tests →',
     },
@@ -38,6 +38,18 @@ export default function Solution() {
       href: '/translate',
       cta: 'Translate codes →',
     },
+    {
+      icon: (
+        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+        </svg>
+      ),
+      title: 'Explore by symptom or condition',
+      description:
+        "Not sure what to order? Browse by symptom, condition, or health goal — and see which tests are commonly discussed for each.",
+      href: '/explore',
+      cta: 'Start exploring →',
+    },
   ]
 
   return (
@@ -60,7 +72,7 @@ export default function Solution() {
         </div>
 
         {/* Features */}
-        <div className="mt-16 grid gap-8 sm:grid-cols-3">
+        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, i) => (
             <Link
               key={i}
