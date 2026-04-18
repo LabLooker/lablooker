@@ -338,6 +338,9 @@ export default function AdvocatePage() {
             <p className="text-sm mt-2 leading-relaxed" style={{ color: '#577572' }}>
               Add the tests you want to request. Copy the list to paste into your patient portal, or print it to bring to your appointment.
             </p>
+            <div className="mt-3 rounded-lg border border-[#e0ebe9] bg-[#f0f7f6] px-4 py-2.5 text-xs text-[#577572] font-mono">
+              <span className="text-[#1a2e2b] font-semibold not-italic">Example output:</span> TSH (CPT 84443) · Ferritin (CPT 82728) · Vitamin D · <span className="italic">Reason: fatigue and hair loss</span>
+            </div>
           </div>
 
           {/* Section 1: Search */}
@@ -392,7 +395,7 @@ export default function AdvocatePage() {
               {searchFocused && searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
                 <div className="absolute left-0 right-0 z-50 mt-1 rounded-xl border bg-white shadow-lg px-4 py-4" style={{ borderColor: '#e0ebe9' }}>
                   <p className="text-sm text-[#577572] mb-2">No tests found for &ldquo;{searchQuery}&rdquo;.</p>
-                  <p className="text-xs text-[#577572] mb-3">Not sure what to order? Our Explore page can help you find the right tests based on symptoms or conditions.</p>
+                  <p className="text-xs text-[#577572] mb-3">Looking for guidance by symptom or condition? Explore can help you figure out which tests are commonly discussed for what you&apos;re experiencing.</p>
                   <a href="/explore" className="inline-flex items-center gap-1 text-xs font-semibold text-[#2d6a5e] hover:underline">Go to Explore →</a>
                 </div>
               )}
