@@ -336,10 +336,31 @@ export default function AdvocatePage() {
               Build Your Lab Request
             </h1>
             <p className="text-sm mt-2 leading-relaxed" style={{ color: '#577572' }}>
-              Add the tests you want to request. Copy the list to paste into your patient portal, or print it to bring to your appointment.
+              Build a ready-to-share test list for your doctor, portal, or appointment.
             </p>
-            <div className="mt-3 rounded-lg border border-[#e0ebe9] bg-[#f0f7f6] px-4 py-2.5 text-xs text-[#577572] font-mono">
-              <span className="text-[#1a2e2b] font-semibold not-italic">Example output:</span> TSH (CPT 84443) · Ferritin (CPT 82728) · Vitamin D · <span className="italic">Reason: fatigue and hair loss</span>
+
+            {/* 3-step progress */}
+            <div className="mt-4 flex items-center gap-0 text-xs">
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border ${
+                !hasTests ? 'border-[#2d6a5e] bg-[#2d6a5e] text-white' : 'border-[#e0ebe9] text-[#a0b8b4]'
+              }`}>
+                <span className="font-semibold">1</span>
+                <span>Search &amp; add tests</span>
+              </div>
+              <div className="h-px w-4 bg-[#e0ebe9] shrink-0" />
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border ${
+                hasTests && !copied ? 'border-[#2d6a5e] bg-[#2d6a5e] text-white' : 'border-[#e0ebe9] text-[#a0b8b4]'
+              }`}>
+                <span className="font-semibold">2</span>
+                <span>Review your list</span>
+              </div>
+              <div className="h-px w-4 bg-[#e0ebe9] shrink-0" />
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border ${
+                copied ? 'border-[#2d6a5e] bg-[#2d6a5e] text-white' : 'border-[#e0ebe9] text-[#a0b8b4]'
+              }`}>
+                <span className="font-semibold">3</span>
+                <span>Copy or print</span>
+              </div>
             </div>
           </div>
 
