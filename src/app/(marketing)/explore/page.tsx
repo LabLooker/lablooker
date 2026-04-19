@@ -104,11 +104,28 @@ export default function ExplorePage() {
   const searchResults = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase()
     if (!q || q.length < 2) return null
-    return symptoms.filter(s =>
-      s.name.toLowerCase().includes(q) ||
-      (s.keywords || []).some(k => k.toLowerCase().includes(q)) ||
-      (s.description || '').toLowerCase().includes(q)
-    )
+
+    const scored = symptoms.reduce<{ symptom: Symptom; tier: number }[]>((acc, s) => {
+      const name = s.name.toLowerCase()
+      const keywords = (s.keywords || []).map(k => k.toLowerCase())
+
+      // Tier 1: name starts with query
+      if (name.startsWith(q)) { acc.push({ symptom: s, tier: 1 }); return acc }
+      // Tier 2: name contains query
+      if (name.includes(q)) { acc.push({ symptom: s, tier: 2 }); return acc }
+      // Tier 3: keyword exact or starts-with match
+      if (keywords.some(k => k === q || k.startsWith(q))) { acc.push({ symptom: s, tier: 3 }); return acc }
+      // Tier 4: keyword contains query
+      if (keywords.some(k => k.includes(q))) { acc.push({ symptom: s, tier: 4 }); return acc }
+      // Tier 5: description only — show separately as "related"
+      if ((s.description || '').toLowerCase().includes(q)) { acc.push({ symptom: s, tier: 5 }); return acc }
+      return acc
+    }, [])
+
+    // Sort by tier, then alphabetically within each tier
+    scored.sort((a, b) => a.tier !== b.tier ? a.tier - b.tier : a.symptom.name.localeCompare(b.symptom.name))
+
+    return scored
   }, [debouncedQuery, symptoms])
 
   const isSearching = query.trim().length >= 2
@@ -174,16 +191,38 @@ export default function ExplorePage() {
               </div>
             ) : (
               <div className="flex flex-col gap-2 mt-4">
-                <p className="text-xs text-[#577572] mb-2">{searchResults.length} symptom{searchResults.length !== 1 ? 's' : ''} matched</p>
-                {searchResults.map(s => (
-                  <SymptomCard
-                    key={s.id}
-                    symptom={s}
-                    testById={testById}
-                    expanded={expandedSymptom === s.id}
-                    onToggle={() => setExpandedSymptom(expandedSymptom === s.id ? null : s.id)}
-                  />
-                ))}
+                {(() => {
+                  const primary = searchResults.filter(r => r.tier < 5)
+                  const related = searchResults.filter(r => r.tier === 5)
+                  return (
+                    <>
+                      <p className="text-xs text-[#577572] mb-2">{primary.length} symptom{primary.length !== 1 ? 's' : ''} matched</p>
+                      {primary.map(({ symptom: s }) => (
+                        <SymptomCard
+                          key={s.id}
+                          symptom={s}
+                          testById={testById}
+                          expanded={expandedSymptom === s.id}
+                          onToggle={() => setExpandedSymptom(expandedSymptom === s.id ? null : s.id)}
+                        />
+                      ))}
+                      {related.length > 0 && (
+                        <>
+                          <p className="text-xs text-[#a0b8b4] mt-4 mb-2 uppercase tracking-wider font-semibold">Related topics</p>
+                          {related.map(({ symptom: s }) => (
+                            <SymptomCard
+                              key={s.id}
+                              symptom={s}
+                              testById={testById}
+                              expanded={expandedSymptom === s.id}
+                              onToggle={() => setExpandedSymptom(expandedSymptom === s.id ? null : s.id)}
+                            />
+                          ))}
+                        </>
+                      )}
+                    </>
+                  )
+                })()}
               </div>
             )}
           </div>
