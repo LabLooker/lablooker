@@ -235,7 +235,7 @@ export default function SearchPageClient() {
     async function load() {
       const { data } = await supabase
         .from('tests')
-        .select('id, test_name, category, description, cpt_codes, also_known_as, sample_type, fasting_required, turnaround_time')
+        .select('id, test_name, category, description, cpt_codes, fasting_required, turnaround, related_tests, notes')
         .order('test_name')
       if (data) {
         const typed = data as unknown as Test[]
