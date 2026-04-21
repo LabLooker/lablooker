@@ -340,11 +340,13 @@ export default function SearchPageClient() {
     if (!query.trim()) return result
     const q = query.toLowerCase()
     const words = q.split(/\s+/).filter(Boolean)
+    // Only match on test name, CPT codes, or category — not description.
+    // Description matches cause symptom words (e.g. "fatigue") to surface irrelevant tests.
+    // Symptom-based lookup belongs on the Explore page.
     return result.filter(
       (t) =>
         words.every(w => t.test_name.toLowerCase().includes(w)) ||
         t.cpt_codes.some((c) => c.includes(q)) ||
-        (t.description && words.every(w => t.description!.toLowerCase().includes(w))) ||
         (t.category && t.category.toLowerCase().includes(q))
     )
   }, [tests, query, categoryFilter, keywordFilter, activeTopicSlug])
