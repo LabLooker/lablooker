@@ -27,3 +27,4 @@ insert-codes.js
 *.scripts.js
 tools/cpl-extractor/venv/
 tools/cpl-extractor/data/
+.env*.local
