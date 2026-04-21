@@ -435,7 +435,7 @@ export default function TestDetailClient({ testId, test, pricing, icd10Codes, la
                   <span className="text-sm text-[#1a2e2b]">{lc.lab_name}</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-sm font-medium text-[#2d6a5e]">{lc.proprietary_code}</span>
-                    {lc.code_type && (
+                    {false && (
                       <span className="text-[11px] text-[#577572]">({lc.code_type})</span>
                     )}
                   </div>
