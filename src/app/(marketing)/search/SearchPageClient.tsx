@@ -507,9 +507,9 @@ export default function SearchPageClient() {
             {/* Results count + view toggle */}
             <div className="mt-6 flex items-center justify-between mx-auto max-w-5xl">
               <p className="text-sm text-[#577572]">
-                {query.trim() ? (
+                {query.trim() && !codeMatch ? (
                   <>{filteredTests.length} test{filteredTests.length !== 1 ? 's' : ''} found</>
-                ) : (
+                ) : query.trim() && codeMatch ? null : (
                   `${filteredTests.length} tests available`
                 )}
               </p>
@@ -620,7 +620,7 @@ export default function SearchPageClient() {
                   )
                 })()}
 
-                {filteredTests.length === 0 && (
+                {filteredTests.length === 0 && !codeMatch && (
                   <div className="mt-16 text-center">
                     <p className="text-lg text-[#577572]">No tests found for &ldquo;{query}&rdquo;.</p>
                     <p className="mt-2 text-sm text-[#577572]">
