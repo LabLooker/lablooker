@@ -137,47 +137,37 @@ function TermChip({
     )
   }
 
-  // manual
+  // manual (kept, now in editing mode to add a name)
   if (term.status === 'manual') {
-    if (isEditing) {
-      return (
-        <div
-          className={rowBase}
-          style={{ backgroundColor: '#f9fafb', borderLeft: '3px solid #9ca3af', padding: '6px 12px' }}
-        >
-          <span className="text-xs shrink-0 opacity-60">✏️</span>
-          <input
-            ref={editRef}
-            value={editValue}
-            onChange={e => setEditValue(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter') { onUpdateRaw(editValue); setIsEditing(false) }
-              if (e.key === 'Escape') { setEditValue(term.raw); setIsEditing(false) }
-            }}
-            onBlur={() => { onUpdateRaw(editValue); setIsEditing(false) }}
-            className="flex-1 min-w-0 text-sm bg-white rounded border px-2 py-0.5 focus:outline-none focus:ring-1"
-            style={{ borderColor: '#9ca3af', color: '#374151' }}
-            placeholder="Enter test name or code..."
-          />
-          <button
-            onClick={() => { onUpdateRaw(editValue); setIsEditing(false) }}
-            className="text-xs px-2 py-0.5 rounded shrink-0"
-            style={{ backgroundColor: '#2d6a5e', color: 'white' }}
-          >Done</button>
-        </div>
-      )
-    }
     return (
       <div
-        className={rowBase + " group cursor-pointer"}
-        style={{ backgroundColor: '#f9fafb', borderLeft: '3px solid #9ca3af', color: '#374151' }}
-        onClick={() => { setEditValue(term.raw); setIsEditing(true) }}
-        title="Click to edit"
+        className={rowBase}
+        style={{ backgroundColor: '#f9fafb', borderLeft: '3px solid #9ca3af', padding: '6px 12px' }}
       >
         <span className="text-xs shrink-0 opacity-60">✏️</span>
-        <span className="flex-1 min-w-0 italic truncate">{term.raw}</span>
-        <span className="text-xs opacity-40 shrink-0 group-hover:opacity-70">click to edit</span>
-        <button onClick={e => { e.stopPropagation(); onRemove() }} className="opacity-0 group-hover:opacity-40 hover:!opacity-80 text-xs font-bold shrink-0 transition-opacity">×</button>
+        <input
+          ref={editRef}
+          value={editValue}
+          onChange={e => setEditValue(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && editValue.trim()) {
+              onAccept({ id: `manual-${editValue.trim()}`, test_name: editValue.trim(), cpt_codes: [], category: null })
+            }
+            if (e.key === 'Escape') { setEditValue(''); onRemove() }
+          }}
+          autoFocus
+          className="flex-1 min-w-0 text-sm bg-white rounded border px-2 py-0.5 focus:outline-none focus:ring-1"
+          style={{ borderColor: '#9ca3af', color: '#374151' }}
+          placeholder="Type test name..."
+        />
+        <button
+          onClick={() => {
+            if (editValue.trim()) onAccept({ id: `manual-${editValue.trim()}`, test_name: editValue.trim(), cpt_codes: [], category: null })
+          }}
+          className="text-xs px-2 py-0.5 rounded shrink-0"
+          style={{ backgroundColor: '#2d6a5e', color: 'white' }}
+        >Done</button>
+        <button onClick={onRemove} className="opacity-40 hover:opacity-80 text-xs font-bold shrink-0">×</button>
       </div>
     )
   }
@@ -192,10 +182,10 @@ function TermChip({
         <span className="text-xs shrink-0 opacity-70">✕</span>
         <span className="flex-1 min-w-0 truncate">{term.raw}</span>
         <button
-          onClick={onKeepManual}
-          className="text-xs px-2 py-0.5 rounded shrink-0 transition-opacity hover:opacity-100 opacity-70"
-          style={{ backgroundColor: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}
-        >keep</button>
+          onClick={() => { onKeepManual(); setEditValue(''); setIsEditing(true) }}
+          className="text-xs px-2 py-0.5 rounded shrink-0 transition-opacity hover:opacity-100 opacity-80"
+          style={{ backgroundColor: '#dcfce7', color: '#166534', border: '1px solid #bbf7d0' }}
+        >add</button>
         <button onClick={onRemove} className="opacity-0 group-hover:opacity-50 hover:!opacity-80 text-xs font-bold shrink-0 transition-opacity">×</button>
       </div>
     </div>
