@@ -33,7 +33,7 @@ type TranslatedTest = {
   pricing: PricingRow[]
 }
 
-type TermStatus = 'matched' | 'suggestion' | 'notfound'
+type TermStatus = 'matched' | 'suggestion' | 'notfound' | 'manual'
 
 type ParsedTerm = {
   raw: string
@@ -48,10 +48,12 @@ function TermChip({
   term,
   onAccept,
   onRemove,
+  onKeepManual,
 }: {
   term: ParsedTerm
   onAccept: (test: TestResult) => void
   onRemove: () => void
+  onKeepManual: () => void
 }) {
   const [showDropdown, setShowDropdown] = useState(false)
 
@@ -148,20 +150,47 @@ function TermChip({
     )
   }
 
+  // manual (kept for manual fill-in)
+  if (term.status === 'manual') {
+    return (
+      <div
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
+        style={{ backgroundColor: '#f3f4f6', border: '1.5px solid #d1d5db', color: '#374151' }}
+      >
+        <span className="text-xs">✏️</span>
+        <span>{term.raw}</span>
+        <span className="text-xs opacity-50 ml-1">— fill in manually</span>
+        <button
+          onClick={onRemove}
+          className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none"
+          aria-label="Remove"
+        >×</button>
+      </div>
+    )
+  }
+
   // notfound
   return (
-    <div
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
-      style={{ backgroundColor: '#fee2e2', border: '1.5px solid #fecaca', color: '#991b1b' }}
-    >
-      <span className="text-xs">✕</span>
-      <span>{term.raw}</span>
-      <span className="text-xs opacity-60 ml-1">— not found</span>
-      <button
-        onClick={onRemove}
-        className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none"
-        aria-label="Remove"
-      >×</button>
+    <div className="inline-flex flex-col items-start gap-1">
+      <div
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
+        style={{ backgroundColor: '#fee2e2', border: '1.5px solid #fecaca', color: '#991b1b' }}
+      >
+        <span className="text-xs">✕</span>
+        <span>{term.raw}</span>
+        <span className="text-xs opacity-60 ml-1">— not found</span>
+        <button
+          onClick={onKeepManual}
+          className="ml-1 text-xs px-1.5 py-0.5 rounded opacity-70 hover:opacity-100 transition-opacity"
+          style={{ backgroundColor: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}
+          title="Keep this test and fill in the code manually on your printout"
+        >keep</button>
+        <button
+          onClick={onRemove}
+          className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none"
+          aria-label="Remove"
+        >×</button>
+      </div>
     </div>
   )
 }
@@ -318,10 +347,12 @@ function ResultsSection({
   translatedTests,
   sourceLab,
   targetLab,
+  manualTerms,
 }: {
   translatedTests: TranslatedTest[]
   sourceLab: string
   targetLab: string
+  manualTerms?: string[]
 }) {
   const isSingle = translatedTests.length === 1
 
@@ -536,6 +567,39 @@ function ResultsSection({
         </div>
       )}
 
+      {/* Manual fill-in rows */}
+      {manualTerms && manualTerms.length > 0 && (
+        <div className="mt-5">
+          <div className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: '#577572' }}>
+            ✏️ Fill in manually ({manualTerms.length})
+          </div>
+          <div className="rounded-lg overflow-hidden" style={{ border: '1px solid #e0ebe9' }}>
+            <table className="w-full text-sm">
+              <thead>
+                <tr style={{ backgroundColor: '#f8faf9' }}>
+                  <th className="text-left px-4 py-2 text-xs font-semibold" style={{ color: '#577572', width: '35%' }}>Test (you entered)</th>
+                  <th className="text-left px-4 py-2 text-xs font-semibold" style={{ color: '#577572', width: '32.5%' }}>{getLabDisplayName(sourceLab)} Code</th>
+                  <th className="text-left px-4 py-2 text-xs font-semibold" style={{ color: '#577572', width: '32.5%' }}>{getLabDisplayName(targetLab)} Code</th>
+                </tr>
+              </thead>
+              <tbody>
+                {manualTerms.map((raw, i) => (
+                  <tr key={i} style={{ borderTop: '1px solid #e0ebe9' }}>
+                    <td className="px-4 py-3 font-medium" style={{ color: '#1a2e2b' }}>{raw}</td>
+                    <td className="px-4 py-3" style={{ color: '#9ca3af', borderLeft: '1px dashed #e0ebe9' }}>
+                      <span className="inline-block w-24 border-b" style={{ borderColor: '#9ca3af' }}>&nbsp;</span>
+                    </td>
+                    <td className="px-4 py-3" style={{ color: '#9ca3af', borderLeft: '1px dashed #e0ebe9' }}>
+                      <span className="inline-block w-24 border-b" style={{ borderColor: '#9ca3af' }}>&nbsp;</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* Disclaimer */}
       <div className="mt-5 rounded-lg p-4 text-xs" style={{ backgroundColor: '#fff8f5', border: '1px solid #e8d5cc', color: '#4a6b67' }}>
         <p className="font-semibold mb-1" style={{ color: '#b85c5c' }}>
@@ -694,7 +758,7 @@ export default function TranslatePage() {
     )
 
     // Append new results to existing terms
-    setParsedTerms(prev => [...prev.filter(t => t.status === 'matched' || t.status === 'suggestion' || t.status === 'notfound'), ...results])
+    setParsedTerms(prev => [...prev.filter(t => t.status === 'matched' || t.status === 'suggestion' || t.status === 'notfound' || t.status === 'manual'), ...results])
     setBulkInput('')
     setIsParsing(false)
   }, [bulkInput, parsedTerms])
@@ -712,6 +776,11 @@ export default function TranslatePage() {
   const removeTerm = (index: number) =>
     setParsedTerms(prev => prev.filter((_, i) => i !== index))
 
+  const keepManual = (index: number) =>
+    setParsedTerms(prev => prev.map((t, i) =>
+      i === index ? { ...t, status: 'manual' as TermStatus } : t
+    ))
+
   // Only fully matched tests count — unresolved suggestions must be reviewed first
   const confirmedTests = parsedTerms
     .filter(t => t.status === 'matched' && t.matched)
@@ -722,8 +791,9 @@ export default function TranslatePage() {
 
   const matchedWithIndex = parsedTerms.map((t, i) => ({ term: t, index: i })).filter(({ term }) => term.status === 'matched')
   const suggestionsWithIndex = parsedTerms.map((t, i) => ({ term: t, index: i })).filter(({ term }) => term.status === 'suggestion')
-  const notfoundWithIndex = parsedTerms.map((t, i) => ({ term: t, index: i })).filter(({ term }) => term.status === 'notfound')
+  const notfoundWithIndex = parsedTerms.map((t, i) => ({ term: t, index: i })).filter(({ term }) => term.status === 'notfound' || term.status === 'manual')
 
+  const manualCount = parsedTerms.filter(t => t.status === 'manual').length
   const canTranslate = confirmedTests.length > 0 && unresolvedCount === 0 && sourceLab && targetLab && sourceLab !== targetLab
 
   const translate = async () => {
@@ -861,7 +931,7 @@ export default function TranslatePage() {
                     <p className="text-xs italic" style={{ color: '#9ca3af', padding: '4px 0' }}>No tests matched yet</p>
                   ) : (
                     matchedWithIndex.map(({ term, index }) => (
-                      <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} />
+                      <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} onKeepManual={() => keepManual(index)} />
                     ))
                   )}
                 </div>
@@ -878,7 +948,7 @@ export default function TranslatePage() {
                     <p className="text-xs italic" style={{ color: '#9ca3af', padding: '4px 0' }}>All resolved ✓</p>
                   ) : (
                     suggestionsWithIndex.map(({ term, index }) => (
-                      <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} />
+                      <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} onKeepManual={() => keepManual(index)} />
                     ))
                   )}
                 </div>
@@ -896,7 +966,7 @@ export default function TranslatePage() {
                   ) : (
                     <>
                       {notfoundWithIndex.map(({ term, index }) => (
-                        <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} />
+                        <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} onKeepManual={() => keepManual(index)} />
                       ))}
                       <p className="mt-1.5" style={{ fontSize: '11px', color: '#991b1b', opacity: 0.7 }}>Try a different name or remove.</p>
                     </>
@@ -956,6 +1026,7 @@ export default function TranslatePage() {
               translatedTests={translatedTests}
               sourceLab={sourceLab}
               targetLab={targetLab}
+              manualTerms={parsedTerms.filter(t => t.status === 'manual').map(t => t.raw)}
             />
           </div>
         )}
