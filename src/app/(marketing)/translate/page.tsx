@@ -60,27 +60,27 @@ function TermChip({
   if (term.status === 'matched') {
     const hasOptions = term.suggestions && term.suggestions.length > 1
     return (
-      <div className="inline-flex flex-col items-start">
+      <div className="flex flex-col items-start w-full">
         <div
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
+          className="flex items-start gap-1.5 px-3 py-2 rounded-lg text-sm font-medium w-full"
           style={{ backgroundColor: '#dcfce7', border: '1.5px solid #bbf7d0', color: '#166534' }}
         >
-          <span className="text-xs">✓</span>
-          <span>{term.matched!.test_name}</span>
+          <span className="text-xs mt-0.5 shrink-0">✓</span>
+          <span className="flex-1 min-w-0 break-words">{term.matched!.test_name}</span>
           {term.raw.toLowerCase() !== term.matched!.test_name.toLowerCase() && (
-            <span className="text-xs opacity-50 ml-0.5">({term.raw})</span>
+            <span className="text-xs opacity-50 shrink-0">({term.raw})</span>
           )}
           {hasOptions && (
             <button
               onClick={() => setShowDropdown(d => !d)}
-              className="ml-1 text-xs opacity-40 hover:opacity-80 transition-opacity"
+              className="ml-1 text-xs opacity-40 hover:opacity-80 transition-opacity shrink-0"
               aria-label="Edit selection"
               title="Click to change"
             >✎</button>
           )}
           <button
             onClick={onRemove}
-            className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none"
+            className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none shrink-0"
             aria-label="Remove"
           >×</button>
         </div>
@@ -109,22 +109,22 @@ function TermChip({
   if (term.status === 'suggestion') {
     const options = term.suggestions && term.suggestions.length > 0 ? term.suggestions : [term.matched!]
     return (
-      <div className="inline-flex flex-col items-start">
+      <div className="flex flex-col items-start w-full">
         {/* Amber pill — click to expand/collapse options */}
         <button
           onClick={() => setShowDropdown(d => !d)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium cursor-pointer"
+          className="flex items-start gap-1.5 px-3 py-2 rounded-lg text-sm font-medium cursor-pointer w-full text-left"
           style={{ backgroundColor: '#fffbeb', border: '1.5px solid #fcd34d', color: '#92400e' }}
         >
-          <span className="text-xs opacity-60">~</span>
-          <span>{term.matched!.test_name}</span>
+          <span className="text-xs opacity-60 mt-0.5 shrink-0">~</span>
+          <span className="flex-1 min-w-0 break-words">{term.matched!.test_name}</span>
           {term.raw.toLowerCase() !== term.matched!.test_name.toLowerCase() && (
-            <span className="text-xs opacity-50 ml-0.5">({term.raw})</span>
+            <span className="text-xs opacity-50 shrink-0">({term.raw})</span>
           )}
-          <span className="ml-1 text-xs opacity-50">{showDropdown ? '▲' : '▼'}</span>
+          <span className="ml-1 text-xs opacity-50 shrink-0">{showDropdown ? '▲' : '▼'}</span>
           <span
             onClick={(e) => { e.stopPropagation(); onRemove() }}
-            className="ml-1 opacity-40 hover:opacity-80 text-xs font-bold leading-none transition-opacity cursor-pointer"
+            className="ml-1 opacity-40 hover:opacity-80 text-xs font-bold leading-none transition-opacity cursor-pointer shrink-0"
             aria-label="Remove"
           >×</span>
         </button>
@@ -154,15 +154,15 @@ function TermChip({
   if (term.status === 'manual') {
     return (
       <div
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
+        className="flex items-start gap-1.5 px-3 py-2 rounded-lg text-sm font-medium w-full"
         style={{ backgroundColor: '#f3f4f6', border: '1.5px solid #d1d5db', color: '#374151' }}
       >
-        <span className="text-xs">✏️</span>
-        <span>{term.raw}</span>
-        <span className="text-xs opacity-50 ml-1">— fill in manually</span>
+        <span className="text-xs mt-0.5 shrink-0">✏️</span>
+        <span className="flex-1 min-w-0 break-words">{term.raw}</span>
+        <span className="text-xs opacity-50 shrink-0">— manual</span>
         <button
           onClick={onRemove}
-          className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none"
+          className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none shrink-0"
           aria-label="Remove"
         >×</button>
       </div>
@@ -171,23 +171,22 @@ function TermChip({
 
   // notfound
   return (
-    <div className="inline-flex flex-col items-start gap-1">
+    <div className="flex flex-col items-start w-full gap-1">
       <div
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
+        className="flex items-start gap-1.5 px-3 py-2 rounded-lg text-sm font-medium w-full"
         style={{ backgroundColor: '#fee2e2', border: '1.5px solid #fecaca', color: '#991b1b' }}
       >
-        <span className="text-xs">✕</span>
-        <span>{term.raw}</span>
-        <span className="text-xs opacity-60 ml-1">— not found</span>
+        <span className="text-xs mt-0.5 shrink-0">✕</span>
+        <span className="flex-1 min-w-0 break-words">{term.raw}</span>
         <button
           onClick={onKeepManual}
-          className="ml-1 text-xs px-1.5 py-0.5 rounded opacity-70 hover:opacity-100 transition-opacity"
+          className="text-xs px-1.5 py-0.5 rounded opacity-70 hover:opacity-100 transition-opacity shrink-0"
           style={{ backgroundColor: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}
           title="Keep this test and fill in the code manually on your printout"
         >keep</button>
         <button
           onClick={onRemove}
-          className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none"
+          className="opacity-50 hover:opacity-100 text-xs font-bold leading-none shrink-0"
           aria-label="Remove"
         >×</button>
       </div>
