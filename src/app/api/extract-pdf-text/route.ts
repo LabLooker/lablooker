@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-// Use internal path to avoid pdf-parse test file lookup (fails in serverless/Vercel)
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require('pdf-parse/lib/pdf-parse.js')
+import { extractText } from 'unpdf'
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,11 +7,14 @@ export async function POST(req: NextRequest) {
     const file = formData.get('file') as File | null
     if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 })
 
-    const buffer = Buffer.from(await file.arrayBuffer())
-    const parsed = await pdfParse(buffer)
-    return NextResponse.json({ text: parsed.text })
+    const buffer = await file.arrayBuffer()
+    const { text } = await extractText(new Uint8Array(buffer), { mergePages: true })
+    if (!text || text.trim().length === 0) {
+      return NextResponse.json({ error: 'No text found in PDF — it may be a scanned image' }, { status: 422 })
+    }
+    return NextResponse.json({ text: text.trim() })
   } catch (e) {
     console.error('PDF text extract error:', e)
-    return NextResponse.json({ error: 'Failed to extract PDF text' }, { status: 500 })
+    return NextResponse.json({ error: `Failed to extract PDF text: ${e instanceof Error ? e.message : 'unknown'}` }, { status: 500 })
   }
 }
