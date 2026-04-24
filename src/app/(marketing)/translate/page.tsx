@@ -158,7 +158,7 @@ function TermChip({
           autoFocus
           className="flex-1 min-w-0 text-sm bg-white rounded border px-2 py-0.5 focus:outline-none focus:ring-1"
           style={{ borderColor: '#9ca3af', color: '#374151' }}
-          placeholder="Type test name..."
+          placeholder="Edit or type test name..."
         />
         <button
           onClick={() => {
@@ -181,7 +181,7 @@ function TermChip({
       >
         <span className="flex-1 min-w-0 truncate">{term.raw}</span>
         <button
-          onClick={() => { onKeepManual(); setEditValue(''); setIsEditing(true) }}
+          onClick={() => { onKeepManual(); setEditValue(term.raw); setIsEditing(true) }}
           className="text-xs px-2 py-0.5 rounded shrink-0 transition-opacity hover:opacity-100 opacity-80"
           style={{ backgroundColor: '#dcfce7', color: '#166534', border: '1px solid #bbf7d0' }}
         >add</button>
