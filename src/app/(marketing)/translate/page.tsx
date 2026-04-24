@@ -67,7 +67,7 @@ function TermChip({
   }, [isEditing])
 
   // Row style: left border accent, name + actions, no nested pill-in-box
-  const rowBase = "flex items-center gap-2 px-3 py-2 rounded-lg w-full text-sm group"
+  const rowBase = "flex items-center gap-2 px-3 py-2 rounded-lg w-full text-sm group min-w-0"
 
   if (term.status === 'matched') {
     const hasOptions = term.suggestions && term.suggestions.length > 1
@@ -78,7 +78,7 @@ function TermChip({
           style={{ backgroundColor: '#f0fdf4', borderLeft: '3px solid #22c55e', color: '#166534' }}
         >
           <span className="text-xs shrink-0 opacity-70">✓</span>
-          <span className="flex-1 min-w-0 font-medium" style={{ wordBreak: 'break-word' }}>{term.matched!.test_name}</span>
+          <span className="flex-1 min-w-0 font-medium truncate">{term.matched!.test_name}</span>
           {term.raw.toLowerCase() !== term.matched!.test_name.toLowerCase() && (
             <span className="text-xs opacity-40 shrink-0 hidden sm:inline">({term.raw})</span>
           )}
@@ -113,7 +113,7 @@ function TermChip({
           style={{ backgroundColor: '#fffbeb', borderLeft: '3px solid #f59e0b', color: '#92400e' }}
         >
           <span className="text-xs shrink-0 opacity-60">?</span>
-          <span className="flex-1 min-w-0 font-medium" style={{ wordBreak: 'break-word' }}>{term.matched!.test_name}</span>
+          <span className="flex-1 min-w-0 font-medium truncate">{term.matched!.test_name}</span>
           {term.raw.toLowerCase() !== term.matched!.test_name.toLowerCase() && (
             <span className="text-xs opacity-40 shrink-0 hidden sm:inline">({term.raw})</span>
           )}
@@ -175,7 +175,7 @@ function TermChip({
         title="Click to edit"
       >
         <span className="text-xs shrink-0 opacity-60">✏️</span>
-        <span className="flex-1 min-w-0 italic" style={{ wordBreak: 'break-word' }}>{term.raw}</span>
+        <span className="flex-1 min-w-0 italic truncate">{term.raw}</span>
         <span className="text-xs opacity-40 shrink-0 group-hover:opacity-70">click to edit</span>
         <button onClick={e => { e.stopPropagation(); onRemove() }} className="opacity-0 group-hover:opacity-40 hover:!opacity-80 text-xs font-bold shrink-0 transition-opacity">×</button>
       </div>
@@ -190,7 +190,7 @@ function TermChip({
         style={{ backgroundColor: '#fef2f2', borderLeft: '3px solid #f87171', color: '#991b1b' }}
       >
         <span className="text-xs shrink-0 opacity-70">✕</span>
-        <span className="flex-1 min-w-0" style={{ wordBreak: 'break-word' }}>{term.raw}</span>
+        <span className="flex-1 min-w-0 truncate">{term.raw}</span>
         <button
           onClick={onKeepManual}
           className="text-xs px-2 py-0.5 rounded shrink-0 transition-opacity hover:opacity-100 opacity-70"
