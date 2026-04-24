@@ -65,6 +65,9 @@ function TermChip({
         >
           <span className="text-xs">✓</span>
           <span>{term.matched!.test_name}</span>
+          {term.raw.toLowerCase() !== term.matched!.test_name.toLowerCase() && (
+            <span className="text-xs opacity-50 ml-0.5">({term.raw})</span>
+          )}
           {hasOptions && (
             <button
               onClick={() => setShowDropdown(d => !d)}
@@ -113,7 +116,9 @@ function TermChip({
         >
           <span className="text-xs opacity-60">~</span>
           <span>{term.matched!.test_name}</span>
-          <span className="text-xs opacity-50 ml-0.5">({term.raw})</span>
+          {term.raw.toLowerCase() !== term.matched!.test_name.toLowerCase() && (
+            <span className="text-xs opacity-50 ml-0.5">({term.raw})</span>
+          )}
           <span className="ml-1 text-xs opacity-50">{showDropdown ? '▲' : '▼'}</span>
           <span
             onClick={(e) => { e.stopPropagation(); onRemove() }}
