@@ -625,6 +625,7 @@ export default function TranslatePage() {
 
   const [bulkInput, setBulkInput] = useState('')
   const [isPdfLoading, setIsPdfLoading] = useState(false)
+  const [pdfError, setPdfError] = useState<string | null>(null)
   const pdfInputRef = useRef<HTMLInputElement>(null)
   const [isParsing, setIsParsing] = useState(false)
   const [parsedTerms, setParsedTerms] = useState<ParsedTerm[]>([])
@@ -636,7 +637,12 @@ export default function TranslatePage() {
   const resultsRef = useRef<HTMLDivElement>(null)
 
   const handlePdfUpload = useCallback(async (file: File) => {
-    if (!file || !file.name.toLowerCase().endsWith('.pdf')) return
+    setPdfError(null)
+    if (!file) { setPdfError('No file selected.'); return }
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      setPdfError(`File "${file.name}" doesn't look like a PDF. Make sure it ends in .pdf`)
+      return
+    }
     setIsPdfLoading(true)
     try {
       const formData = new FormData()
@@ -654,7 +660,7 @@ export default function TranslatePage() {
       if (translatedTests.length > 0) setTranslatedTests([])
     } catch (e) {
       console.error('PDF upload error:', e)
-      alert(`Could not read PDF: ${e instanceof Error ? e.message : 'unknown error'}. Try copying and pasting the test names instead.`)
+      setPdfError(`Could not read PDF: ${e instanceof Error ? e.message : 'unknown error'}. Try copying and pasting the test names instead.`)
     }
     setIsPdfLoading(false)
   }, [translatedTests])
@@ -930,6 +936,11 @@ export default function TranslatePage() {
               onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePdfUpload(f); e.target.value = '' }}
             />
           </div>
+          {pdfError && (
+            <div className="mt-2 px-3 py-2 rounded-lg text-xs" style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca' }}>
+              ⚠️ {pdfError}
+            </div>
+          )}
           <textarea
             value={bulkInput}
             onChange={(e) => {
