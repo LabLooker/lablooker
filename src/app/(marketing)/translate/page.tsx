@@ -49,13 +49,22 @@ function TermChip({
   onAccept,
   onRemove,
   onKeepManual,
+  onUpdateRaw,
 }: {
   term: ParsedTerm
   onAccept: (test: TestResult) => void
   onRemove: () => void
   onKeepManual: () => void
+  onUpdateRaw: (newRaw: string) => void
 }) {
   const [showDropdown, setShowDropdown] = useState(false)
+  const [editValue, setEditValue] = useState(term.raw)
+  const [isEditing, setIsEditing] = useState(false)
+  const editRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (isEditing && editRef.current) editRef.current.focus()
+  }, [isEditing])
 
   // Row style: left border accent, name + actions, no nested pill-in-box
   const rowBase = "flex items-center gap-2 px-3 py-2 rounded-lg w-full text-sm group"
@@ -130,15 +139,45 @@ function TermChip({
 
   // manual
   if (term.status === 'manual') {
+    if (isEditing) {
+      return (
+        <div
+          className={rowBase}
+          style={{ backgroundColor: '#f9fafb', borderLeft: '3px solid #9ca3af', padding: '6px 12px' }}
+        >
+          <span className="text-xs shrink-0 opacity-60">✏️</span>
+          <input
+            ref={editRef}
+            value={editValue}
+            onChange={e => setEditValue(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') { onUpdateRaw(editValue); setIsEditing(false) }
+              if (e.key === 'Escape') { setEditValue(term.raw); setIsEditing(false) }
+            }}
+            onBlur={() => { onUpdateRaw(editValue); setIsEditing(false) }}
+            className="flex-1 min-w-0 text-sm bg-white rounded border px-2 py-0.5 focus:outline-none focus:ring-1"
+            style={{ borderColor: '#9ca3af', color: '#374151' }}
+            placeholder="Enter test name or code..."
+          />
+          <button
+            onClick={() => { onUpdateRaw(editValue); setIsEditing(false) }}
+            className="text-xs px-2 py-0.5 rounded shrink-0"
+            style={{ backgroundColor: '#2d6a5e', color: 'white' }}
+          >Done</button>
+        </div>
+      )
+    }
     return (
       <div
-        className={rowBase + " group"}
+        className={rowBase + " group cursor-pointer"}
         style={{ backgroundColor: '#f9fafb', borderLeft: '3px solid #9ca3af', color: '#374151' }}
+        onClick={() => { setEditValue(term.raw); setIsEditing(true) }}
+        title="Click to edit"
       >
         <span className="text-xs shrink-0 opacity-60">✏️</span>
         <span className="flex-1 min-w-0 italic" style={{ wordBreak: 'break-word' }}>{term.raw}</span>
-        <span className="text-xs opacity-40 shrink-0">fill in</span>
-        <button onClick={onRemove} className="opacity-0 group-hover:opacity-40 hover:!opacity-80 text-xs font-bold shrink-0 transition-opacity">×</button>
+        <span className="text-xs opacity-40 shrink-0 group-hover:opacity-70">click to edit</span>
+        <button onClick={e => { e.stopPropagation(); onRemove() }} className="opacity-0 group-hover:opacity-40 hover:!opacity-80 text-xs font-bold shrink-0 transition-opacity">×</button>
       </div>
     )
   }
@@ -796,6 +835,11 @@ export default function TranslatePage() {
       i === index ? { ...t, status: 'manual' as TermStatus } : t
     ))
 
+  const updateRaw = (index: number, newRaw: string) =>
+    setParsedTerms(prev => prev.map((t, i) =>
+      i === index ? { ...t, raw: newRaw.trim() || t.raw } : t
+    ))
+
   // Only fully matched tests count — unresolved suggestions must be reviewed first
   const confirmedTests = parsedTerms
     .filter(t => t.status === 'matched' && t.matched)
@@ -964,7 +1008,7 @@ export default function TranslatePage() {
                     <p className="text-xs italic" style={{ color: '#9ca3af', padding: '4px 0' }}>No tests matched yet</p>
                   ) : (
                     matchedWithIndex.map(({ term, index }) => (
-                      <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} onKeepManual={() => keepManual(index)} />
+                      <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} onKeepManual={() => keepManual(index)} onUpdateRaw={(v) => updateRaw(index, v)} />
                     ))
                   )}
                 </div>
@@ -981,7 +1025,7 @@ export default function TranslatePage() {
                     <p className="text-xs italic" style={{ color: '#9ca3af', padding: '4px 0' }}>All resolved ✓</p>
                   ) : (
                     suggestionsWithIndex.map(({ term, index }) => (
-                      <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} onKeepManual={() => keepManual(index)} />
+                      <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} onKeepManual={() => keepManual(index)} onUpdateRaw={(v) => updateRaw(index, v)} />
                     ))
                   )}
                 </div>
@@ -999,7 +1043,7 @@ export default function TranslatePage() {
                   ) : (
                     <>
                       {notfoundWithIndex.map(({ term, index }) => (
-                        <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} onKeepManual={() => keepManual(index)} />
+                        <TermChip key={index} term={term} onAccept={(test) => acceptSuggestion(index, test)} onRemove={() => removeTerm(index)} onKeepManual={() => keepManual(index)} onUpdateRaw={(v) => updateRaw(index, v)} />
                       ))}
                       <p className="mt-1.5" style={{ fontSize: '11px', color: '#991b1b', opacity: 0.7 }}>Try a different name or remove.</p>
                     </>
