@@ -648,12 +648,14 @@ export default function TranslatePage() {
       const formData = new FormData()
       formData.append('file', file)
       const res = await fetch('/api/extract-pdf-text', { method: 'POST', body: formData })
-      if (!res.ok) {
-        const body = await res.text()
-        throw new Error(`Server error ${res.status}: ${body}`)
-      }
       const json = await res.json()
-      if (json.error || !json.text) throw new Error(json.error || 'No text extracted')
+      if (res.status === 422) {
+        setPdfError('This PDF looks like a scanned image — text can\'t be extracted automatically. Try typing your test names in the box below, or copy them from your patient portal (Quest MyQuest, LabCorp Patient, etc.).')
+        setIsPdfLoading(false)
+        return
+      }
+      if (!res.ok) throw new Error(json.error || `Server error ${res.status}`)
+      if (!json.text) throw new Error('No text extracted')
       // Strip extra whitespace but keep line breaks so test names stay separated
       const cleaned = json.text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim()
       setBulkInput(prev => prev ? prev + '\n' + cleaned : cleaned)
