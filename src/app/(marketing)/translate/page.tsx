@@ -829,7 +829,7 @@ export default function TranslatePage() {
             )}
 
             <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#577572' }}>
-              {confirmedTests.length} of {parsedTerms.filter(t => t.status !== 'notfound').length} confirmed
+              {parsedTerms.filter(t => t.status === 'matched').length} of {parsedTerms.filter(t => t.status !== 'notfound').length} confirmed
             </div>
 
             {/* 3-column grid */}
@@ -929,7 +929,7 @@ export default function TranslatePage() {
                 ? `Resolve ${unresolvedCount} test${unresolvedCount !== 1 ? 's' : ''} above to continue`
                 : !sourceLab || !targetLab
                   ? 'Select both labs to translate'
-                  : `Translate ${confirmedTests.length} test${confirmedTests.length !== 1 ? 's' : ''} →`}
+                  : `Translate ${parsedTerms.filter(t => t.status === 'matched').length} test${parsedTerms.filter(t => t.status === 'matched').length !== 1 ? 's' : ''} →`}
           </button>
         )}
 
