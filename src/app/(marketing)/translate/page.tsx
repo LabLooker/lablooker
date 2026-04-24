@@ -640,19 +640,25 @@ export default function TranslatePage() {
   const resultsRef = useRef<HTMLDivElement>(null)
 
   const handlePdfUpload = useCallback(async (file: File) => {
-    if (!file || !file.name.endsWith('.pdf')) return
+    if (!file || !file.name.toLowerCase().endsWith('.pdf')) return
     setIsPdfLoading(true)
     try {
       const formData = new FormData()
       formData.append('file', file)
       const res = await fetch('/api/extract-pdf-text', { method: 'POST', body: formData })
-      const { text, error } = await res.json()
-      if (error || !text) throw new Error(error || 'No text extracted')
-      setBulkInput(prev => prev ? prev + '\n' + text : text)
+      if (!res.ok) {
+        const body = await res.text()
+        throw new Error(`Server error ${res.status}: ${body}`)
+      }
+      const json = await res.json()
+      if (json.error || !json.text) throw new Error(json.error || 'No text extracted')
+      // Strip extra whitespace but keep line breaks so test names stay separated
+      const cleaned = json.text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim()
+      setBulkInput(prev => prev ? prev + '\n' + cleaned : cleaned)
       if (translatedTests.length > 0) setTranslatedTests([])
     } catch (e) {
       console.error('PDF upload error:', e)
-      alert('Could not read PDF. Try copying and pasting the test names instead.')
+      alert(`Could not read PDF: ${e instanceof Error ? e.message : 'unknown error'}. Try copying and pasting the test names instead.`)
     }
     setIsPdfLoading(false)
   }, [translatedTests])
@@ -770,7 +776,28 @@ export default function TranslatePage() {
             })
           )
           const suggestionPool = nameSuggestions.length > 0 ? nameSuggestions : all
-          return { raw, status: 'suggestion', matched: suggestionPool[0], suggestions: suggestionPool.slice(0, 5) }
+
+          // Auto-match: if only one candidate in suggestion pool, accept it
+          if (suggestionPool.length === 1) return { raw, status: 'matched', matched: suggestionPool[0] }
+
+          // Score each candidate: how many query words appear in the name?
+          const scored = suggestionPool.map(t => {
+            const name = t.test_name.toLowerCase()
+            const hits = words.filter(w => {
+              if (w.length <= 2) return new RegExp(`(^|[\\s,(/])${w}([\\s,)./]|$)`, 'i').test(name)
+              return name.includes(w)
+            }).length
+            return { t, hits }
+          })
+          const maxHits = Math.max(...scored.map(s => s.hits))
+          const topScored = scored.filter(s => s.hits === maxHits).map(s => s.t)
+
+          // If one candidate covers all query words, auto-match it
+          if (topScored.length === 1 && maxHits === words.length) {
+            return { raw, status: 'matched', matched: topScored[0] }
+          }
+
+          return { raw, status: 'suggestion', matched: topScored[0] ?? suggestionPool[0], suggestions: topScored.slice(0, 5).length > 0 ? topScored.slice(0, 5) : suggestionPool.slice(0, 5) }
         } catch {
           return { raw, status: 'notfound' }
         }
