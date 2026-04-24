@@ -628,6 +628,8 @@ export default function TranslatePage() {
   const supabase = createClient()
 
   const [bulkInput, setBulkInput] = useState('')
+  const [isPdfLoading, setIsPdfLoading] = useState(false)
+  const pdfInputRef = useRef<HTMLInputElement>(null)
   const [isParsing, setIsParsing] = useState(false)
   const [parsedTerms, setParsedTerms] = useState<ParsedTerm[]>([])
   const [sourceLab, setSourceLab] = useState('')
@@ -636,6 +638,24 @@ export default function TranslatePage() {
   const [translatedTests, setTranslatedTests] = useState<TranslatedTest[]>([])
   const [isTranslating, setIsTranslating] = useState(false)
   const resultsRef = useRef<HTMLDivElement>(null)
+
+  const handlePdfUpload = useCallback(async (file: File) => {
+    if (!file || !file.name.endsWith('.pdf')) return
+    setIsPdfLoading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/extract-pdf-text', { method: 'POST', body: formData })
+      const { text, error } = await res.json()
+      if (error || !text) throw new Error(error || 'No text extracted')
+      setBulkInput(prev => prev ? prev + '\n' + text : text)
+      if (translatedTests.length > 0) setTranslatedTests([])
+    } catch (e) {
+      console.error('PDF upload error:', e)
+      alert('Could not read PDF. Try copying and pasting the test names instead.')
+    }
+    setIsPdfLoading(false)
+  }, [translatedTests])
 
   useEffect(() => {
     async function fetchLabs() {
@@ -861,9 +881,27 @@ export default function TranslatePage() {
 
         {/* Bulk input */}
         <div className="bg-white rounded-xl shadow-sm border p-6 mb-4 print:hidden" style={{ borderColor: '#e0ebe9' }}>
-          <label className="block text-sm font-semibold mb-3" style={{ color: '#1a2e2b' }}>
-            What tests were ordered?
-          </label>
+          <div className="flex items-center justify-between mb-3">
+            <label className="block text-sm font-semibold" style={{ color: '#1a2e2b' }}>
+              What tests were ordered?
+            </label>
+            <button
+              onClick={() => pdfInputRef.current?.click()}
+              disabled={isPdfLoading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+              style={{ backgroundColor: '#f0f7f6', color: '#2d6a5e', border: '1px solid #c5deda' }}
+              title="Upload a PDF lab order to extract test names automatically"
+            >
+              {isPdfLoading ? '⏳ Reading PDF...' : '📄 Upload PDF order'}
+            </button>
+            <input
+              ref={pdfInputRef}
+              type="file"
+              accept=".pdf,application/pdf"
+              className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePdfUpload(f); e.target.value = '' }}
+            />
+          </div>
           <textarea
             value={bulkInput}
             onChange={(e) => {
