@@ -57,46 +57,35 @@ function TermChip({
 }) {
   const [showDropdown, setShowDropdown] = useState(false)
 
+  // Row style: left border accent, name + actions, no nested pill-in-box
+  const rowBase = "flex items-center gap-2 px-3 py-2 rounded-lg w-full text-sm group"
+
   if (term.status === 'matched') {
     const hasOptions = term.suggestions && term.suggestions.length > 1
     return (
-      <div className="flex flex-col items-start w-full">
+      <div className="w-full">
         <div
-          className="flex items-start gap-1.5 px-3 py-2 rounded-lg text-sm font-medium w-full"
-          style={{ backgroundColor: '#dcfce7', border: '1.5px solid #bbf7d0', color: '#166534' }}
+          className={rowBase}
+          style={{ backgroundColor: '#f0fdf4', borderLeft: '3px solid #22c55e', color: '#166534' }}
         >
-          <span className="text-xs mt-0.5 shrink-0">✓</span>
-          <span className="flex-1 min-w-0 break-words">{term.matched!.test_name}</span>
+          <span className="text-xs shrink-0 opacity-70">✓</span>
+          <span className="flex-1 min-w-0 font-medium" style={{ wordBreak: 'break-word' }}>{term.matched!.test_name}</span>
           {term.raw.toLowerCase() !== term.matched!.test_name.toLowerCase() && (
-            <span className="text-xs opacity-50 shrink-0">({term.raw})</span>
+            <span className="text-xs opacity-40 shrink-0 hidden sm:inline">({term.raw})</span>
           )}
           {hasOptions && (
-            <button
-              onClick={() => setShowDropdown(d => !d)}
-              className="ml-1 text-xs opacity-40 hover:opacity-80 transition-opacity shrink-0"
-              aria-label="Edit selection"
-              title="Click to change"
-            >✎</button>
+            <button onClick={() => setShowDropdown(d => !d)} className="text-xs opacity-40 hover:opacity-80 shrink-0" title="Change">✎</button>
           )}
-          <button
-            onClick={onRemove}
-            className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none shrink-0"
-            aria-label="Remove"
-          >×</button>
+          <button onClick={onRemove} className="opacity-0 group-hover:opacity-40 hover:!opacity-80 text-xs font-bold shrink-0 transition-opacity" aria-label="Remove">×</button>
         </div>
-        {/* Edit dropdown — reopens options without reverting chip state */}
         {showDropdown && hasOptions && (
-          <div className="mt-1 ml-2 bg-white rounded-lg shadow-lg border py-1" style={{ borderColor: '#e0ebe9', minWidth: '200px', zIndex: 10 }}>
+          <div className="mt-1 ml-4 bg-white rounded-lg shadow-lg border py-1" style={{ borderColor: '#e0ebe9', minWidth: '180px', zIndex: 10 }}>
             {term.suggestions!.map(s => (
-              <button
-                key={s.id}
-                onClick={() => { onAccept(s); setShowDropdown(false) }}
-                className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm hover:bg-[#f0f7f6] transition-colors"
+              <button key={s.id} onClick={() => { onAccept(s); setShowDropdown(false) }}
+                className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm hover:bg-[#f0f7f6]"
                 style={{ color: s.id === term.matched!.id ? '#2d6a5e' : '#1a2e2b' }}
               >
-                <span className="text-xs w-3 shrink-0">
-                  {s.id === term.matched!.id ? '●' : '○'}
-                </span>
+                <span className="text-xs w-3 shrink-0">{s.id === term.matched!.id ? '●' : '○'}</span>
                 {s.test_name}
               </button>
             ))}
@@ -109,38 +98,27 @@ function TermChip({
   if (term.status === 'suggestion') {
     const options = term.suggestions && term.suggestions.length > 0 ? term.suggestions : [term.matched!]
     return (
-      <div className="flex flex-col items-start w-full">
-        {/* Amber pill — click to expand/collapse options */}
-        <button
-          onClick={() => setShowDropdown(d => !d)}
-          className="flex items-start gap-1.5 px-3 py-2 rounded-lg text-sm font-medium cursor-pointer w-full text-left"
-          style={{ backgroundColor: '#fffbeb', border: '1.5px solid #fcd34d', color: '#92400e' }}
+      <div className="w-full">
+        <button onClick={() => setShowDropdown(d => !d)}
+          className={rowBase + " cursor-pointer w-full text-left"}
+          style={{ backgroundColor: '#fffbeb', borderLeft: '3px solid #f59e0b', color: '#92400e' }}
         >
-          <span className="text-xs opacity-60 mt-0.5 shrink-0">~</span>
-          <span className="flex-1 min-w-0 break-words">{term.matched!.test_name}</span>
+          <span className="text-xs shrink-0 opacity-60">?</span>
+          <span className="flex-1 min-w-0 font-medium" style={{ wordBreak: 'break-word' }}>{term.matched!.test_name}</span>
           {term.raw.toLowerCase() !== term.matched!.test_name.toLowerCase() && (
-            <span className="text-xs opacity-50 shrink-0">({term.raw})</span>
+            <span className="text-xs opacity-40 shrink-0 hidden sm:inline">({term.raw})</span>
           )}
-          <span className="ml-1 text-xs opacity-50 shrink-0">{showDropdown ? '▲' : '▼'}</span>
-          <span
-            onClick={(e) => { e.stopPropagation(); onRemove() }}
-            className="ml-1 opacity-40 hover:opacity-80 text-xs font-bold leading-none transition-opacity cursor-pointer shrink-0"
-            aria-label="Remove"
-          >×</span>
+          <span className="text-xs opacity-50 shrink-0">{showDropdown ? '▲' : '▼'}</span>
+          <span onClick={(e) => { e.stopPropagation(); onRemove() }} className="opacity-0 group-hover:opacity-40 hover:!opacity-80 text-xs font-bold shrink-0 transition-opacity cursor-pointer">×</span>
         </button>
-        {/* Options — only shown when expanded */}
         {showDropdown && (
-          <div className="mt-1 ml-1 bg-white rounded-lg shadow-lg border py-1" style={{ borderColor: '#e0ebe9', minWidth: '200px' }}>
+          <div className="mt-1 ml-4 bg-white rounded-lg shadow-lg border py-1" style={{ borderColor: '#e0ebe9', minWidth: '180px', zIndex: 10 }}>
             {options.map(s => (
-              <button
-                key={s.id}
-                onClick={() => { onAccept(s); setShowDropdown(false) }}
-                className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm hover:bg-[#f0f7f6] transition-colors"
+              <button key={s.id} onClick={() => { onAccept(s); setShowDropdown(false) }}
+                className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm hover:bg-[#f0f7f6]"
                 style={{ color: s.id === term.matched!.id ? '#2d6a5e' : '#1a2e2b' }}
               >
-                <span className="text-xs w-3 shrink-0">
-                  {s.id === term.matched!.id ? '●' : '○'}
-                </span>
+                <span className="text-xs w-3 shrink-0">{s.id === term.matched!.id ? '●' : '○'}</span>
                 {s.test_name}
               </button>
             ))}
@@ -150,45 +128,36 @@ function TermChip({
     )
   }
 
-  // manual (kept for manual fill-in)
+  // manual
   if (term.status === 'manual') {
     return (
       <div
-        className="flex items-start gap-1.5 px-3 py-2 rounded-lg text-sm font-medium w-full"
-        style={{ backgroundColor: '#f3f4f6', border: '1.5px solid #d1d5db', color: '#374151' }}
+        className={rowBase + " group"}
+        style={{ backgroundColor: '#f9fafb', borderLeft: '3px solid #9ca3af', color: '#374151' }}
       >
-        <span className="text-xs mt-0.5 shrink-0">✏️</span>
-        <span className="flex-1 min-w-0 break-words">{term.raw}</span>
-        <span className="text-xs opacity-50 shrink-0">— manual</span>
-        <button
-          onClick={onRemove}
-          className="ml-1 opacity-50 hover:opacity-100 text-xs font-bold leading-none shrink-0"
-          aria-label="Remove"
-        >×</button>
+        <span className="text-xs shrink-0 opacity-60">✏️</span>
+        <span className="flex-1 min-w-0 italic" style={{ wordBreak: 'break-word' }}>{term.raw}</span>
+        <span className="text-xs opacity-40 shrink-0">fill in</span>
+        <button onClick={onRemove} className="opacity-0 group-hover:opacity-40 hover:!opacity-80 text-xs font-bold shrink-0 transition-opacity">×</button>
       </div>
     )
   }
 
   // notfound
   return (
-    <div className="flex flex-col items-start w-full gap-1">
+    <div className="w-full">
       <div
-        className="flex items-start gap-1.5 px-3 py-2 rounded-lg text-sm font-medium w-full"
-        style={{ backgroundColor: '#fee2e2', border: '1.5px solid #fecaca', color: '#991b1b' }}
+        className={rowBase + " group"}
+        style={{ backgroundColor: '#fef2f2', borderLeft: '3px solid #f87171', color: '#991b1b' }}
       >
-        <span className="text-xs mt-0.5 shrink-0">✕</span>
-        <span className="flex-1 min-w-0 break-words">{term.raw}</span>
+        <span className="text-xs shrink-0 opacity-70">✕</span>
+        <span className="flex-1 min-w-0" style={{ wordBreak: 'break-word' }}>{term.raw}</span>
         <button
           onClick={onKeepManual}
-          className="text-xs px-1.5 py-0.5 rounded opacity-70 hover:opacity-100 transition-opacity shrink-0"
+          className="text-xs px-2 py-0.5 rounded shrink-0 transition-opacity hover:opacity-100 opacity-70"
           style={{ backgroundColor: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}
-          title="Keep this test and fill in the code manually on your printout"
         >keep</button>
-        <button
-          onClick={onRemove}
-          className="opacity-50 hover:opacity-100 text-xs font-bold leading-none shrink-0"
-          aria-label="Remove"
-        >×</button>
+        <button onClick={onRemove} className="opacity-0 group-hover:opacity-50 hover:!opacity-80 text-xs font-bold shrink-0 transition-opacity">×</button>
       </div>
     </div>
   )
@@ -985,7 +954,7 @@ export default function TranslatePage() {
             {/* 3-column grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {/* Ready (green) */}
-              <div className="rounded-xl p-3.5 order-1 md:order-none" style={{ backgroundColor: '#f0fdf4', border: '1.5px solid #bbf7d0' }}>
+              <div className="rounded-xl p-3.5 order-1 md:order-none" style={{ backgroundColor: '#fafafa', border: '1px solid #e5e7eb' }}>
                 <div className="flex items-center gap-1.5 mb-2.5" style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: '#15803d' }}>
                   <span>✓ Ready</span>
                   {matchedWithIndex.length > 0 && <span style={{ fontWeight: 400, opacity: 0.7 }}>({matchedWithIndex.length})</span>}
@@ -1002,7 +971,7 @@ export default function TranslatePage() {
               </div>
 
               {/* Needs input (amber) — first on mobile */}
-              <div className="rounded-xl p-3.5 order-first md:order-none" style={{ backgroundColor: '#fffbeb', border: '1.5px solid #fcd34d' }}>
+              <div className="rounded-xl p-3.5 order-first md:order-none" style={{ backgroundColor: '#fafafa', border: '1px solid #e5e7eb' }}>
                 <div className="flex items-center gap-1.5 mb-2.5" style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: '#92400e' }}>
                   <span>~ Needs your input</span>
                   {suggestionsWithIndex.length > 0 && <span style={{ fontWeight: 400, opacity: 0.7 }}>({suggestionsWithIndex.length})</span>}
@@ -1019,7 +988,7 @@ export default function TranslatePage() {
               </div>
 
               {/* Not found (red) */}
-              <div className="rounded-xl p-3.5 order-2 md:order-none" style={{ backgroundColor: '#fef2f2', border: '1.5px solid #fecaca' }}>
+              <div className="rounded-xl p-3.5 order-2 md:order-none" style={{ backgroundColor: '#fafafa', border: '1px solid #e5e7eb' }}>
                 <div className="flex items-center gap-1.5 mb-2.5" style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: '#991b1b' }}>
                   <span>✕ Not found</span>
                   {notfoundWithIndex.length > 0 && <span style={{ fontWeight: 400, opacity: 0.7 }}>({notfoundWithIndex.length})</span>}
