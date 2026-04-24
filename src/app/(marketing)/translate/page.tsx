@@ -179,7 +179,6 @@ function TermChip({
         className={rowBase + " group"}
         style={{ backgroundColor: '#fef2f2', borderLeft: '3px solid #f87171', color: '#991b1b' }}
       >
-        <span className="text-xs shrink-0 opacity-70">?</span>
         <span className="flex-1 min-w-0 truncate">{term.raw}</span>
         <button
           onClick={() => { onKeepManual(); setEditValue(''); setIsEditing(true) }}
