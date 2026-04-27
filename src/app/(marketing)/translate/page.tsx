@@ -80,10 +80,10 @@ function TermChip({
           <span className="text-xs shrink-0 opacity-70">✓</span>
           <span className="flex-1 min-w-0 font-medium truncate">{term.matched!.test_name}</span>
           {term.raw.toLowerCase() !== term.matched!.test_name.toLowerCase() && (
-            <span className="text-xs opacity-40 shrink-0 hidden sm:inline">({term.raw})</span>
+            <span className="text-xs opacity-70 shrink-0 hidden sm:inline">({term.raw})</span>
           )}
           {hasOptions && (
-            <button onClick={() => setShowDropdown(d => !d)} className="text-xs opacity-40 hover:opacity-80 shrink-0" title="Change">✎</button>
+            <button onClick={() => setShowDropdown(d => !d)} className="text-xs opacity-60 hover:opacity-90 shrink-0" title="Change">✎</button>
           )}
           <button onClick={onRemove} className="opacity-0 group-hover:opacity-40 hover:!opacity-80 text-xs font-bold shrink-0 transition-opacity" aria-label="Remove">×</button>
         </div>
@@ -115,9 +115,9 @@ function TermChip({
           <span className="text-xs shrink-0 opacity-60">?</span>
           <span className="flex-1 min-w-0 font-medium truncate">{term.matched!.test_name}</span>
           {term.raw.toLowerCase() !== term.matched!.test_name.toLowerCase() && (
-            <span className="text-xs opacity-40 shrink-0 hidden sm:inline">({term.raw})</span>
+            <span className="text-xs opacity-70 shrink-0 hidden sm:inline">({term.raw})</span>
           )}
-          <span className="text-xs opacity-50 shrink-0">{showDropdown ? '▲' : '▼'}</span>
+          <span className="text-xs opacity-70 shrink-0">{showDropdown ? '▲' : '▼'}</span>
           <span onClick={(e) => { e.stopPropagation(); onRemove() }} className="opacity-0 group-hover:opacity-40 hover:!opacity-80 text-xs font-bold shrink-0 transition-opacity cursor-pointer">×</span>
         </button>
         {showDropdown && (
