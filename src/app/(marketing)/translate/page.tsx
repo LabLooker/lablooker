@@ -628,13 +628,35 @@ export default function TranslatePage() {
   const [pdfError, setPdfError] = useState<string | null>(null)
   const pdfInputRef = useRef<HTMLInputElement>(null)
   const [isParsing, setIsParsing] = useState(false)
-  const [parsedTerms, setParsedTerms] = useState<ParsedTerm[]>([])
-  const [sourceLab, setSourceLab] = useState('')
-  const [targetLab, setTargetLab] = useState('')
+  const [parsedTerms, setParsedTerms] = useState<ParsedTerm[]>(() => {
+    try { const s = localStorage.getItem('ll_parsedTerms'); return s ? JSON.parse(s) : [] } catch { return [] }
+  })
+  const [sourceLab, setSourceLab] = useState(() => {
+    try { return localStorage.getItem('ll_sourceLab') || '' } catch { return '' }
+  })
+  const [targetLab, setTargetLab] = useState(() => {
+    try { return localStorage.getItem('ll_targetLab') || '' } catch { return '' }
+  })
   const [allLabs, setAllLabs] = useState<string[]>([])
-  const [translatedTests, setTranslatedTests] = useState<TranslatedTest[]>([])
+  const [translatedTests, setTranslatedTests] = useState<TranslatedTest[]>(() => {
+    try { const s = localStorage.getItem('ll_translatedTests'); return s ? JSON.parse(s) : [] } catch { return [] }
+  })
   const [isTranslating, setIsTranslating] = useState(false)
   const resultsRef = useRef<HTMLDivElement>(null)
+
+  // Persist state to localStorage whenever it changes
+  useEffect(() => {
+    try { localStorage.setItem('ll_parsedTerms', JSON.stringify(parsedTerms)) } catch {}
+  }, [parsedTerms])
+  useEffect(() => {
+    try { localStorage.setItem('ll_translatedTests', JSON.stringify(translatedTests)) } catch {}
+  }, [translatedTests])
+  useEffect(() => {
+    try { localStorage.setItem('ll_sourceLab', sourceLab) } catch {}
+  }, [sourceLab])
+  useEffect(() => {
+    try { localStorage.setItem('ll_targetLab', targetLab) } catch {}
+  }, [targetLab])
 
   const handlePdfUpload = useCallback(async (file: File) => {
     setPdfError(null)
