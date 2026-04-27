@@ -427,7 +427,7 @@ function ResultsSection({
                     >
                       {test.test_name}
                       {test.cpt_codes?.length > 0 && (
-                        <span className="font-normal ml-1" style={{ color: '#9ca3af', fontSize: '0.7rem' }}>
+                        <span className="font-normal ml-1" style={{ color: '#6b7280', fontSize: '0.7rem' }}>
                           (CPT {test.cpt_codes.join(', ')})
                         </span>
                       )}
@@ -464,7 +464,7 @@ function ResultsSection({
                 <div className="font-semibold text-base" style={{ color: '#1a2e2b' }}>
                   {test.test_name}
                   {cptLabel && (
-                    <span className="font-normal text-xs ml-1" style={{ color: '#9ca3af' }}>{cptLabel}</span>
+                    <span className="font-normal text-xs ml-1" style={{ color: '#6b7280' }}>{cptLabel}</span>
                   )}
                 </div>
                 <a
