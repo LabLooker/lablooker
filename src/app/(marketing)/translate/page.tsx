@@ -758,6 +758,13 @@ export default function TranslatePage() {
             codeMatches = ct || []
           }
 
+          // If input looks like a pure lab code (digits only, or short alphanumeric no spaces)
+          // and we got exactly one code match — trust it directly, skip name merge
+          const looksLikeCode = /^[a-z0-9]{2,12}$/i.test(raw.trim()) && !/\s/.test(raw.trim())
+          if (looksLikeCode && codeMatches.length === 1) {
+            return { raw, status: 'matched', matched: codeMatches[0] }
+          }
+
           // Name matches always take priority over code matches
           const seen = new Set<string>()
           const all: TestResult[] = []
