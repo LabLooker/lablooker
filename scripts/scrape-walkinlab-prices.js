@@ -22,22 +22,39 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 // Known Walk-In Lab URL slugs for common tests (CPT code → slug mapping)
 // Add more as we discover them
 const WIL_SLUG_MAP = {
-  '82728': 'ferritin-serum-test',                                          // Ferritin
-  '11111': 'ferritin-serum-test',                                          // fallback
-  '84443': 'thyroid-stimulating-hormone-tsh-blood-test',                  // TSH
-  '84480': 'tri-iodothyronine-t3-free-serum-blood-test',                  // Free T3
-  '82306': 'vitamin-d25-hydroxy-blood-test',                              // Vitamin D
-  '84402': 'testosteronefree-direct-serum-test-with-total-testosterone',  // Free Testosterone
-  '84403': 'testosteronefree-direct-serum-test-with-total-testosterone',  // Total Testosterone
-  '82670': 'estradiol-blood-test',                                        // Estradiol
-  '80053': 'complete-comprehensive-metabolic-panel-cmp-14-blood-test',    // CMP
-  '85025': 'complete-blood-count-cbc-with-differential-platelets-blood-test', // CBC
-  '82533': 'cortisol-am-blood-test',                                      // Cortisol AM
-  '84270': 'shbg-sex-hormone-binding-globulin-blood-test',                // SHBG
-  '83001': 'fsh-follicle-stimulating-hormone-blood-test',                 // FSH
-  '83002': 'luteinizing-hormone-lh-blood-test',                          // LH
-  '84146': 'prolactin-blood-test',                                        // Prolactin
-  '84153': 'psa-total-blood-test',                                        // PSA
+  '82728': 'ferritin-serum-test',
+  '84443': 'thyroid-stimulating-hormone-tsh-blood-test',
+  '84480': 'tri-iodothyronine-t3-free-serum-blood-test',
+  '84481': 'tri-iodothyronine-t3-free-serum-blood-test',           // Free T3
+  '84439': 'thyroxine-t4-free-direct-serum-test',                  // Free T4
+  '82306': 'vitamin-d25-hydroxy-blood-test',
+  '84402': 'testosteronefree-direct-serum-test-with-total-testosterone',
+  '84403': 'testosteronefree-direct-serum-test-with-total-testosterone',
+  '82670': 'estradiol-blood-test',
+  '80053': 'complete-comprehensive-metabolic-panel-cmp-14-blood-test',
+  '85025': 'complete-blood-count-cbc-with-differential-platelets-blood-test',
+  '82533': 'cortisol-am-blood-test',
+  '84270': 'shbg-sex-hormone-binding-globulin-blood-test',
+  '83001': 'fsh-follicle-stimulating-hormone-blood-test',
+  '83002': 'luteinizing-hormone-lh-blood-test',
+  '84146': 'prolactin-blood-test',
+  '84153': 'psa-total-blood-test',
+  '83036': 'hemoglobin-hb-a1c-blood-test',                         // HbA1c
+  '80061': 'lipid-panel-blood-test',                               // Lipid Panel
+  '83540': 'iron-with-total-iron-binding-capacity-tibc-blood-test', // Iron & TIBC
+  '82607': 'vitamin-b12-blood-test',                               // Vitamin B12
+  '83735': 'magnesium-serum-test',                                 // Magnesium
+  '83525': 'insulin-fasting-blood-test',                           // Insulin Fasting
+  '82627': 'dehydroepiandrosterone-dhea-s-sulfate-blood-test',     // DHEA-S
+  '84482': 'reverse-t3-blood-test',                                // Reverse T3
+  '86141': 'c-reactive-protein-crp-blood-test-high-sensitivity',   // hs-CRP
+  '83090': 'homocysteine-blood-test-plasma',                       // Homocysteine
+  '84144': 'progesterone-blood-test',                              // Progesterone
+  '83695': 'lipoprotein-a-blood-test',                             // Lp(a)
+  '82172': 'apolipoprotein-b-blood-test',                          // ApoB
+  '84305': 'insulin-like-growth-factor-igf-1-blood-test',          // IGF-1
+  '81001': 'urinalysis-complete-with-microscopic-examination',     // Urinalysis
+  '82746': 'folate-folic-acid-serum-test',                         // Folate Serum
 }
 
 const WIL_BASE = 'https://www.walkinlab.com/products/view'
