@@ -948,6 +948,24 @@ export default function TranslatePage() {
           </p>
         </div>
 
+        {/* Lab selector — shown before input so source lab is set before matching */}
+        <div className="print:hidden mb-4">
+          <LabRow
+            sourceLab={sourceLab}
+            targetLab={targetLab}
+            allLabs={allLabs}
+            onSourceChange={(lab) => {
+              setSourceLab(lab)
+              if (targetLab === lab) setTargetLab('')
+              setTranslatedTests([])
+            }}
+            onTargetChange={(lab) => {
+              setTargetLab(lab)
+              setTranslatedTests([])
+            }}
+          />
+        </div>
+
         {/* Bulk input */}
         <div className="bg-white rounded-xl shadow-sm border p-6 mb-4 print:hidden" style={{ borderColor: '#e0ebe9' }}>
           <div className="flex items-center justify-between mb-3">
@@ -1089,25 +1107,7 @@ export default function TranslatePage() {
           </div>
         )}
 
-        {/* Lab row */}
-        {parsedTerms.length > 0 && confirmedTests.length > 0 && (
-          <div className="print:hidden">
-            <LabRow
-              sourceLab={sourceLab}
-              targetLab={targetLab}
-              allLabs={allLabs}
-              onSourceChange={(lab) => {
-                setSourceLab(lab)
-                if (targetLab === lab) setTargetLab('')
-                setTranslatedTests([])
-              }}
-              onTargetChange={(lab) => {
-                setTargetLab(lab)
-                setTranslatedTests([])
-              }}
-            />
-          </div>
-        )}
+
 
         {/* Translate button */}
         {confirmedTests.length > 0 && (
