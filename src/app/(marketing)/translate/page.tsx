@@ -972,6 +972,23 @@ export default function TranslatePage() {
             <label className="block text-sm font-semibold" style={{ color: '#1a2e2b' }}>
               What tests were ordered?
             </label>
+            <div className="flex items-center gap-2">
+            {parsedTerms.length > 0 && (
+              <button
+                onClick={() => {
+                  setParsedTerms([])
+                  setTranslatedTests([])
+                  setBulkInput('')
+                  setPdfError(null)
+                  try {
+                    localStorage.removeItem('ll_parsedTerms')
+                    localStorage.removeItem('ll_translatedTests')
+                  } catch {}
+                }}
+                className="text-xs px-2 py-1 rounded-lg transition-all"
+                style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca' }}
+              >↺ Start over</button>
+            )}
             <button
               onClick={() => pdfInputRef.current?.click()}
               disabled={isPdfLoading}
@@ -988,6 +1005,7 @@ export default function TranslatePage() {
               className="hidden"
               onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePdfUpload(f); e.target.value = '' }}
             />
+            </div>
           </div>
           {pdfError && (
             <div className="mt-2 px-3 py-2 rounded-lg text-xs" style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca' }}>
