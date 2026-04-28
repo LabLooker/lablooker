@@ -729,11 +729,15 @@ export default function TranslatePage() {
               .select('id, test_name, cpt_codes, category')
               .ilike('test_name', `%${firstWord}%`)
               .limit(25),
-            supabase
-              .from('lab_codes')
-              .select('test_id')
-              .ilike('proprietary_code', `%${raw}%`)
-              .limit(5),
+            (() => {
+              let q = supabase
+                .from('lab_codes')
+                .select('test_id')
+                .ilike('proprietary_code', `%${raw}%`)
+                .limit(5)
+              if (sourceLab) q = q.eq('lab_name', sourceLab)
+              return q
+            })(),
           ])
 
           const nameMatches: TestResult[] = (nameData || []).filter((t: TestResult) =>
