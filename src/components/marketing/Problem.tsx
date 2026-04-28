@@ -22,7 +22,7 @@ export default function Problem() {
       ),
       title: 'Lab prices are a black box',
       description: 'The same ferritin test costs $28 at one lab and $400 at another. Self-pay options exist — but nobody tells you where to find them.',
-      solution: "LabLooker compares real self-pay prices across 7+ labs side by side, so you can find the lowest price before you order.",
+      solution: "LabLooker compares real self-pay prices across 10+ labs side by side, so you can find the lowest price before you order.",
       href: '/compare',
       cta: 'Compare prices →',
     },

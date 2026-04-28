@@ -10,7 +10,7 @@ export default function Solution() {
       ),
       title: 'Search & compare tests',
       description:
-        "Know what you need? Search by test name, CPT code, or lab code and compare real self-pay prices across 7+ providers instantly.",
+        "Know what you need? Search by test name, CPT code, or lab code and compare real self-pay prices across 10+ providers instantly.",
       href: '/search',
       cta: 'Search tests →',
     },
