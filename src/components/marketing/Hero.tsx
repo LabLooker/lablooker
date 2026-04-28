@@ -125,7 +125,7 @@ export default function Hero() {
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Request Tests</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-[#577572]">
-              Walk into your next appointment prepared — with a clear, specific request your doctor can act on.
+              Go to your appointment prepared with a specific request your doctor can act on.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
           </Link>
@@ -145,7 +145,7 @@ export default function Hero() {
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Track Results</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-[#577572]">
-              Save test results, track markers, and visualize trends over time with Premium. Your personal dashboard, private and organized.
+              Log results, track markers over time, and spot trends. Private dashboard, Premium only.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
           </Link>
