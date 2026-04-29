@@ -85,7 +85,7 @@ export default function Hero() {
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Translate Codes</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-[#577572]">
-              Match test names and lab codes across providers so you can find the equivalent test anywhere.
+              Paste lab codes from any provider and find the matching test anywhere else.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
           </Link>
@@ -105,7 +105,7 @@ export default function Hero() {
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Compare Prices</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-[#577572]">
-              Find the lowest self-pay price across 10+ lab providers and order directly.
+              See real self-pay prices across 10+ labs side by side and order directly.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
           </Link>
@@ -125,7 +125,7 @@ export default function Hero() {
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Request Tests</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-[#577572]">
-              Go to your appointment prepared with a specific request your doctor can act on.
+              Come prepared. Generate a specific test request your doctor can act on.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
           </Link>
@@ -145,7 +145,7 @@ export default function Hero() {
             </div>
             <h3 className="mt-3 text-base font-bold text-[#1a2e2b] group-hover:text-[#2d6a5e] transition-colors">Track Results</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-[#577572]">
-              Log results, track markers over time, and spot trends. Private dashboard, Premium only.
+              Log results, watch trends, and build your health history over time.
             </p>
             <span className="absolute bottom-3 right-4 text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 text-[#2d6a5e]">→</span>
           </Link>
