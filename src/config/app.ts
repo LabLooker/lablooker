@@ -69,6 +69,7 @@ export const APP_CONFIG = {
   moreNav: [
     { label: 'Explore', href: '/explore' },
     { label: 'Generate Request', href: '/advocate' },
+    { label: 'Format for Sharing', href: '/format' },
     { label: 'Calculators', href: '/calculators' },
     { label: 'Panels', href: '/bundles' },
     { label: 'Topics', href: '/topics' },
