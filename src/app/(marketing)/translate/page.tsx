@@ -723,7 +723,9 @@ export default function TranslatePage() {
           const words = raw.toLowerCase().split(/\s+/).filter(Boolean)
           const firstWord = words[0]
 
-          const [{ data: nameData }, { data: codeData }] = await Promise.all([
+          const isCptCode = /^\d{5}$/.test(raw.trim())
+
+          const [{ data: nameData }, { data: codeData }, { data: cptData }] = await Promise.all([
             supabase
               .from('tests')
               .select('id, test_name, cpt_codes, category')
@@ -738,6 +740,12 @@ export default function TranslatePage() {
               if (sourceLab) q = q.eq('lab_name', sourceLab)
               return q
             })(),
+            isCptCode
+              ? supabase
+                  .from('tests')
+                  .select('id, test_name, cpt_codes, category')
+                  .overlaps('cpt_codes', [raw.trim()])
+              : Promise.resolve({ data: [] as TestResult[] }),
           ])
 
           const nameMatches: TestResult[] = (nameData || []).filter((t: TestResult) =>
@@ -762,17 +770,26 @@ export default function TranslatePage() {
             codeMatches = ct || []
           }
 
+          const directCodeMatches: TestResult[] = []
+          const directCodeIds = new Set<string>()
+          for (const test of [...(cptData || []), ...codeMatches]) {
+            if (!directCodeIds.has(test.id)) {
+              directCodeIds.add(test.id)
+              directCodeMatches.push(test)
+            }
+          }
+
           // If input looks like a pure lab code (digits only, or short alphanumeric no spaces)
           // and we got exactly one code match — trust it directly, skip name merge
           const looksLikeCode = /^[a-z0-9]{2,12}$/i.test(raw.trim()) && !/\s/.test(raw.trim())
-          if (looksLikeCode && codeMatches.length === 1) {
-            return { raw, status: 'matched', matched: codeMatches[0] }
+          if (looksLikeCode && directCodeMatches.length === 1) {
+            return { raw, status: 'matched', matched: directCodeMatches[0] }
           }
 
           // Name matches always take priority over code matches
           const seen = new Set<string>()
           const all: TestResult[] = []
-          for (const t of [...nameMatches, ...codeMatches]) {
+          for (const t of [...nameMatches, ...directCodeMatches]) {
             if (!seen.has(t.id)) { seen.add(t.id); all.push(t) }
           }
 
