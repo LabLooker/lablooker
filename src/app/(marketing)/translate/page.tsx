@@ -42,6 +42,8 @@ type ParsedTerm = {
   suggestions?: TestResult[]
 }
 
+const TRANSLATE_PARSER_VERSION = '2'
+
 // ─── TermChip ─────────────────────────────────────────────────────────────────
 
 function TermChip({
@@ -223,10 +225,10 @@ function LabRow({
       <div className="text-sm font-semibold mb-3" style={{ color: '#577572' }}>
         Translate between labs
       </div>
-      <div className="flex items-end gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-end gap-3">
 
         {/* Source */}
-        <div className="flex-1 relative">
+        <div className="w-full sm:flex-1 min-w-0 relative">
           <div className="text-xs font-medium mb-1.5" style={{ color: '#577572' }}>From</div>
           {sourceLab ? (
             <button
@@ -278,10 +280,10 @@ function LabRow({
           )}
         </div>
 
-        <div className="text-xl font-light pb-2.5" style={{ color: '#577572' }}>→</div>
+        <div className="text-xl font-light self-center rotate-90 sm:rotate-0 sm:pb-2.5" style={{ color: '#577572' }}>→</div>
 
         {/* Target */}
-        <div className="flex-1 relative">
+        <div className="w-full sm:flex-1 min-w-0 relative">
           <div className="text-xs font-medium mb-1.5" style={{ color: '#577572' }}>To</div>
           {targetLab ? (
             <button
@@ -628,35 +630,58 @@ export default function TranslatePage() {
   const [pdfError, setPdfError] = useState<string | null>(null)
   const pdfInputRef = useRef<HTMLInputElement>(null)
   const [isParsing, setIsParsing] = useState(false)
-  const [parsedTerms, setParsedTerms] = useState<ParsedTerm[]>(() => {
-    try { const s = localStorage.getItem('ll_parsedTerms'); return s ? JSON.parse(s) : [] } catch { return [] }
-  })
-  const [sourceLab, setSourceLab] = useState(() => {
-    try { return localStorage.getItem('ll_sourceLab') || '' } catch { return '' }
-  })
-  const [targetLab, setTargetLab] = useState(() => {
-    try { return localStorage.getItem('ll_targetLab') || '' } catch { return '' }
-  })
+  const [parsedTerms, setParsedTerms] = useState<ParsedTerm[]>([])
+  const [sourceLab, setSourceLab] = useState('')
+  const [targetLab, setTargetLab] = useState('')
   const [allLabs, setAllLabs] = useState<string[]>([])
-  const [translatedTests, setTranslatedTests] = useState<TranslatedTest[]>(() => {
-    try { const s = localStorage.getItem('ll_translatedTests'); return s ? JSON.parse(s) : [] } catch { return [] }
-  })
+  const [translatedTests, setTranslatedTests] = useState<TranslatedTest[]>([])
+  const [hasLoadedPersistedState, setHasLoadedPersistedState] = useState(false)
   const [isTranslating, setIsTranslating] = useState(false)
   const resultsRef = useRef<HTMLDivElement>(null)
 
+  // Load browser-only state after hydration. Parser upgrades preserve good
+  // matches while requeueing previously failed terms for the corrected parser.
+  useEffect(() => {
+    try {
+      const savedTerms = localStorage.getItem('ll_parsedTerms')
+      let terms: ParsedTerm[] = savedTerms ? JSON.parse(savedTerms) : []
+      if (localStorage.getItem('ll_translateParserVersion') !== TRANSLATE_PARSER_VERSION) {
+        const staleTerms = terms.filter(term => term.status === 'notfound')
+        terms = terms.filter(term => term.status !== 'notfound')
+        if (staleTerms.length > 0) {
+          localStorage.setItem('ll_translateRetryTerms', staleTerms.map(term => term.raw).join('\n'))
+        }
+        localStorage.setItem('ll_parsedTerms', JSON.stringify(terms))
+        localStorage.setItem('ll_translateParserVersion', TRANSLATE_PARSER_VERSION)
+      }
+      const retryTerms = localStorage.getItem('ll_translateRetryTerms')
+      if (retryTerms) setBulkInput(retryTerms)
+      setParsedTerms(terms)
+      setSourceLab(localStorage.getItem('ll_sourceLab') || '')
+      setTargetLab(localStorage.getItem('ll_targetLab') || '')
+      const savedTranslations = localStorage.getItem('ll_translatedTests')
+      setTranslatedTests(savedTranslations ? JSON.parse(savedTranslations) : [])
+    } catch {}
+    setHasLoadedPersistedState(true)
+  }, [])
+
   // Persist state to localStorage whenever it changes
   useEffect(() => {
+    if (!hasLoadedPersistedState) return
     try { localStorage.setItem('ll_parsedTerms', JSON.stringify(parsedTerms)) } catch {}
-  }, [parsedTerms])
+  }, [hasLoadedPersistedState, parsedTerms])
   useEffect(() => {
+    if (!hasLoadedPersistedState) return
     try { localStorage.setItem('ll_translatedTests', JSON.stringify(translatedTests)) } catch {}
-  }, [translatedTests])
+  }, [hasLoadedPersistedState, translatedTests])
   useEffect(() => {
+    if (!hasLoadedPersistedState) return
     try { localStorage.setItem('ll_sourceLab', sourceLab) } catch {}
-  }, [sourceLab])
+  }, [hasLoadedPersistedState, sourceLab])
   useEffect(() => {
+    if (!hasLoadedPersistedState) return
     try { localStorage.setItem('ll_targetLab', targetLab) } catch {}
-  }, [targetLab])
+  }, [hasLoadedPersistedState, targetLab])
 
   const handlePdfUpload = useCallback(async (file: File) => {
     setPdfError(null)
@@ -860,6 +885,7 @@ export default function TranslatePage() {
 
     // Append new results to existing terms
     setParsedTerms(prev => [...prev.filter(t => t.status === 'matched' || t.status === 'suggestion' || t.status === 'notfound' || t.status === 'manual'), ...results])
+    try { localStorage.removeItem('ll_translateRetryTerms') } catch {}
     setBulkInput('')
     setIsParsing(false)
   }, [bulkInput, parsedTerms])
@@ -985,11 +1011,11 @@ export default function TranslatePage() {
 
         {/* Bulk input */}
         <div className="bg-white rounded-xl shadow-sm border p-6 mb-4 print:hidden" style={{ borderColor: '#e0ebe9' }}>
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-3">
             <label className="block text-sm font-semibold" style={{ color: '#1a2e2b' }}>
               What tests were ordered?
             </label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 self-end sm:self-auto">
             {parsedTerms.length > 0 && (
               <button
                 onClick={() => {
@@ -1000,16 +1026,17 @@ export default function TranslatePage() {
                   try {
                     localStorage.removeItem('ll_parsedTerms')
                     localStorage.removeItem('ll_translatedTests')
+                    localStorage.removeItem('ll_translateRetryTerms')
                   } catch {}
                 }}
-                className="text-xs px-2 py-1 rounded-lg transition-all"
+                className="text-xs px-2 py-1 rounded-lg transition-all whitespace-nowrap"
                 style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca' }}
               >↺ Start over</button>
             )}
             <button
               onClick={() => pdfInputRef.current?.click()}
               disabled={isPdfLoading}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap"
               style={{ backgroundColor: '#f0f7f6', color: '#2d6a5e', border: '1px solid #c5deda' }}
               title="Upload a PDF lab order to extract test names automatically"
             >
